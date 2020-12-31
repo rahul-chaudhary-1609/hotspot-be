@@ -2,7 +2,8 @@ require('dotenv/config')
 const express=require('express')
 
 
-const router=express.Router();
+
+const router=require('./signup.route')
 
 router.get('/',(req,res)=>{
     res.send("Welcome to Hotspot")

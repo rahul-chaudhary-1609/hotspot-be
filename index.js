@@ -1,7 +1,7 @@
 require('dotenv/config')
 const express=require('express')
 const router=require('./routes')
-const model=require('./models')
+const {sequelize}=require('./models')
 
 const port=process.env.PORT || 5000;
 
@@ -11,11 +11,23 @@ app.use(express.json());
 
 app.use('/',router);
 
-app.listen(port,(err)=>{
+app.listen(port, async (err)=>{
     if(err){
-        console.log("Some Error Occurred",err)
+        console.log("Some Error Occurred",err);
     }
     else{
-        console.log(`Server is started successfully at port: ${port}`)
+        console.log(`Server is started successfully at port: ${port}`);        
+    }
+    // try {
+    //     await sequelize.sync({force:true});
+    //     console.log("Database synced")
+    // } catch (error) {
+    //     console.log("Error in database sync",error);
+    // }
+    try {
+        await sequelize.authenticate();
+        console.log("Database connected")
+    } catch (error) {
+        console.log("Error in database connection",error);
     }
 })
