@@ -8,7 +8,7 @@ const { Customer}=require("../models")
 
 const router=express.Router();
 
-router.get('/customer-signup', async (req,res)=>{
+router.post('/customer-signup', async (req,res)=>{
 
     const result=schema.validate(req.body);
 
@@ -17,6 +17,8 @@ router.get('/customer-signup', async (req,res)=>{
     }
     
     const {name, email,phone,password}=result.value;
+
+    console.log("result error:",result.error,result.value);
 
     const hashedPassword=passwordHash.generate(password);
 
