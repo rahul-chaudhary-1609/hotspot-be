@@ -15,25 +15,59 @@ module.exports = (sequelize, DataTypes) => {
   };
   Customer.init({
     id:{
-      type:DataTypes.UUID,
-      defaultValue:DataTypes.UUIDV4,
-      primaryKey:true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true
     }, 
     name:{
-      type:DataTypes.STRING,
+      type:DataTypes.STRING(45),
       allowNull: false,
     }, 
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(45),
       allowNull:false,
     },
-    phone: {
-      type: DataTypes.STRING,
+    address: {
+      type: DataTypes.STRING(45),
+    },
+    country_code: {
+      type: DataTypes.STRING(45),
+      allowNull:false
+    },
+    phone_no: {
+      type: DataTypes.BIGINT,
       allowNull:false,
     },
     password: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(60),
       allowNull:false,
+    },
+    email_verification_otp: {
+      type: DataTypes.STRING(45),
+    },
+    reset_pass_otp: {
+      type: DataTypes.STRING(45),
+    },
+    reset_pass_expiry: {
+      type: DataTypes.DATE,
+    },
+    apple_id: {
+      type: DataTypes.STRING(45),
+    },
+    google_id: {
+      type: DataTypes.STRING(45),
+    },
+    facebook_id: {
+      type: DataTypes.STRING(45),
+    },
+    status: {
+      type: DataTypes.INTEGER,
+    },
+    is_deleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue:false
     },
   }, {
     sequelize,

@@ -16,7 +16,7 @@ const config = {
   dialect: process.env.db_dialect
 }
 
-console.log(config);
+//console.log(config);
 
 let sequelize= new Sequelize(config.database, config.username, config.password, config);
 

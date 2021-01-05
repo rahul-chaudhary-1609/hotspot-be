@@ -2,26 +2,60 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('customers', {
-      id:{
-        type:DataTypes.UUID,
-        defaultValue:DataTypes.UUIDV4,
-        primaryKey:true,
-      }, 
-      name:{
-        type:DataTypes.STRING,
+      id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-      }, 
-      email: {
-        type: DataTypes.STRING,
-        allowNull:false,
+        primaryKey: true,
+        autoIncrement: true
       },
-      phone: {
-        type: DataTypes.STRING,
-        allowNull:false,
+      name: {
+        type: Sequelize.STRING(45),
+        allowNull: false,
+      },
+      email: {
+        type: Sequelize.STRING(45),
+        allowNull: false,
+      },
+      address: {
+        type: Sequelize.STRING(45),
+      },
+      country_code: {
+        type: Sequelize.STRING(45),
+        allowNull: false
+      },
+      phone_no: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
       },
       password: {
-        type: DataTypes.STRING,
-        allowNull:false,
+        type: Sequelize.STRING(60),
+        allowNull: false,
+      },
+      email_verification_otp: {
+        type: Sequelize.STRING(45),
+      },
+      reset_pass_otp: {
+        type: Sequelize.STRING(45),
+      },
+      reset_pass_expiry: {
+        type: Sequelize.DATE,
+      },
+      apple_id: {
+        type: Sequelize.STRING(45),
+      },
+      google_id: {
+        type: Sequelize.STRING(45),
+      },
+      facebook_id: {
+        type: Sequelize.STRING(45),
+      },
+      status: {
+        type: Sequelize.INTEGER,
+      },
+      is_deleted: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
