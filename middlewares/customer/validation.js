@@ -1,6 +1,6 @@
 const Joi=require('joi');
 
-const schema= Joi.object({
+const customerSchema= Joi.object({
     name:Joi.string().required(),
     email: Joi.string().email().required(),
     country_code:Joi.string().required(),
@@ -8,4 +8,4 @@ const schema= Joi.object({
     password:Joi.string().min(6).required()
 });
 
-module.exports=schema;
+module.exports = {customerSchema};
