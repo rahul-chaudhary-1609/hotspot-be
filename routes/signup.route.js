@@ -1,16 +1,17 @@
 require('dotenv/config')
 const express = require('express');
-const schema=require("./validation");
+const schema=require("../middlewares/validation");
 const passwordHash = require('password-hash');
 const { Op } = require("sequelize");
 const passport = require('passport');
+const sendMail = require('../utilityServices/mail');
 
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
 
-require('./passport-setup');
+require('../middlewares/passport-setup');
 
 const { Customer}=require("../models");
-const { message } = require('./validation');
+const { message } = require('../middlewares/validation');
 
 
 const router=express.Router();
@@ -100,7 +101,8 @@ router.post('/customer-email-signup', async (req,res)=>{
 router.get('/customer-google-signup', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/customer-google-signup-cb', passport.authenticate('google', { failureRedirect: '/failed'}),async (req,res)=>{
-    const body={name:req.user.displayName,email:req.user.emails[0].value}
+    const body = { id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value };
+    console.log(body);
     try {
         const response=await signupCustomer(body); 
         res.send(response);
@@ -117,13 +119,27 @@ router.get('/failed', (req, res) =>{
 })
 
 
-
+// Social Media Logout
 router.get('/logout', (req, res) => {
     req.session = null;
     req.logout();
     res.redirect('/');
 })
 
+// Route for customer signup with facebook account
+router.get('/customer-facebook-signup', passport.authenticate('facebook', { scope: 'email' }));
+
+router.get('/customer-facebook-signup-cb', passport.authenticate('facebook', { failureRedirect: '/failed' }), async (req, res) => {
+    const body = { id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value };
+    console.log(body);
+    try {
+        const response = await signupCustomer(body);
+        res.send(response);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
 
 router.get('/generateOTP', (req, res) => {
     console.log(req.query);
@@ -136,7 +152,7 @@ router.get('/generateOTP', (req, res) => {
             channel: req.query.channel
         })
         .then((data) => {
-            res.status(200).json({ message: `Verification code is sent to +${req.query.country_code}${req.query.phone}`, data });
+            res.status(200).json({ message: `Verification code is sent to +${req.query.country_code}${req.query.phone}` });
         })
         .catch((error) => {
             res.status(500).json(error);
@@ -156,15 +172,30 @@ router.get('/validateOTP', (req, res) => {
         .then((data) => {
             if (data.status === "approved")
             {
-                res.status(200).json({ message: `Phone verified`, data })
+                res.status(200).json({ message: `Phone verified`})
             }
             else {
-                res.status(200).json({ message: `Invalid Code`, data })
+                res.status(200).json({ message: `Invalid Code`})
             }
         })
         .catch((error) => {
             res.status(500).json(error);
     })
+})
+
+
+router.post('/verifyEmail', async (req, res) => {
+    var mailOptions = {
+        from: `Hotspot 👻 <${process.env.ev_email}>`,
+        to: req.body.email,
+        subject: 'Email Verification',
+        text: 'Here is your code'
+    };
+    sendMail(mailOptions).then((resp) => {
+        res.send(resp);
+    });
+    //console.log(response)
+    
 })
 
 module.exports=router;
