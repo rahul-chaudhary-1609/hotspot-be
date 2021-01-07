@@ -75,7 +75,7 @@ router.get('/logout', (req, res) => {
 
 
 
-router.get('/verifyPhone', async(req, res) => {
+router.get('/verify-phone', async(req, res) => {
 
     generatePhoneOTP(req.query)
         .then((data) => {
@@ -86,7 +86,7 @@ router.get('/verifyPhone', async(req, res) => {
         })
 });
 
-router.get('/validatePhone', async (req, res) => {
+router.get('/validate-phone', async (req, res) => {
 
     validatePhoneOTP(req.query)
         .then((data) => {
@@ -103,7 +103,7 @@ router.get('/validatePhone', async (req, res) => {
 });
 
 
-router.get('/verifyEmail', async (req, res) => {
+router.get('/verify-email', async (req, res) => {
     
     try {
         let customer = await Customer.findOne({
@@ -131,7 +131,7 @@ router.get('/verifyEmail', async (req, res) => {
     
 });
 
-router.get('/validateEmail', async (req, res) => {
+router.get('/validate-email', async (req, res) => {
     
     try {
         let customer = await Customer.findOne({
