@@ -29,10 +29,7 @@ router.get('/customer-google-signup', passport.authenticate('google', { scope: [
 
 // Callback Route for customer signup with google account
 router.get('/customer-google-signup-cb', passport.authenticate('google', { failureRedirect: '/failed'}),async (req,res)=>{
-    const body = {
-        google_id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value, country_code: '+91',
-        phone: '9555269398',
-        password: '123456' };
+    const body = {google_id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value};
     console.log(body);
     try {
         const response=await signupCustomer(body); 
