@@ -13,7 +13,9 @@ const signupCustomer = async (data) => {
     const result = customerSchema.validate(data);
 
     if (result.error) {
-        return result.error.details[0].message;
+        return {
+            status: "failure", is_customer_created: false, message: result.error.details[0].message
+        };
     }
 
     if (result.value) {
@@ -40,7 +42,7 @@ const signupCustomer = async (data) => {
         });
 
         if (created) {
-            return constomer;
+            return { status:"success",is_customer_created: true, message:`Customer (${email}) created successfully` };
         }
         else {
             const checkEmail = await Customer.findOne({
@@ -55,11 +57,12 @@ const signupCustomer = async (data) => {
             });
 
             if (checkEmail !== null) {
-                return `Customer with the same email is already exist. \n Login with ${email}`;
+                return { status: "success", is_customer_created: false, message:`Customer with the same email is already exist. \n Login with ${email}`};
             }
 
             if (checkPhone !== null) {                
-                return `Customer with the same phone is already exist. \n Login with ${checkPhone.getDataValue('email')}`;
+                return {
+                    status: "success", is_customer_created: false, message: `Customer with the same phone is already exist. \n Login with ${checkPhone.getDataValue('email')}`};
             }
         }
     }

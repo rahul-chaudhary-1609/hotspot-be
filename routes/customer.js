@@ -1,5 +1,6 @@
 require('dotenv/config');
 require('../middlewares/customer/passport-setup');
+const { Customer } = require('../models');
 const express = require('express');
 const passport = require('passport');
 
@@ -103,21 +104,55 @@ router.get('/validatePhone', async (req, res) => {
 
 
 router.get('/verifyEmail', async (req, res) => {
-    generateEmailOTP(req.query)
-        .then((resp) => {
-            res.send(`Verification Email Sent to : ${req.query.email}`);
-        }).catch((error) => {
-            res.status(500).send(error);
+    
+    try {
+        let customer = await Customer.findOne({
+            where: {
+                email: req.query.email,
+            }
         });
+
+        if (customer.getDataValue('is_email_verified')) {
+            res.send(`${req.query.email} is already verified`);
+        }
+        else {
+
+            generateEmailOTP(req.query)
+                .then((resp) => {
+                    res.send(`Verification Email Sent to : ${req.query.email}`);
+                }).catch((error) => {
+                    res.status(500).send(error);
+                });
+        }
+    } catch (error) {
+        res.status(500).send(error);
+    }
+    
     
 });
 
 router.get('/validateEmail', async (req, res) => {
-    console.log(req.query);
+    
     try {
-        if (validateEmailOTP(req.query)) {
-            res.send(`${req.query.email} is verified.`);
+        let customer = await Customer.findOne({
+            where: {
+                email: req.query.email,
+            }
+        });
+
+        if (customer.getDataValue('is_email_verified')) {
+            res.send(`${req.query.email} is already verified`);
         }
+        else {
+
+            if (validateEmailOTP(req.query)) {
+                res.send(`${req.query.email} is verified.`);
+            }
+            else {
+                res.status(400).send('Some Error Occured in Email Verification');
+            }
+        }
+       
     } catch (error) {
         res.status(500).send(error);
     }
