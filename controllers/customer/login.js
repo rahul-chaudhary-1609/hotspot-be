@@ -3,6 +3,7 @@ const { Customer } = require('../../models');
 const { customerSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
+const sendMail = require('../../utilityServices/mail');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
 
 
@@ -61,14 +62,14 @@ const signupCustomer = async (data) => {
                 return `Customer with the same email is already exist. \n Login with ${email}`;
             }
 
-            if (checkPhone !== null) {
-                return "Customer with the same phone is already exist.";
+            if (checkPhone !== null) {                
+                return `Customer with the same phone is already exist. \n Login with ${checkPhone.getDataValue('email')}`;
             }
         }
     }
 };
 
-const generateOTP = (userInfo) => {
+const generatePhoneOTP = (userInfo) => {
     
     return client
                 .verify
@@ -78,14 +79,11 @@ const generateOTP = (userInfo) => {
                     to: `+${userInfo.country_code}${userInfo.phone}`,
                     channel: userInfo.channel
                 })
-                .then((data) => {
-                    return {message: `Verification code is sent to +${userInfo.country_code}${userInfo.phone}`};
-                });
     
     
 };
 
-const validateOTP = (userInfo) => {
+const validatePhoneOTP = (userInfo) => {
     return client
                 .verify
                 .services(process.env.serviceID)
@@ -95,6 +93,62 @@ const validateOTP = (userInfo) => {
                     code: userInfo.code
                 })
         
- };
+};
+ 
 
-module.exports = { signupCustomer, generateOTP, validateOTP };
+const generateEmailOTP = async(userInfo) => {
+    const email_verification_otp = Math.random().toString(36).substring(3);
+
+    const customer = await Customer.update({
+        email_verification_otp
+    }, {
+        where: {
+            email: userInfo.email
+            },
+            returning: true,
+    });
+
+    const mailOptions = {
+        from: `Hotspot <${process.env.ev_email}>`,
+        to: userInfo.email,
+        subject: 'Email Verification',
+        text: 'Here is your code',
+        html: `<a href='http://192.168.0.2:3000/validateEmail?code=${email_verification_otp}&email=${userInfo.email}'>Click Here</a>`,
+    };
+    
+    return sendMail(mailOptions);
+};
+
+
+const validateEmailOTP = async(userInfo) => {
+    const customer = await Customer.findOne({
+        where: {
+            email: userInfo.email,
+        }
+    });
+
+    const email_verification_otp = customer.getDataValue('email_verification_otp');
+
+    if (email_verification_otp != null && email_verification_otp===userInfo.code) {
+        const result = await Customer.update({
+            is_email_verified: true,
+        }, {
+            where: {
+                email: userInfo.email
+            },
+            returning: true,
+        });
+
+        if (result.is_email_verified) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+};
+
+module.exports = { signupCustomer, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

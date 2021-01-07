@@ -2,8 +2,8 @@ require('dotenv/config');
 require('../middlewares/customer/passport-setup');
 const express = require('express');
 const passport = require('passport');
-const sendMail = require('../utilityServices/mail');
-const { signupCustomer, generateOTP, validateOTP}=require('../controllers/customer/login')
+
+const { signupCustomer, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP}=require('../controllers/customer/login')
 
 const router=express.Router();
                                 
@@ -28,7 +28,10 @@ router.get('/customer-google-signup', passport.authenticate('google', { scope: [
 
 // Callback Route for customer signup with google account
 router.get('/customer-google-signup-cb', passport.authenticate('google', { failureRedirect: '/failed'}),async (req,res)=>{
-    const body = { id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value };
+    const body = {
+        google_id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value, country_code: '+91',
+        phone: '9555269399',
+        password: '123456' };
     console.log(body);
     try {
         const response=await signupCustomer(body); 
@@ -44,7 +47,7 @@ router.get('/customer-facebook-signup', passport.authenticate('facebook', { scop
 
 // Callback Route for customer signup with facebook account
 router.get('/customer-facebook-signup-cb', passport.authenticate('facebook', { failureRedirect: '/failed' }), async (req, res) => {
-    const body = { id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value };
+    const body = { facebook_id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value };
     console.log(body);
     try {
         const response = await signupCustomer(body);
@@ -71,18 +74,9 @@ router.get('/logout', (req, res) => {
 
 
 
-router.get('/generateOTP', async(req, res) => {
-    // //console.log(req.query);
-    // try {
-    //     const response = generateOTP(req.query);
-    //     console.log(response);
-    //     res.send(response);
-    // } catch (error) {
-    //     console.log(error);
-    //     return res.status(500).json(error);
-    // }
+router.get('/verifyPhone', async(req, res) => {
 
-    generateOTP(req.query)
+    generatePhoneOTP(req.query)
         .then((data) => {
             res.status(200).send({ message: `Verification code is sent to +${req.query.country_code}${req.query.phone}` });
         })
@@ -91,18 +85,9 @@ router.get('/generateOTP', async(req, res) => {
         })
 });
 
-router.get('/validateOTP', async (req, res) => {
-    //console.log(req.query);
-    // try {
-    //     const response = validateOTP(req.query);
-    //     console.log(response);
-    //     res.send(response);
-    // } catch (error) {
-    //     console.log(error);
-    //     return res.status(500).json(error);
-    // }
+router.get('/validatePhone', async (req, res) => {
 
-    validateOTP(req.query)
+    validatePhoneOTP(req.query)
         .then((data) => {
             if (data.status === "approved") {
                 res.status(200).send({ message: `Phone verified` });
@@ -117,18 +102,26 @@ router.get('/validateOTP', async (req, res) => {
 });
 
 
-router.post('/verifyEmail', async (req, res) => {
-    var mailOptions = {
-        from: `Hotspot 👻 <${process.env.ev_email}>`,
-        to: req.body.email,
-        subject: 'Email Verification',
-        text: 'Here is your code'
-    };
-    sendMail(mailOptions).then((resp) => {
-        res.send(resp);
-    });
-    //console.log(response)
+router.get('/verifyEmail', async (req, res) => {
+    generateEmailOTP(req.query)
+        .then((resp) => {
+            res.send(`Verification Email Sent to : ${req.query.email}`);
+        }).catch((error) => {
+            res.status(500).send(error);
+        });
     
-})
+});
+
+router.get('/validateEmail', async (req, res) => {
+    console.log(req.query);
+    try {
+        if (validateEmailOTP(req.query)) {
+            res.send(`${req.query.email} is verified.`);
+        }
+    } catch (error) {
+        res.status(500).send(error);
+    }
+   
+});
 
 module.exports=router;

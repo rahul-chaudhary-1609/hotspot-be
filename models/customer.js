@@ -46,6 +46,11 @@ module.exports = (sequelize, DataTypes) => {
     email_verification_otp: {
       type: DataTypes.STRING(45),
     },
+    is_email_verified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     reset_pass_otp: {
       type: DataTypes.STRING(45),
     },
