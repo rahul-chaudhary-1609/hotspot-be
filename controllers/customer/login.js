@@ -122,7 +122,7 @@ const generateEmailOTP = async(userInfo) => {
         to: userInfo.email,
         subject: 'Email Verification',
         text: 'Here is your code',
-        html: `To verify your email id <a href='http://192.168.0.2:3000/validateEmail?code=${email_verification_otp}&email=${userInfo.email}'>Click Here</a>.`,
+        html: `To verify your email id <a href='http://6b3dbd40d7bf.ngrok.io/validateEmail?code=${email_verification_otp}&email=${userInfo.email}'>Click Here</a>.`,
     };
     
     return sendMail(mailOptions);
