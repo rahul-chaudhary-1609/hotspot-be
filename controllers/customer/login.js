@@ -18,28 +18,24 @@ const signupCustomer = async (data) => {
 
     if (result.value) {
 
-        const { name, email, country_code, phone, password } = result.value;
+        const { name, email, country_code, facebook_id,google_id, apple_id } = result.value;
 
 
 
         console.log("result error:", result.error, result.value);
 
-        const hashedPassword = passwordHash.generate(password);
+        const password = passwordHash.generate(result.value.password);
+        const phone_no = parseInt(result.value.phone);
 
 
         const [constomer, created] = await Customer.findOrCreate({
             where: {
                 [Op.or]: {
-                    email: email,
-                    phone_no: parseInt(phone),
+                    email, phone_no,
                 }
             },
             defaults: {
-                name: name,
-                email: email,
-                country_code: country_code,
-                phone_no: parseInt(phone),
-                password: hashedPassword,
+                name, email, country_code, phone_no, password,facebook_id, google_id, apple_id
             }
         });
 
@@ -49,12 +45,12 @@ const signupCustomer = async (data) => {
         else {
             const checkEmail = await Customer.findOne({
                 where: {
-                    email: email,
+                    email,
                 }
             });
             const checkPhone = await Customer.findOne({
                 where: {
-                    phone_no: parseInt(phone),
+                    phone_no,
                 }
             });
 
@@ -97,9 +93,19 @@ const validatePhoneOTP = (userInfo) => {
  
 
 const generateEmailOTP = async(userInfo) => {
-    const email_verification_otp = Math.random().toString(36).substring(3);
+    let email_verification_otp = Math.random().toString(36).substring(3);
 
-    const customer = await Customer.update({
+    let customer = await Customer.findOne({
+        where: {
+            email:userInfo.email,
+        }
+    });
+
+    if (customer.getDataValue('email_verification_otp')!==null) {
+        email_verification_otp = customer.getDataValue('email_verification_otp');
+    }
+
+    customer = await Customer.update({
         email_verification_otp
     }, {
         where: {
@@ -113,7 +119,7 @@ const generateEmailOTP = async(userInfo) => {
         to: userInfo.email,
         subject: 'Email Verification',
         text: 'Here is your code',
-        html: `<a href='http://192.168.0.2:3000/validateEmail?code=${email_verification_otp}&email=${userInfo.email}'>Click Here</a>`,
+        html: `To verify your email id <a href='http://192.168.0.2:3000/validateEmail?code=${email_verification_otp}&email=${userInfo.email}'>Click Here</a>.`,
     };
     
     return sendMail(mailOptions);
