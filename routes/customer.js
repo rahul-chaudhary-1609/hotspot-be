@@ -14,7 +14,7 @@ router.post('/customer-email-signup', async (req,res)=>{
 
     try {  
         const response=await signupCustomer(req.body); 
-        res.send(response);
+        res.status(200).send(response);
     } catch (error) {
         console.log(error);
         return res.status(500).json(error); 
@@ -105,7 +105,7 @@ router.get('/verify-email', async (req, res) => {
     try {
         let customer = await Customer.findOne({
             where: {
-                email: req.query.email,
+                email: (req.query.email).toLowerCase(),
             }
         });
 

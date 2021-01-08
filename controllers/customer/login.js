@@ -20,7 +20,7 @@ const signupCustomer = async (data) => {
 
     if (result.value) {
 
-        const { name, email, country_code, facebook_id,google_id, apple_id } = result.value;
+        const { name, country_code, facebook_id,google_id, apple_id } = result.value;
 
 
 
@@ -28,6 +28,7 @@ const signupCustomer = async (data) => {
 
         const password = passwordHash.generate(result.value.password);
         const phone_no = parseInt(result.value.phone);
+        const email= (result.value.email).toLowerCase();
 
 
         const [constomer, created] = await Customer.findOrCreate({
@@ -100,7 +101,7 @@ const generateEmailOTP = async(userInfo) => {
 
     let customer = await Customer.findOne({
         where: {
-            email:userInfo.email,
+            email:(userInfo.email).toLowerCase(),
         }
     });
 
@@ -108,11 +109,11 @@ const generateEmailOTP = async(userInfo) => {
         email_verification_otp = customer.getDataValue('email_verification_otp');
     }
 
-    customer = await Customer.update({
+    await Customer.update({
         email_verification_otp
     }, {
         where: {
-            email: userInfo.email
+            email: (userInfo.email).toLowerCase()
             },
             returning: true,
     });
@@ -122,7 +123,7 @@ const generateEmailOTP = async(userInfo) => {
         to: userInfo.email,
         subject: 'Email Verification',
         text: 'Here is your code',
-        html: `To verify your email id <a href='https://8178c82539a1.ngrok.io/validate-email?code=${email_verification_otp}&email=${userInfo.email}'>Click Here</a>.`,
+        html: `To verify your email id <a href='${process.env.host}/validate-email?code=${email_verification_otp}&email=${userInfo.email}'>Click Here</a>.`,
     };
     
     return sendMail(mailOptions);
@@ -132,7 +133,7 @@ const generateEmailOTP = async(userInfo) => {
 const validateEmailOTP = async(userInfo) => {
     const customer = await Customer.findOne({
         where: {
-            email: userInfo.email,
+            email: (userInfo.email).toLowerCase(),
         }
     });
 
@@ -143,7 +144,7 @@ const validateEmailOTP = async(userInfo) => {
             is_email_verified: true,
         }, {
             where: {
-                email: userInfo.email
+                email: (userInfo.email).toLowerCase()
             },
             returning: true,
         });

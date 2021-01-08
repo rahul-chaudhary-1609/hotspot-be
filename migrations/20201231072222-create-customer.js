@@ -21,15 +21,12 @@ module.exports = {
       },
       country_code: {
         type: Sequelize.STRING(45),
-        allowNull: false
       },
       phone_no: {
         type: Sequelize.BIGINT,
-        allowNull: false,
       },
       password: {
         type: Sequelize.STRING(60),
-        allowNull: false,
       },
       email_verification_otp: {
         type: Sequelize.STRING(45),
