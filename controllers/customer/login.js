@@ -62,7 +62,7 @@ const signupCustomer = async (data) => {
 
             if (checkPhone !== null) {                
                 return {
-                    status: "success", is_customer_created: false, message: `Customer with the same phone is already exist. \n Login with ${checkPhone.getDataValue('email')}`};
+                    status: "success", is_customer_created: false, message: `Customer with the same phone is already exist. \n Login with ${phone_no}`};
             }
         }
     }
@@ -122,7 +122,7 @@ const generateEmailOTP = async(userInfo) => {
         to: userInfo.email,
         subject: 'Email Verification',
         text: 'Here is your code',
-        html: `To verify your email id <a href='http://6b3dbd40d7bf.ngrok.io/validate-email?code=${email_verification_otp}&email=${userInfo.email}'>Click Here</a>.`,
+        html: `To verify your email id <a href='https://8178c82539a1.ngrok.io/validate-email?code=${email_verification_otp}&email=${userInfo.email}'>Click Here</a>.`,
     };
     
     return sendMail(mailOptions);
