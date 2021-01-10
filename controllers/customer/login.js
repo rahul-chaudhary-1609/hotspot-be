@@ -35,7 +35,7 @@ const signupCustomer = async (data) => {
         const email= (result.value.email).toLowerCase();
 
 
-        const [created] = await Customer.findOrCreate({
+        const [customer,created] = await Customer.findOrCreate({
             where: {
                 [Op.or]: {
                     email, phone_no,
@@ -121,7 +121,7 @@ const loginWithGoogle = async(userInfo) => {
 const loginWithFacebook = async (userInfo) => {
     const { facebook_id, name, email } = userInfo;
 
-    const [created] = await Customer.findOrCreate({
+    const [customer,created] = await Customer.findOrCreate({
         where: {
                 email,
         },
