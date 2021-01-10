@@ -4,8 +4,12 @@ const { customerSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
+const jwt = require('jsonwebtoken');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
 
+const loginCustomer = () => {
+    return "pending...";
+};
 
 
 const signupCustomer = async (data) => {
@@ -31,7 +35,7 @@ const signupCustomer = async (data) => {
         const email= (result.value.email).toLowerCase();
 
 
-        const [constomer, created] = await Customer.findOrCreate({
+        const [created] = await Customer.findOrCreate({
             where: {
                 [Op.or]: {
                     email, phone_no,
@@ -43,7 +47,15 @@ const signupCustomer = async (data) => {
         });
 
         if (created) {
-            return { status:"success",is_customer_created: true, message:`Customer (${email}) created successfully` };
+            const user = {
+                username: name,
+                email: email,
+            };
+
+            const accessToken = generateAccessToken(user);
+            const refreshToken = generateRefreshToken(user);
+
+            return { status: "success", is_customer_created: true, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
         }
         else {
             const checkEmail = await Customer.findOne({
@@ -68,6 +80,85 @@ const signupCustomer = async (data) => {
         }
     }
 };
+
+
+const loginWithGoogle = async(userInfo) => {
+
+    const { google_id, name, email } = userInfo;
+
+    const [customer,created] = await Customer.findOrCreate({
+        where: {
+                email,
+        },
+        defaults: {
+            name, email, google_id
+        }
+    });
+
+    if (created) {
+        const user = {
+            username: userInfo.name,
+            email: userInfo.email,
+        };
+
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+        return { status: "success", is_customer_created: true, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
+    }
+    else {
+        const user = {
+            username: customer.getDataValue('name'),
+            email: customer.getDataValue('name'),
+        }
+        
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+        return { status: "success", is_customer_created: false, message: `Customer with the same Google account is already exist.`, accessToken: accessToken, refreshToken: refreshToken };
+    }
+
+};
+
+const loginWithFacebook = async (userInfo) => {
+    const { facebook_id, name, email } = userInfo;
+
+    const [created] = await Customer.findOrCreate({
+        where: {
+                email,
+        },
+        defaults: {
+            name, email, facebook_id
+        }
+    });
+
+    if (created) {
+        const user = {
+            username: userInfo.name,
+            email: userInfo.email,
+        }
+
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+        return { status: "success", is_customer_created: true, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
+    }
+    else {
+        const user = {
+            username: customer.getDataValue('name'),
+            email: customer.getDataValue('name'),
+        }
+
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+        return { status: "success", is_customer_created: false, message: `Customer with the same facebook account is already exist.`, accessToken: accessToken, refreshToken: refreshToken  };
+    }
+};
+
+const generateAccessToken = (userInfo) => {
+    return jwt.sign(userInfo, process.env.Access_Token_Secret, {expiresIn:'30s'});
+}
+
+const generateRefreshToken = (userInfo) => {
+    return jwt.sign(userInfo, process.env.Refresh_Token_Secret);
+}
 
 const generatePhoneOTP = (userInfo) => {
     
@@ -161,4 +252,4 @@ const validateEmailOTP = async(userInfo) => {
     }
 };
 
-module.exports = { signupCustomer, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+module.exports = { signupCustomer,loginCustomer, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
