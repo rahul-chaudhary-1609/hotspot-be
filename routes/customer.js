@@ -92,7 +92,7 @@ router.get('/verify-phone', async (req, res) => {
         country_code: req.query.country_code
     }
     
-    const result = customerSchema.validate(data);
+    const result = phoneSchema.validate(data);
 
     if (result.error) {
         return res.status(400).send({ message: result.error.details[0].message });
@@ -117,7 +117,7 @@ router.get('/validate-phone', async (req, res) => {
         country_code: req.query.country_code
     }
 
-    const result = customerSchema.validate(data);
+    const result = phoneSchema.validate(data);
 
     if (result.error) {
         return res.status(400).send({ message: result.error.details[0].message });
