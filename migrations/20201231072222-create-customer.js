@@ -25,6 +25,11 @@ module.exports = {
       phone_no: {
         type: Sequelize.BIGINT,
       },
+      is_phone_verified: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
       password: {
         type: Sequelize.STRING(60),
       },

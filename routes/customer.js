@@ -98,11 +98,28 @@ router.get('/verify-phone', async (req, res) => {
         return res.status(400).send({ message: result.error.details[0].message });
     }
 
+    const country_code = `+${req.query.country_code}`.replace(' ', '')
+
+    let customer = await Customer.findOne({
+        where: {
+            phone_no: req.query.phone,
+            country_code: country_code
+        }
+    });
+
+    if (!customer) {
+        return res.status(400).send(`User does not exist with this phone: ${country_code} ${req.query.phone}`);
+    }
+
+    if (customer.getDataValue('is_phone_verified')) {
+        return res.send(`${country_code} ${req.query.phone} is already verified`);
+    }
+
     if (result.value) {
 
         return generatePhoneOTP(req.query)
                 .then((resp) => {
-                    res.status(200).send({ message: `Verification code is sent to +${req.query.country_code}${req.query.phone}` });
+                    res.status(200).send({ message: `Verification code is sent to ${country_code} ${req.query.phone}` });
                 })
                 .catch((error) => {
                     res.status(500).send(error);
@@ -123,11 +140,38 @@ router.get('/validate-phone', async (req, res) => {
         return res.status(400).send({ message: result.error.details[0].message });
     }
 
+    const country_code = `+${req.query.country_code}`.replace(' ', '')
+
+    let customer = await Customer.findOne({
+        where: {
+            phone_no: req.query.phone,
+            country_code: country_code
+        }
+    });
+
+    if (!customer) {
+        return res.status(400).send(`User does not exist with this phone: ${country_code} ${req.query.phone}`);
+    }
+
+    if (customer.getDataValue('is_phone_verified')) {
+        return res.send(`${country_code} ${req.query.phone} is already verified`);
+    }
+
     if (result.value) {
 
         return validatePhoneOTP(req.query)
                 .then((resp) => {
                     if (resp.status === "approved") {
+                        Customer.update({
+                            is_phone_verified: true,
+                        }, {
+                            where: {
+                                phone_no: req.query.phone,
+                                country_code: country_code
+                            },
+                            returning: true,
+                        });
+
                         res.status(200).send({ message: `Phone verified` });
                     }
                     else {
@@ -156,7 +200,7 @@ router.get('/verify-email', async (req, res) => {
         });
 
         if (!customer) {
-            return res.send(`User does not exist with provided email: ${req.query.email}`);
+            return res.status(400).send(`User does not exist with provided email: ${req.query.email}`);
         }
 
         if (customer.getDataValue('is_email_verified')) {
@@ -192,7 +236,7 @@ router.get('/validate-email', async (req, res) => {
         });
 
         if (!customer) {
-            return res.send(`User does not exist with this email: ${req.query.email}`);
+            return res.status(400).send(`User does not exist with this email: ${req.query.email}`);
         }
 
         if (customer.getDataValue('is_email_verified')) {

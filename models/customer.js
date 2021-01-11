@@ -37,6 +37,11 @@ module.exports = (sequelize, DataTypes) => {
     phone_no: {
       type: DataTypes.BIGINT,
     },
+    is_phone_verified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     password: {
       type: DataTypes.STRING(60),
     },
