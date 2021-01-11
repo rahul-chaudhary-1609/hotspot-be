@@ -7,8 +7,67 @@ const sendMail = require('../../utilityServices/mail');
 const jwt = require('jsonwebtoken');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
 
-const loginCustomer = () => {
-    return "pending...";
+const loginWithEmail = async(data) => {
+
+    const email = (data.email).toLowerCase()
+    const password = data.password;
+
+    if (!email || !password) return { status: "failure", message: `Please provide valid email and password` }
+
+    const customer = await Customer.findOne({
+        where: {
+            email
+        }
+    });
+
+    if (!customer) return { status: "failure", message: `Invalid email Id or password` };
+    
+    if (passwordHash.verify(password, customer.getDataValue('password'))) {
+        const user = {
+            username: customer.getDataValue('name'),
+            email: customer.getDataValue('email'),
+        };
+
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        return { status: "success", message: `Customer (${email}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
+    }
+    else
+    {
+        return { status: "failure", message: `Invalid email Id or password` }
+        }
+};
+
+const loginWithPhone = async (data) => {
+
+    const phone_no = parseInt(data.phone);
+    const password = data.password;
+
+    if (!phone_no || !password) return { status: "failure", message: `Please provide valid phone and password` };
+
+    const customer = await Customer.findOne({
+        where: {
+            phone_no
+        }
+    });
+
+    if (!customer) return { status: "failure", message: `Invalid phone or password` };
+
+    if (passwordHash.verify(password, customer.getDataValue('password'))) {
+        const user = {
+            username: customer.getDataValue('name'),
+            email: customer.getDataValue('email'),
+        };
+
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        return { status: "success", message: `Customer (${phone_no}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
+    }
+    else {
+        return { status: "failure", message: `Invalid phone or password` }
+    }
 };
 
 
@@ -55,7 +114,7 @@ const signupCustomer = async (data) => {
             const accessToken = generateAccessToken(user);
             const refreshToken = generateRefreshToken(user);
 
-            return { status: "success", is_customer_created: true, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
+            return { status: "success", message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
         }
         else {
             const checkEmail = await Customer.findOne({
@@ -70,12 +129,12 @@ const signupCustomer = async (data) => {
             });
 
             if (checkEmail !== null) {
-                return { status: "success", is_customer_created: false, message:`Customer with the same email is already exist. \n Login with ${email}`};
+                return { status: "failure",  message:`Customer with the same email is already exist. \n Login with ${email}`};
             }
 
             if (checkPhone !== null) {                
                 return {
-                    status: "success", is_customer_created: false, message: `Customer with the same phone is already exist. \n Login with ${phone_no}`};
+                    status: "failure", message: `Customer with the same phone is already exist. \n Login with ${phone_no}`};
             }
         }
     }
@@ -252,4 +311,4 @@ const validateEmailOTP = async(userInfo) => {
     }
 };
 
-module.exports = { signupCustomer,loginCustomer, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+module.exports = { signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
