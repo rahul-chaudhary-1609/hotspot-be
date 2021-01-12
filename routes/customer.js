@@ -1,11 +1,13 @@
 require('dotenv/config');
 require('../middlewares/customer/passport-setup');
 const { Customer } = require('../models');
+const { Op } = require("sequelize");
 const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
 //const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
-const { signupCustomer, loginWithEmail,loginWithPhone,loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP}=require('../controllers/customer/login')
+const { validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
+//require('../controllers/customer/login');
 
 const router=express.Router();
 
@@ -284,20 +286,117 @@ router.get('/validate-email', async (req, res) => {
         if (customer.getDataValue('is_email_verified')) {
             return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
         }
-        else {
 
-            if (validateEmailOTP(req.query)) {
-                return res.status(200).json({ status: 200, message: `${req.query.email} is verified.` });
-            }
-            else {
-                return res.sendStatus(500);
-            }
-        }
+        validateEmailOTP(req, res);
        
     } catch (error) {
         return res.sendStatus(500);
     }
    
+});
+
+router.get('/send-password-reset-code', async(req, res) => {
+    try {
+
+        if (!req.query.emailOrPhone) {
+            return res.status(400).json({ status: 400, message: `Please provide email/phone to reset password` });
+        }
+
+        const phone_no = parseInt(req.query.emailOrPhone);
+        const email = (req.query.emailOrPhone).toLowerCase();
+
+        let customer = null;
+
+        if (isNaN(phone_no)) {
+            customer = await Customer.findOne({
+                where: {
+                        email
+                }
+            });            
+        }
+        else {
+            customer = await Customer.findOne({
+                where: {
+                    [Op.or]: {
+                        email, phone_no,
+                    }
+                }
+            });
+        }
+        
+
+        if (!customer) {
+            return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
+        }
+
+        // if (customer.getDataValue('is_email_verified')) {
+        //     return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
+        // }
+        
+        
+        req.query.email = customer.getDataValue('email');
+
+        return generatePassResetCode(req.query)
+            .then((resp) => {
+                res.status(200).json({ status: 200, message: `Password reset code Sent to : ${req.query.email}` });
+            }).catch((error) => {
+                res.sendStatus(500);
+            });
+        
+    } catch (error) {
+        return res.sendStatus(500);
+    }
+})
+
+router.get('/validate-password-reset-code', async (req, res) => {
+
+    try {
+        if (!req.query.emailOrPhone) {
+            return res.status(400).json({ status: 400, message: `Please provide email/phone to reset password` });
+        }
+
+        const phone_no = parseInt(req.query.emailOrPhone);
+        const email = (req.query.emailOrPhone).toLowerCase();
+
+        let customer = null;
+
+        if (isNaN(phone_no)) {
+            customer = await Customer.findOne({
+                where: {
+                    email
+                }
+            });
+        }
+        else {
+            customer = await Customer.findOne({
+                where: {
+                    [Op.or]: {
+                        email, phone_no,
+                    }
+                }
+            });
+        }
+
+
+        if (!customer) {
+            return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
+        }
+
+        // if (customer.getDataValue('is_email_verified')) {
+        //     return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
+        // }
+        
+
+        req.query.email = customer.getDataValue('email')
+
+        validatePassResetCode(req, res);
+        
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+
 });
 
 module.exports=router;
