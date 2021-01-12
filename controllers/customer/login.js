@@ -12,7 +12,7 @@ const loginWithEmail = async(data) => {
     const email = (data.email).toLowerCase()
     const password = data.password;
 
-    if (!email || !password) return { status: "failure", message: `Please provide valid email and password` }
+    if (!email || !password) return { status: 400, message: `Please provide valid email and password` }
 
     const customer = await Customer.findOne({
         where: {
@@ -20,7 +20,7 @@ const loginWithEmail = async(data) => {
         }
     });
 
-    if (!customer) return { status: "failure", message: `Invalid email Id or password` };
+    if (!customer) return { status: 401, message: `Invalid email Id or password` };
     
     if (passwordHash.verify(password, customer.getDataValue('password'))) {
         const user = {
@@ -31,11 +31,11 @@ const loginWithEmail = async(data) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        return { status: "success", message: `Customer (${email}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
+        return { status: 200, message: `Customer (${email}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
     }
     else
     {
-        return { status: "failure", message: `Invalid email Id or password` }
+        return { status: 401, message: `Invalid email Id or password` }
         }
 };
 
@@ -44,7 +44,7 @@ const loginWithPhone = async (data) => {
     const phone_no = parseInt(data.phone);
     const password = data.password;
 
-    if (!phone_no || !password) return { status: "failure", message: `Please provide valid phone and password` };
+    if (!phone_no || !password) return { status: 400, message: `Please provide valid phone and password` };
 
     const customer = await Customer.findOne({
         where: {
@@ -52,7 +52,7 @@ const loginWithPhone = async (data) => {
         }
     });
 
-    if (!customer) return { status: "failure", message: `Invalid phone or password` };
+    if (!customer) return { status: 401, message: `Invalid phone or password` };
 
     if (passwordHash.verify(password, customer.getDataValue('password'))) {
         const user = {
@@ -63,10 +63,10 @@ const loginWithPhone = async (data) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        return { status: "success", message: `Customer (${phone_no}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
+        return { status: 200, message: `Customer (${phone_no}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
     }
     else {
-        return { status: "failure", message: `Invalid phone or password` }
+        return { status: 401, message: `Invalid phone or password` }
     }
 };
 
@@ -77,7 +77,7 @@ const signupCustomer = async (data) => {
 
     if (result.error) {
         return {
-            status: "failure", is_customer_created: false, message: result.error.details[0].message
+            status: 400, is_customer_created: false, message: result.error.details[0].message
         };
     }
 
@@ -114,7 +114,7 @@ const signupCustomer = async (data) => {
             const accessToken = generateAccessToken(user);
             const refreshToken = generateRefreshToken(user);
 
-            return { status: "success", message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
+            return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
         }
         else {
             const checkEmail = await Customer.findOne({
@@ -129,12 +129,12 @@ const signupCustomer = async (data) => {
             });
 
             if (checkEmail !== null) {
-                return { status: "failure",  message:`Customer with the same email is already exist. \n Login with ${email}`};
+                return { status: 409,  message:`Customer with the same email is already exist. \n Login with ${email}`};
             }
 
             if (checkPhone !== null) {                
                 return {
-                    status: "failure", message: `Customer with the same phone is already exist. \n Login with ${phone_no}`};
+                    status: 409, message: `Customer with the same phone is already exist. \n Login with ${phone_no}`};
             }
         }
     }
@@ -162,7 +162,7 @@ const loginWithGoogle = async(userInfo) => {
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        return { status: "success", is_customer_created: true, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
+        return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
     }
     else {
         const user = {
@@ -172,7 +172,7 @@ const loginWithGoogle = async(userInfo) => {
         
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        return { status: "success", is_customer_created: false, message: `Customer with the same Google account is already exist.`, accessToken: accessToken, refreshToken: refreshToken };
+        return { status: 200, message: `Customer with the same Google account is already exist.`, accessToken: accessToken, refreshToken: refreshToken };
     }
 
 };
@@ -197,7 +197,7 @@ const loginWithFacebook = async (userInfo) => {
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        return { status: "success", is_customer_created: true, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
+        return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
     }
     else {
         const user = {
@@ -207,7 +207,7 @@ const loginWithFacebook = async (userInfo) => {
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        return { status: "success", is_customer_created: false, message: `Customer with the same facebook account is already exist.`, accessToken: accessToken, refreshToken: refreshToken  };
+        return { status: 200, message: `Customer with the same facebook account is already exist.`, accessToken: accessToken, refreshToken: refreshToken  };
     }
 };
 

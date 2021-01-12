@@ -4,7 +4,7 @@ const { Customer } = require('../models');
 const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
-const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
+//const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
 const { signupCustomer, loginWithEmail,loginWithPhone,loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP}=require('../controllers/customer/login')
 
 const router=express.Router();
@@ -14,10 +14,10 @@ router.get('/customer-email-login', async (req, res) => {
 
     try {
         const response = await loginWithEmail(req.body);
-        res.status(200).send(response);
+        res.status(response.status).json(response);
     } catch (error) {
         console.log(error);
-        return res.status(500).json(error);
+        return res.sendStatus(500);
     }
 
 });
@@ -27,10 +27,10 @@ router.get('/customer-phone-login', async (req, res) => {
 
     try {
         const response = await loginWithPhone(req.body);
-        res.status(200).send(response);
+        res.status(response.status).json(response);
     } catch (error) {
         console.log(error);
-        return res.status(500).json(error);
+        return res.sendStatus(500);
     }
 
 });
@@ -54,10 +54,10 @@ router.post('/customer-email-signup', async (req,res)=>{
 
     try {  
         const response=await signupCustomer(req.body); 
-        res.status(200).send(response);
+        res.status(response.status).json(response);
     } catch (error) {
         console.log(error);
-        return res.status(500).json(error); 
+        return res.sendStatus(500); 
     }
      
 });
@@ -88,10 +88,10 @@ router.get('/customer-google-auth-cb', passport.authenticate('google', { failure
     console.log(body);
     try {
         const response=await loginWithGoogle(body); 
-        res.send(response);
+        res.status(response.status).json(response);
     } catch (error) {
         console.log(error);
-        return res.status(500).json(error); 
+        return res.sendStatus(500); 
     }
 });
 
@@ -104,10 +104,10 @@ router.get('/customer-facebook-auth-cb', passport.authenticate('facebook', { fai
     console.log(body);
     try {
         const response = await loginWithFacebook(body);
-        res.send(response);
+        res.status(response.status).json(response);
     } catch (error) {
         console.log(error);
-        return res.status(500).json(error);
+        return res.sendStatus(500);
     }
 });
 
@@ -137,7 +137,7 @@ router.get('/verify-phone', async (req, res) => {
     const result = phoneSchema.validate(data);
 
     if (result.error) {
-        return res.status(400).send({ message: result.error.details[0].message });
+        return res.status(400).json({ status:400,message: result.error.details[0].message });
     }
 
     const country_code = `+${req.query.country_code}`.replace(' ', '')
@@ -150,21 +150,21 @@ router.get('/verify-phone', async (req, res) => {
     });
 
     if (!customer) {
-        return res.status(400).send(`User does not exist with this phone: ${country_code} ${req.query.phone}`);
+        return res.status(404).json({ status: 404, message: `User does not exist with this phone: ${country_code} ${req.query.phone}` });
     }
 
     if (customer.getDataValue('is_phone_verified')) {
-        return res.send(`${country_code} ${req.query.phone} is already verified`);
+        return res.status(409).json({ status: 409, message:`${country_code} ${req.query.phone} is already verified`});
     }
 
     if (result.value) {
 
         return generatePhoneOTP(req.query)
                 .then((resp) => {
-                    res.status(200).send({ message: `Verification code is sent to ${country_code} ${req.query.phone}` });
+                    res.status(200).json({ status: 200, message: `Verification code is sent to ${country_code} ${req.query.phone}` });
                 })
                 .catch((error) => {
-                    res.status(500).send(error);
+                    res.sendStatus(500);
                 })
     }
 });
@@ -179,7 +179,7 @@ router.get('/validate-phone', async (req, res) => {
     const result = phoneSchema.validate(data);
 
     if (result.error) {
-        return res.status(400).send({ message: result.error.details[0].message });
+        return res.status(400).json({ status: 400, message: result.error.details[0].message });
     }
 
     const country_code = `+${req.query.country_code}`.replace(' ', '')
@@ -192,11 +192,11 @@ router.get('/validate-phone', async (req, res) => {
     });
 
     if (!customer) {
-        return res.status(400).send(`User does not exist with this phone: ${country_code} ${req.query.phone}`);
+        return res.status(404).json({ status: 404, message: `User does not exist with this phone: ${country_code} ${req.query.phone}` });
     }
 
     if (customer.getDataValue('is_phone_verified')) {
-        return res.send(`${country_code} ${req.query.phone} is already verified`);
+        return res.status(409).json({ status: 409, message: `${country_code} ${req.query.phone} is already verified` });
     }
 
     if (result.value) {
@@ -214,13 +214,13 @@ router.get('/validate-phone', async (req, res) => {
                             returning: true,
                         });
 
-                        res.status(200).send({ message: `Phone verified` });
+                        res.status(200).json({ status: 200,message: `Phone verified` });
                     }
                     else {
-                        res.status(401).send({ message: `Invalid Code` });
+                        res.status(401).json({ status: 401,message: `Invalid Code` });
                     }
                 }).catch((error) => {
-                    res.status(500).send(error);
+                    res.sendStatus(500);
                 })
     }
 
@@ -232,7 +232,7 @@ router.get('/verify-email', async (req, res) => {
     try {
         
         if (!req.query.email){
-            return res.send(`Please provide email id to verify`);
+            return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
         }
 
         let customer = await Customer.findOne({
@@ -242,23 +242,23 @@ router.get('/verify-email', async (req, res) => {
         });
 
         if (!customer) {
-            return res.status(400).send(`User does not exist with provided email: ${req.query.email}`);
+            return res.status(404).json({ status: 404, message: `User does not exist with provided email: ${req.query.email}` });
         }
 
         if (customer.getDataValue('is_email_verified')) {
-            return res.send(`${req.query.email} is already verified`);
+            return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
         }
         else {
 
            return generateEmailOTP(req.query)
                 .then((resp) => {
-                    res.send(`Verification Email Sent to : ${req.query.email}`);
+                    res.status(200).json({ status: 200, message: `Verification Email Sent to : ${req.query.email}` });
                 }).catch((error) => {
-                    res.status(500).send(error);
+                    res.sendStatus(500);
                 });
         }
     } catch (error) {
-       return res.status(500).send(error);
+       return res.sendStatus(500);
     }
     
     
@@ -268,7 +268,7 @@ router.get('/validate-email', async (req, res) => {
     
     try {
         if (!req.query.email) {
-            return res.send(`Please provide email id and code to validate user`);
+            return res.status(400).json({ status: 400, message: `Please provide email id and code to validate user` });
         }
 
         let customer = await Customer.findOne({
@@ -278,24 +278,24 @@ router.get('/validate-email', async (req, res) => {
         });
 
         if (!customer) {
-            return res.status(400).send(`User does not exist with this email: ${req.query.email}`);
+            return res.status(404).json({ status: 404, message: `User does not exist with this email: ${req.query.email}` });
         }
 
         if (customer.getDataValue('is_email_verified')) {
-            return res.send(`${req.query.email} is already verified`);
+            return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
         }
         else {
 
             if (validateEmailOTP(req.query)) {
-                return res.send(`${req.query.email} is verified.`);
+                return res.status(200).json({ status: 200, message: `${req.query.email} is verified.` });
             }
             else {
-               return res.status(400).send('Some Error Occured in Email Verification');
+                return res.sendStatus(500);
             }
         }
        
     } catch (error) {
-        return res.status(500).send(error);
+        return res.sendStatus(500);
     }
    
 });
