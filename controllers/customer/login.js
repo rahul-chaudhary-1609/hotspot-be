@@ -172,7 +172,7 @@ const loginWithGoogle = async(userInfo) => {
         
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        return { status: 200, message: `Customer with the same Google account is already exist.`, accessToken: accessToken, refreshToken: refreshToken };
+        return { status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken, refreshToken: refreshToken };
     }
 
 };
@@ -207,7 +207,7 @@ const loginWithFacebook = async (userInfo) => {
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
-        return { status: 200, message: `Customer with the same facebook account is already exist.`, accessToken: accessToken, refreshToken: refreshToken  };
+        return { status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken, refreshToken: refreshToken  };
     }
 };
 
@@ -370,18 +370,34 @@ const validatePassResetCode = async (req,res) => {
 const resetPassword = async(req,res) => {
     try {
 
-        if (!req.body.email) {
-            return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
+        if (!req.body.emailOrPhone) {
+            return res.status(400).json({ status: 400, message: `Please provide email/phone for reset password` });
         }
 
-        let customer = await Customer.findOne({
-            where: {
-                email: (req.body.email).toLowerCase(),
-            }
-        });
+        const phone_no = parseInt(req.body.emailOrPhone);
+        const email = (req.body.emailOrPhone).toLowerCase();
+
+        let customer = null;
+
+        if (isNaN(phone_no)) {
+            customer = await Customer.findOne({
+                where: {
+                    email
+                }
+            });
+        }
+        else {
+            customer = await Customer.findOne({
+                where: {
+                    [Op.or]: {
+                        email, phone_no,
+                    }
+                }
+            });
+        }
 
         if (!customer) {
-            return res.status(404).json({ status: 404, message: `User does not exist with provided email: ${req.body.email}` });
+            return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
         }
 
         const result = passwordSchema.validate({password:req.body.password});
@@ -398,7 +414,7 @@ const resetPassword = async(req,res) => {
             password,
         }, {
             where: {
-                email: (req.body.email).toLowerCase()
+                email: (req.body.emailOrPhone).toLowerCase()
             },
             returning: true,
         });
