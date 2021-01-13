@@ -6,13 +6,13 @@ const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
 //const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
-const { validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
+const { resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
 //require('../controllers/customer/login');
 
 const router=express.Router();
 
 // Route for customer login with email
-router.get('/customer-email-login', async (req, res) => {
+router.post('/customer-email-login', async (req, res) => {
 
     try {
         const response = await loginWithEmail(req.body);
@@ -25,7 +25,7 @@ router.get('/customer-email-login', async (req, res) => {
 });
 
 // Route for customer login with phone
-router.get('/customer-phone-login', async (req, res) => {
+router.post('/customer-phone-login', async (req, res) => {
 
     try {
         const response = await loginWithPhone(req.body);
@@ -38,16 +38,31 @@ router.get('/customer-phone-login', async (req, res) => {
 });
 
 // Route for customer login with google
-router.get('/customer-google-login', async (req, res) => {
-
-    res.redirect('/customer-google-auth');
+router.post('/customer-google-login', async (req, res) => {
+    const body = { google_id: req.body.id, name: req.body.name, email: req.body.email };
+    console.log(body);
+    try {
+        const response = await loginWithGoogle(body);
+        res.status(response.status).json(response);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
 
 });
 
 // Route for customer login with facebook
-router.get('/customer-facebook-login', async (req, res) => {
+router.post('/customer-facebook-login', async (req, res) => {
 
-    res.redirect('/customer-facebook-auth');
+    const body = { facebook_id: req.body.id, name: req.body.name, email: req.body.email };
+    console.log(body);
+    try {
+        const response = await loginWithFacebook(body);
+        res.status(response.status).json(response);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
 
 });
 
@@ -66,17 +81,29 @@ router.post('/customer-email-signup', async (req,res)=>{
 
 
 // Route for customer signup with google
-router.get('/customer-google-signup', async (req, res) => {
-
-    res.redirect('/customer-google-auth');
-
+router.post('/customer-google-signup', async (req, res) => {
+    const body = { google_id: req.body.id, name: req.body.name, email: req.body.email };
+    console.log(body);
+    try {
+        const response = await loginWithGoogle(body);
+        res.status(response.status).json(response);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
 });
 
 // Route for customer signup with facebook
-router.get('/customer-facebook-signup', async (req, res) => {
-
-    res.redirect('/customer-facebook-auth');
-
+router.post('/customer-facebook-signup', async (req, res) => {
+    const body = { facebook_id: req.body.id, name: req.body.name, email: req.body.email };
+    console.log(body);
+    try {
+        const response = await loginWithFacebook(body);
+        res.status(response.status).json(response);
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
 });
 
 
@@ -397,6 +424,11 @@ router.get('/validate-password-reset-code', async (req, res) => {
         return res.sendStatus(500);
     }
 
+});
+
+
+router.put('/reset-password', (req, res) => {
+    return resetPassword(req,res);
 });
 
 module.exports=router;

@@ -1,6 +1,6 @@
 require('dotenv/config');
 const { Customer } = require('../../models');
-const { customerSchema } = require('../../middlewares/customer/validation');
+const { customerSchema,passwordSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
@@ -302,7 +302,6 @@ const validateEmailOTP = async(req,res) => {
         return res.status(200).json({ status: 200, message: `${req.query.email} is verified.` });
     }
     else {
-        console.log("h1")
         return res.status(401).json({ status: 401, message: `Invalid Code` });
     }
 };
@@ -368,4 +367,48 @@ const validatePassResetCode = async (req,res) => {
     }
 };
 
-module.exports = { validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+const resetPassword = async(req,res) => {
+    try {
+
+        if (!req.body.email) {
+            return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
+        }
+
+        let customer = await Customer.findOne({
+            where: {
+                email: (req.body.email).toLowerCase(),
+            }
+        });
+
+        if (!customer) {
+            return res.status(404).json({ status: 404, message: `User does not exist with provided email: ${req.body.email}` });
+        }
+
+        const result = passwordSchema.validate({password:req.body.password});
+
+        if (result.error) {
+            return res.status(400).json({ status: 400, message: result.error.details[0].message });
+        }
+
+        console.log(result);
+
+        const password = passwordHash.generate(result.value.password);
+
+        await Customer.update({
+            password,
+        }, {
+            where: {
+                email: (req.body.email).toLowerCase()
+            },
+            returning: true,
+        });
+
+        return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+}
+
+module.exports = { resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

@@ -29,4 +29,10 @@ const phoneSchema = Joi.object({
     }),
 });
 
-module.exports = { customerSchema, phoneSchema};
+const passwordSchema = Joi.object({
+    password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
+        'string.pattern.base': `Password must contain at least one 1 lowercase, 1 uppercase, 1 numeric and 1 special (!@#$%^&*) character`,
+    }),
+});
+
+module.exports = { passwordSchema,customerSchema, phoneSchema};
