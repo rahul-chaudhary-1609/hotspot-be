@@ -212,7 +212,7 @@ const loginWithFacebook = async (userInfo) => {
 };
 
 const generateAccessToken = (userInfo) => {
-    return jwt.sign(userInfo, process.env.Access_Token_Secret, {expiresIn:'30s'});
+    return jwt.sign(userInfo, process.env.Access_Token_Secret, {expiresIn:'86400s'});
 }
 
 const generateRefreshToken = (userInfo) => {
@@ -406,7 +406,6 @@ const resetPassword = async(req,res) => {
             return res.status(400).json({ status: 400, message: result.error.details[0].message });
         }
 
-        console.log(result);
 
         const password = passwordHash.generate(result.value.password);
 
@@ -422,9 +421,68 @@ const resetPassword = async(req,res) => {
         return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
 
     } catch (error) {
-        console.log(error);
         return res.sendStatus(500);
     }
 }
 
-module.exports = { resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+const getCustomerProfile = async (req, res) => {
+    try {
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+        return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone') } });
+    } catch (error) {
+        return res.sendStatus(500);
+    }
+    
+}
+
+const getCustomerChangePassword = async (req, res) => {
+    try {
+
+        const newPassword = req.body.newPassword;
+        const oldPassword = req.body.oldPassword;
+
+        if (!newPassword || !oldPassword) return { status: 400, message: `Please provide valid email and password` }
+
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+        const result = passwordSchema.validate({ password: newPassword });
+
+        if (result.error) {
+            return res.status(400).json({ status: 400, message: result.error.details[0].message });
+        }
+
+        if (!passwordHash.verify(oldPassword, customer.getDataValue('password'))) return res.status(401).json({ status: 401, message: `Invalid old password` });
+    
+
+        const password = passwordHash.generate(result.value.password);
+
+        await Customer.update({
+            password,
+        }, {
+            where: {
+                email: (req.user.email).toLowerCase()
+            },
+            returning: true,
+        });
+
+        return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
+    } catch (error) {
+        return res.sendStatus(500);
+    }
+
+}
+
+module.exports = { getCustomerChangePassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

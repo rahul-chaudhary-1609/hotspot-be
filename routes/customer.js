@@ -5,8 +5,8 @@ const { Op } = require("sequelize");
 const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
-//const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
-const { resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
+const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
+const { getCustomerChangePassword,getCustomerProfile, resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
 //require('../controllers/customer/login');
 
 const router=express.Router();
@@ -429,6 +429,15 @@ router.get('/validate-password-reset-code', async (req, res) => {
 
 router.put('/reset-password', (req, res) => {
     return resetPassword(req,res);
+});
+
+
+router.get('/customer-profile', authenticateCustomer, (req, res) => {
+    return (getCustomerProfile(req, res));
+});
+ 
+router.get('/customer-change-password', authenticateCustomer, (req, res) => {
+    return (getCustomerChangePassword(req, res));
 });
 
 module.exports=router;
