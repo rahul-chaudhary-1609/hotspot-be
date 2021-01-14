@@ -1,6 +1,6 @@
 require('dotenv/config');
 const { Customer } = require('../../models');
-const { customerSchema,passwordSchema } = require('../../middlewares/customer/validation');
+const { customerSchema, passwordSchema, customerUpdateProfile } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
@@ -493,8 +493,69 @@ const changeCustomerPassword = async (req, res) => {
 
 }
 
-const updateCustomerProfile = (req, res) => {
-    return res.status(200).json('working...');
+const updateCustomerProfile = async(req, res) => {
+
+    const customer = await Customer.findOne({
+        where: {
+            email: (req.user.email).toLowerCase()
+        }
+    });
+
+    
+
+    const result = customerUpdateProfile.validate(req.body);
+
+    if (result.error) {
+        return res.status(400).json({status: 400, message: result.error.details[0].message});
+    }
+
+    if (result.value) {
+
+        const { name, country_code } = result.value;
+        
+        const phone_no = parseInt(result.value.phone);
+        const email = (result.value.email).toLowerCase();
+
+        if (customer.getDataValue('email') === email && customer.getDataValue('phone_no')===phone_no) {
+            await Customer.update({
+                name, country_code, phone_no, email
+            }, {
+                where: {
+                    email: (req.user.email).toLowerCase()
+                },
+                returning: true,
+            });
+        }
+        else if (customer.getDataValue('email') !== email)
+        {
+            const is_email_verified = false;
+            const email_verification_otp = null;
+            await Customer.update({
+                name, country_code, phone_no, email, is_email_verified,email_verification_otp
+            }, {
+                where: {
+                    email: (req.user.email).toLowerCase()
+                },
+                returning: true,
+            });
+        }
+        else if (customer.getDataValue('phone_no') !== phone_no)
+        {
+            const is_phone_verified = false;
+            await Customer.update({
+                name, country_code, phone_no, email, is_phone_verified
+            }, {
+                where: {
+                    email: (req.user.email).toLowerCase()
+                },
+                returning: true,
+            });
+
+        }
+
+        
+
+    }
 };
 
 module.exports = { updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

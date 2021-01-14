@@ -20,6 +20,16 @@ const customerSchema = Joi.object({
     facebook_id: Joi.string().trim().max(45)
 });
 
+const nameSchema = Joi.object({
+    name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        'string.pattern.base': `Please enter a valid customer name`,
+    }),
+});
+
+const emailSchema = Joi.object({
+    email: Joi.string().trim().max(45).email().required(),
+});
+
 const phoneSchema = Joi.object({
     country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).required().messages({
         'string.pattern.base': `Please enter a valid country code`,
@@ -35,4 +45,20 @@ const passwordSchema = Joi.object({
     }),
 });
 
-module.exports = { passwordSchema,customerSchema, phoneSchema};
+const customerUpdateProfile = Joi.object({
+    name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        'string.pattern.base': `Please enter a valid customer name`,
+    }),
+    email: Joi.string().trim().max(45).email().required(),
+
+    country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).messages({
+        'string.pattern.base': `Please enter a valid country code`,
+    }),
+    phone: Joi.string().trim().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).min(10).max(10).messages({
+        'string.pattern.base': `Please enter a valid phone no`,
+    }),
+    
+});
+
+
+module.exports = { customerUpdateProfile, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};
