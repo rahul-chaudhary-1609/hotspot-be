@@ -21,6 +21,8 @@ const loginWithEmail = async(data) => {
     });
 
     if (!customer) return { status: 401, message: `Invalid email Id or password` };
+
+    if (!customer.getDataValue('is_email_verified')) return { status: 401, message: `Customer's email id is not Verified.` };
     
     if (passwordHash.verify(password, customer.getDataValue('password'))) {
         const user = {
@@ -53,6 +55,8 @@ const loginWithPhone = async (data) => {
     });
 
     if (!customer) return { status: 401, message: `Invalid phone or password` };
+
+    if (!customer.getDataValue('is_phone_verified')) return { status: 401, message: `Customer's phone is not Verified.` };
 
     if (passwordHash.verify(password, customer.getDataValue('password'))) {
         const user = {
@@ -442,7 +446,7 @@ const getCustomerProfile = async (req, res) => {
     
 }
 
-const getCustomerChangePassword = async (req, res) => {
+const changeCustomerPassword = async (req, res) => {
     try {
 
         const newPassword = req.body.newPassword;
@@ -485,4 +489,8 @@ const getCustomerChangePassword = async (req, res) => {
 
 }
 
-module.exports = { getCustomerChangePassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+const updateCustomerProfile = (req, res) => {
+    return res.status(200).json('working...');
+};
+
+module.exports = { updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

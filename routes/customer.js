@@ -6,7 +6,7 @@ const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
 const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
-const { getCustomerChangePassword,getCustomerProfile, resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
+const { updateCustomerProfile,changeCustomerPassword,getCustomerProfile, resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
 //require('../controllers/customer/login');
 
 const router=express.Router();
@@ -356,9 +356,9 @@ router.get('/send-password-reset-code', async(req, res) => {
             return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
         }
 
-        // if (customer.getDataValue('is_email_verified')) {
-        //     return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
-        // }
+        if (!customer.getDataValue('is_email_verified')) {
+            return res.status(409).json({ status: 409, message: `${req.query.email} is not verified` });
+        }
         
         
         req.query.email = customer.getDataValue('email');
@@ -409,9 +409,9 @@ router.get('/validate-password-reset-code', async (req, res) => {
             return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
         }
 
-        // if (customer.getDataValue('is_email_verified')) {
-        //     return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
-        // }
+        if (customer.getDataValue('is_email_verified')) {
+            return res.status(409).json({ status: 409, message: `${req.query.email} is not verified` });
+        }
         
 
         req.query.email = customer.getDataValue('email')
@@ -435,9 +435,13 @@ router.put('/reset-password', (req, res) => {
 router.get('/customer-profile', authenticateCustomer, (req, res) => {
     return (getCustomerProfile(req, res));
 });
+
+router.put('/update-customer-profile', authenticateCustomer, (req, res) => {
+    return (updateCustomerProfile(req, res));
+});
  
 router.get('/customer-change-password', authenticateCustomer, (req, res) => {
-    return (getCustomerChangePassword(req, res));
+    return (changeCustomerPassword(req, res));
 });
 
 module.exports=router;
