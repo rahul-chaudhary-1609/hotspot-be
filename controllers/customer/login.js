@@ -149,12 +149,14 @@ const loginWithGoogle = async(userInfo) => {
 
     const { google_id, name, email } = userInfo;
 
+    const is_email_verified = true;
+
     const [customer,created] = await Customer.findOrCreate({
         where: {
                 email,
         },
         defaults: {
-            name, email, google_id
+            name, email, is_email_verified, google_id
         }
     });
 
@@ -184,12 +186,14 @@ const loginWithGoogle = async(userInfo) => {
 const loginWithFacebook = async (userInfo) => {
     const { facebook_id, name, email } = userInfo;
 
+    const is_email_verified = true;
+
     const [customer,created] = await Customer.findOrCreate({
         where: {
                 email,
         },
         defaults: {
-            name, email, facebook_id
+            name, email, is_email_verified,facebook_id
         }
     });
 
