@@ -49,7 +49,6 @@ const customerUpdateProfile = Joi.object({
     name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
         'string.pattern.base': `Please enter a valid customer name`,
     }),
-    email: Joi.string().trim().max(45).email().required(),
 
     country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).messages({
         'string.pattern.base': `Please enter a valid country code`,
