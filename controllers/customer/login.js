@@ -618,49 +618,88 @@ const updateCustomerProfile = async (req, res) => {
     
 };
 
-const getAccessToken = async (req, res) => {
-    const refreshToken = req.body.token;
+const feedbackCustomer = (req, res) => {
+    try {
+        const mailOptions = {
+            from: ` Customer Hotspot <${req.user.email}>`,
+            to: process.env.ev_email,
+            subject: 'Customer Feedback',
+            text: 'Here is your code',
+            html: req.body.message,
+        };
 
-    if (!refreshToken) return res.sendStatus(401);
-
-    const token = await Token.findOne({
-        refresh_token:refreshToken,
-    });
-
-    if (!token) return res.sendStatus(403);
-
-    jwt.verify(refreshToken, process.env.Refresh_Token_Secret, (err, user) => {
-        console.log(err);
-        if (err) return res.sendStatus(403);
-
-
-        const accessToken = generateAccessToken({email:user.email});
-
-        return res.status(200).json({ status: 200, accessToken: accessToken });
-        
-    })
-
-
-}
-
-const logoutCustomer = async(req, res) => {
-    const refreshToken = req.body.token;
-
-    const token = await Token.findOne({
-        refresh_token: refreshToken,
-    });
-
-    if (token) {
-        await Token.destroy({
-            where: {
-                refresh_token: refreshToken,
-            },
-            force: true
-        });
+        return sendMail(mailOptions)
+            .then((resp) => {
+                res.status(200).json({ status: 200, message: `Feedback Sent Successfully` });
+            }).catch((error) => {
+                res.sendStatus(500);
+            });
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500);
     }
-
-    return res.status(200).json({ status: 200, message:`Customer logged out Successfully` });    
     
 }
 
-module.exports = { getAccessToken,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+const getAccessToken = async (req, res) => {
+
+    try {
+        const refreshToken = req.body.token;
+
+        if (!refreshToken) return res.sendStatus(401);
+
+        const token = await Token.findOne({
+            refresh_token: refreshToken,
+        });
+
+        if (!token) return res.sendStatus(403);
+
+        jwt.verify(refreshToken, process.env.Refresh_Token_Secret, (err, user) => {
+            console.log(err);
+            if (err) return res.sendStatus(403);
+
+
+            const accessToken = generateAccessToken({ email: user.email });
+
+            return res.status(200).json({ status: 200, accessToken: accessToken });
+
+        })
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500);
+    }
+    
+
+
+}
+
+
+
+const logoutCustomer = async (req, res) => {
+    
+    try {
+        const refreshToken = req.body.token;
+
+        const token = await Token.findOne({
+            refresh_token: refreshToken,
+        });
+
+        if (token) {
+            await Token.destroy({
+                where: {
+                    refresh_token: refreshToken,
+                },
+                force: true
+            });
+        }
+
+        return res.status(200).json({ status: 200, message: `Customer logged out Successfully` });    
+    } catch (error) {
+        console.log(error)
+        return res.sendStatus(500);
+    }
+    
+    
+}
+
+module.exports = { feedbackCustomer,getAccessToken,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

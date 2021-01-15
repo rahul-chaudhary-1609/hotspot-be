@@ -6,7 +6,7 @@ const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
 const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
-const { getAccessToken,logoutCustomer,updateCustomerProfile,changeCustomerPassword,getCustomerProfile, resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
+const { feedbackCustomer, getAccessToken,logoutCustomer,updateCustomerProfile,changeCustomerPassword,getCustomerProfile, resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
 //require('../controllers/customer/login');
 
 const router=express.Router();
@@ -442,6 +442,11 @@ router.put('/customer-update-profile', authenticateCustomer, (req, res) => {
  
 router.put('/customer-change-password', authenticateCustomer, (req, res) => {
     return (changeCustomerPassword(req, res));
+});
+
+
+router.post('/customer-feedback', authenticateCustomer, (req, res) => {
+    return (feedbackCustomer(req, res));
 });
 
 router.put('/customer-refresh', (req, res) => {
