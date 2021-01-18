@@ -3,11 +3,13 @@ const express=require('express')
 const router=require('./routes')
 const {sequelize}=require('./models')
 const passport = require('passport');
+const cors=require("cors");
 const cookieSession = require('cookie-session');
-require('./routes/passport-setup');
+//require('./routes/passport-setup');
 const port=process.env.PORT || 5000;
 
 const app=express();
+app.use(cors());
 
 // Initializes passport and passport sessions
 app.use(passport.initialize());
@@ -31,12 +33,12 @@ app.listen(port, async (err)=>{
     else{
         console.log(`Server is started successfully at port: ${port}`);        
     }
-    // try {
-    //     await sequelize.sync({alter:true});
-    //     console.log("Database synced")
-    // } catch (error) {
-    //     console.log("Error in database sync",error);
-    // }
+    try {
+        await sequelize.sync({alter:true});
+        console.log("Database synced")
+    } catch (error) {
+        console.log("Error in database sync",error);
+    }
     try {
         await sequelize.authenticate();
         console.log("Database connected")

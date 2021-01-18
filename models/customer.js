@@ -15,25 +15,66 @@ module.exports = (sequelize, DataTypes) => {
   };
   Customer.init({
     id:{
-      type:DataTypes.UUID,
-      defaultValue:DataTypes.UUIDV4,
-      primaryKey:true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true
     }, 
     name:{
-      type:DataTypes.STRING,
+      type:DataTypes.STRING(45),
       allowNull: false,
     }, 
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(45),
       allowNull:false,
     },
-    phone: {
-      type: DataTypes.STRING,
-      allowNull:false,
+    address: {
+      type: DataTypes.STRING(45),
+    },
+    country_code: {
+      type: DataTypes.STRING(45),
+    },
+    phone_no: {
+      type: DataTypes.BIGINT,
+    },
+    is_phone_verified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
     password: {
-      type: DataTypes.STRING,
-      allowNull:false,
+      type: DataTypes.STRING(60),
+    },
+    email_verification_otp: {
+      type: DataTypes.STRING(45),
+    },
+    is_email_verified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
+    reset_pass_otp: {
+      type: DataTypes.STRING(45),
+    },
+    reset_pass_expiry: {
+      type: DataTypes.DATE,
+    },
+    apple_id: {
+      type: DataTypes.STRING(45),
+    },
+    google_id: {
+      type: DataTypes.STRING(45),
+    },
+    facebook_id: {
+      type: DataTypes.STRING(45),
+    },
+    status: {
+      type: DataTypes.INTEGER,
+    },
+    is_deleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue:false
     },
   }, {
     sequelize,
