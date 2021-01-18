@@ -357,7 +357,7 @@ router.get('/send-password-reset-code', async(req, res) => {
         }
 
         if (!customer.getDataValue('is_email_verified')) {
-            return res.status(409).json({ status: 409, message: `${req.query.email} is not verified` });
+            return res.status(409).json({ status: 409, message: `${req.query.emailOrPhone} is not verified` });
         }
         
         
