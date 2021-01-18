@@ -409,7 +409,7 @@ router.get('/validate-password-reset-code', async (req, res) => {
             return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
         }
 
-        if (customer.getDataValue('is_email_verified')) {
+        if (!customer.getDataValue('is_email_verified')) {
             return res.status(409).json({ status: 409, message: `${req.query.emailOrPhone} is not verified` });
         }
         
