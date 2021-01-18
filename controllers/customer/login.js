@@ -618,6 +618,10 @@ const updateCustomerProfile = async (req, res) => {
     
 };
 
+const addCustomerAddress = (req, res) => {
+    
+}
+
 const feedbackCustomer = (req, res) => {
     try {
         const mailOptions = {
@@ -702,4 +706,4 @@ const logoutCustomer = async (req, res) => {
     
 }
 
-module.exports = { feedbackCustomer,getAccessToken,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+module.exports = { addCustomerAddress,feedbackCustomer,getAccessToken,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

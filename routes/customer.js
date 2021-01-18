@@ -6,7 +6,7 @@ const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
 const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
-const { feedbackCustomer, getAccessToken,logoutCustomer,updateCustomerProfile,changeCustomerPassword,getCustomerProfile, resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
+const { addCustomerAddress,feedbackCustomer, getAccessToken,logoutCustomer,updateCustomerProfile,changeCustomerPassword,getCustomerProfile, resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
 //require('../controllers/customer/login');
 
 const router=express.Router();
@@ -410,7 +410,7 @@ router.get('/validate-password-reset-code', async (req, res) => {
         }
 
         if (customer.getDataValue('is_email_verified')) {
-            return res.status(409).json({ status: 409, message: `${req.query.email} is not verified` });
+            return res.status(409).json({ status: 409, message: `${req.query.emailOrPhone} is not verified` });
         }
         
 
@@ -438,6 +438,10 @@ router.get('/customer-profile', authenticateCustomer, (req, res) => {
 
 router.put('/customer-update-profile', authenticateCustomer, (req, res) => {
     return (updateCustomerProfile(req, res));
+});
+
+router.post('/customer-add-address', authenticateCustomer, (req, res) => {
+    return (addCustomerAddress(req, res));
 });
  
 router.put('/customer-change-password', authenticateCustomer, (req, res) => {
