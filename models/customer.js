@@ -77,7 +77,8 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue:false
     },
   }, {
-    sequelize,
+      sequelize,
+    underscored:true,
     tableName: 'customers',
     modelName: 'Customer',
   });

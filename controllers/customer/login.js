@@ -1,6 +1,6 @@
 require('dotenv/config');
-const { Customer,Token } = require('../../models');
-const { customerSchema, passwordSchema, customerUpdateProfile } = require('../../middlewares/customer/validation');
+const { Customer, CustomerFavLocation} = require('../../models');
+const { customerSchema, passwordSchema, customerAddressSchema, customerUpdateProfileSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
@@ -32,14 +32,14 @@ const loginWithEmail = async(data) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        await Token.findOrCreate({
-            where: {
-                    refresh_token:refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
+        // await Token.findOrCreate({
+        //     where: {
+        //             refresh_token:refreshToken,
+        //     },
+        //     defaults: {
+        //         refresh_token: refreshToken,
+        //     }
+        // });
 
         return { status: 200, message: `Customer (${email}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
     }
@@ -74,14 +74,14 @@ const loginWithPhone = async (data) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
+        // await Token.findOrCreate({
+        //     where: {
+        //         refresh_token: refreshToken,
+        //     },
+        //     defaults: {
+        //         refresh_token: refreshToken,
+        //     }
+        // });
 
         return { status: 200, message: `Customer (${phone_no}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
     }
@@ -133,14 +133,14 @@ const signupCustomer = async (data) => {
             const accessToken = generateAccessToken(user);
             const refreshToken = generateRefreshToken(user);
 
-            await Token.findOrCreate({
-                where: {
-                    refresh_token: refreshToken,
-                },
-                defaults: {
-                    refresh_token: refreshToken,
-                }
-            });
+            // await Token.findOrCreate({
+            //     where: {
+            //         refresh_token: refreshToken,
+            //     },
+            //     defaults: {
+            //         refresh_token: refreshToken,
+            //     }
+            // });
 
             return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
         }
@@ -192,14 +192,14 @@ const loginWithGoogle = async(userInfo) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
+        // await Token.findOrCreate({
+        //     where: {
+        //         refresh_token: refreshToken,
+        //     },
+        //     defaults: {
+        //         refresh_token: refreshToken,
+        //     }
+        // });
 
         return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
     }
@@ -211,14 +211,14 @@ const loginWithGoogle = async(userInfo) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
+        // await Token.findOrCreate({
+        //     where: {
+        //         refresh_token: refreshToken,
+        //     },
+        //     defaults: {
+        //         refresh_token: refreshToken,
+        //     }
+        // });
 
         return { status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken, refreshToken: refreshToken };
     }
@@ -247,14 +247,14 @@ const loginWithFacebook = async (userInfo) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
+        // await Token.findOrCreate({
+        //     where: {
+        //         refresh_token: refreshToken,
+        //     },
+        //     defaults: {
+        //         refresh_token: refreshToken,
+        //     }
+        // });
 
         return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
     }
@@ -266,21 +266,21 @@ const loginWithFacebook = async (userInfo) => {
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
+        // await Token.findOrCreate({
+        //     where: {
+        //         refresh_token: refreshToken,
+        //     },
+        //     defaults: {
+        //         refresh_token: refreshToken,
+        //     }
+        // });
 
         return { status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken, refreshToken: refreshToken  };
     }
 };
 
 const generateAccessToken = (userInfo) => {
-    return jwt.sign(userInfo, process.env.Access_Token_Secret, {expiresIn:'3600s'});
+    return jwt.sign(userInfo, process.env.Access_Token_Secret);
 }
 
 const generateRefreshToken = (userInfo) => {
@@ -563,7 +563,7 @@ const updateCustomerProfile = async (req, res) => {
 
         if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
 
-        const result = customerUpdateProfile.validate(req.body);
+        const result = customerUpdateProfileSchema.validate(req.body);
 
         if (result.error) {
             return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -618,7 +618,41 @@ const updateCustomerProfile = async (req, res) => {
     
 };
 
-const addCustomerAddress = (req, res) => {
+const addCustomerAddress = async (req, res) => {
+    
+    try {
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+        const result = customerAddressSchema.validate({ address: req.body.address });
+
+        if (result.error) {
+            return res.status(400).json({ status: 400, message: result.error.details[0].message });
+        }
+
+        const address = result.value.address;
+        const customer_id = customer.getDataValue('id');
+
+        console.log("customer ID",customer_id)
+
+        const customerFavLocation = await CustomerFavLocation.create({
+            address, customer_id: customer_id
+        })
+
+        if (customerFavLocation) return res.status(200).json({ status: 200, mesaage: "Address Added Successfully" });
+
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+        
+    }  
+
     
 }
 
@@ -645,57 +679,57 @@ const feedbackCustomer = (req, res) => {
     
 }
 
-const getAccessToken = async (req, res) => {
+// const getAccessToken = async (req, res) => {
 
-    try {
-        const refreshToken = req.body.token;
+//     try {
+//         const refreshToken = req.body.token;
 
-        if (!refreshToken) return res.sendStatus(401);
+//         if (!refreshToken) return res.sendStatus(401);
 
-        const token = await Token.findOne({
-            refresh_token: refreshToken,
-        });
+//         const token = await Token.findOne({
+//             refresh_token: refreshToken,
+//         });
 
-        if (!token) return res.sendStatus(403);
+//         if (!token) return res.sendStatus(403);
 
-        jwt.verify(refreshToken, process.env.Refresh_Token_Secret, (err, user) => {
-            console.log(err);
-            if (err) return res.sendStatus(403);
+//         jwt.verify(refreshToken, process.env.Refresh_Token_Secret, (err, user) => {
+//             console.log(err);
+//             if (err) return res.sendStatus(403);
 
 
-            const accessToken = generateAccessToken({ email: user.email });
+//             const accessToken = generateAccessToken({ email: user.email });
 
-            return res.status(200).json({ status: 200, accessToken: accessToken });
+//             return res.status(200).json({ status: 200, accessToken: accessToken });
 
-        })
-    } catch (error) {
-        console.log(error)
-        return res.sendStatus(500);
-    }
+//         })
+//     } catch (error) {
+//         console.log(error)
+//         return res.sendStatus(500);
+//     }
     
 
 
-}
+// }
 
 
 
 const logoutCustomer = async (req, res) => {
     
     try {
-        const refreshToken = req.body.token;
+        // const refreshToken = req.body.token;
 
-        const token = await Token.findOne({
-            refresh_token: refreshToken,
-        });
+        // const token = await Token.findOne({
+        //     refresh_token: refreshToken,
+        // });
 
-        if (token) {
-            await Token.destroy({
-                where: {
-                    refresh_token: refreshToken,
-                },
-                force: true
-            });
-        }
+        // if (token) {
+        //     await Token.destroy({
+        //         where: {
+        //             refresh_token: refreshToken,
+        //         },
+        //         force: true
+        //     });
+        // }
 
         return res.status(200).json({ status: 200, message: `Customer logged out Successfully` });    
     } catch (error) {
@@ -706,4 +740,4 @@ const logoutCustomer = async (req, res) => {
     
 }
 
-module.exports = { addCustomerAddress,feedbackCustomer,getAccessToken,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+module.exports = { addCustomerAddress,feedbackCustomer,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

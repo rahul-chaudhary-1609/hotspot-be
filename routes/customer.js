@@ -431,7 +431,6 @@ router.put('/reset-password', (req, res) => {
     return resetPassword(req,res);
 });
 
-
 router.get('/customer-profile', authenticateCustomer, (req, res) => {
     return (getCustomerProfile(req, res));
 });
@@ -448,19 +447,17 @@ router.put('/customer-change-password', authenticateCustomer, (req, res) => {
     return (changeCustomerPassword(req, res));
 });
 
-
 router.post('/customer-feedback', authenticateCustomer, (req, res) => {
     return (feedbackCustomer(req, res));
 });
 
-router.put('/customer-refresh', (req, res) => {
-    return (getAccessToken(req, res));
-});
+// router.put('/customer-refresh', (req, res) => {
+//     return (getAccessToken(req, res));
+// });
 
 router.delete('/customer-logout', (req, res) => {
     return (logoutCustomer(req, res));
 });
-
 
 
 module.exports=router;

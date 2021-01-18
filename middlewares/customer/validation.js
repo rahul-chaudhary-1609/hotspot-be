@@ -45,7 +45,7 @@ const passwordSchema = Joi.object({
     }),
 });
 
-const customerUpdateProfile = Joi.object({
+const customerUpdateProfileSchema = Joi.object({
     name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
         'string.pattern.base': `Please enter a valid customer name`,
     }),
@@ -59,5 +59,9 @@ const customerUpdateProfile = Joi.object({
     
 });
 
+const customerAddressSchema = Joi.object({    
+    address: Joi.string().max(45).required(),
+});
 
-module.exports = { customerUpdateProfile, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};
+
+module.exports = { customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};
