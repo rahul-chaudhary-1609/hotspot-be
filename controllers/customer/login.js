@@ -411,52 +411,32 @@ const validatePhoneOTP = async (req,res) => {
 };
  
 
-const generateEmailOTP = async(userInfo) => {
-    let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
+const generateEmailOTP = async (req,res) => {
+    try {
 
-    let customer = await Customer.findOne({
-        where: {
-            email:(userInfo.email).toLowerCase(),
+        if (!req.query.email) {
+            return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
         }
-    });
 
-    if (customer.getDataValue('email_verification_otp')!==null) {
-        email_verification_otp = customer.getDataValue('email_verification_otp');
-    }
+        let customer = await Customer.findOne({
+            where: {
+                email: (req.query.email).toLowerCase(),
+            }
+        });
 
-    await Customer.update({
-        email_verification_otp
-    }, {
-        where: {
-            email: (userInfo.email).toLowerCase()
-            },
-            returning: true,
-    });
-
-    const mailOptions = {
-        from: `Hotspot <${process.env.ev_email}>`,
-        to: userInfo.email,
-        subject: 'Email Verification',
-        text: 'Here is your code',
-        html: `OTP is: <b>${email_verification_otp}</b>`,
-    };
-    
-    return sendMail(mailOptions);
-};
-
-
-const validateEmailOTP = async(req,res) => {
-    const customer = await Customer.findOne({
-        where: {
-            email: (req.query.email).toLowerCase(),
+        if (!customer) {
+            return res.status(404).json({ status: 404, message: `User does not exist with provided email: ${req.query.email}` });
         }
-    });
 
-    const email_verification_otp = customer.getDataValue('email_verification_otp');
+        if (customer.getDataValue('is_email_verified')) {
+            return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
+        }
 
-    if (email_verification_otp != null && email_verification_otp === req.query.code) {
+        let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
+
         await Customer.update({
-            is_email_verified: true,
+            email_verification_otp,
+            email_verification_otp_expiry: new Date(),
         }, {
             where: {
                 email: (req.query.email).toLowerCase()
@@ -464,11 +444,80 @@ const validateEmailOTP = async(req,res) => {
             returning: true,
         });
 
-        return res.status(200).json({ status: 200, message: `${req.query.email} is verified.` });
+        const mailOptions = {
+            from: `Hotspot <${process.env.ev_email}>`,
+            to: req.query.email,
+            subject: 'Email Verification',
+            text: 'Here is your code',
+            html: `OTP is: <b>${email_verification_otp}</b>`,
+        };
+
+        sendMail(mailOptions)
+            .then((resp) => {
+                res.status(200).json({ status: 200, message: `Verification Email Sent to : ${req.query.email}` });
+            }).catch((error) => {
+                res.sendStatus(500);
+            });
+        
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
     }
-    else {
-        return res.status(401).json({ status: 401, message: `Invalid Code` });
+    
+};
+
+
+const validateEmailOTP = async (req, res) => {
+    
+    try {
+
+        if (!req.query.email) {
+            return res.status(400).json({ status: 400, message: `Please provide email id and code to validate user` });
+        }
+
+        let customer = await Customer.findOne({
+            where: {
+                email: (req.query.email).toLowerCase(),
+            }
+        });
+
+        if (!customer) {
+            return res.status(404).json({ status: 404, message: `User does not exist with this email: ${req.query.email}` });
+        }
+
+        if (customer.getDataValue('is_email_verified')) {
+            return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
+        }
+
+        const email_verification_otp = customer.getDataValue('email_verification_otp');
+        const email_verification_otp_expiry = customer.getDataValue('email_verification_otp_expiry');
+        const now = new Date();
+
+        const timeDiff = Math.floor((now.getTime() - email_verification_otp_expiry.getTime()) / 1000)
+        if (timeDiff > 60) {
+            return res.status(401).json({ status: 401, message: ` OTP Expired` });
+        }
+
+        if (email_verification_otp != null && email_verification_otp === req.query.code) {
+            await Customer.update({
+                is_email_verified: true,
+            }, {
+                where: {
+                    email: (req.query.email).toLowerCase()
+                },
+                returning: true,
+            });
+
+            return res.status(200).json({ status: 200, message: `${req.query.email} is verified.` });
+        }
+        else {
+            return res.status(401).json({ status: 401, message: `Invalid Code` });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
     }
+    
 };
 
 const generatePassResetCode = async (userInfo) => {
@@ -482,9 +531,6 @@ const generatePassResetCode = async (userInfo) => {
         }
     });
 
-    // if (customer.getDataValue('email_verification_otp') !== null) {
-    //     email_verification_otp = customer.getDataValue('email_verification_otp');
-    // }
 
     await Customer.update({
         reset_pass_otp: `${reset_pass_otp}`,

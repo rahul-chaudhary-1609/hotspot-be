@@ -157,80 +157,20 @@ router.get('/logout', (req, res) => {
 
 
 router.get('/verify-phone', (req, res) => {
-
     return generatePhoneOTP(req,res)            
 });
 
 router.get('/validate-phone', async (req, res) => {
-
     return validatePhoneOTP(req, res);
 });
 
 
-router.get('/verify-email', async (req, res) => {
-    
-    try {
-        
-        if (!req.query.email){
-            return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
-        }
-
-        let customer = await Customer.findOne({
-            where: {
-                email: (req.query.email).toLowerCase(),
-            }
-        });
-
-        if (!customer) {
-            return res.status(404).json({ status: 404, message: `User does not exist with provided email: ${req.query.email}` });
-        }
-
-        if (customer.getDataValue('is_email_verified')) {
-            return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
-        }
-        else {
-
-           return generateEmailOTP(req.query)
-                .then((resp) => {
-                    res.status(200).json({ status: 200, message: `Verification Email Sent to : ${req.query.email}` });
-                }).catch((error) => {
-                    res.sendStatus(500);
-                });
-        }
-    } catch (error) {
-       return res.sendStatus(500);
-    }
-    
-    
+router.get('/verify-email', (req, res) => {     
+    return generateEmailOTP(req, res);    
 });
 
 router.get('/validate-email', async (req, res) => {
-    
-    try {
-        if (!req.query.email) {
-            return res.status(400).json({ status: 400, message: `Please provide email id and code to validate user` });
-        }
-
-        let customer = await Customer.findOne({
-            where: {
-                email: req.query.email,
-            }
-        });
-
-        if (!customer) {
-            return res.status(404).json({ status: 404, message: `User does not exist with this email: ${req.query.email}` });
-        }
-
-        if (customer.getDataValue('is_email_verified')) {
-            return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
-        }
-
-        validateEmailOTP(req, res);
-       
-    } catch (error) {
-        return res.sendStatus(500);
-    }
-   
+    return validateEmailOTP(req, res);  
 });
 
 router.get('/send-password-reset-code', async(req, res) => {
