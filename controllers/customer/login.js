@@ -7,285 +7,241 @@ const sendMail = require('../../utilityServices/mail');
 const jwt = require('jsonwebtoken');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
 
-const loginWithEmail = async(data) => {
-
-    const email = (data.email).toLowerCase()
-    const password = data.password;
-
-    if (!email || !password) return { status: 400, message: `Please provide valid email and password` }
-
-    const customer = await Customer.findOne({
-        where: {
-            email
-        }
-    });
-
-    if (!customer) return { status: 401, message: `Invalid email Id or password` };
-
-    if (!customer.getDataValue('is_email_verified')) return { status: 401, message: `Customer's email id is not Verified.` };
+const loginWithEmail = async (req,res) => {
     
-    if (passwordHash.verify(password, customer.getDataValue('password'))) {
-        const user = {
-            email: customer.getDataValue('email'),
-        };
+    try {
+        const email = (req.body.email).toLowerCase()
+        const password = req.body.password;
 
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
+        if (!email || !password) return res.status(400).json({ status: 400, message: `Please provide valid email and password` });
 
-        // await Token.findOrCreate({
-        //     where: {
-        //             refresh_token:refreshToken,
-        //     },
-        //     defaults: {
-        //         refresh_token: refreshToken,
-        //     }
-        // });
-
-        return { status: 200, message: `Customer (${email}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-    else
-    {
-        return { status: 401, message: `Invalid email Id or password` }
-        }
-};
-
-const loginWithPhone = async (data) => {
-
-    const phone_no = parseInt(data.phone);
-    const password = data.password;
-
-    if (!phone_no || !password) return { status: 400, message: `Please provide valid phone and password` };
-
-    const customer = await Customer.findOne({
-        where: {
-            phone_no
-        }
-    });
-
-    if (!customer) return { status: 401, message: `Invalid phone or password` };
-
-    if (!customer.getDataValue('is_phone_verified')) return { status: 401, message: `Customer's phone is not Verified.` };
-
-    if (passwordHash.verify(password, customer.getDataValue('password'))) {
-        const user = {
-            email: customer.getDataValue('email'),
-        };
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        // await Token.findOrCreate({
-        //     where: {
-        //         refresh_token: refreshToken,
-        //     },
-        //     defaults: {
-        //         refresh_token: refreshToken,
-        //     }
-        // });
-
-        return { status: 200, message: `Customer (${phone_no}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-    else {
-        return { status: 401, message: `Invalid phone or password` }
-    }
-};
-
-
-const signupCustomer = async (data) => {
-
-    const result = customerSchema.validate(data);
-
-    if (result.error) {
-        return {
-            status: 400, message: result.error.details[0].message
-        };
-    }
-
-    if (result.value) {
-
-        const { name, country_code, facebook_id,google_id, apple_id } = result.value;
-
-
-
-        console.log("result error:", result.error, result.value);
-
-        const password = passwordHash.generate(result.value.password);
-        const phone_no = parseInt(result.value.phone);
-        const email= (result.value.email).toLowerCase();
-
-
-        const [customer,created] = await Customer.findOrCreate({
+        const customer = await Customer.findOne({
             where: {
-                [Op.or]: {
-                    email, phone_no,
+                email
+            }
+        });
+
+        if (!customer) return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
+
+        if (!customer.getDataValue('is_email_verified')) return res.status(401).json({ status: 401, message: `Customer's email id is not Verified.` });
+
+        if (passwordHash.verify(password, customer.getDataValue('password'))) {
+
+            const user = {
+                email: customer.getDataValue('email'),
+            };
+
+            const accessToken = generateAccessToken(user);
+
+            return res.status(200).json({ status: 200, message: `Customer (${email}) Logged in successfully`, accessToken: accessToken });
+        }
+        else {
+            return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+
+    
+};
+
+const loginWithPhone = async (req, res) => {
+
+    try {
+        const phone_no = parseInt(req.body.phone);
+        const password = req.body.password;
+
+        if (!phone_no || !password) return res.status(400).json({ status: 400, message: `Please provide valid phone and password` });
+
+        const customer = await Customer.findOne({
+            where: {
+                phone_no
+            }
+        });
+
+        if (!customer) return res.status(401).json({ status: 401, message: `Invalid phone or password` });
+
+        if (!customer.getDataValue('is_phone_verified')) return res.status(401).json({ status: 401, message: `Customer's phone is not Verified.` });
+
+        if (passwordHash.verify(password, customer.getDataValue('password'))) {
+            const user = {
+                email: customer.getDataValue('email'),
+            };
+
+            const accessToken = generateAccessToken(user);
+
+            return res.status(200).json({ status: 200, message: `Customer (${phone_no}) Logged in successfully`, accessToken: accessToken });
+        }
+        else {
+            return res.status(401).json({ status: 401, message: `Invalid phone or password` });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+
+};
+
+
+const signupCustomer = async (req,res) => {
+
+    try {
+        const result = customerSchema.validate(req.body);
+
+        if (result.error) return res.status(400).json({status: 400, message: result.error.details[0].message});
+
+        if (result.value) {
+
+            const { name, country_code, facebook_id, google_id, apple_id } = result.value;
+
+
+
+            console.log("result error:", result.error, result.value);
+
+            const password = passwordHash.generate(result.value.password);
+            const phone_no = parseInt(result.value.phone);
+            const email = (result.value.email).toLowerCase();
+
+
+            const [customer, created] = await Customer.findOrCreate({
+                where: {
+                    [Op.or]: {
+                        email, phone_no,
+                    }
+                },
+                defaults: {
+                    name, email, country_code, phone_no, password, facebook_id, google_id, apple_id
                 }
+            });
+
+            if (created) {
+                const user = {
+                    email: email,
+                };
+
+                const accessToken = generateAccessToken(user);
+
+
+                return res.status(200).json({ status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, });
+            }
+            else {
+                const checkEmail = await Customer.findOne({
+                    where: {
+                        email,
+                    }
+                });
+                const checkPhone = await Customer.findOne({
+                    where: {
+                        phone_no,
+                    }
+                });
+
+                if (checkEmail !== null) return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with ${email}` });
+
+                if (checkPhone !== null) return res.status(409).json({status: 409, message: `Customer with the same phone is already exist. \n Login with ${phone_no}`});
+                
+            }
+        }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+
+    
+};
+
+
+const loginWithGoogle = async (req, res) => {
+    
+    try {
+        const body = { google_id: req.body.id, name: req.body.name, email: req.body.email };
+
+        const { google_id, name, email } = body;
+        const is_email_verified = true;
+
+        const [customer, created] = await Customer.findOrCreate({
+            where: {
+                email,
             },
             defaults: {
-                name, email, country_code, phone_no, password,facebook_id, google_id, apple_id
+                name, email, is_email_verified, google_id
             }
         });
 
         if (created) {
             const user = {
-                email: email,
+                email: body.email,
             };
 
             const accessToken = generateAccessToken(user);
-            const refreshToken = generateRefreshToken(user);
 
-            // await Token.findOrCreate({
-            //     where: {
-            //         refresh_token: refreshToken,
-            //     },
-            //     defaults: {
-            //         refresh_token: refreshToken,
-            //     }
-            // });
-
-            return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
+            return res.status(200).json({ status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken });
         }
         else {
-            const checkEmail = await Customer.findOne({
-                where: {
-                    email,
-                }
-            });
-            const checkPhone = await Customer.findOne({
-                where: {
-                    phone_no,
-                }
-            });
-
-            if (checkEmail !== null) {
-                return { status: 409,  message:`Customer with the same email is already exist. \n Login with ${email}`};
+            const user = {
+                email: customer.getDataValue('name'),
             }
 
-            if (checkPhone !== null) {                
-                return {
-                    status: 409, message: `Customer with the same phone is already exist. \n Login with ${phone_no}`};
+            const accessToken = generateAccessToken(user);
+
+            return res.status(200).json({ status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+   
+
+};
+
+const loginWithFacebook = async (req,res) => {
+
+    try {
+        const body = { facebook_id: req.body.id, name: req.body.name, email: req.body.email };
+
+        const { facebook_id, name, email } = body;
+
+        const is_email_verified = true;
+
+        const [customer, created] = await Customer.findOrCreate({
+            where: {
+                email,
+            },
+            defaults: {
+                name, email, is_email_verified, facebook_id
             }
+        });
+
+        if (created) {
+            const user = {
+                email: body.email,
+            }
+
+            const accessToken = generateAccessToken(user);
+
+            return res.status(200).json({ status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken });
         }
+        else {
+            const user = {
+                email: customer.getDataValue('name'),
+            }
+
+            const accessToken = generateAccessToken(user);
+
+            return res.status(200).json({ status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
     }
+    
 };
 
-
-const loginWithGoogle = async(userInfo) => {
-
-    const { google_id, name, email } = userInfo;
-
-    const is_email_verified = true;
-
-    const [customer,created] = await Customer.findOrCreate({
-        where: {
-                email,
-        },
-        defaults: {
-            name, email, is_email_verified, google_id
-        }
-    });
-
-    if (created) {
-        const user = {
-            email: userInfo.email,
-        };
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        // await Token.findOrCreate({
-        //     where: {
-        //         refresh_token: refreshToken,
-        //     },
-        //     defaults: {
-        //         refresh_token: refreshToken,
-        //     }
-        // });
-
-        return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-    else {
-        const user = {
-            email: customer.getDataValue('name'),
-        }
-        
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        // await Token.findOrCreate({
-        //     where: {
-        //         refresh_token: refreshToken,
-        //     },
-        //     defaults: {
-        //         refresh_token: refreshToken,
-        //     }
-        // });
-
-        return { status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-
-};
-
-const loginWithFacebook = async (userInfo) => {
-    const { facebook_id, name, email } = userInfo;
-
-    const is_email_verified = true;
-
-    const [customer,created] = await Customer.findOrCreate({
-        where: {
-                email,
-        },
-        defaults: {
-            name, email, is_email_verified,facebook_id
-        }
-    });
-
-    if (created) {
-        const user = {
-            email: userInfo.email,
-        }
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        // await Token.findOrCreate({
-        //     where: {
-        //         refresh_token: refreshToken,
-        //     },
-        //     defaults: {
-        //         refresh_token: refreshToken,
-        //     }
-        // });
-
-        return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-    else {
-        const user = {
-            email: customer.getDataValue('name'),
-        }
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        // await Token.findOrCreate({
-        //     where: {
-        //         refresh_token: refreshToken,
-        //     },
-        //     defaults: {
-        //         refresh_token: refreshToken,
-        //     }
-        // });
-
-        return { status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken, refreshToken: refreshToken  };
-    }
-};
-
-const generateAccessToken = (userInfo) => {
-    return jwt.sign(userInfo, process.env.Access_Token_Secret);
+const generateAccessToken = (user) => {
+    return jwt.sign(user, process.env.Access_Token_Secret);
 }
 
-const generateRefreshToken = (userInfo) => {
-    return jwt.sign(userInfo, process.env.Refresh_Token_Secret);
-}
 
 const generatePhoneOTP = async (req,res) => {
 
@@ -520,62 +476,140 @@ const validateEmailOTP = async (req, res) => {
     
 };
 
-const generatePassResetCode = async (userInfo) => {
-    let reset_pass_otp = Math.floor(1000 + Math.random() * 9000);
+const generatePassResetCode = async (req, res) => {
 
-    const email = (userInfo.email).toLowerCase();
+    try {
 
-    let customer = await Customer.findOne({
-        where: {
-            email
+        if (!req.query.emailOrPhone) {
+            return res.status(400).json({ status: 400, message: `Please provide email/phone to reset password` });
         }
-    });
+
+        const phone_no = parseInt(req.query.emailOrPhone);
+        const email = (req.query.emailOrPhone).toLowerCase();
+
+        let customer = null;
+
+        if (isNaN(phone_no)) {
+            customer = await Customer.findOne({
+                where: {
+                    email
+                }
+            });
+        }
+        else {
+            customer = await Customer.findOne({
+                where: {
+                    [Op.or]: {
+                        email, phone_no,
+                    }
+                }
+            });
+        }
 
 
-    await Customer.update({
-        reset_pass_otp: `${reset_pass_otp}`,
-        reset_pass_expiry: new Date(),
-    }, {
-        where: {
-            email,
-        },
-        returning: true,
-    });
+        if (!customer) {
+            return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
+        }
 
-    const mailOptions = {
-        from: `Hotspot <${process.env.ev_email}>`,
-        to: customer.getDataValue('email'),
-        subject: 'Password Reset',
-        text: 'Here is your code',
-        html: `OTP for password reset is: <b>${reset_pass_otp}</b>`,
-    };
+        if (!customer.getDataValue('is_email_verified')) {
+            return res.status(409).json({ status: 409, message: `${req.query.emailOrPhone} is not verified` });
+        }
 
-    return sendMail(mailOptions);
+
+        let reset_pass_otp = Math.floor(1000 + Math.random() * 9000);
+
+
+        await Customer.update({
+            reset_pass_otp: `${reset_pass_otp}`,
+            reset_pass_expiry: new Date(),
+        }, {
+            where: {
+                email: customer.getDataValue('email'),
+            },
+            returning: true,
+        });
+
+        const mailOptions = {
+            from: `Hotspot <${process.env.ev_email}>`,
+            to: customer.getDataValue('email'),
+            subject: 'Password Reset',
+            text: 'Here is your code',
+            html: `OTP for password reset is: <b>${reset_pass_otp}</b>`,
+        };
+
+        sendMail(mailOptions)
+            .then((resp) => {
+                res.status(200).json({ status: 200, message: `Password reset code Sent to : ${customer.getDataValue('email')}` });
+            }).catch((error) => {
+                res.sendStatus(500);
+            });
+        
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }
+    
 };
 
 
-const validatePassResetCode = async (req,res) => {
-    const customer = await Customer.findOne({
-        where: {
-            email: (req.query.email).toLowerCase(),
-        }
-    });
-
-    const reset_pass_otp = customer.getDataValue('reset_pass_otp');
-    const reset_pass_expiry = customer.getDataValue('reset_pass_expiry');
-    const now = new Date();
+const validatePassResetCode = async (req, res) => {
     
-    const timeDiff = Math.floor((now.getTime() - reset_pass_expiry.getTime()) / 1000)
-    if (timeDiff > 60) {
-        return res.status(401).json({ status: 401, message: ` OTP Expired` });        
-    }
+    try {
+        if (!req.query.emailOrPhone) {
+            return res.status(400).json({ status: 400, message: `Please provide email/phone to reset password` });
+        }
 
-    if (reset_pass_otp != null && reset_pass_otp === req.query.code) {
-        return res.status(200).json({ status: 200, message: `OTP is verified.` });
+        const phone_no = parseInt(req.query.emailOrPhone);
+        const email = (req.query.emailOrPhone).toLowerCase();
+
+        let customer = null;
+
+        if (isNaN(phone_no)) {
+            customer = await Customer.findOne({
+                where: {
+                    email
+                }
+            });
+        }
+        else {
+            customer = await Customer.findOne({
+                where: {
+                    [Op.or]: {
+                        email, phone_no,
+                    }
+                }
+            });
+        }
+
+
+        if (!customer) {
+            return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
+        }
+
+        if (!customer.getDataValue('is_email_verified')) {
+            return res.status(409).json({ status: 409, message: `${req.query.emailOrPhone} is not verified` });
+        }
+        
+        const reset_pass_otp = customer.getDataValue('reset_pass_otp');
+        const reset_pass_expiry = customer.getDataValue('reset_pass_expiry');
+        const now = new Date();
+
+        const timeDiff = Math.floor((now.getTime() - reset_pass_expiry.getTime()) / 1000)
+        if (timeDiff > 60) {
+            return res.status(401).json({ status: 401, message: ` OTP Expired` });
+        }
+
+        if (reset_pass_otp != null && reset_pass_otp === req.query.code) {
+            return res.status(200).json({ status: 200, message: `OTP is verified.` });
+        }
+        else {
+            return res.status(401).json({ status: 401, message: `Invalid OTP` });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
     }
-    else {
-        return res.status(401).json({ status: 401, message: `Invalid OTP` });
-    }
+    
 };
 
 const resetPassword = async(req,res) => {
@@ -850,58 +884,10 @@ const feedbackCustomer = (req, res) => {
     
 }
 
-// const getAccessToken = async (req, res) => {
-
-//     try {
-//         const refreshToken = req.body.token;
-
-//         if (!refreshToken) return res.sendStatus(401);
-
-//         const token = await Token.findOne({
-//             refresh_token: refreshToken,
-//         });
-
-//         if (!token) return res.sendStatus(403);
-
-//         jwt.verify(refreshToken, process.env.Refresh_Token_Secret, (err, user) => {
-//             console.log(err);
-//             if (err) return res.sendStatus(403);
-
-
-//             const accessToken = generateAccessToken({ email: user.email });
-
-//             return res.status(200).json({ status: 200, accessToken: accessToken });
-
-//         })
-//     } catch (error) {
-//         console.log(error)
-//         return res.sendStatus(500);
-//     }
-    
-
-
-// }
-
-
 
 const logoutCustomer = async (req, res) => {
     
     try {
-        // const refreshToken = req.body.token;
-
-        // const token = await Token.findOne({
-        //     refresh_token: refreshToken,
-        // });
-
-        // if (token) {
-        //     await Token.destroy({
-        //         where: {
-        //             refresh_token: refreshToken,
-        //         },
-        //         force: true
-        //     });
-        // }
-
         return res.status(200).json({ status: 200, message: `Customer logged out Successfully` });    
     } catch (error) {
         console.log(error)
