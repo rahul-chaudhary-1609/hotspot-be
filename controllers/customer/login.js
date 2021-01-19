@@ -815,8 +815,6 @@ const addCustomerAddress = async (req, res) => {
         const address = result.value.address;
         const customer_id = customer.getDataValue('id');
 
-        console.log("customer ID",customer_id)
-
         const customerFavLocation = await CustomerFavLocation.create({
             address, customer_id: customer_id
         })
@@ -861,6 +859,52 @@ const getCustomerAddress = async (req, res) => {
     }  
 }
 
+const setCustomerDefaultAddress = async(req, res) => {
+    try {
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+        const result = customerAddressSchema.validate({ address: req.body.address });
+
+        if (result.error) {
+            return res.status(400).json({ status: 400, message: result.error.details[0].message });
+        }
+
+        const address = result.value.address;
+
+        await CustomerFavLocation.update({
+            default_address:false
+        }, {
+                where: {
+                default_address: true
+                },
+            returning: true,
+        });
+
+        await CustomerFavLocation.update({
+            default_address: true
+        }, {
+            where: {
+                address
+            },
+            returning: true,
+        });
+
+        return res.status(200).json({ status: 200, mesaage: "Address updated as default Successfully" });
+
+
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }  
+}
+
 const feedbackCustomer = (req, res) => {
     try {
         const mailOptions = {
@@ -897,4 +941,4 @@ const logoutCustomer = async (req, res) => {
     
 }
 
-module.exports = { getCustomerAddress,addCustomerAddress,feedbackCustomer,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+module.exports = { setCustomerDefaultAddress, getCustomerAddress,addCustomerAddress,feedbackCustomer,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
