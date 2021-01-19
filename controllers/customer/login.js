@@ -1,6 +1,6 @@
 require('dotenv/config');
 const { Customer, CustomerFavLocation} = require('../../models');
-const { customerSchema, passwordSchema, customerAddressSchema, customerUpdateProfileSchema } = require('../../middlewares/customer/validation');
+const { customerSchema, passwordSchema, customerAddressSchema, customerUpdateProfileSchema, phoneSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
@@ -287,29 +287,126 @@ const generateRefreshToken = (userInfo) => {
     return jwt.sign(userInfo, process.env.Refresh_Token_Secret);
 }
 
-const generatePhoneOTP = (userInfo) => {
+const generatePhoneOTP = async (req,res) => {
+
+    const data = {
+        phone: req.query.phone,
+        country_code: req.query.country_code
+    }
+
+    const result = phoneSchema.validate(data);
+
+    if (result.error) {
+        return res.status(400).json({ status: 400, message: result.error.details[0].message });
+    }
+
+    const country_code = `+${req.query.country_code}`.replace(' ', '')
+
+    let customer = await Customer.findOne({
+        where: {
+            phone_no: req.query.phone,
+            country_code: country_code
+        }
+    });
+
+    if (!customer) {
+        return res.status(404).json({ status: 404, message: `User does not exist with this phone: ${country_code} ${req.query.phone}` });
+    }
+
+    if (customer.getDataValue('is_phone_verified')) {
+        return res.status(409).json({ status: 409, message: `${country_code} ${req.query.phone} is already verified` });
+    }
     
-    return client
-                .verify
-                .services(process.env.serviceID)
-                .verifications
-                .create({
-                    to: `+${userInfo.country_code}${userInfo.phone}`,
-                    channel: userInfo.channel
-                })
-    
-    
+    client
+        .verify
+        .services(process.env.serviceID)
+        .verifications
+        .create({
+            to: `+${req.query.country_code}${req.query.phone}`,
+            channel: req.query.channel
+        })
+        .then((resp) => {
+            Customer.update({
+                phone_verification_otp_expiry: new Date(),
+            }, {
+                where: {
+                    phone_no: req.query.phone,
+                },
+                returning: true,
+            });
+            res.status(200).json({ status: 200, message: `Verification code is sent to ${country_code} ${req.query.phone}` });
+        })
+        .catch((error) => {
+            res.sendStatus(500);
+        })    
 };
 
-const validatePhoneOTP = (userInfo) => {
-    return client
-                .verify
-                .services(process.env.serviceID)
-                .verificationChecks
-                .create({
-                    to: `+${userInfo.country_code}${userInfo.phone}`,
-                    code: userInfo.code
-                })
+const validatePhoneOTP = async (req,res) => {
+
+    const data = {
+        phone: req.query.phone,
+        country_code: req.query.country_code
+    }
+
+    const result = phoneSchema.validate(data);
+
+    if (result.error) {
+        return res.status(400).json({ status: 400, message: result.error.details[0].message });
+    }
+
+    const country_code = `+${req.query.country_code}`.replace(' ', '')
+
+    let customer = await Customer.findOne({
+        where: {
+            phone_no: req.query.phone,
+            country_code: country_code
+        }
+    });
+
+    if (!customer) {
+        return res.status(404).json({ status: 404, message: `User does not exist with this phone: ${country_code} ${req.query.phone}` });
+    }
+
+    if (customer.getDataValue('is_phone_verified')) {
+        return res.status(409).json({ status: 409, message: `${country_code} ${req.query.phone} is already verified` });
+    }
+
+    const phone_verification_otp_expiry = customer.getDataValue('phone_verification_otp_expiry');
+    const now = new Date();
+
+    const timeDiff = Math.floor((now.getTime() - phone_verification_otp_expiry.getTime()) / 1000)
+    if (timeDiff > 60) {
+        return res.status(401).json({ status: 401, message: ` OTP Expired` });
+    }
+
+    client
+        .verify
+        .services(process.env.serviceID)
+        .verificationChecks
+        .create({
+            to: `+${req.query.country_code}${req.query.phone}`,
+            code: req.query.code
+        })
+        .then((resp) => {
+            if (resp.status === "approved") {
+                Customer.update({
+                    is_phone_verified: true,
+                }, {
+                    where: {
+                        phone_no: req.query.phone,
+                        country_code: country_code
+                    },
+                    returning: true,
+                });
+
+                res.status(200).json({ status: 200, message: `Phone verified` });
+            }
+            else {
+                res.status(401).json({ status: 401, message: `Invalid Code` });
+            }
+        }).catch((error) => {
+            res.sendStatus(500);
+        })
         
 };
  

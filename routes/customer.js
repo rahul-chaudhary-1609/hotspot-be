@@ -156,103 +156,14 @@ router.get('/logout', (req, res) => {
 
 
 
-router.get('/verify-phone', async (req, res) => {
+router.get('/verify-phone', (req, res) => {
 
-    const data = {
-        phone: req.query.phone,
-        country_code: req.query.country_code
-    }
-    
-    const result = phoneSchema.validate(data);
-
-    if (result.error) {
-        return res.status(400).json({ status:400,message: result.error.details[0].message });
-    }
-
-    const country_code = `+${req.query.country_code}`.replace(' ', '')
-
-    let customer = await Customer.findOne({
-        where: {
-            phone_no: req.query.phone,
-            country_code: country_code
-        }
-    });
-
-    if (!customer) {
-        return res.status(404).json({ status: 404, message: `User does not exist with this phone: ${country_code} ${req.query.phone}` });
-    }
-
-    if (customer.getDataValue('is_phone_verified')) {
-        return res.status(409).json({ status: 409, message:`${country_code} ${req.query.phone} is already verified`});
-    }
-
-    if (result.value) {
-
-        return generatePhoneOTP(req.query)
-                .then((resp) => {
-                    res.status(200).json({ status: 200, message: `Verification code is sent to ${country_code} ${req.query.phone}` });
-                })
-                .catch((error) => {
-                    res.sendStatus(500);
-                })
-    }
+    return generatePhoneOTP(req,res)            
 });
 
 router.get('/validate-phone', async (req, res) => {
 
-    const data = {
-        phone: req.query.phone,
-        country_code: req.query.country_code
-    }
-
-    const result = phoneSchema.validate(data);
-
-    if (result.error) {
-        return res.status(400).json({ status: 400, message: result.error.details[0].message });
-    }
-
-    const country_code = `+${req.query.country_code}`.replace(' ', '')
-
-    let customer = await Customer.findOne({
-        where: {
-            phone_no: req.query.phone,
-            country_code: country_code
-        }
-    });
-
-    if (!customer) {
-        return res.status(404).json({ status: 404, message: `User does not exist with this phone: ${country_code} ${req.query.phone}` });
-    }
-
-    if (customer.getDataValue('is_phone_verified')) {
-        return res.status(409).json({ status: 409, message: `${country_code} ${req.query.phone} is already verified` });
-    }
-
-    if (result.value) {
-
-        return validatePhoneOTP(req.query)
-                .then((resp) => {
-                    if (resp.status === "approved") {
-                        Customer.update({
-                            is_phone_verified: true,
-                        }, {
-                            where: {
-                                phone_no: req.query.phone,
-                                country_code: country_code
-                            },
-                            returning: true,
-                        });
-
-                        res.status(200).json({ status: 200,message: `Phone verified` });
-                    }
-                    else {
-                        res.status(401).json({ status: 401,message: `Invalid Code` });
-                    }
-                }).catch((error) => {
-                    res.sendStatus(500);
-                })
-    }
-
+    return validatePhoneOTP(req, res);
 });
 
 
