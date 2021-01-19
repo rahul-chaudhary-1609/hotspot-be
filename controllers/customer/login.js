@@ -651,9 +651,37 @@ const addCustomerAddress = async (req, res) => {
         console.log(error);
         return res.sendStatus(500);
         
-    }  
+    }    
+}
 
-    
+const getCustomerAddress = async (req, res) => {
+    try {
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+        const customerFavLocation = await CustomerFavLocation.findAll({
+            where: {
+                customer_id:customer.getDataValue('id')
+            }
+        })
+
+        if (customerFavLocation.length===0) return res.status(404).json({ status: 404, mesaage: "No Addresses Fonud" });
+
+        const customerAddress = customerFavLocation.map((val) => {
+            return {address:val.address,isDefault:val.default_address}
+        })
+        
+        return res.status(200).json({ status: 200, customerAddress: customerAddress});
+
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(500);
+    }  
 }
 
 const feedbackCustomer = (req, res) => {
@@ -740,4 +768,4 @@ const logoutCustomer = async (req, res) => {
     
 }
 
-module.exports = { addCustomerAddress,feedbackCustomer,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+module.exports = { getCustomerAddress,addCustomerAddress,feedbackCustomer,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

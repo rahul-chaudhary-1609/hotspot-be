@@ -6,7 +6,7 @@ const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
 const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
-const { addCustomerAddress,feedbackCustomer, getAccessToken,logoutCustomer,updateCustomerProfile,changeCustomerPassword,getCustomerProfile, resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
+const { addCustomerAddress, feedbackCustomer, getCustomerAddress,logoutCustomer,updateCustomerProfile,changeCustomerPassword,getCustomerProfile, resetPassword,validatePassResetCode, generatePassResetCode,signupCustomer, loginWithEmail, loginWithPhone, loginWithGoogle, loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP, validateEmailOTP } = require('../controllers/customer/login');
 //require('../controllers/customer/login');
 
 const router=express.Router();
@@ -441,6 +441,10 @@ router.put('/customer-update-profile', authenticateCustomer, (req, res) => {
 
 router.post('/customer-add-address', authenticateCustomer, (req, res) => {
     return (addCustomerAddress(req, res));
+});
+
+router.get('/customer-get-address', authenticateCustomer, (req, res) => {
+    return (getCustomerAddress(req, res));
 });
  
 router.put('/customer-change-password', authenticateCustomer, (req, res) => {
