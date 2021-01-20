@@ -667,7 +667,7 @@ const resetPassword = async(req,res) => {
             password,
         }, {
             where: {
-                email: (req.body.emailOrPhone).toLowerCase()
+                email: customer.getDataValue('email')
             },
             returning: true,
         });
