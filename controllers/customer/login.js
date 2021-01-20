@@ -1,6 +1,6 @@
 require('dotenv/config');
-const { Customer, CustomerFavLocation} = require('../../models');
-const { customerSchema, passwordSchema, customerAddressSchema, customerUpdateProfileSchema, phoneSchema } = require('../../middlewares/customer/validation');
+const { Customer, CustomerFavLocation, TempEmail} = require('../../models');
+const { customerSchema, passwordSchema, customerAddressSchema, customerUpdateProfileSchema, phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
@@ -27,9 +27,9 @@ const loginWithEmail = async (req,res) => {
 
         if (passwordHash.verify(password, customer.getDataValue('password'))) {
 
-            if (!customer.getDataValue('is_email_verified')) return res.status(401).json({ status: 401, message: `Customer's email id is not Verified.` });
+            // if (!customer.getDataValue('is_email_verified')) return res.status(401).json({ status: 401, message: `Customer's email id is not Verified.` });
 
-            if (!customer.getDataValue('is_phone_verified')) return res.status(401).json({ status: 401, message: `Customer's phone is not Verified.` });
+            // if (!customer.getDataValue('is_phone_verified')) return res.status(401).json({ status: 401, message: `Customer's phone is not Verified.` });
 
             const user = {
                 email: customer.getDataValue('email'),
@@ -70,7 +70,7 @@ const loginWithPhone = async (req, res) => {
 
         if (passwordHash.verify(password, customer.getDataValue('password'))) {
 
-            if (!customer.getDataValue('is_email_verified')) return res.status(401).json({ status: 401, message: `Customer's email id is not Verified.` });
+            //if (!customer.getDataValue('is_email_verified')) return res.status(401).json({ status: 401, message: `Customer's email id is not Verified.` });
 
             if (!customer.getDataValue('is_phone_verified')) return res.status(401).json({ status: 401, message: `Customer's phone is not Verified.` });
 
@@ -112,6 +112,23 @@ const signupCustomer = async (req,res) => {
             const phone_no = parseInt(result.value.phone);
             const email = (result.value.email).toLowerCase();
 
+            let tempEmail = await TempEmail.findOne({
+                where: {
+                    email,
+                }
+            });
+
+            if (!tempEmail) {
+                return res.status(401).json({ status: 401, message: `Verify '${email}' before signup` });
+            }
+
+            if (!tempEmail.getDataValue('is_email_verified')) {
+                return res.status(401).json({ status: 401, message: `'${email}' is not verified.` });
+            }
+
+            const is_email_verified = true;
+            const email_verification_otp = tempEmail.getDataValue('email_verification_otp')
+            const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry')
 
             const [customer, created] = await Customer.findOrCreate({
                 where: {
@@ -120,11 +137,19 @@ const signupCustomer = async (req,res) => {
                     }
                 },
                 defaults: {
-                    name, email, country_code, phone_no, password, facebook_id, google_id, apple_id
+                    name, email, is_email_verified, email_verification_otp, email_verification_otp_expiry, country_code, phone_no, password, facebook_id, google_id, apple_id
                 }
             });
 
             if (created) {
+
+                await TempEmail.destroy({
+                    where: {
+                        email,
+                    },
+                    force: true,
+                })
+
                 const user = {
                     email: email,
                 };
@@ -383,46 +408,81 @@ const generateEmailOTP = async (req,res) => {
             return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
         }
 
+        const result = emailSchema.validate({ email: req.query.email });
+
+        if (result.error) {
+            return res.status(400).json({ status: 400, message: result.error.details[0].message });
+        }
+
+        const email = (result.value.email).toLowerCase();
+
         let customer = await Customer.findOne({
             where: {
-                email: (req.query.email).toLowerCase(),
+                email,
             }
         });
 
-        if (!customer) {
-            return res.status(404).json({ status: 404, message: `User does not exist with provided email: ${req.query.email}` });
-        }
-
-        if (customer.getDataValue('is_email_verified')) {
-            return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
+        if (customer) {
+            return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with ${email}` });
         }
 
         let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
 
-        await Customer.update({
-            email_verification_otp,
-            email_verification_otp_expiry: new Date(),
-        }, {
+        const [tempEmail, created] = await TempEmail.findOrCreate({
             where: {
-                email: (req.query.email).toLowerCase()
+                    email,
             },
-            returning: true,
+            defaults: {
+                email,
+                email_verification_otp, 
+                email_verification_otp_expiry: new Date(),
+            }
         });
 
-        const mailOptions = {
-            from: `Hotspot <${process.env.ev_email}>`,
-            to: req.query.email,
-            subject: 'Email Verification',
-            text: 'Here is your code',
-            html: `OTP is: <b>${email_verification_otp}</b>`,
-        };
+        if (created) {
 
-        sendMail(mailOptions)
-            .then((resp) => {
-                res.status(200).json({ status: 200, message: `Verification Email Sent to : ${req.query.email}` });
-            }).catch((error) => {
-                res.sendStatus(500);
+            const mailOptions = {
+                from: `Hotspot <${process.env.ev_email}>`,
+                to: email,
+                subject: 'Email Verification',
+                text: 'Here is your code',
+                html: `OTP is: <b>${email_verification_otp}</b>`,
+            };
+
+            return sendMail(mailOptions)
+                .then((resp) => {
+                    res.status(200).json({ status: 200, message: `Verification Email Sent to : ${email}` });
+                }).catch((error) => {
+                    res.sendStatus(500);
+                });
+        }
+        else {
+
+            await TempEmail.update({
+                email_verification_otp,
+                email_verification_otp_expiry: new Date(),
+            }, {
+                where: {
+                    email
+                },
+                returning: true,
             });
+
+            const mailOptions = {
+                from: `Hotspot <${process.env.ev_email}>`,
+                to: email,
+                subject: 'Email Verification',
+                text: 'Here is your code',
+                html: `OTP is: <b>${email_verification_otp}</b>`,
+            };
+
+            return sendMail(mailOptions)
+                .then((resp) => {
+                    res.status(200).json({ status: 200, message: `Verification Email Sent to : ${email}` });
+                }).catch((error) => {
+                    res.sendStatus(500);
+                });
+        }        
         
     } catch (error) {
         console.log(error);
@@ -437,25 +497,43 @@ const validateEmailOTP = async (req, res) => {
     try {
 
         if (!req.query.email) {
-            return res.status(400).json({ status: 400, message: `Please provide email id and code to validate user` });
+            return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
         }
+
+        const result = emailSchema.validate({ email: req.query.email });
+
+        if (result.error) {
+            return res.status(400).json({ status: 400, message: result.error.details[0].message });
+        }
+
+        const email = (result.value.email).toLowerCase();
 
         let customer = await Customer.findOne({
             where: {
-                email: (req.query.email).toLowerCase(),
+                email,
             }
         });
 
-        if (!customer) {
-            return res.status(404).json({ status: 404, message: `User does not exist with this email: ${req.query.email}` });
+        if (customer) {
+            return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with ${email}` });
         }
 
-        if (customer.getDataValue('is_email_verified')) {
+        let tempEmail = await TempEmail.findOne({
+            where: {
+                email,
+            }
+        });
+
+        if (!tempEmail) {
+            return res.status(404).json({ status: 404, message: `User does not exist with provided email` });
+        }
+
+        if (tempEmail.getDataValue('is_email_verified')) {
             return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
         }
 
-        const email_verification_otp = customer.getDataValue('email_verification_otp');
-        const email_verification_otp_expiry = customer.getDataValue('email_verification_otp_expiry');
+        const email_verification_otp = tempEmail.getDataValue('email_verification_otp');
+        const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry');
         const now = new Date();
 
         const timeDiff = Math.floor((now.getTime() - email_verification_otp_expiry.getTime()) / 1000)
@@ -464,16 +542,16 @@ const validateEmailOTP = async (req, res) => {
         }
 
         if (email_verification_otp != null && email_verification_otp === req.query.code) {
-            await Customer.update({
+            await TempEmail.update({
                 is_email_verified: true,
             }, {
                 where: {
-                    email: (req.query.email).toLowerCase()
+                    email
                 },
                 returning: true,
             });
 
-            return res.status(200).json({ status: 200, message: `${req.query.email} is verified.` });
+            return res.status(200).json({ status: 200, message: `${email} is verified.` });
         }
         else {
             return res.status(401).json({ status: 401, message: `Invalid Code` });
