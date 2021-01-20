@@ -1,6 +1,6 @@
 require('dotenv/config');
 const { Customer, CustomerFavLocation, TempEmail} = require('../../models');
-const { customerSchema, passwordSchema, customerAddressSchema, customerUpdateProfileSchema, phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
+const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema, phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
@@ -567,16 +567,32 @@ const generatePassResetCode = async (req, res) => {
 
     try {
 
-        if (!req.query.emailOrPhone) {
-            return res.status(400).json({ status: 400, message: `Please provide email/phone to reset password` });
+        let is_phone = false;
+        let is_email = false;
+
+        const phoneResult = onlyPhoneSchema.validate({ phone: req.query.emailOrPhone });
+
+        if (!phoneResult.error) {
+            is_phone = true;
         }
 
-        const phone_no = parseInt(req.query.emailOrPhone);
-        const email = (req.query.emailOrPhone).toLowerCase();
+        const phone_no = parseInt(phoneResult.value.phone);
+
+        const emailResult = emailSchema.validate({ email: req.query.emailOrPhone });
+
+        if (!emailResult.error) {
+            is_email = true;
+        }
+
+        const email = (emailResult.value.email).toLowerCase();
+
+        if (!is_email && !is_phone) {
+            return res.status(400).json({ status: 400, message: `Please provide a valid email/phone to reset password` });
+        }
 
         let customer = null;
 
-        if (isNaN(phone_no)) {
+        if (is_email) {
             customer = await Customer.findOne({
                 where: {
                     email
@@ -598,38 +614,63 @@ const generatePassResetCode = async (req, res) => {
             return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
         }
 
-        if (!customer.getDataValue('is_email_verified')) {
-            return res.status(409).json({ status: 409, message: `${req.query.emailOrPhone} is not verified` });
+
+        if (is_phone) {
+            return client
+                    .verify
+                    .services(process.env.serviceID)
+                    .verifications
+                    .create({
+                        to: `${customer.getDataValue('country_code')}${phone_no}`,
+                        channel: 'sms'
+                    })
+                    .then((resp) => {
+                        Customer.update({
+                            phone_verification_otp_expiry: new Date(),
+                            reset_pass_expiry: new Date(),
+                        }, {
+                            where: {
+                                phone_no
+                            },
+                            returning: true,
+                        });
+                        res.status(200).json({ status: 200, message: `Verification code is sent to ${customer.getDataValue('country_code')} ${phone_no}` });
+                    })
+                    .catch((error) => {
+                        res.sendStatus(500);
+                    })    
         }
 
+        if (is_email) {
+            let reset_pass_otp = Math.floor(1000 + Math.random() * 9000);
 
-        let reset_pass_otp = Math.floor(1000 + Math.random() * 9000);
 
-
-        await Customer.update({
-            reset_pass_otp: `${reset_pass_otp}`,
-            reset_pass_expiry: new Date(),
-        }, {
-            where: {
-                email: customer.getDataValue('email'),
-            },
-            returning: true,
-        });
-
-        const mailOptions = {
-            from: `Hotspot <${process.env.ev_email}>`,
-            to: customer.getDataValue('email'),
-            subject: 'Password Reset',
-            text: 'Here is your code',
-            html: `OTP for password reset is: <b>${reset_pass_otp}</b>`,
-        };
-
-        sendMail(mailOptions)
-            .then((resp) => {
-                res.status(200).json({ status: 200, message: `Password reset code Sent to : ${customer.getDataValue('email')}` });
-            }).catch((error) => {
-                res.sendStatus(500);
+            await Customer.update({
+                reset_pass_otp: `${reset_pass_otp}`,
+                reset_pass_expiry: new Date(),
+            }, {
+                where: {
+                    email: customer.getDataValue('email'),
+                },
+                returning: true,
             });
+
+            const mailOptions = {
+                from: `Hotspot <${process.env.ev_email}>`,
+                to: customer.getDataValue('email'),
+                subject: 'Password Reset',
+                text: 'Here is your code',
+                html: `OTP for password reset is: <b>${reset_pass_otp}</b>`,
+            };
+
+            return sendMail(mailOptions)
+                .then((resp) => {
+                    res.status(200).json({ status: 200, message: `Password reset code Sent to : ${customer.getDataValue('email')}` });
+                }).catch((error) => {
+                    res.sendStatus(500);
+                });
+        }
+        
         
     } catch (error) {
         console.log(error);
@@ -642,16 +683,32 @@ const generatePassResetCode = async (req, res) => {
 const validatePassResetCode = async (req, res) => {
     
     try {
-        if (!req.query.emailOrPhone) {
-            return res.status(400).json({ status: 400, message: `Please provide email/phone to reset password` });
+        let is_phone = false;
+        let is_email = false;
+
+        const phoneResult = onlyPhoneSchema.validate({ phone: req.query.emailOrPhone });
+
+        if (!phoneResult.error) {
+            is_phone = true;
         }
 
-        const phone_no = parseInt(req.query.emailOrPhone);
-        const email = (req.query.emailOrPhone).toLowerCase();
+        const phone_no = parseInt(phoneResult.value.phone);
+
+        const emailResult = emailSchema.validate({ email: req.query.emailOrPhone });
+
+        if (!emailResult.error) {
+            is_email = true;
+        }
+
+        const email = (emailResult.value.email).toLowerCase();
+
+        if (!is_email && !is_phone) {
+            return res.status(400).json({ status: 400, message: `Please provide a valid email/phone to reset password` });
+        }
 
         let customer = null;
 
-        if (isNaN(phone_no)) {
+        if (is_email) {
             customer = await Customer.findOne({
                 where: {
                     email
@@ -673,11 +730,6 @@ const validatePassResetCode = async (req, res) => {
             return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
         }
 
-        if (!customer.getDataValue('is_email_verified')) {
-            return res.status(409).json({ status: 409, message: `${req.query.emailOrPhone} is not verified` });
-        }
-        
-        const reset_pass_otp = customer.getDataValue('reset_pass_otp');
         const reset_pass_expiry = customer.getDataValue('reset_pass_expiry');
         const now = new Date();
 
@@ -686,16 +738,52 @@ const validatePassResetCode = async (req, res) => {
             return res.status(401).json({ status: 401, message: ` OTP Expired` });
         }
 
-        if (reset_pass_otp != null && reset_pass_otp === req.query.code) {
-            return res.status(200).json({ status: 200, message: `OTP is verified.` });
+        if (is_phone) {
+            return client
+                    .verify
+                    .services(process.env.serviceID)
+                    .verificationChecks
+                    .create({
+                        to: `${customer.getDataValue('country_code')}${phone_no}`,
+                        code: req.query.code
+                    })
+                    .then((resp) => {
+                        if (resp.status === "approved") {
+                            Customer.update({
+                                is_phone_verified: true,
+                            }, {
+                                where: {
+                                    phone_no
+                                },
+                                returning: true,
+                            });
+
+                            res.status(200).json({ status: 200, message: `OTP is verified.` });
+                        }
+                        else {
+                            res.status(401).json({ status: 401, message: `Invalid Code` });
+                        }
+                    }).catch((error) => {
+                        res.sendStatus(500);
+                    })
         }
-        else {
-            return res.status(401).json({ status: 401, message: `Invalid OTP` });
+        if (is_email) {
+            const reset_pass_otp = customer.getDataValue('reset_pass_otp');
+            
+
+            if (reset_pass_otp != null && reset_pass_otp === req.query.code) {
+                return res.status(200).json({ status: 200, message: `OTP is verified.` });
+            }
+            else {
+                return res.status(401).json({ status: 401, message: `Invalid OTP` });
+            }
+        
         }
+        
     } catch (error) {
         console.log(error);
         return res.sendStatus(500);
-    }
+    } 
     
 };
 
