@@ -23,8 +23,11 @@ module.exports = {
                 }
             });
 
+            
+
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
 
+            
         
 
             if (passwordHash.verify(password, customer.getDataValue('password'))) {
@@ -65,6 +68,7 @@ module.exports = {
 
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid phone or password` });
 
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Normal login service unavailable for this account. Try login with Google/Facebook account` });
         
 
             if (passwordHash.verify(password, customer.getDataValue('password'))) {
@@ -200,13 +204,14 @@ module.exports = {
 
             const { google_id, name, email } = body;
             const is_email_verified = true;
+            const is_social = true;
 
             const [customer, created] = await Customer.findOrCreate({
                 where: {
                     email,
                 },
                 defaults: {
-                    name, email, is_email_verified, google_id
+                    name, email, is_email_verified, google_id, is_social
                 }
             });
 
@@ -221,7 +226,7 @@ module.exports = {
             }
             else {
                 const user = {
-                    email: customer.getDataValue('name'),
+                    email: customer.getDataValue('email'),
                 }
 
                 const accessToken = customerAuthentication.generateAccessToken(user);
@@ -244,13 +249,15 @@ module.exports = {
             const { facebook_id, name, email } = body;
 
             const is_email_verified = true;
+            const is_social = true;
+            
 
             const [customer, created] = await Customer.findOrCreate({
                 where: {
                     email,
                 },
                 defaults: {
-                    name, email, is_email_verified, facebook_id
+                    name, email, is_email_verified, facebook_id, is_social
                 }
             });
 
@@ -265,7 +272,7 @@ module.exports = {
             }
             else {
                 const user = {
-                    email: customer.getDataValue('name'),
+                    email: customer.getDataValue('email'),
                 }
 
                 const accessToken = customerAuthentication.generateAccessToken(user);
@@ -626,6 +633,9 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Password Reset service is unavailable for this email/phone.` });
+           
+
 
             if (is_phone) {
                 return client
@@ -654,6 +664,8 @@ module.exports = {
             }
 
             if (is_email) {
+
+                
                 let reset_pass_otp = Math.floor(1000 + Math.random() * 9000);
 
 
@@ -742,6 +754,8 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Password Reset service is unavailable for this email/phone.` });
+
             const reset_pass_expiry = customer.getDataValue('reset_pass_expiry');
             const now = new Date();
 
@@ -780,6 +794,8 @@ module.exports = {
                     })
             }
             if (is_email) {
+
+
                 const reset_pass_otp = customer.getDataValue('reset_pass_otp');
             
 
@@ -832,6 +848,8 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Password Reset service is unavailable for this email/phone.` });
+
             const result = passwordSchema.validate({ password: req.body.password });
 
             if (result.error) {
@@ -859,6 +877,7 @@ module.exports = {
 
     getCustomerProfile: async (req, res) => {
         try {
+            console.log("req.user.email",req.user.email)
             const customer = await Customer.findOne({
                 where: {
                     email: req.user.email,
@@ -867,7 +886,7 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
 
-            return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), is_phone_verified: customer.getDataValue('is_phone_verified') } });
+            return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
         } catch (error) {
             return res.sendStatus(500);
         }
@@ -888,6 +907,9 @@ module.exports = {
             })
 
             if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Password Change service is unavailable for this account.` });
+
 
             const result = passwordSchema.validate({ password: newPassword });
 
