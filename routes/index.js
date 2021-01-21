@@ -1,20 +1,15 @@
-// require('dotenv/config')
-// const express=require('express')
-
-
-
-// const router=require('./customer')
-
-// router.get('/',(req,res)=>{
-//     res.json("Welcome to Hotspot")
-// })
-
-// module.exports=router;
-
 const express = require('express');
 const router = express.Router();
 
+router.get('/',(req,res)=>{
+    res.json("Welcome to Hotspot")
+})
+
 router.use("/admin", require("./admin.routes"));
-router.use("/customer", require("./customer"));
+
+//router.use("/customer", require("./customer.routes"));
+
+//temporary
+router.use("/", require("./customer.routes")); 
 
 module.exports = router;

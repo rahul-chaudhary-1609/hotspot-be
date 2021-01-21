@@ -27,10 +27,7 @@ const loginWithEmail = async (req,res) => {
 
         if (passwordHash.verify(password, customer.getDataValue('password'))) {
 
-            // if (!customer.getDataValue('is_email_verified')) return res.status(401).json({ status: 401, message: `Customer's email id is not Verified.` });
-
-            // if (!customer.getDataValue('is_phone_verified')) return res.status(401).json({ status: 401, message: `Customer's phone is not Verified.` });
-
+            
             const user = {
                 email: customer.getDataValue('email'),
             };
@@ -70,8 +67,7 @@ const loginWithPhone = async (req, res) => {
 
         if (passwordHash.verify(password, customer.getDataValue('password'))) {
 
-            //if (!customer.getDataValue('is_email_verified')) return res.status(401).json({ status: 401, message: `Customer's email id is not Verified.` });
-
+            
             if (!customer.getDataValue('is_phone_verified')) return res.status(401).json({ status: 401, message: `Customer's phone is not Verified.` });
 
             const user = {

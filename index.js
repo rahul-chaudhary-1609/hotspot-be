@@ -2,31 +2,27 @@ require('dotenv/config');
 const express=require('express')
 const router=require('./routes')
 const {sequelize}=require('./models')
-const passport = require('passport');
 const cors=require("cors");
 const cookieSession = require('cookie-session');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
-//require('./routes/passport-setup');
+
 const port=process.env.PORT || 5000;
 
 const app=express();
 app.use(cors());
 
-// Initializes passport and passport sessions
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(express.json());
 
 app.use('/apiDocs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/api',router);
+app.use('/',router);
 
-// For an actual app you should configure this with an experation time, better keys, proxy and secure
-app.use(cookieSession({
-    name: 'hotspot',
-    keys: ['key1', 'key2']
-  }))
+// // For an actual app you should configure this with an experation time, better keys, proxy and secure
+// app.use(cookieSession({
+//     name: 'hotspot',
+//     keys: ['key1', 'key2']
+//   }))
 
 
 app.listen(port, async (err)=>{
