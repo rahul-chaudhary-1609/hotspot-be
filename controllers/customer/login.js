@@ -27,7 +27,7 @@ module.exports = {
 
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
 
-            
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });           
         
 
             if (passwordHash.verify(password, customer.getDataValue('password'))) {
@@ -68,7 +68,7 @@ module.exports = {
 
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid phone or password` });
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Normal login service unavailable for this account. Try login with Google/Facebook account` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
         
 
             if (passwordHash.verify(password, customer.getDataValue('password'))) {
@@ -633,8 +633,7 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Password Reset service is unavailable for this email/phone.` });
-           
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
 
 
             if (is_phone) {
@@ -754,8 +753,8 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Password Reset service is unavailable for this email/phone.` });
-
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            
             const reset_pass_expiry = customer.getDataValue('reset_pass_expiry');
             const now = new Date();
 
@@ -848,7 +847,7 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Password Reset service is unavailable for this email/phone.` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
 
             const result = passwordSchema.validate({ password: req.body.password });
 
@@ -908,7 +907,7 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `Password Change service is unavailable for this account.` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n You can not set/change password for your account.` });
 
 
             const result = passwordSchema.validate({ password: newPassword });
