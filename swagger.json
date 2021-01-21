@@ -1,0 +1,62 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "v1",
+      "title": "Hotspot"
+    },
+    "basePath": "/api/",
+    "schemes": [
+      "http",
+      "https"
+    ],
+    "consumes": [
+      "application/json",
+      "application/x-www-form-urlencoded",
+      "multipart/form-data"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "tags": [
+      {
+        "name": "admin",
+        "description": "admin Api's"
+      },
+      {
+        "name": "customer",
+        "description": "customer Api's"
+      }
+    ],
+    "paths": {
+        "/admin/login": {
+            "post": {
+              "tags": [
+                "admin"
+              ],
+              "description": "For admin login",
+              "consumes": [
+                "application/x-www-form-urlencoded"
+              ],
+              "parameters": [
+                {
+                  "name": "email",
+                  "in": "formData",
+                  "description": "admin email",
+                  "default": "",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "password",
+                  "in": "formData",
+                  "description": "admin password",
+                  "default": "",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {}
+            }
+        }
+    }
+}
