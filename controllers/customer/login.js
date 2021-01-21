@@ -37,7 +37,7 @@ const loginWithEmail = async (req,res) => {
 
             const accessToken = generateAccessToken(user);
 
-            return res.status(200).json({ status: 200, message: `Customer (${email}) Logged in successfully`, accessToken: accessToken });
+            return res.status(200).json({ status: 200, message: `Logged in successfully`, accessToken: accessToken });
         }
         else {
             return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
@@ -80,7 +80,7 @@ const loginWithPhone = async (req, res) => {
 
             const accessToken = generateAccessToken(user);
 
-            return res.status(200).json({ status: 200, message: `Customer (${phone_no}) Logged in successfully`, accessToken: accessToken });
+            return res.status(200).json({ status: 200, message: `Logged in successfully`, accessToken: accessToken });
         }
         else {
             return res.status(401).json({ status: 401, message: `Invalid phone or password` });
@@ -119,7 +119,7 @@ const signupCustomer = async (req,res) => {
             });
 
             if (checkCustomer) {
-                return res.status(409).json({ status: 409, message: `Customer already exist with this id ${email}` });
+                return res.status(409).json({ status: 409, message: `Customer already exist with this email` });
             }
 
             let tempEmail = await TempEmail.findOne({
@@ -131,11 +131,11 @@ const signupCustomer = async (req,res) => {
             
 
             if (!tempEmail) {
-                return res.status(401).json({ status: 401, message: `Verify '${email}' before signup` });
+                return res.status(401).json({ status: 401, message: `Verify email before signup` });
             }
 
             if (!tempEmail.getDataValue('is_email_verified')) {
-                return res.status(401).json({ status: 401, message: `'${email}' is not verified.` });
+                return res.status(401).json({ status: 401, message: `Email is not verified.` });
             }
 
             const is_email_verified = true;
@@ -169,7 +169,7 @@ const signupCustomer = async (req,res) => {
                 const accessToken = generateAccessToken(user);
 
 
-                return res.status(200).json({ status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, });
+                return res.status(200).json({ status: 200, message: `Customer Signup successfully`, accessToken: accessToken, });
             }
             else {
                 const checkEmail = await Customer.findOne({
@@ -183,9 +183,9 @@ const signupCustomer = async (req,res) => {
                     }
                 });
 
-                if (checkEmail !== null) return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with ${email}` });
+                if (checkEmail !== null) return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
 
-                if (checkPhone !== null) return res.status(409).json({status: 409, message: `Customer with the same phone is already exist. \n Login with ${phone_no}`});
+                if (checkPhone !== null) return res.status(409).json({status: 409, message: `Customer with the same phone is already exist. \n Login with phone`});
                 
             }
         }
@@ -222,7 +222,7 @@ const loginWithGoogle = async (req, res) => {
 
             const accessToken = generateAccessToken(user);
 
-            return res.status(200).json({ status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken });
+            return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
         }
         else {
             const user = {
@@ -231,7 +231,7 @@ const loginWithGoogle = async (req, res) => {
 
             const accessToken = generateAccessToken(user);
 
-            return res.status(200).json({ status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken });
+            return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
         }
     } catch (error) {
         console.log(error);
@@ -266,7 +266,7 @@ const loginWithFacebook = async (req,res) => {
 
             const accessToken = generateAccessToken(user);
 
-            return res.status(200).json({ status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken });
+            return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
         }
         else {
             const user = {
@@ -275,7 +275,7 @@ const loginWithFacebook = async (req,res) => {
 
             const accessToken = generateAccessToken(user);
 
-            return res.status(200).json({ status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken });
+            return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
         }
     } catch (error) {
         console.log(error);
@@ -312,7 +312,7 @@ const generatePhoneOTP = async (req, res) => {
         }
 
         if (customer.getDataValue('is_phone_verified')) {
-            return res.status(409).json({ status: 409, message: `${customer.getDataValue('country_code')} ${phone_no} is already verified` });
+            return res.status(409).json({ status: 409, message: `Phone is already verified` });
         }
 
         client
@@ -332,7 +332,7 @@ const generatePhoneOTP = async (req, res) => {
                     },
                     returning: true,
                 });
-                res.status(200).json({ status: 200, message: `Verification code is sent to ${customer.getDataValue('country_code')} ${phone_no}` });
+                res.status(200).json({ status: 200, message: `Verification code is sent to phone` });
             })
             .catch((error) => {
                 res.sendStatus(500);
@@ -366,7 +366,7 @@ const validatePhoneOTP = async (req, res) => {
         }
 
         if (customer.getDataValue('is_phone_verified')) {
-            return res.status(409).json({ status: 409, message: `${customer.getDataValue('country_code')} ${phone_no} is already verified` });
+            return res.status(409).json({ status: 409, message: `Phone is already verified` });
         }
 
         const phone_verification_otp_expiry = customer.getDataValue('phone_verification_otp_expiry');
@@ -436,7 +436,7 @@ const generateEmailOTP = async (req,res) => {
         });
 
         if (customer) {
-            return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with ${email}` });
+            return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
         }
 
         let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
@@ -464,7 +464,7 @@ const generateEmailOTP = async (req,res) => {
 
             return sendMail(mailOptions)
                 .then((resp) => {
-                    res.status(200).json({ status: 200, message: `Verification Email Sent to : ${email}` });
+                    res.status(200).json({ status: 200, message: `Verification code sent to email address` });
                 }).catch((error) => {
                     res.sendStatus(500);
                 });
@@ -491,7 +491,7 @@ const generateEmailOTP = async (req,res) => {
 
             return sendMail(mailOptions)
                 .then((resp) => {
-                    res.status(200).json({ status: 200, message: `Verification Email Sent to : ${email}` });
+                    res.status(200).json({ status: 200, message: `Verification code Sent to email address` });
                 }).catch((error) => {
                     res.sendStatus(500);
                 });
@@ -528,7 +528,7 @@ const validateEmailOTP = async (req, res) => {
         });
 
         if (customer) {
-            return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with ${email}` });
+            return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
         }
 
         let tempEmail = await TempEmail.findOne({
@@ -542,7 +542,7 @@ const validateEmailOTP = async (req, res) => {
         }
 
         if (tempEmail.getDataValue('is_email_verified')) {
-            return res.status(409).json({ status: 409, message: `${req.query.email} is already verified` });
+            return res.status(409).json({ status: 409, message: `Email is already verified` });
         }
 
         const email_verification_otp = tempEmail.getDataValue('email_verification_otp');
@@ -564,7 +564,7 @@ const validateEmailOTP = async (req, res) => {
                 returning: true,
             });
 
-            return res.status(200).json({ status: 200, message: `${email} is verified.` });
+            return res.status(200).json({ status: 200, message: `Email is verified Successfully.` });
         }
         else {
             return res.status(401).json({ status: 401, message: `Invalid Code` });
@@ -678,7 +678,7 @@ const generatePassResetCode = async (req, res) => {
 
             return sendMail(mailOptions)
                 .then((resp) => {
-                    res.status(200).json({ status: 200, message: `Password reset code Sent to : ${customer.getDataValue('email')}` });
+                    res.status(200).json({ status: 200, message: `Password reset code Sent to email` });
                 }).catch((error) => {
                     res.sendStatus(500);
                 });
@@ -868,7 +868,7 @@ const getCustomerProfile = async (req, res) => {
 
         if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
 
-        return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no') } });
+        return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), is_phone_verified: customer.getDataValue('is_phone_verified')  } });
     } catch (error) {
         return res.sendStatus(500);
     }
