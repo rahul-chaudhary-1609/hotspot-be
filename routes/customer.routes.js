@@ -4,7 +4,7 @@ const { Op } = require("sequelize");
 const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
-const { authenticateCustomer } = require('../middlewares/customer/jwt-validation');
+const customerAuthentication = require('../middlewares/customer/jwt-validation');
 const customerLoginController=require('../controllers/customer/login');
 
 const router=express.Router();
@@ -75,31 +75,31 @@ router.put('/reset-password', (req, res) => {
     return customerLoginController.resetPassword(req,res);
 });
 
-router.get('/customer-profile', authenticateCustomer, (req, res) => {
+router.get('/customer-profile', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.getCustomerProfile(req, res);
 });
 
-router.put('/customer-update-profile', authenticateCustomer, (req, res) => {
+router.put('/customer-update-profile', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.updateCustomerProfile(req, res);
 });
 
-router.post('/customer-add-address', authenticateCustomer, (req, res) => {
+router.post('/customer-add-address', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.addCustomerAddress(req, res);
 });
 
-router.get('/customer-get-address', authenticateCustomer, (req, res) => {
+router.get('/customer-get-address', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.getCustomerAddress(req, res);
 });
 
-router.put('/customer-set-default-address', authenticateCustomer, (req, res) => {
+router.put('/customer-set-default-address', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.setCustomerDefaultAddress(req, res);
 });
  
-router.put('/customer-change-password', authenticateCustomer, (req, res) => {
+router.put('/customer-change-password', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.changeCustomerPassword(req, res);
 });
 
-router.post('/customer-feedback', authenticateCustomer, (req, res) => {
+router.post('/customer-feedback', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.feedbackCustomer(req, res);
 });
 

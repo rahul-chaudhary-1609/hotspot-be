@@ -4,8 +4,8 @@ const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, 
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
-const jwt = require('jsonwebtoken');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
+const customerAuthentication = require('../../middlewares/customer/jwt-validation');
 
 module.exports = {
     
@@ -34,7 +34,7 @@ module.exports = {
                     email: customer.getDataValue('email'),
                 };
 
-                const accessToken = generateAccessToken(user);
+                const accessToken = customerAuthentication.generateAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Logged in successfully`, accessToken: accessToken });
             }
@@ -76,7 +76,7 @@ module.exports = {
                     email: customer.getDataValue('email'),
                 };
 
-                const accessToken = generateAccessToken(user);
+                const accessToken = customerAuthentication.generateAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Logged in successfully`, accessToken: accessToken });
             }
@@ -161,7 +161,7 @@ module.exports = {
                         email: email,
                     };
 
-                    const accessToken = generateAccessToken(user);
+                    const accessToken = customerAuthentication.generateAccessToken(user);
 
 
                     return res.status(200).json({ status: 200, message: `Customer Signup successfully`, accessToken: accessToken, });
@@ -215,7 +215,7 @@ module.exports = {
                     email: body.email,
                 };
 
-                const accessToken = generateAccessToken(user);
+                const accessToken = customerAuthentication.generateAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
             }
@@ -224,7 +224,7 @@ module.exports = {
                     email: customer.getDataValue('name'),
                 }
 
-                const accessToken = generateAccessToken(user);
+                const accessToken = customerAuthentication.generateAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
             }
@@ -259,7 +259,7 @@ module.exports = {
                     email: body.email,
                 }
 
-                const accessToken = generateAccessToken(user);
+                const accessToken = customerAuthentication.generateAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
             }
@@ -268,7 +268,7 @@ module.exports = {
                     email: customer.getDataValue('name'),
                 }
 
-                const accessToken = generateAccessToken(user);
+                const accessToken = customerAuthentication.generateAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
             }
@@ -277,10 +277,6 @@ module.exports = {
             return res.sendStatus(500);
         }
     
-    },
-
-    generateAccessToken: (user) => {
-        return jwt.sign(user, process.env.Access_Token_Secret);
     },
 
 
