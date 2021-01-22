@@ -1,3 +1,5 @@
+const randomstring = require('randomstring');
+
 module.exports.ReE =  (res, errMsg, code, errObj={}) => { // Error Web Response
     // if (typeof err == 'object' && typeof err.message != 'undefined') {
     //     err = err.message;
@@ -29,4 +31,17 @@ module.exports.TE =  (err_message, log) => { // TE stands for Throw Error
     }
 
     throw new Error(err_message);
+};
+
+module.exports.gererateOtp = () => {
+    // Generate Random Number
+    const otp = randomstring.generate({
+        charset: 'numeric',
+        length: 4,
+        numeric: true,
+        letters: false,
+        special: false,
+        exclude: ["0"],
+    });
+    return process.env.DEFAULT_OTP == "true" ? '1234' : otp;
 };

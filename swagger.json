@@ -57,6 +57,90 @@
               ],
               "responses": {}
             }
-        }
+        },
+        "/admin/forgotPassword": {
+            "post": {
+              "tags": [
+                "Admin"
+              ],
+              "description": "Admin forget password",
+              "consumes": [
+                "application/x-www-form-urlencoded"
+              ],
+              "parameters": [
+                {
+                  "name": "email",
+                  "in": "formData",
+                  "description": "email id",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {}
+            }
+          },
+          "/admin/resetPassword": {
+            "post": {
+              "tags": [
+                "Admin"
+              ],
+              "description": "Admin reset password",
+              "consumes": [
+                "application/x-www-form-urlencoded"
+              ],
+              "parameters": [
+                {
+                  "name": "otp",
+                  "in": "formData",
+                  "description": "forget pass otp",
+                  "required": true,
+                  "type": "number"
+                },
+                {
+                  "name": "email",
+                  "in": "formData",
+                  "description": "email id",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "password",
+                  "in": "formData",
+                  "description": "password",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "confirmPassword",
+                  "in": "formData",
+                  "description": "confirmPassword",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {}
+            }
+          },
+          "/admin/logout": {
+            "get": {
+              "tags": [
+                "Admin"
+              ],
+              "description": "Api to get admin logout",
+              "consumes": [
+                "application/x-www-form-urlencoded"
+              ],
+              "parameters": [
+                {
+                  "name": "Authorization",
+                  "in": "header",
+                  "description": "Enter jwt token for authentication",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {}
+            }
+          }
     }
 }
