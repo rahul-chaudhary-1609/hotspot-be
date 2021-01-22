@@ -36,6 +36,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     reset_pass_expiry: {
       type: DataTypes.DATE,
+    },
+    token: {
+      type: DataTypes.STRING(600)
     }
   }, {
     sequelize,
