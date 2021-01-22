@@ -1,4 +1,5 @@
 const randomstring = require('randomstring');
+const bcrypt = require('bcrypt');
 
 module.exports.ReE =  (res, errMsg, code, errObj={}) => { // Error Web Response
     // if (typeof err == 'object' && typeof err.message != 'undefined') {
@@ -45,3 +46,38 @@ module.exports.gererateOtp = () => {
     });
     return process.env.DEFAULT_OTP == "true" ? '1234' : otp;
 };
+
+/*
+* function to get the time
+*/
+module.exports.calcluateOtpTime = (date) => {
+    var d = new Date(date);
+    var t = d.getTime();
+    return Math.floor(t);
+}
+
+/*
+*get the current time value
+*/
+module.exports.currentUnixTimeStamp = () => {
+    return Math.floor(Date.now());
+}
+
+/*
+*get the current time value
+*/
+module.exports.getUnixTimeStamp = (date, n) => {
+    var d = new Date(date);
+    return d.getTime() + n*60000;
+}
+
+
+/* function for bcrypt the password */
+module.exports.bcryptPassword = async (myPlaintextPassword) => {
+    return bcrypt.hash(myPlaintextPassword, 10);
+}
+
+/* function for compare the passwords */
+module.exports.comparePassword = async (myPlaintextPassword, hash) => {
+    return bcrypt.compare(myPlaintextPassword, hash);
+}

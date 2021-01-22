@@ -58,6 +58,55 @@
               "responses": {}
             }
         },
+        "/admin/addNewAdmin": {
+            "post": {
+            "tags": [
+                "Admin"
+            ],
+            "description": "Admin signup",
+            "consumes": [
+            "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+                {
+                    "name": "passkey",
+                    "in": "formData",
+                    "description": "admin passkey",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "name": "name",
+                    "in": "formData",
+                    "description": "admin name",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "name": "email",
+                    "in": "formData",
+                    "description": "email id",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "name": "password",
+                    "in": "formData",
+                    "description": "password",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "name": "confirmPassword",
+                    "in": "formData",
+                    "description": "confirmPassword",
+                    "required": true,
+                    "type": "string"
+                }
+                ],
+                "responses": {}
+            }
+        },
         "/admin/forgotPassword": {
             "post": {
               "tags": [
