@@ -5,7 +5,8 @@ const express = require('express');
 const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
 const customerAuthentication = require('../middlewares/customer/jwt-validation');
-const customerLoginController=require('../controllers/customer/login');
+const customerLoginController = require('../controllers/customer/login');
+const customerMulter = require('../middlewares/customer/multer');
 
 const router=express.Router();
 
@@ -97,6 +98,10 @@ router.put('/customer-set-default-address', customerAuthentication.authenticateC
  
 router.put('/customer-change-password', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.changeCustomerPassword(req, res);
+});
+
+router.put('/customer-change-picture', customerAuthentication.authenticateCustomer, customerMulter.upload, (req, res) => {
+    return customerLoginController.changeCustomerPicture(req, res);
 });
 
 router.post('/customer-feedback', customerAuthentication.authenticateCustomer, (req, res) => {

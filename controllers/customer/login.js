@@ -6,6 +6,8 @@ const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
 const customerAuthentication = require('../../middlewares/customer/jwt-validation');
+const customerAWS = require('../../utilityServices/aws');
+
 
 module.exports = {
     
@@ -225,6 +227,9 @@ module.exports = {
                 return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
             }
             else {
+
+                if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\n please try login with email/phone and password` });
+
                 const user = {
                     email: customer.getDataValue('email'),
                 }
@@ -271,6 +276,9 @@ module.exports = {
                 return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
             }
             else {
+
+                if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\n please try login with email/phone and password` });
+               
                 const user = {
                     email: customer.getDataValue('email'),
                 }
@@ -872,6 +880,24 @@ module.exports = {
         } catch (error) {
             return res.sendStatus(500);
         }
+    },
+
+    changeCustomerPicture: async (req, res) => {
+
+        const pictureName = req.file.originalname.split('.');
+        const pictureType = pictureName[pictureName.length - 1];
+        const pictureKey = `${req.user.email}.${pictureType}`;
+        const pictureBuffer = req.file.buffer;
+
+        const params = customerAWS.setParams(pictureKey, pictureBuffer);
+
+        customerAWS.s3.upload(params, (error, data) => {
+            if (error) return res.status(500).json({ status: 500, message: "Server Error" });
+            
+            return res.status(200).json({ status: 200, message: data })
+        })
+
+        
     },
 
     getCustomerProfile: async (req, res) => {
