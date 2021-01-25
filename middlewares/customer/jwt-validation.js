@@ -10,9 +10,9 @@ module.exports = {
 
     authenticateCustomer: (req, res, next) => {
         const authHeader = req.headers['authorization'];
-        console.log(authHeader);
+        //console.log(authHeader);
         const token = authHeader && authHeader.split(' ')[1];
-        console.log(token);
+        //console.log(token);
 
         if (!token) return res.sendStatus(401);
 

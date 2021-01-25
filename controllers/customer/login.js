@@ -468,14 +468,14 @@ module.exports = {
             if (created) {
 
                 const mailOptions = {
-                    from: `Hotspot <${process.env.ev_email}>`,
+                    from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
                     to: email,
                     subject: 'Email Verification',
                     text: 'Here is your code',
                     html: `OTP is: <b>${email_verification_otp}</b>`,
                 };
 
-                return sendMail(mailOptions)
+                return sendMail.send(mailOptions)
                     .then((resp) => {
                         res.status(200).json({ status: 200, message: `Verification code sent to email address` });
                     }).catch((error) => {
@@ -496,14 +496,14 @@ module.exports = {
                 });
 
                 const mailOptions = {
-                    from: `Hotspot <${process.env.ev_email}>`,
+                    from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
                     to: email,
                     subject: 'Email Verification',
                     text: 'Here is your code',
                     html: `OTP is: <b>${email_verification_otp}</b>`,
                 };
 
-                return sendMail(mailOptions)
+                return sendMail.send(mailOptions)
                     .then((resp) => {
                         res.status(200).json({ status: 200, message: `Verification code Sent to email address` });
                     }).catch((error) => {
@@ -687,14 +687,14 @@ module.exports = {
                 });
 
                 const mailOptions = {
-                    from: `Hotspot <${process.env.ev_email}>`,
+                    from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
                     to: customer.getDataValue('email'),
                     subject: 'Password Reset',
                     text: 'Here is your code',
                     html: `OTP for password reset is: <b>${reset_pass_otp}</b>`,
                 };
 
-                return sendMail(mailOptions)
+                return sendMail.send(mailOptions)
                     .then((resp) => {
                         res.status(200).json({ status: 200, message: `Password reset code Sent to email` });
                     }).catch((error) => {
@@ -1162,17 +1162,18 @@ module.exports = {
     feedbackCustomer: async(req, res) => {
         try {
             const mailOptions = {
-                from: ` Customer Hotspot <${req.user.email}>`,
-                to: process.env.ev_email,
+                from: `Hotspot Customer <${process.env.SG_EMAIL_ID}>`,
+                to: req.user.email,
                 subject: 'Customer Feedback',
                 text: 'Here is your code',
                 html: req.body.message,
             };
 
-            return sendMail(mailOptions)
+            return sendMail.send(mailOptions)
                 .then((resp) => {
                     res.status(200).json({ status: 200, message: `Feedback Sent Successfully` });
                 }).catch((error) => {
+                    console.log(error)
                     res.sendStatus(500);
                 });
         } catch (error) {
