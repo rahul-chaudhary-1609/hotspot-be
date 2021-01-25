@@ -26,7 +26,7 @@ router.route('/resetPassword').post([
     check('confirmPassword', 'Please enter password').not().isEmpty()
 ], adminLoginController.resetPassword);
 
-router.route('/logout').post([adminMiddleware.checkToken
+router.route('/logout').get([adminMiddleware.checkToken
 ], adminLoginController.logout);
 
 module.exports = router;
