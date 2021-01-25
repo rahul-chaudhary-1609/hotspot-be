@@ -1,709 +1,1192 @@
 require('dotenv/config');
-const { Customer,Token } = require('../../models');
-const { customerSchema, passwordSchema, customerUpdateProfile } = require('../../middlewares/customer/validation');
+const { Customer, CustomerFavLocation, TempEmail} = require('../../models');
+const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema, phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
-const jwt = require('jsonwebtoken');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
+const customerAuthentication = require('../../middlewares/customer/jwt-validation');
+const customerAWS = require('../../utilityServices/aws');
 
-const loginWithEmail = async(data) => {
 
-    const email = (data.email).toLowerCase()
-    const password = data.password;
-
-    if (!email || !password) return { status: 400, message: `Please provide valid email and password` }
-
-    const customer = await Customer.findOne({
-        where: {
-            email
-        }
-    });
-
-    if (!customer) return { status: 401, message: `Invalid email Id or password` };
-
-    if (!customer.getDataValue('is_email_verified')) return { status: 401, message: `Customer's email id is not Verified.` };
+module.exports = {
     
-    if (passwordHash.verify(password, customer.getDataValue('password'))) {
-        const user = {
-            email: customer.getDataValue('email'),
-        };
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        await Token.findOrCreate({
-            where: {
-                    refresh_token:refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
-
-        return { status: 200, message: `Customer (${email}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-    else
-    {
-        return { status: 401, message: `Invalid email Id or password` }
-        }
-};
-
-const loginWithPhone = async (data) => {
-
-    const phone_no = parseInt(data.phone);
-    const password = data.password;
-
-    if (!phone_no || !password) return { status: 400, message: `Please provide valid phone and password` };
-
-    const customer = await Customer.findOne({
-        where: {
-            phone_no
-        }
-    });
-
-    if (!customer) return { status: 401, message: `Invalid phone or password` };
-
-    if (!customer.getDataValue('is_phone_verified')) return { status: 401, message: `Customer's phone is not Verified.` };
-
-    if (passwordHash.verify(password, customer.getDataValue('password'))) {
-        const user = {
-            email: customer.getDataValue('email'),
-        };
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
-
-        return { status: 200, message: `Customer (${phone_no}) Logged in successfully`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-    else {
-        return { status: 401, message: `Invalid phone or password` }
-    }
-};
-
-
-const signupCustomer = async (data) => {
-
-    const result = customerSchema.validate(data);
-
-    if (result.error) {
-        return {
-            status: 400, message: result.error.details[0].message
-        };
-    }
-
-    if (result.value) {
-
-        const { name, country_code, facebook_id,google_id, apple_id } = result.value;
-
-
-
-        console.log("result error:", result.error, result.value);
-
-        const password = passwordHash.generate(result.value.password);
-        const phone_no = parseInt(result.value.phone);
-        const email= (result.value.email).toLowerCase();
-
-
-        const [customer,created] = await Customer.findOrCreate({
-            where: {
-                [Op.or]: {
-                    email, phone_no,
-                }
-            },
-            defaults: {
-                name, email, country_code, phone_no, password,facebook_id, google_id, apple_id
-            }
-        });
-
-        if (created) {
-            const user = {
-                email: email,
-            };
-
-            const accessToken = generateAccessToken(user);
-            const refreshToken = generateRefreshToken(user);
-
-            await Token.findOrCreate({
-                where: {
-                    refresh_token: refreshToken,
-                },
-                defaults: {
-                    refresh_token: refreshToken,
-                }
-            });
-
-            return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
-        }
-        else {
-            const checkEmail = await Customer.findOne({
-                where: {
-                    email,
-                }
-            });
-            const checkPhone = await Customer.findOne({
-                where: {
-                    phone_no,
-                }
-            });
-
-            if (checkEmail !== null) {
-                return { status: 409,  message:`Customer with the same email is already exist. \n Login with ${email}`};
-            }
-
-            if (checkPhone !== null) {                
-                return {
-                    status: 409, message: `Customer with the same phone is already exist. \n Login with ${phone_no}`};
-            }
-        }
-    }
-};
-
-
-const loginWithGoogle = async(userInfo) => {
-
-    const { google_id, name, email } = userInfo;
-
-    const is_email_verified = true;
-
-    const [customer,created] = await Customer.findOrCreate({
-        where: {
-                email,
-        },
-        defaults: {
-            name, email, is_email_verified, google_id
-        }
-    });
-
-    if (created) {
-        const user = {
-            email: userInfo.email,
-        };
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
-
-        return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-    else {
-        const user = {
-            email: customer.getDataValue('name'),
-        }
-        
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
-
-        return { status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-
-};
-
-const loginWithFacebook = async (userInfo) => {
-    const { facebook_id, name, email } = userInfo;
-
-    const is_email_verified = true;
-
-    const [customer,created] = await Customer.findOrCreate({
-        where: {
-                email,
-        },
-        defaults: {
-            name, email, is_email_verified,facebook_id
-        }
-    });
-
-    if (created) {
-        const user = {
-            email: userInfo.email,
-        }
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
-
-        return { status: 200, message: `Customer (${email}) created successfully`, accessToken: accessToken, refreshToken: refreshToken };
-    }
-    else {
-        const user = {
-            email: customer.getDataValue('name'),
-        }
-
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-
-        await Token.findOrCreate({
-            where: {
-                refresh_token: refreshToken,
-            },
-            defaults: {
-                refresh_token: refreshToken,
-            }
-        });
-
-        return { status: 200, message: `Customer with the same email: (${email}) is already exist.`, accessToken: accessToken, refreshToken: refreshToken  };
-    }
-};
-
-const generateAccessToken = (userInfo) => {
-    return jwt.sign(userInfo, process.env.Access_Token_Secret, {expiresIn:'3600s'});
-}
-
-const generateRefreshToken = (userInfo) => {
-    return jwt.sign(userInfo, process.env.Refresh_Token_Secret);
-}
-
-const generatePhoneOTP = (userInfo) => {
+    loginWithEmail: async (req, res) => {
     
-    return client
-                .verify
-                .services(process.env.serviceID)
-                .verifications
-                .create({
-                    to: `+${userInfo.country_code}${userInfo.phone}`,
-                    channel: userInfo.channel
-                })
-    
-    
-};
+        try {
+            const email = (req.body.email).toLowerCase()
+            const password = req.body.password;
 
-const validatePhoneOTP = (userInfo) => {
-    return client
-                .verify
-                .services(process.env.serviceID)
-                .verificationChecks
-                .create({
-                    to: `+${userInfo.country_code}${userInfo.phone}`,
-                    code: userInfo.code
-                })
-        
-};
- 
+            if (!email || !password) return res.status(400).json({ status: 400, message: `Please provide valid email and password` });
 
-const generateEmailOTP = async(userInfo) => {
-    let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
-
-    let customer = await Customer.findOne({
-        where: {
-            email:(userInfo.email).toLowerCase(),
-        }
-    });
-
-    if (customer.getDataValue('email_verification_otp')!==null) {
-        email_verification_otp = customer.getDataValue('email_verification_otp');
-    }
-
-    await Customer.update({
-        email_verification_otp
-    }, {
-        where: {
-            email: (userInfo.email).toLowerCase()
-            },
-            returning: true,
-    });
-
-    const mailOptions = {
-        from: `Hotspot <${process.env.ev_email}>`,
-        to: userInfo.email,
-        subject: 'Email Verification',
-        text: 'Here is your code',
-        html: `OTP is: <b>${email_verification_otp}</b>`,
-    };
-    
-    return sendMail(mailOptions);
-};
-
-
-const validateEmailOTP = async(req,res) => {
-    const customer = await Customer.findOne({
-        where: {
-            email: (req.query.email).toLowerCase(),
-        }
-    });
-
-    const email_verification_otp = customer.getDataValue('email_verification_otp');
-
-    if (email_verification_otp != null && email_verification_otp === req.query.code) {
-        await Customer.update({
-            is_email_verified: true,
-        }, {
-            where: {
-                email: (req.query.email).toLowerCase()
-            },
-            returning: true,
-        });
-
-        return res.status(200).json({ status: 200, message: `${req.query.email} is verified.` });
-    }
-    else {
-        return res.status(401).json({ status: 401, message: `Invalid Code` });
-    }
-};
-
-const generatePassResetCode = async (userInfo) => {
-    let reset_pass_otp = Math.floor(1000 + Math.random() * 9000);
-
-    const email = (userInfo.email).toLowerCase();
-
-    let customer = await Customer.findOne({
-        where: {
-            email
-        }
-    });
-
-    // if (customer.getDataValue('email_verification_otp') !== null) {
-    //     email_verification_otp = customer.getDataValue('email_verification_otp');
-    // }
-
-    await Customer.update({
-        reset_pass_otp: `${reset_pass_otp}`,
-        reset_pass_expiry: new Date(),
-    }, {
-        where: {
-            email,
-        },
-        returning: true,
-    });
-
-    const mailOptions = {
-        from: `Hotspot <${process.env.ev_email}>`,
-        to: customer.getDataValue('email'),
-        subject: 'Password Reset',
-        text: 'Here is your code',
-        html: `OTP for password reset is: <b>${reset_pass_otp}</b>`,
-    };
-
-    return sendMail(mailOptions);
-};
-
-
-const validatePassResetCode = async (req,res) => {
-    const customer = await Customer.findOne({
-        where: {
-            email: (req.query.email).toLowerCase(),
-        }
-    });
-
-    const reset_pass_otp = customer.getDataValue('reset_pass_otp');
-    const reset_pass_expiry = customer.getDataValue('reset_pass_expiry');
-    const now = new Date();
-    
-    const timeDiff = Math.floor((now.getTime() - reset_pass_expiry.getTime()) / 1000)
-    if (timeDiff > 60) {
-        return res.status(401).json({ status: 401, message: ` OTP Expired` });        
-    }
-
-    if (reset_pass_otp != null && reset_pass_otp === req.query.code) {
-        return res.status(200).json({ status: 200, message: `OTP is verified.` });
-    }
-    else {
-        return res.status(401).json({ status: 401, message: `Invalid OTP` });
-    }
-};
-
-const resetPassword = async(req,res) => {
-    try {
-
-        if (!req.body.emailOrPhone) {
-            return res.status(400).json({ status: 400, message: `Please provide email/phone for reset password` });
-        }
-
-        const phone_no = parseInt(req.body.emailOrPhone);
-        const email = (req.body.emailOrPhone).toLowerCase();
-
-        let customer = null;
-
-        if (isNaN(phone_no)) {
-            customer = await Customer.findOne({
+            const customer = await Customer.findOne({
                 where: {
                     email
                 }
             });
-        }
-        else {
-            customer = await Customer.findOne({
-                where: {
-                    [Op.or]: {
-                        email, phone_no,
-                    }
-                }
-            });
-        }
 
-        if (!customer) {
-            return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
-        }
-
-        const result = passwordSchema.validate({password:req.body.password});
-
-        if (result.error) {
-            return res.status(400).json({ status: 400, message: result.error.details[0].message });
-        }
-
-
-        const password = passwordHash.generate(result.value.password);
-
-        await Customer.update({
-            password,
-        }, {
-            where: {
-                email: (req.body.emailOrPhone).toLowerCase()
-            },
-            returning: true,
-        });
-
-        return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
-
-    } catch (error) {
-        return res.sendStatus(500);
-    }
-}
-
-const getCustomerProfile = async (req, res) => {
-    try {
-        const customer = await Customer.findOne({
-            where: {
-                email: req.user.email,
-            }
-        })
-
-        if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
-
-        return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no') } });
-    } catch (error) {
-        return res.sendStatus(500);
-    }
-    
-}
-
-const changeCustomerPassword = async (req, res) => {
-    try {
-        const newPassword = req.body.newPassword;
-        const oldPassword = req.body.oldPassword;
-
-        if (!newPassword || !oldPassword) return res.status(400).json({ status: 400, message: `Please provide both old password and new password` })
-
-        const customer = await Customer.findOne({
-            where: {
-                email: req.user.email,
-            }
-        })
-
-        if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
-
-        const result = passwordSchema.validate({ password: newPassword });
-
-        if (result.error) {
-            return res.status(400).json({ status: 400, message: result.error.details[0].message });
-        }
-
-        if (!passwordHash.verify(oldPassword, customer.getDataValue('password'))) return res.status(401).json({ status: 401, message: `Invalid old password` });
-    
-
-        const password = passwordHash.generate(result.value.password);
-
-        await Customer.update({
-            password,
-        }, {
-            where: {
-                email: (req.user.email).toLowerCase()
-            },
-            returning: true,
-        });
-
-        return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
-    } catch (error) {
-        return res.sendStatus(500);
-    }
-
-}
-
-const updateCustomerProfile = async (req, res) => {
-    
-    try {
-        const customer = await Customer.findOne({
-            where: {
-                email: (req.user.email).toLowerCase()
-            }
-        });
-
-        if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
-
-        const result = customerUpdateProfile.validate(req.body);
-
-        if (result.error) {
-            return res.status(400).json({ status: 400, message: result.error.details[0].message });
-        }
-
-        if (result.value) {
-
-            let { name, country_code } = result.value;
-
-            let phone_no = parseInt(result.value.phone);
-
-            if (isNaN(phone_no)) {
-                phone_no = parseInt(customer.getDataValue('phone_no'));
-            }
-
-            if (!country_code) {
-                country_code = customer.getDataValue('country_code');
-            }           
             
 
-            if (parseInt(customer.getDataValue('phone_no')) !== phone_no) {
-                const is_phone_verified = false;
+            if (!customer) return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
 
-                await Customer.update({
-                    name, country_code, phone_no, is_phone_verified
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });           
+        
+
+            if (passwordHash.verify(password, customer.getDataValue('password'))) {
+
+            
+                const user = {
+                    email: customer.getDataValue('email'),
+                };
+
+                const accessToken = customerAuthentication.generateAccessToken(user);
+
+                return res.status(200).json({ status: 200, message: `Logged in successfully`, accessToken: accessToken });
+            }
+            else {
+                return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
+            }
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+
+    
+    },
+
+    loginWithPhone: async (req, res) => {
+
+        try {
+            const phone_no = parseInt(req.body.phone);
+            const password = req.body.password;
+
+            if (!phone_no || !password) return res.status(400).json({ status: 400, message: `Please provide valid phone and password` });
+
+            const customer = await Customer.findOne({
+                where: {
+                    phone_no
+                }
+            });
+
+            if (!customer) return res.status(401).json({ status: 401, message: `Invalid phone or password` });
+
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+        
+
+            if (passwordHash.verify(password, customer.getDataValue('password'))) {
+
+            
+                if (!customer.getDataValue('is_phone_verified')) return res.status(401).json({ status: 401, message: `Customer's phone is not Verified.` });
+
+                const user = {
+                    email: customer.getDataValue('email'),
+                };
+
+                const accessToken = customerAuthentication.generateAccessToken(user);
+
+                return res.status(200).json({ status: 200, message: `Logged in successfully`, accessToken: accessToken });
+            }
+            else {
+                return res.status(401).json({ status: 401, message: `Invalid phone or password` });
+            }
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+
+    },
+
+
+    signupCustomer: async (req, res) => {
+
+        try {
+            const result = customerSchema.validate(req.body);
+
+            if (result.error) return res.status(400).json({ status: 400, message: result.error.details[0].message });
+
+            if (result.value) {
+
+                const { name, country_code, facebook_id, google_id, apple_id } = result.value;
+
+
+                const password = passwordHash.generate(result.value.password);
+                const phone_no = parseInt(result.value.phone);
+                const email = (result.value.email).toLowerCase();
+
+                const checkCustomer = await Customer.findOne({
+                    where: {
+                        email,
+                    }
+                });
+
+                if (checkCustomer) {
+                    return res.status(409).json({ status: 409, message: `Customer already exist with this email` });
+                }
+
+                let tempEmail = await TempEmail.findOne({
+                    where: {
+                        email,
+                    }
+                });
+
+            
+
+                if (!tempEmail) {
+                    return res.status(401).json({ status: 401, message: `Verify email before signup` });
+                }
+
+                if (!tempEmail.getDataValue('is_email_verified')) {
+                    return res.status(401).json({ status: 401, message: `Email is not verified.` });
+                }
+
+                const is_email_verified = true;
+                const email_verification_otp = tempEmail.getDataValue('email_verification_otp')
+                const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry')
+
+                const [customer, created] = await Customer.findOrCreate({
+                    where: {
+                        [Op.or]: {
+                            email, phone_no,
+                        }
+                    },
+                    defaults: {
+                        name, email, is_email_verified, email_verification_otp, email_verification_otp_expiry, country_code, phone_no, password, facebook_id, google_id, apple_id
+                    }
+                });
+
+                if (created) {
+
+                    await TempEmail.destroy({
+                        where: {
+                            email,
+                        },
+                        force: true,
+                    })
+
+                    const user = {
+                        email: email,
+                    };
+
+                    const accessToken = customerAuthentication.generateAccessToken(user);
+
+
+                    return res.status(200).json({ status: 200, message: `Customer Signup successfully`, accessToken: accessToken, });
+                }
+                else {
+                    const checkEmail = await Customer.findOne({
+                        where: {
+                            email,
+                        }
+                    });
+                    const checkPhone = await Customer.findOne({
+                        where: {
+                            phone_no,
+                        }
+                    });
+
+                    if (checkEmail !== null) return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
+
+                    if (checkPhone !== null) return res.status(409).json({ status: 409, message: `Customer with the same phone is already exist. \n Login with phone` });
+                
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+
+    
+    },
+
+
+    loginWithGoogle: async (req, res) => {
+    
+        try {
+            const body = { google_id: req.body.id, name: req.body.name, email: req.body.email };
+
+            const { google_id, name, email } = body;
+            const is_email_verified = true;
+            const is_social = true;
+
+            const [customer, created] = await Customer.findOrCreate({
+                where: {
+                    email,
+                },
+                defaults: {
+                    name, email, is_email_verified, google_id, is_social
+                }
+            });
+
+            if (created) {
+                const user = {
+                    email: body.email,
+                };
+
+                const accessToken = customerAuthentication.generateAccessToken(user);
+
+                return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
+            }
+            else {
+
+                if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\n please try login with email/phone and password` });
+
+                const user = {
+                    email: customer.getDataValue('email'),
+                }
+
+                const accessToken = customerAuthentication.generateAccessToken(user);
+
+                return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
+            }
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+   
+
+    },
+
+    loginWithFacebook: async (req, res) => {
+
+        try {
+            const body = { facebook_id: req.body.id, name: req.body.name, email: req.body.email };
+
+            const { facebook_id, name, email } = body;
+
+            const is_email_verified = true;
+            const is_social = true;
+            
+
+            const [customer, created] = await Customer.findOrCreate({
+                where: {
+                    email,
+                },
+                defaults: {
+                    name, email, is_email_verified, facebook_id, is_social
+                }
+            });
+
+            if (created) {
+                const user = {
+                    email: body.email,
+                }
+
+                const accessToken = customerAuthentication.generateAccessToken(user);
+
+                return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
+            }
+            else {
+
+                if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\n please try login with email/phone and password` });
+               
+                const user = {
+                    email: customer.getDataValue('email'),
+                }
+
+                const accessToken = customerAuthentication.generateAccessToken(user);
+
+                return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
+            }
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+    
+    },
+
+
+    generatePhoneOTP: async (req, res) => {
+    
+        try {
+            const result = onlyPhoneSchema.validate({ phone: req.query.phone });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+
+            const phone_no = parseInt(result.value.phone);
+
+
+            let customer = await Customer.findOne({
+                where: {
+                    phone_no
+                }
+            });
+
+            if (!customer) {
+                return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
+            }
+
+            if (customer.getDataValue('is_phone_verified')) {
+                return res.status(409).json({ status: 409, message: `Phone is already verified` });
+            }
+
+            client
+                .verify
+                .services(process.env.serviceID)
+                .verifications
+                .create({
+                    to: `${customer.getDataValue('country_code')}${phone_no}`,
+                    channel: 'sms'
+                })
+                .then((resp) => {
+                    Customer.update({
+                        phone_verification_otp_expiry: new Date(),
+                    }, {
+                        where: {
+                            phone_no
+                        },
+                        returning: true,
+                    });
+                    res.status(200).json({ status: 200, message: `Verification code is sent to phone` });
+                })
+                .catch((error) => {
+                    if (error.status === 429) {
+                        res.status(429).json({ status: 429, message: `Too many requests` });
+                    }
+                    else
+                    {
+                        res.sendStatus(error.status);                        
+                    }
+                    console.log(error);
+                    
+                })
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+    },
+
+    validatePhoneOTP: async (req, res) => {
+    
+        try {
+            const result = onlyPhoneSchema.validate({ phone: req.query.phone });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+
+            const phone_no = parseInt(result.value.phone);
+
+
+            let customer = await Customer.findOne({
+                where: {
+                    phone_no
+                }
+            });
+
+            if (!customer) {
+                return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
+            }
+
+            if (customer.getDataValue('is_phone_verified')) {
+                return res.status(409).json({ status: 409, message: `Phone is already verified` });
+            }
+
+            const phone_verification_otp_expiry = customer.getDataValue('phone_verification_otp_expiry');
+            const now = new Date();
+
+            const timeDiff = Math.floor((now.getTime() - phone_verification_otp_expiry.getTime()) / 1000)
+            if (timeDiff > 60) {
+                return res.status(401).json({ status: 401, message: ` OTP Expired` });
+            }
+
+            client
+                .verify
+                .services(process.env.serviceID)
+                .verificationChecks
+                .create({
+                    to: `${customer.getDataValue('country_code')}${phone_no}`,
+                    code: req.query.code
+                })
+                .then((resp) => {
+                    if (resp.status === "approved") {
+                        Customer.update({
+                            is_phone_verified: true,
+                        }, {
+                            where: {
+                                phone_no
+                            },
+                            returning: true,
+                        });
+
+                        res.status(200).json({ status: 200, message: `Phone verified` });
+                    }
+                    else {
+                        res.status(401).json({ status: 401, message: `Invalid Code` });
+                    }
+                }).catch((error) => {
+                    res.status(401).json({ status: 401, message: `Some Error Occurred` });
+                })
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }       
+    },
+ 
+
+    generateEmailOTP: async (req, res) => {
+        try {
+
+            if (!req.query.email) {
+                return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
+            }
+
+            const result = emailSchema.validate({ email: req.query.email });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+
+            const email = (result.value.email).toLowerCase();
+
+            let customer = await Customer.findOne({
+                where: {
+                    email,
+                }
+            });
+
+            if (customer) {
+                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
+            }
+
+            let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
+            const is_email_verified = false;
+
+            const [tempEmail, created] = await TempEmail.findOrCreate({
+                where: {
+                    email,
+                },
+                defaults: {
+                    email,
+                    email_verification_otp,
+                    is_email_verified,
+                    email_verification_otp_expiry: new Date(),
+                }
+            });
+
+            if (created) {
+
+                const mailOptions = {
+                    from: `Hotspot <${process.env.ev_email}>`,
+                    to: email,
+                    subject: 'Email Verification',
+                    text: 'Here is your code',
+                    html: `OTP is: <b>${email_verification_otp}</b>`,
+                };
+
+                return sendMail(mailOptions)
+                    .then((resp) => {
+                        res.status(200).json({ status: 200, message: `Verification code sent to email address` });
+                    }).catch((error) => {
+                        res.sendStatus(500);
+                    });
+            }
+            else {
+
+                await TempEmail.update({
+                    email_verification_otp,
+                    is_email_verified,
+                    email_verification_otp_expiry: new Date(),
                 }, {
                     where: {
-                        email: (req.user.email).toLowerCase()
+                        email
                     },
                     returning: true,
                 });
-            }            
-            else {
-                await Customer.update({
-                    name, country_code, phone_no,
+
+                const mailOptions = {
+                    from: `Hotspot <${process.env.ev_email}>`,
+                    to: email,
+                    subject: 'Email Verification',
+                    text: 'Here is your code',
+                    html: `OTP is: <b>${email_verification_otp}</b>`,
+                };
+
+                return sendMail(mailOptions)
+                    .then((resp) => {
+                        res.status(200).json({ status: 200, message: `Verification code Sent to email address` });
+                    }).catch((error) => {
+                        res.sendStatus(500);
+                    });
+            }
+        
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+    
+    },
+
+
+    validateEmailOTP: async (req, res) => {
+    
+        try {
+
+            if (!req.query.email) {
+                return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
+            }
+
+            const result = emailSchema.validate({ email: req.query.email });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+
+            const email = (result.value.email).toLowerCase();
+
+            let customer = await Customer.findOne({
+                where: {
+                    email,
+                }
+            });
+
+            if (customer) {
+                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
+            }
+
+            let tempEmail = await TempEmail.findOne({
+                where: {
+                    email,
+                }
+            });
+
+            if (!tempEmail) {
+                return res.status(404).json({ status: 404, message: `User does not exist with provided email` });
+            }
+
+            if (tempEmail.getDataValue('is_email_verified')) {
+                return res.status(409).json({ status: 409, message: `Email is already verified` });
+            }
+
+            const email_verification_otp = tempEmail.getDataValue('email_verification_otp');
+            const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry');
+            const now = new Date();
+
+            const timeDiff = Math.floor((now.getTime() - email_verification_otp_expiry.getTime()) / 1000)
+            if (timeDiff > 60) {
+                return res.status(401).json({ status: 401, message: ` OTP Expired` });
+            }
+
+            if (email_verification_otp != null && email_verification_otp === req.query.code) {
+                await TempEmail.update({
+                    is_email_verified: true,
                 }, {
                     where: {
-                        email: (req.user.email).toLowerCase()
+                        email
                     },
                     returning: true,
+                });
+
+                return res.status(200).json({ status: 200, message: `Email is verified Successfully.` });
+            }
+            else {
+                return res.status(401).json({ status: 401, message: `Invalid Code` });
+            }
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+    
+    },
+
+    generatePassResetCode: async (req, res) => {
+
+        try {
+
+            let is_phone = false;
+            let is_email = false;
+
+            const phoneResult = onlyPhoneSchema.validate({ phone: req.query.emailOrPhone });
+
+            if (!phoneResult.error) {
+                is_phone = true;
+            }
+
+            const phone_no = parseInt(phoneResult.value.phone);
+
+            const emailResult = emailSchema.validate({ email: req.query.emailOrPhone });
+
+            if (!emailResult.error) {
+                is_email = true;
+            }
+
+            const email = (emailResult.value.email).toLowerCase();
+
+            if (!is_email && !is_phone) {
+                return res.status(400).json({ status: 400, message: `Please provide a valid email/phone to reset password` });
+            }
+
+            let customer = null;
+
+            if (is_email) {
+                customer = await Customer.findOne({
+                    where: {
+                        email
+                    }
+                });
+            }
+            else {
+                customer = await Customer.findOne({
+                    where: {
+                        [Op.or]: {
+                            email, phone_no,
+                        }
+                    }
                 });
             }
 
-            return res.status(200).json({ status: 200, message: `Profile Updated Successfully.` });
 
+            if (!customer) {
+                return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
+            }
+
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+
+
+            if (is_phone) {
+                return client
+                    .verify
+                    .services(process.env.serviceID)
+                    .verifications
+                    .create({
+                        to: `${customer.getDataValue('country_code')}${phone_no}`,
+                        channel: 'sms'
+                    })
+                    .then((resp) => {
+                        Customer.update({
+                            phone_verification_otp_expiry: new Date(),
+                            reset_pass_expiry: new Date(),
+                        }, {
+                            where: {
+                                phone_no
+                            },
+                            returning: true,
+                        });
+                        res.status(200).json({ status: 200, message: `Verification code is sent to ${customer.getDataValue('country_code')} ${phone_no}` });
+                    })
+                    .catch((error) => {
+                        res.sendStatus(500);
+                    })
+            }
+
+            if (is_email) {
+
+                
+                let reset_pass_otp = Math.floor(1000 + Math.random() * 9000);
+
+
+                await Customer.update({
+                    reset_pass_otp: `${reset_pass_otp}`,
+                    reset_pass_expiry: new Date(),
+                }, {
+                    where: {
+                        email: customer.getDataValue('email'),
+                    },
+                    returning: true,
+                });
+
+                const mailOptions = {
+                    from: `Hotspot <${process.env.ev_email}>`,
+                    to: customer.getDataValue('email'),
+                    subject: 'Password Reset',
+                    text: 'Here is your code',
+                    html: `OTP for password reset is: <b>${reset_pass_otp}</b>`,
+                };
+
+                return sendMail(mailOptions)
+                    .then((resp) => {
+                        res.status(200).json({ status: 200, message: `Password reset code Sent to email` });
+                    }).catch((error) => {
+                        res.sendStatus(500);
+                    });
+            }
+        
+        
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
         }
-    } catch (error) {
-        console.log(error)
-        return res.sendStatus(500);
-    }
-
     
-};
+    },
 
-const addCustomerAddress = (req, res) => {
+
+    validatePassResetCode: async (req, res) => {
     
-}
+        try {
+            let is_phone = false;
+            let is_email = false;
 
-const feedbackCustomer = (req, res) => {
-    try {
-        const mailOptions = {
-            from: ` Customer Hotspot <${req.user.email}>`,
-            to: process.env.ev_email,
-            subject: 'Customer Feedback',
-            text: 'Here is your code',
-            html: req.body.message,
-        };
+            const phoneResult = onlyPhoneSchema.validate({ phone: req.query.emailOrPhone });
 
-        return sendMail(mailOptions)
-            .then((resp) => {
-                res.status(200).json({ status: 200, message: `Feedback Sent Successfully` });
-            }).catch((error) => {
-                res.sendStatus(500);
-            });
-    } catch (error) {
-        console.log(error)
-        return res.sendStatus(500);
-    }
+            if (!phoneResult.error) {
+                is_phone = true;
+            }
+
+            const phone_no = parseInt(phoneResult.value.phone);
+
+            const emailResult = emailSchema.validate({ email: req.query.emailOrPhone });
+
+            if (!emailResult.error) {
+                is_email = true;
+            }
+
+            const email = (emailResult.value.email).toLowerCase();
+
+            if (!is_email && !is_phone) {
+                return res.status(400).json({ status: 400, message: `Please provide a valid email/phone to reset password` });
+            }
+
+            let customer = null;
+
+            if (is_email) {
+                customer = await Customer.findOne({
+                    where: {
+                        email
+                    }
+                });
+            }
+            else {
+                customer = await Customer.findOne({
+                    where: {
+                        [Op.or]: {
+                            email, phone_no,
+                        }
+                    }
+                });
+            }
+
+
+            if (!customer) {
+                return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
+            }
+
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            
+            const reset_pass_expiry = customer.getDataValue('reset_pass_expiry');
+            const now = new Date();
+
+            const timeDiff = Math.floor((now.getTime() - reset_pass_expiry.getTime()) / 1000)
+            if (timeDiff > 60) {
+                return res.status(401).json({ status: 401, message: ` OTP Expired` });
+            }
+
+            if (is_phone) {
+                return client
+                    .verify
+                    .services(process.env.serviceID)
+                    .verificationChecks
+                    .create({
+                        to: `${customer.getDataValue('country_code')}${phone_no}`,
+                        code: req.query.code
+                    })
+                    .then((resp) => {
+                        if (resp.status === "approved") {
+                            Customer.update({
+                                is_phone_verified: true,
+                            }, {
+                                where: {
+                                    phone_no
+                                },
+                                returning: true,
+                            });
+
+                            res.status(200).json({ status: 200, message: `OTP is verified.` });
+                        }
+                        else {
+                            res.status(401).json({ status: 401, message: `Invalid Code` });
+                        }
+                    }).catch((error) => {
+                        res.sendStatus(500);
+                    })
+            }
+            if (is_email) {
+
+
+                const reset_pass_otp = customer.getDataValue('reset_pass_otp');
+            
+
+                if (reset_pass_otp != null && reset_pass_otp === req.query.code) {
+                    return res.status(200).json({ status: 200, message: `OTP is verified.` });
+                }
+                else {
+                    return res.status(401).json({ status: 401, message: `Invalid OTP` });
+                }
+        
+            }
+        
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
     
-}
+    },
 
-const getAccessToken = async (req, res) => {
+    resetPassword: async (req, res) => {
+        try {
 
-    try {
-        const refreshToken = req.body.token;
+            if (!req.body.emailOrPhone) {
+                return res.status(400).json({ status: 400, message: `Please provide email/phone for reset password` });
+            }
 
-        if (!refreshToken) return res.sendStatus(401);
+            const phone_no = parseInt(req.body.emailOrPhone);
+            const email = (req.body.emailOrPhone).toLowerCase();
 
-        const token = await Token.findOne({
-            refresh_token: refreshToken,
-        });
+            let customer = null;
 
-        if (!token) return res.sendStatus(403);
+            if (isNaN(phone_no)) {
+                customer = await Customer.findOne({
+                    where: {
+                        email
+                    }
+                });
+            }
+            else {
+                customer = await Customer.findOne({
+                    where: {
+                        [Op.or]: {
+                            email, phone_no,
+                        }
+                    }
+                });
+            }
 
-        jwt.verify(refreshToken, process.env.Refresh_Token_Secret, (err, user) => {
-            console.log(err);
-            if (err) return res.sendStatus(403);
+            if (!customer) {
+                return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
+            }
+
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+
+            const result = passwordSchema.validate({ password: req.body.password });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
 
 
-            const accessToken = generateAccessToken({ email: user.email });
+            const password = passwordHash.generate(result.value.password);
 
-            return res.status(200).json({ status: 200, accessToken: accessToken });
-
-        })
-    } catch (error) {
-        console.log(error)
-        return res.sendStatus(500);
-    }
-    
-
-
-}
-
-
-
-const logoutCustomer = async (req, res) => {
-    
-    try {
-        const refreshToken = req.body.token;
-
-        const token = await Token.findOne({
-            refresh_token: refreshToken,
-        });
-
-        if (token) {
-            await Token.destroy({
+            await Customer.update({
+                password,
+            }, {
                 where: {
-                    refresh_token: refreshToken,
+                    email: customer.getDataValue('email')
                 },
-                force: true
+                returning: true,
             });
+
+            return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
+
+        } catch (error) {
+            return res.sendStatus(500);
+        }
+    },
+
+    changeCustomerPicture:  (req, res) => {
+
+        const pictureName = req.file.originalname.split('.');
+        const pictureType = pictureName[pictureName.length - 1];
+        const pictureKey = `${req.user.email}.${pictureType}`;
+        const pictureBuffer = req.file.buffer;
+
+        const params = customerAWS.setParams(pictureKey, pictureBuffer);
+
+        customerAWS.s3.upload(params, async (error, data) => {
+            if (error) return res.status(500).json({ status: 500, message: "Server Error" });
+
+            const profile_picture_url = data.Location;
+
+            await Customer.update({
+                profile_picture_url,
+            }, {
+                where: {
+                    email: req.user.email,
+                },
+                returning: true,
+            },
+         )
+            
+            return res.status(200).json({ status: 200, message: "Profile picture uploaded successfully", profile_picture_url: profile_picture_url })
+        })
+
+        
+    },
+
+    getCustomerProfile: async (req, res) => {
+        try {
+            console.log("req.user.email",req.user.email)
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+            return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), profile_picture_url: customer.getDataValue('profile_picture_url'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
+        } catch (error) {
+            return res.sendStatus(500);
+        }
+    
+    },
+
+    changeCustomerPassword: async (req, res) => {
+        try {
+            const newPassword = req.body.newPassword;
+            const oldPassword = req.body.oldPassword;
+
+            if (!newPassword || !oldPassword) return res.status(400).json({ status: 400, message: `Please provide both old password and new password` })
+
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n You can not set/change password for your account.` });
+
+
+            const result = passwordSchema.validate({ password: newPassword });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+
+            if (!passwordHash.verify(oldPassword, customer.getDataValue('password'))) return res.status(401).json({ status: 401, message: `Invalid old password` });
+    
+
+            const password = passwordHash.generate(result.value.password);
+
+            await Customer.update({
+                password,
+            }, {
+                where: {
+                    email: (req.user.email).toLowerCase()
+                },
+                returning: true,
+            });
+
+            return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
+        } catch (error) {
+            return res.sendStatus(500);
         }
 
-        return res.status(200).json({ status: 200, message: `Customer logged out Successfully` });    
-    } catch (error) {
-        console.log(error)
-        return res.sendStatus(500);
-    }
+    },
+
+    updateCustomerProfile: async (req, res) => {
+    
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: (req.user.email).toLowerCase()
+                }
+            });
+
+            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+            const result = customerUpdateProfileSchema.validate(req.body);
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+
+            if (result.value) {
+
+                let { name, country_code } = result.value;
+
+                let phone_no = parseInt(result.value.phone);
+
+                if (isNaN(phone_no)) {
+                    phone_no = parseInt(customer.getDataValue('phone_no'));
+                }
+
+                if (!country_code) {
+                    country_code = customer.getDataValue('country_code');
+                }
+            
+
+                if (parseInt(customer.getDataValue('phone_no')) !== phone_no) {
+                    const is_phone_verified = false;
+
+                    await Customer.update({
+                        name, country_code, phone_no, is_phone_verified
+                    }, {
+                        where: {
+                            email: (req.user.email).toLowerCase()
+                        },
+                        returning: true,
+                    });
+                }
+                else {
+                    await Customer.update({
+                        name, country_code, phone_no,
+                    }, {
+                        where: {
+                            email: (req.user.email).toLowerCase()
+                        },
+                        returning: true,
+                    });
+                }
+
+                return res.status(200).json({ status: 200, message: `Profile Updated Successfully.` });
+
+            }
+        } catch (error) {
+            console.log(error)
+            return res.sendStatus(500);
+        }
+
+    
+    },
+
+    addCustomerAddress: async (req, res) => {
+    
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+            const result = customerAddressSchema.validate({ address: req.body.address });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+
+            const address = result.value.address;
+            const customer_id = customer.getDataValue('id');
+
+            const customerFavLocation = await CustomerFavLocation.create({
+                address, customer_id: customer_id
+            })
+
+            if (customerFavLocation) return res.status(200).json({ status: 200, mesaage: "Address Added Successfully" });
+
+
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        
+        }
+    },
+
+    getCustomerAddress: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+            const customerFavLocation = await CustomerFavLocation.findAll({
+                where: {
+                    customer_id: customer.getDataValue('id')
+                }
+            })
+
+            if (customerFavLocation.length === 0) return res.status(404).json({ status: 404, mesaage: "No Addresses Fonud" });
+
+            const customerAddress = customerFavLocation.map((val) => {
+                return { address: val.address, isDefault: val.default_address }
+            })
+        
+            return res.status(200).json({ status: 200, customerAddress: customerAddress });
+
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+    },
+
+    setCustomerDefaultAddress: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+
+            const result = customerAddressSchema.validate({ address: req.body.address });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+
+            const address = result.value.address;
+
+            await CustomerFavLocation.update({
+                default_address: false
+            }, {
+                where: {
+                    default_address: true
+                },
+                returning: true,
+            });
+
+            await CustomerFavLocation.update({
+                default_address: true
+            }, {
+                where: {
+                    address
+                },
+                returning: true,
+            });
+
+            return res.status(200).json({ status: 200, mesaage: "Address updated as default Successfully" });
+
+
+
+        } catch (error) {
+            console.log(error);
+            return res.sendStatus(500);
+        }
+    },
+
+    feedbackCustomer: async(req, res) => {
+        try {
+            const mailOptions = {
+                from: ` Customer Hotspot <${req.user.email}>`,
+                to: process.env.ev_email,
+                subject: 'Customer Feedback',
+                text: 'Here is your code',
+                html: req.body.message,
+            };
+
+            return sendMail(mailOptions)
+                .then((resp) => {
+                    res.status(200).json({ status: 200, message: `Feedback Sent Successfully` });
+                }).catch((error) => {
+                    res.sendStatus(500);
+                });
+        } catch (error) {
+            console.log(error)
+            return res.sendStatus(500);
+        }
+    
+    },
+
+
+    logoutCustomer: async (req, res) => {
+    
+        try {
+            return res.status(200).json({ status: 200, message: `Customer logged out Successfully` });
+        } catch (error) {
+            console.log(error)
+            return res.sendStatus(500);
+        }
     
     
+    },
+
 }
 
-module.exports = { addCustomerAddress,feedbackCustomer,getAccessToken,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };
+//module.exports = { setCustomerDefaultAddress, getCustomerAddress,addCustomerAddress,feedbackCustomer,logoutCustomer, updateCustomerProfile,changeCustomerPassword,getCustomerProfile,resetPassword,validatePassResetCode, generatePassResetCode, signupCustomer, loginWithPhone, loginWithEmail, loginWithGoogle,loginWithFacebook, generatePhoneOTP, validatePhoneOTP, generateEmailOTP,validateEmailOTP };

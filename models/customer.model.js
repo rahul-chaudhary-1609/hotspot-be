@@ -24,6 +24,9 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.STRING(45),
       allowNull: false,
     }, 
+    profile_picture_url: {
+      type: DataTypes.STRING(100),
+    },
     email: {
       type: DataTypes.STRING(45),
       allowNull:false,
@@ -42,6 +45,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false
     },
+
+    phone_verification_otp_expiry: {
+      type: DataTypes.DATE,
+    },
     password: {
       type: DataTypes.STRING(60),
     },
@@ -52,6 +59,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    email_verification_otp_expiry: {
+      type: DataTypes.DATE,
     },
     reset_pass_otp: {
       type: DataTypes.STRING(45),
@@ -76,8 +86,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue:false
     },
+    is_social: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
   }, {
-    sequelize,
+      sequelize,
+    underscored:true,
     tableName: 'customers',
     modelName: 'Customer',
   });
