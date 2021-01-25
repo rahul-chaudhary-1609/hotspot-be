@@ -882,7 +882,7 @@ module.exports = {
         }
     },
 
-    changeCustomerPicture: async (req, res) => {
+    changeCustomerPicture:  (req, res) => {
 
         const pictureName = req.file.originalname.split('.');
         const pictureType = pictureName[pictureName.length - 1];
@@ -891,10 +891,22 @@ module.exports = {
 
         const params = customerAWS.setParams(pictureKey, pictureBuffer);
 
-        customerAWS.s3.upload(params, (error, data) => {
+        customerAWS.s3.upload(params, async (error, data) => {
             if (error) return res.status(500).json({ status: 500, message: "Server Error" });
+
+            const profile_picture_url = data.Location;
+
+            await Customer.update({
+                profile_picture_url,
+            }, {
+                where: {
+                    email: req.user.email,
+                },
+                returning: true,
+            },
+         )
             
-            return res.status(200).json({ status: 200, message: data })
+            return res.status(200).json({ status: 200, message: "Profile picture uploaded successfully", profile_picture_url: profile_picture_url })
         })
 
         
@@ -911,7 +923,7 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
 
-            return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
+            return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), profile_picture_url: customer.getDataValue('profile_picture_url'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
         } catch (error) {
             return res.sendStatus(500);
         }

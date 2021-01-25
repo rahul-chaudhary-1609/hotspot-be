@@ -100,7 +100,7 @@ router.put('/customer-change-password', customerAuthentication.authenticateCusto
     return customerLoginController.changeCustomerPassword(req, res);
 });
 
-router.put('/customer-change-picture', customerAuthentication.authenticateCustomer, customerMulter.upload, (req, res) => {
+router.put('/customer-change-profile-picture', customerAuthentication.authenticateCustomer, customerMulter.upload, (req, res) => {
     return customerLoginController.changeCustomerPicture(req, res);
 });
 

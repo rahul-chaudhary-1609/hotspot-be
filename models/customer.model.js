@@ -24,6 +24,9 @@ module.exports = (sequelize, DataTypes) => {
       type:DataTypes.STRING(45),
       allowNull: false,
     }, 
+    profile_picture_url: {
+      type: DataTypes.STRING(100),
+    },
     email: {
       type: DataTypes.STRING(45),
       allowNull:false,
