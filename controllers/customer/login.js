@@ -1052,17 +1052,21 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
 
-            const result = customerAddressSchema.validate({ address: req.body.address });
+            const result = customerAddressSchema.validate(req.body);
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
             }
 
             const address = result.value.address;
+            const city = result.value.city;
+            const state = result.value.state;
+            const country = result.value.country;
+            const location_geometry = result.value.location_geometry;
             const customer_id = customer.getDataValue('id');
 
             const customerFavLocation = await CustomerFavLocation.create({
-                address, customer_id: customer_id
+                address,city,state,country,location_geometry, customer_id: customer_id
             })
 
             if (customerFavLocation) return res.status(200).json({ status: 200, mesaage: "Address Added Successfully" });
@@ -1094,7 +1098,7 @@ module.exports = {
             if (customerFavLocation.length === 0) return res.status(404).json({ status: 404, mesaage: "No Addresses Fonud" });
 
             const customerAddress = customerFavLocation.map((val) => {
-                return { address: val.address, isDefault: val.default_address }
+                return { address: { address: val.address,city:val.city,state:val.state,country:val.country,location_geometry:val.location_geometry }, isDefault: val.default_address }
             })
         
             return res.status(200).json({ status: 200, customerAddress: customerAddress });
@@ -1115,13 +1119,17 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
 
-            const result = customerAddressSchema.validate({ address: req.body.address });
+            const result = customerAddressSchema.validate(req.body);
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
             }
 
             const address = result.value.address;
+            const city = result.value.city;
+            const state = result.value.state;
+            const country = result.value.country;
+            const location_geometry = result.value.location_geometry;
 
             await CustomerFavLocation.update({
                 default_address: false
@@ -1136,7 +1144,7 @@ module.exports = {
                 default_address: true
             }, {
                 where: {
-                    address
+                    address, city, state, country, location_geometry
                 },
                 returning: true,
             });

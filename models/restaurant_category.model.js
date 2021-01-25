@@ -3,7 +3,7 @@ const {
     Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class HotspotLocation extends Model {
+    class RestaurantCategory extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -13,27 +13,29 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
         }
     }
-    HotspotLocation.init({
+    RestaurantCategory.init({
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        location: {
-            type: DataTypes.ARRAY(DataTypes.FLOAT),
+        name: {
+            type: DataTypes.STRING(45),
             allowNull: false,
         },
-        location_detail: {
-            type: DataTypes.STRING,
+        
+        is_deleted: {
+            type: DataTypes.BOOLEAN,
             allowNull: false,
+            defaultValue: false
         },
 
     }, {
         sequelize,
         underscored: true,
-        tableName: 'hotspot_locations',
-        modelName: 'HotspotLocation',
+        tableName: 'restaurant_categories',
+        modelName: 'RestaurantCategory',
     });
-    return HotspotLocation;
+    return RestaurantCategory;
 };
