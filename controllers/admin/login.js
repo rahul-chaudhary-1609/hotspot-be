@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 // const client = require('twilio')(process.env.accountSID, process.env.authToken);
 const { ReE, ReS, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utilityServices/utilityFunctions');
 const adminMiddleware = require('../../middlewares/adminMiddleware');
+const _ = require('lodash');
 
 module.exports = {
     login: async (req, res) => {
@@ -32,12 +33,13 @@ module.exports = {
                 let update = {
                     'token': accessToken,
                 };
-                await Admin.update(update,{ where: condition });
+                await Admin.update(update,{ where: {id: id} });
                 ReS(res, { 'email': adminData.email, 'id': adminData.id, 'token': accessToken }, 200, "Log in successfully.");
             } else {
                 ReE(res, "Invalid email Id or password", 401, {});
             }   
-        } catch (error) {
+        } catch (err) {
+            console.log(err);
             ReE(res, "Internal server error", 500, err);
         }
     },
@@ -70,22 +72,23 @@ module.exports = {
                             'token': token,
                         };
                         let condition = {
-                            id: adminData.id
+                            where: { id: adminData.id }
                         }
                         await Admin.update(update, condition);
                         delete adminData.reset_pass_otp;
                         delete adminData.reset_pass_expiry;
                         ReS(res, adminData, 200, "Account created successfully.");
                     } else {
-                        ReE(res, "Password mismatch", 401, err);
+                        ReE(res, "Password mismatch", 401, {});
                     }
                 } else {
-                    ReE(res, "Account already exists with this email id", 401, err);
+                    ReE(res, "Account already exists with this email id", 401, {});
                 }
             } else {
-                ReE(res, "Invalid passkey", 400, err);
+                ReE(res, "Invalid passkey", 400, {});
             }    
-        } catch (error) {
+        } catch (err) {
+            console.log(err);
             ReE(res, "Internal server error", 500, err);
         }
     },
@@ -122,7 +125,8 @@ module.exports = {
                     ReE(res, "No user found", 400, { "message": "No user found" });
                 }
             }
-        } catch (error) {
+        } catch (err) {
+            console.log(err);
             ReE(res, "Internal server error", 500, err);
         }
     },
@@ -130,6 +134,7 @@ module.exports = {
     resetPassword: async (req, res) => {
         try {
             let params = req.body;
+            const otp_expiry_time = 30*60*1000;
             const query = { where: {} };
             if (!_.isEmpty(params)) {
                 query.where.email = params.email;
@@ -145,7 +150,7 @@ module.exports = {
                     let time = calcluateOtpTime(userdata.reset_pass_expiry);
                     if (userdata.reset_pass_otp != params.otp) {
                         ReE(res, "Invalid otp", 401, { "message": "Invalid otp" });
-                    } else if (currentUnixTimeStamp() - time > constants.otp_expiry_time) {
+                    } else if (currentUnixTimeStamp() - time > otp_expiry_time) {
                         ReE(res, "OTP expired", 401, { "message": "OTP expired" });
                     } else if (params.password !== params.confirmPassword) {
                         ReE(res, "Passward and confirm password mismatch", 401, { "message": "Passward and confirm password mismatch" });
@@ -163,7 +168,8 @@ module.exports = {
                     ReE(res, "Invalid request", 400, { "message": "Invalid request" });
                 }
             }
-        } catch (error) {
+        } catch (err) {
+            console.log(err);
             ReE(res, "Internal server error", 500, err);
         }
     },
@@ -174,11 +180,12 @@ module.exports = {
                 'token': null,
             };
             let condition = {
-                id: adminInfo.id
+                id: req.adminInfo.id
             }
             await Admin.update(update,{ where: condition });
             ReS(res, {}, 200, "Logout successfully.");
-        } catch (error) {
+        } catch (err) {
+            console.log(err);
             ReE(res, "Internal server error", 500, err);
         }
     }

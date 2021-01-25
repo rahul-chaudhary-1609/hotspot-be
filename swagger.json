@@ -4,7 +4,7 @@
       "version": "v1",
       "title": "Hotspot"
     },
-    "basePath": "/api/",
+    "basePath": "/",
     "schemes": [
       "http",
       "https"
@@ -61,7 +61,7 @@
         "/admin/addNewAdmin": {
             "post": {
             "tags": [
-                "Admin"
+                "admin"
             ],
             "description": "Admin signup",
             "consumes": [
@@ -110,7 +110,7 @@
         "/admin/forgotPassword": {
             "post": {
               "tags": [
-                "Admin"
+                "admin"
               ],
               "description": "Admin forget password",
               "consumes": [
@@ -131,7 +131,7 @@
           "/admin/resetPassword": {
             "post": {
               "tags": [
-                "Admin"
+                "admin"
               ],
               "description": "Admin reset password",
               "consumes": [
@@ -173,7 +173,7 @@
           "/admin/logout": {
             "get": {
               "tags": [
-                "Admin"
+                "admin"
               ],
               "description": "Api to get admin logout",
               "consumes": [
