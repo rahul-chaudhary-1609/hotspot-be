@@ -6,6 +6,7 @@ const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
 const customerAuthentication = require('../middlewares/customer/jwt-validation');
 const customerLoginController = require('../controllers/customer/login');
+const HotspotLocationController = require('../controllers/customer/hotspot_location');
 const customerMulter = require('../middlewares/customer/multer');
 
 const router=express.Router();
@@ -110,6 +111,15 @@ router.post('/customer-feedback', customerAuthentication.authenticateCustomer, (
 
 router.delete('/customer-logout', (req, res) => {
     return customerLoginController.logoutCustomer(req, res);
+});
+
+
+
+//Hotspot Locations Routes
+
+
+router.get('/get-hotspot-location', customerAuthentication.authenticateCustomer, (req, res) => {
+    return HotspotLocationController.getHotspotLocation(req, res);
 });
 
 
