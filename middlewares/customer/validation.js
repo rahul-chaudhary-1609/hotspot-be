@@ -66,9 +66,10 @@ const customerUpdateProfileSchema = Joi.object({
 });
 
 const customerAddressSchema = Joi.object({    
-    address: Joi.string().max(45).required(),
+    address: Joi.string().required(),
     city: Joi.string().max(45).required(),
     state: Joi.string().max(45).required(),
+    postal_code: Joi.string().max(45).required(),
     country: Joi.string().max(45).required(),
     location_geometry: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
 });
