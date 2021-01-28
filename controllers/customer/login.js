@@ -884,6 +884,9 @@ module.exports = {
 
     changeCustomerPicture:  (req, res) => {
 
+        console.log("Profile Picture Req:", req);
+        console.log("Profile Picture file:", req.file);
+
         const pictureName = req.file.originalname.split('.');
         const pictureType = pictureName[pictureName.length - 1];
         const pictureKey = `${req.user.email}.${pictureType}`;
