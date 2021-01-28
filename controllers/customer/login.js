@@ -1214,6 +1214,18 @@ module.exports = {
         return notification_status ? res.status(200).json({ status: 200, message: `Notifications turned on` }) : res.status(200).json({ status: 200, message: `Notifications turned off` });
 
     },
+    getNotificationStatus: async (req, res) => {
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
+
+        return res.status(200).json({ status: 200, notification_status: customer.getDataValue('notification_status') })
+    },
+
 
 
     logoutCustomer: async (req, res) => {

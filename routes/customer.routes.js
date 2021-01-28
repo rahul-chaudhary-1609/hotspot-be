@@ -113,6 +113,10 @@ router.put('/customer-toggle-notification', customerAuthentication.authenticateC
     return customerLoginController.toggleNotification(req, res);
 });
 
+router.get('/get-notification-status', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.getNotificationStatus(req, res);
+});
+
 router.delete('/customer-logout', (req, res) => {
     return customerLoginController.logoutCustomer(req, res);
 });
