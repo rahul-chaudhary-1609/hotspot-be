@@ -33,6 +33,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        full_address: {
+            type: DataTypes.JSON,
+            allowNull: false,
+        },
     }, {
         sequelize,
         underscored: true,

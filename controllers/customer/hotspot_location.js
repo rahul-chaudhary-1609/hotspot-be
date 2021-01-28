@@ -48,10 +48,15 @@ module.exports = {
             const URL =`https://us1.locationiq.com/v1/reverse.php?key=pk.7877e7074e3d5ad05dfbd4bfdde25737&format=json&lat=${nP.latitude}&lon=${nP.longitude}`
 
             request(URL, { json: true }, async(err, resp, body) => {
-                if (err) { return console.log(err); }
+                if (err) { return console.log("LocationIQ API Error",err); }
                 const location_detail = body.display_name;
                 const location = [nP.latitude, nP.longitude]
-
+                const full_address = {
+                    city: body.address.county,
+                    state: body.address.state,
+                    postal_code: body.address.postcode,
+                    country: body.address.country
+                }
                 if (location_detail) {
 
                     const hotspotLocation = await HotspotLocation.findAndCountAll({
@@ -64,7 +69,7 @@ module.exports = {
 
                     if (hotspotLocation.count<3) {
                         await HotspotLocation.create({
-                            location, location_detail, customer_id
+                            location, location_detail,full_address, customer_id
                         });
                     }      
                 }
@@ -81,6 +86,7 @@ module.exports = {
         const locations = hotspotLocations.map((val) => {
             return {
                 formatted_address: val.location_detail,
+                full_address:val.full_address,
                 location_geometry: { latitude: val.location[0], longitude:val.location[1]}
             }
         });
