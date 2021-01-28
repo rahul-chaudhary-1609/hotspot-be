@@ -7,6 +7,7 @@ const sendMail = require('../../utilityServices/mail');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
 const customerAuthentication = require('../../middlewares/customer/jwt-validation');
 const customerAWS = require('../../utilityServices/aws');
+const { isBoolean } = require('lodash');
 
 
 module.exports = {
@@ -1186,6 +1187,32 @@ module.exports = {
             return res.sendStatus(500);
         }
     
+    },
+
+    toggleNotification: async (req, res) => {
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
+
+        const notification_status = req.body.notification_status;
+
+        if (!isBoolean(notification_status)) return res.status(400).json({ status: 400, message: `Please provide only boolean value` });
+
+        await Customer.update({
+            notification_status,
+        }, {
+            where: {
+                email: req.user.email,
+            },
+            returning: true,
+        });
+
+        return notification_status ? res.status(200).json({ status: 200, message: `Notifications turned on` }) : res.status(200).json({ status: 200, message: `Notifications turned off` });
+
     },
 
 

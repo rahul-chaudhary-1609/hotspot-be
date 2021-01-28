@@ -109,6 +109,10 @@ router.post('/customer-feedback', customerAuthentication.authenticateCustomer, (
     return customerLoginController.feedbackCustomer(req, res);
 });
 
+router.put('/customer-toggle-notification', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.toggleNotification(req, res);
+});
+
 router.delete('/customer-logout', (req, res) => {
     return customerLoginController.logoutCustomer(req, res);
 });
