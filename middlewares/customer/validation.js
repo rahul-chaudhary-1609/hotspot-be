@@ -74,5 +74,9 @@ const customerAddressSchema = Joi.object({
     location_geometry: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
 });
 
+const locationGeometrySchema = Joi.object({
+    location_geometry: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
+});
 
-module.exports = { onlyPhoneSchema,customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};
+
+module.exports = { locationGeometrySchema,onlyPhoneSchema,customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};

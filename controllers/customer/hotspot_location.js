@@ -1,6 +1,6 @@
 require('dotenv/config');
-const { HotspotLocation } = require('../../models');
-//const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema, phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
+const { Customer,HotspotLocation } = require('../../models');
+const { locationGeometrySchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const request = require('request');
@@ -13,6 +13,21 @@ const request = require('request');
 module.exports = {
     getHotspotLocation: async (req, res) => {
         
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
+
+        const customer_id = customer.getDataValue('id');
+        
+        const result = locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
+
+        if (result.error) {
+            return res.status(400).json({ status: 400, message: result.error.details[0].message });
+        }
 
         const P = {
             latitude: req.query.latitude,
@@ -38,15 +53,18 @@ module.exports = {
                 const location = [nP.latitude, nP.longitude]
 
                 if (location_detail) {
-                    const hotspotLocation = await HotspotLocation.findOne({
+
+                    const hotspotLocation = await HotspotLocation.findAndCountAll({
                         where: {
-                            location
+                            customer_id
                         }
                     });
 
-                    if (!hotspotLocation) {
+                    console.log("customer", hotspotLocation.count)
+
+                    if (hotspotLocation.count<3) {
                         await HotspotLocation.create({
-                            location, location_detail
+                            location, location_detail, customer_id
                         });
                     }      
                 }
@@ -54,7 +72,11 @@ module.exports = {
             
         }     
         
-        const hotspotLocations = await HotspotLocation.findAll();
+        const hotspotLocations = await HotspotLocation.findAll({
+            where: {
+                customer_id
+            }
+        });
 
         const locations = hotspotLocations.map((val) => {
             return {
@@ -63,10 +85,10 @@ module.exports = {
             }
         });
         
-        HotspotLocation.destroy({
-            where: {},
-            truncate: true
-        });
+        // HotspotLocation.destroy({
+        //     where: {},
+        //     truncate: true
+        // });
 
         if (locations.length === 0) return res.status(404).json({ status: 404, message: `No Hotspot Found` });
          

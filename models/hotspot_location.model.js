@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            HotspotLocation.belongsTo(models.Customer);
         }
     }
     HotspotLocation.init({
@@ -28,7 +29,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-
+        customer_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
     }, {
         sequelize,
         underscored: true,
