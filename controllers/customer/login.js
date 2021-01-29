@@ -894,12 +894,15 @@ module.exports = {
         now = now.replace(/:/g, '');        
         now = now.replace(/ /g, '');        
         now = now.replace('+', '');        
-        now = now.substr(0,25);
+        now = now.substr(0, 25);
+        let email = req.user.email;
+        email = email.split('.').join("");
+        email = email.replace('@', '');
         //console.log("now",now );
 
         const pictureName = req.file.originalname.split('.');
         const pictureType = pictureName[pictureName.length - 1];
-        const pictureKey = `${req.user.email}${now}.${pictureType}`;
+        const pictureKey = `${email}${now}.${pictureType}`;
         const pictureBuffer = req.file.buffer;
 
         const params = customerAWS.setParams(pictureKey, pictureBuffer);
