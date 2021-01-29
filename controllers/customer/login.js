@@ -49,7 +49,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
     
@@ -92,7 +92,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
     },
@@ -193,7 +193,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
     
@@ -241,7 +241,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
    
 
@@ -290,7 +290,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -354,7 +354,7 @@ module.exports = {
                 })
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
@@ -421,7 +421,7 @@ module.exports = {
                 })
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }       
     },
  
@@ -480,7 +480,7 @@ module.exports = {
                     .then((resp) => {
                         res.status(200).json({ status: 200, message: `Verification code sent to email address` });
                     }).catch((error) => {
-                        res.sendStatus(500);
+                        res.status(500).json({ status: 500, message: `Internal Server Error` });
                     });
             }
             else {
@@ -508,13 +508,13 @@ module.exports = {
                     .then((resp) => {
                         res.status(200).json({ status: 200, message: `Verification code Sent to email address` });
                     }).catch((error) => {
-                        res.sendStatus(500);
+                        res.status(500).json({ status: 500, message: `Internal Server Error` });
                     });
             }
         
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -586,7 +586,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -668,7 +668,7 @@ module.exports = {
                     })
                     .catch((error) => {
                         console.log(error)
-                        res.sendStatus(500);
+                        res.status(500).json({ status: 500, message: `Internal Server Error` });
                     })
             }
 
@@ -700,14 +700,14 @@ module.exports = {
                     .then((resp) => {
                         res.status(200).json({ status: 200, message: `Password reset code Sent to email` });
                     }).catch((error) => {
-                        res.sendStatus(500);
+                        res.status(500).json({ status: 500, message: `Internal Server Error` });
                     });
             }
         
         
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -799,7 +799,7 @@ module.exports = {
                             res.status(401).json({ status: 401, message: `Invalid Code` });
                         }
                     }).catch((error) => {
-                        res.sendStatus(500);
+                        res.status(500).json({ status: 500, message: `Internal Server Error` });
                     })
             }
             if (is_email) {
@@ -819,7 +819,7 @@ module.exports = {
         
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -880,7 +880,7 @@ module.exports = {
             return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
 
         } catch (error) {
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
@@ -908,7 +908,7 @@ module.exports = {
         const params = customerAWS.setParams(pictureKey, pictureBuffer);
 
         customerAWS.s3.upload(params, async (error, data) => {
-            if (error) return res.status(500).json({ status: 500, message: "Server Error" });
+            if (error) return res.status(500).json({ status: 500, message: `Internal Server Error` });
 
             const profile_picture_url = data.Location;
 
@@ -941,7 +941,7 @@ module.exports = {
 
             return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), profile_picture_url: customer.getDataValue('profile_picture_url'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
         } catch (error) {
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -986,7 +986,7 @@ module.exports = {
 
             return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
         } catch (error) {
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
     },
@@ -1024,7 +1024,17 @@ module.exports = {
             
 
                 if (parseInt(customer.getDataValue('phone_no')) !== phone_no) {
+                    
+                    const customer_phone = await Customer.findOne({
+                        where: {
+                            phone_no
+                        }
+                    });
+
+                    if (customer_phone) return res.status(409).json({ status: 409, mesaage: "Customer already exist with same phone!" });
+                    
                     const is_phone_verified = false;
+
 
                     await Customer.update({
                         name, country_code, phone_no, is_phone_verified
@@ -1051,7 +1061,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error)
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
     
@@ -1127,7 +1137,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error)
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
@@ -1185,7 +1195,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         
         }
     },
@@ -1216,7 +1226,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
@@ -1267,7 +1277,7 @@ module.exports = {
 
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
@@ -1286,11 +1296,11 @@ module.exports = {
                     res.status(200).json({ status: 200, message: `Feedback Sent Successfully` });
                 }).catch((error) => {
                     console.log(error)
-                    res.sendStatus(500);
+                    res.status(500).json({ status: 500, message: `Internal Server Error` });
                 });
         } catch (error) {
             console.log(error)
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -1340,7 +1350,7 @@ module.exports = {
             return res.status(200).json({ status: 200, message: `Customer logged out Successfully` });
         } catch (error) {
             console.log(error)
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     
