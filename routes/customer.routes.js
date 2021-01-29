@@ -130,5 +130,9 @@ router.get('/get-hotspot-location', customerAuthentication.authenticateCustomer,
     return HotspotLocationController.getHotspotLocation(req, res);
 });
 
+// router.get('/get-hotspot-addresses', customerAuthentication.authenticateCustomer, (req, res) => {
+//     return HotspotLocationController.getHotspotAddresses(req, res);
+// });
+
 
 module.exports=router;

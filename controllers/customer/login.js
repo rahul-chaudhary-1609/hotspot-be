@@ -1,5 +1,5 @@
 require('dotenv/config');
-const { Customer, CustomerFavLocation, TempEmail} = require('../../models');
+const { Customer, CustomerFavLocation, TempEmail, HotspotLocation} = require('../../models');
 const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema, phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
@@ -667,6 +667,7 @@ module.exports = {
                         res.status(200).json({ status: 200, message: `Verification code is sent to ${customer.getDataValue('country_code')} ${phone_no}` });
                     })
                     .catch((error) => {
+                        console.log(error)
                         res.sendStatus(500);
                     })
             }
@@ -1070,11 +1071,31 @@ module.exports = {
             const location_geometry = result.value.location_geometry;
             const customer_id = customer.getDataValue('id');
 
-            const customerFavLocation = await CustomerFavLocation.create({
-                address, city, state,postal_code,country,location_geometry, customer_id: customer_id
-            })
+            // const customerFavLocation = await CustomerFavLocation.create({
+            //     address, city, state, postal_code, country, location_geometry, customer_id: customer_id
+            // });
 
-            if (customerFavLocation) return res.status(200).json({ status: 200, mesaage: "Address Added Successfully" });
+            const [customerFavLocation, created] = await CustomerFavLocation.findOrCreate({
+                where: {
+                    
+                        location_geometry, customer_id: customer_id
+                },
+                defaults: {
+                    address, city, state, postal_code, country, location_geometry, customer_id: customer_id
+                }
+            });
+
+            await HotspotLocation.update({
+                is_added: true
+            }, {
+                where: {
+                    location: location_geometry,
+                    customer_id:customer.getDataValue('id')
+                },
+                returning: true,
+            });
+
+            if (customerFavLocation || created) return res.status(200).json({ status: 200, mesaage: "Address Added Successfully" });
 
 
         } catch (error) {

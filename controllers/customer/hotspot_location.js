@@ -87,7 +87,8 @@ module.exports = {
             return {
                 formatted_address: val.location_detail,
                 full_address:val.full_address,
-                location_geometry: { latitude: val.location[0], longitude:val.location[1]}
+                location_geometry: { latitude: val.location[0], longitude: val.location[1] },
+                is_added: val.is_added,
             }
         });
         
@@ -100,5 +101,41 @@ module.exports = {
          
         return res.status(200).json({ status: 200, hotspot_loctions:locations });
 
-    }
+    },
+
+    // getHotspotAddresses: async (req, res) => {
+    //     const customer = await Customer.findOne({
+    //         where: {
+    //             email: req.user.email,
+    //         }
+    //     })
+
+    //     if (!customer) return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
+
+    //     const customer_id = customer.getDataValue('id');
+
+    //     const hotspotLocations = await HotspotLocation.findAll({
+    //         where: {
+    //             customer_id,
+    //             is_added:false
+    //         }
+    //     });
+
+    //     const locations = hotspotLocations.map((val) => {
+    //         return {
+    //             formatted_address: val.location_detail,
+    //             full_address: val.full_address,
+    //             location_geometry: { latitude: val.location[0], longitude: val.location[1] }
+    //         }
+    //     });
+
+    //     // HotspotLocation.destroy({
+    //     //     where: {},
+    //     //     truncate: true
+    //     // });
+
+    //     if (locations.length === 0) return res.status(404).json({ status: 404, message: `No Hotspot Address Found` });
+
+    //     return res.status(200).json({ status: 200, hotspot_addresses: locations });
+    // }
 }
