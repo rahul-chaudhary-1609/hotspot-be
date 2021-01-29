@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         restaurant_image_url: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.STRING,
             allowNull: false,
         },
         owner_name: {
@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         address: {
-            type: DataTypes.STRING(45),
+            type: DataTypes.JSON,
         },
         deliveries_per_shift: {
             type: DataTypes.INTEGER,

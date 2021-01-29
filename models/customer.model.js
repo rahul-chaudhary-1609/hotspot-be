@@ -32,7 +32,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull:false,
     },
     address: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.JSON,
     },
     country_code: {
       type: DataTypes.STRING(45),
@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
     },
     password: {
-      type: DataTypes.STRING(60),
+      type: DataTypes.STRING,
     },
     email_verification_otp: {
       type: DataTypes.STRING(45),
