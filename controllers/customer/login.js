@@ -884,46 +884,52 @@ module.exports = {
         }
     },
 
-    changeCustomerPicture:  (req, res) => {
+    changeCustomerPicture: (req, res) => {
+        
+        try {
+            console.log("Profile Picture Req:", req);
+            console.log("Profile Picture file:", req.file);
 
-        console.log("Profile Picture Req:", req);
-        console.log("Profile Picture file:", req.file);
+            let now = new Date();
+            now = now.toString();
+            now = now.replace(/:/g, '');
+            now = now.replace(/ /g, '');
+            now = now.replace('+', '');
+            now = now.substr(0, 25);
+            let email = req.user.email;
+            email = email.split('.').join("");
+            email = email.replace('@', '');
+            //console.log("now",now );
 
-        let now = new Date();        
-        now = now.toString();        
-        now = now.replace(/:/g, '');        
-        now = now.replace(/ /g, '');        
-        now = now.replace('+', '');        
-        now = now.substr(0, 25);
-        let email = req.user.email;
-        email = email.split('.').join("");
-        email = email.replace('@', '');
-        //console.log("now",now );
+            const pictureName = req.file.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `${email}${now}.${pictureType}`;
+            const pictureBuffer = req.file.buffer;
 
-        const pictureName = req.file.originalname.split('.');
-        const pictureType = pictureName[pictureName.length - 1];
-        const pictureKey = `${email}${now}.${pictureType}`;
-        const pictureBuffer = req.file.buffer;
+            const params = customerAWS.setParams(pictureKey, pictureBuffer);
 
-        const params = customerAWS.setParams(pictureKey, pictureBuffer);
+            customerAWS.s3.upload(params, async (error, data) => {
+                if (error) return res.status(500).json({ status: 500, message: `Internal Server Error` });
 
-        customerAWS.s3.upload(params, async (error, data) => {
-            if (error) return res.status(500).json({ status: 500, message: `Internal Server Error` });
+                const profile_picture_url = data.Location;
 
-            const profile_picture_url = data.Location;
-
-            await Customer.update({
-                profile_picture_url,
-            }, {
-                where: {
-                    email: req.user.email,
+                await Customer.update({
+                    profile_picture_url,
+                }, {
+                    where: {
+                        email: req.user.email,
+                    },
+                    returning: true,
                 },
-                returning: true,
-            },
-         )
-            
-            return res.status(200).json({ status: 200, message: "Profile picture uploaded successfully", profile_picture_url: profile_picture_url })
-        })
+                )
+
+                return res.status(200).json({ status: 200, message: "Profile picture uploaded successfully", profile_picture_url: profile_picture_url })
+            })
+        } catch (error) {
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+
+        
 
         
     },
