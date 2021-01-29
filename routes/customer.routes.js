@@ -85,6 +85,10 @@ router.put('/customer-update-profile', customerAuthentication.authenticateCustom
     return customerLoginController.updateCustomerProfile(req, res);
 });
 
+router.put('/customer-update-email', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.updateCustomerEmail(req, res);
+});
+
 router.post('/customer-add-address', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.addCustomerAddress(req, res);
 });

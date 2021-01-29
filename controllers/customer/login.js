@@ -556,9 +556,9 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email` });
             }
 
-            if (tempEmail.getDataValue('is_email_verified')) {
-                return res.status(409).json({ status: 409, message: `Email is already verified` });
-            }
+            // if (tempEmail.getDataValue('is_email_verified')) {
+            //     return res.status(409).json({ status: 409, message: `Email is already verified` });
+            // }
 
             const email_verification_otp = tempEmail.getDataValue('email_verification_otp');
             const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry');
@@ -1044,6 +1044,80 @@ module.exports = {
         }
 
     
+    },
+
+    updateCustomerEmail: async (req, res) => {
+        try {
+
+            if (!req.body.email) {
+                return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
+            }
+
+            const result = emailSchema.validate({ email: req.body.email });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+
+            const email = (result.value.email).toLowerCase();
+
+            const customer = await Customer.findOne({
+                where: {
+                    email,
+                }
+            });
+
+            if (customer) {
+                return res.status(409).json({ status: 409, message: `Customer already exist with this email` });
+            }
+
+            let tempEmail = await TempEmail.findOne({
+                where: {
+                    email,
+                }
+            });
+
+
+            if (!tempEmail) {
+                return res.status(401).json({ status: 401, message: `Verify email before update` });
+            }
+
+            if (!tempEmail.getDataValue('is_email_verified')) {
+                return res.status(401).json({ status: 401, message: `Email is not verified.` });
+            }
+
+            const is_email_verified = true;
+            const email_verification_otp = tempEmail.getDataValue('email_verification_otp')
+            const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry')
+
+            await Customer.update({
+                email,is_email_verified,email_verification_otp,email_verification_otp_expiry
+            }, {
+                where: {
+                    email:req.user.email,
+                },
+                returning: true,
+            });
+
+            await TempEmail.destroy({
+                where: {
+                    email,
+                },
+                force: true,
+            })
+
+            const user = {
+                email: email
+            };
+
+            const accessToken = customerAuthentication.generateAccessToken(user);
+
+            return res.status(200).json({ status: 200, message: `Email Updated Successfully.`, accessToken: accessToken });
+
+        } catch (error) {
+            console.log(error)
+            return res.sendStatus(500);
+        }
     },
 
     addCustomerAddress: async (req, res) => {
