@@ -889,9 +889,17 @@ module.exports = {
         console.log("Profile Picture Req:", req);
         console.log("Profile Picture file:", req.file);
 
+        let now = new Date();        
+        now = now.toString();        
+        now = now.replace(/:/g, '');        
+        now = now.replace(/ /g, '');        
+        now = now.replace('+', '');        
+        now = now.substr(0,25);
+        //console.log("now",now );
+
         const pictureName = req.file.originalname.split('.');
         const pictureType = pictureName[pictureName.length - 1];
-        const pictureKey = `${req.user.email}.${pictureType}`;
+        const pictureKey = `${req.user.email}${now}.${pictureType}`;
         const pictureBuffer = req.file.buffer;
 
         const params = customerAWS.setParams(pictureKey, pictureBuffer);
