@@ -230,6 +230,7 @@ module.exports = {
             else {
 
                 if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\n please try login with email/phone and password` });
+                if (customer.getDataValue('facebook_id')) return res.status(404).json({ status: 404, message: `You have not registered with google account,\n please try login with facebook account or email/phone and password` });
 
                 const user = {
                     email: customer.getDataValue('email'),
@@ -279,7 +280,8 @@ module.exports = {
             else {
 
                 if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\n please try login with email/phone and password` });
-               
+                if (customer.getDataValue('google_id')) return res.status(404).json({ status: 404, message: `You have not registered with facebook account,\n please try login with google account or email/phone and password` });
+
                 const user = {
                     email: customer.getDataValue('email'),
                 }
