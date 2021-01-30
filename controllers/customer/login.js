@@ -945,9 +945,9 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
-            return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), profile_picture_url: customer.getDataValue('profile_picture_url'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
+            return res.status(200).json({ status: 200, message: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), profile_picture_url: customer.getDataValue('profile_picture_url'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
         } catch (error) {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
@@ -967,7 +967,7 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
             if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nYou can not set/change password for your account.` });
 
@@ -1008,7 +1008,7 @@ module.exports = {
                 }
             });
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
             const resultName = nameSchema.validate({ name: req.body.name });
             
@@ -1169,7 +1169,7 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
             const result = customerAddressSchema.validate(req.body);
 
@@ -1209,7 +1209,7 @@ module.exports = {
                 returning: true,
             });
 
-            if (customerFavLocation || created) return res.status(200).json({ status: 200, mesaage: "Address Added Successfully" });
+            if (customerFavLocation || created) return res.status(200).json({ status: 200, message: "Address Added Successfully" });
 
 
         } catch (error) {
@@ -1227,7 +1227,7 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
             const customerFavLocation = await CustomerFavLocation.findAll({
                 where: {
@@ -1235,7 +1235,7 @@ module.exports = {
                 }
             })
 
-            if (customerFavLocation.length === 0) return res.status(404).json({ status: 404, mesaage: "No Addresses Fonud" });
+            if (customerFavLocation.length === 0) return res.status(404).json({ status: 404, message: "No Addresses Fonud" });
 
             const customerAddress = customerFavLocation.map((val) => {
                 return { address: { address: val.address, city: val.city, state: val.state, postal_code: val.postal_code,country:val.country,location_geometry:val.location_geometry }, isDefault: val.default_address }
@@ -1257,7 +1257,7 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
             const result = customerAddressSchema.validate(req.body);
 
@@ -1290,7 +1290,7 @@ module.exports = {
                 returning: true,
             });
 
-            return res.status(200).json({ status: 200, mesaage: "Address updated as default Successfully" });
+            return res.status(200).json({ status: 200, message: "Address updated as default Successfully" });
 
 
 
