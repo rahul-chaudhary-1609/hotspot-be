@@ -30,7 +30,7 @@ module.exports = {
 
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });           
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });           
         
 
             if (passwordHash.verify(password, customer.getDataValue('password'))) {
@@ -71,7 +71,7 @@ module.exports = {
 
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid phone or password` });
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
         
 
             if (passwordHash.verify(password, customer.getDataValue('password'))) {
@@ -185,9 +185,9 @@ module.exports = {
                         }
                     });
 
-                    if (checkEmail !== null) return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
+                    if (checkEmail !== null) return res.status(409).json({ status: 409, message: `Customer with the same email is already exist.\nLogin with email` });
 
-                    if (checkPhone !== null) return res.status(409).json({ status: 409, message: `Customer with the same phone is already exist. \n Login with phone` });
+                    if (checkPhone !== null) return res.status(409).json({ status: 409, message: `Customer with the same phone is already exist.\nLogin with phone` });
                 
                 }
             }
@@ -450,7 +450,7 @@ module.exports = {
             });
 
             if (customer) {
-                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
+                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist.\nLogin with email` });
             }
 
             let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
@@ -545,7 +545,7 @@ module.exports = {
             });
 
             if (customer) {
-                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
+                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist.\nLogin with email` });
             }
 
             let tempEmail = await TempEmail.findOne({
@@ -644,7 +644,7 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
 
 
             if (is_phone) {
@@ -765,7 +765,7 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
             
             const reset_pass_expiry = customer.getDataValue('reset_pass_expiry');
             const now = new Date();
@@ -859,7 +859,7 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
 
             const result = passwordSchema.validate({ password: req.body.password });
 
@@ -969,7 +969,7 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n You can not set/change password for your account.` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nYou can not set/change password for your account.` });
 
 
             const result = passwordSchema.validate({ password: newPassword });
