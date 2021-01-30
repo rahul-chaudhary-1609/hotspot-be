@@ -1050,7 +1050,7 @@ module.exports = {
                     }
                 });
 
-                if (customer_phone) return res.status(409).json({ status: 409, mesaage: "Customer already exist with same phone!" });
+                if (customer_phone) return res.status(409).json({ status: 409, message: "Customer already exist with same phone!" });
                 
                 const is_phone_verified = false;
 
