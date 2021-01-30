@@ -230,7 +230,7 @@ module.exports = {
             else {
 
                 if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\nplease try login with email/phone and password` });
-                if (customer.getDataValue('facebook_id')) return res.status(404).json({ status: 404, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
+                if (customer.getDataValue('facebook_id')) return res.status(409).json({ status: 409, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
 
                 const user = {
                     email: customer.getDataValue('email'),
@@ -280,7 +280,7 @@ module.exports = {
             else {
 
                 if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\nplease try login with email/phone and password` });
-                if (customer.getDataValue('google_id')) return res.status(404).json({ status: 404, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
+                if (customer.getDataValue('google_id')) return res.status(409).json({ status: 409, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
                 
                 const user = {
                     email: customer.getDataValue('email'),
