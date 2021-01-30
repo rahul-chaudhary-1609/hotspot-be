@@ -20,7 +20,7 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
 
             const customer_id = customer.getDataValue('id');
 
