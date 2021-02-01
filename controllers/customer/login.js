@@ -1304,12 +1304,25 @@ module.exports = {
 
     feedbackCustomer: async(req, res) => {
         try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+
+            const messageBody = (req.body.message).trim();
+
+            if (!messageBody || messageBody === null || messageBody === "") return res.status(400).json({ status: 400, message: "Feedback can not be empty" });
+
+            const formattedBody = `<b>From:</b> ${customer.getDataValue('name')} (${req.user.email})<br><br>
+                                    <b>Feedback:</b> ${messageBody}`;
             const mailOptions = {
                 from: `Hotspot Customer <${process.env.SG_EMAIL_ID}>`,
                 to: req.user.email,
                 subject: 'Customer Feedback',
-                text: 'Here is your code',
-                html: req.body.message,
+                html: formattedBody,
             };
 
             return sendMail.send(mailOptions)
