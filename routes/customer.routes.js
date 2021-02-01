@@ -48,11 +48,11 @@ router.post('/customer-facebook-signup', async (req, res) => {
 });
 
 
-router.get('/verify-phone', (req, res) => {
+router.post('/verify-phone', (req, res) => {
     return customerLoginController.generatePhoneOTP(req,res)            
 });
 
-router.get('/validate-phone', async (req, res) => {
+router.post('/validate-phone', async (req, res) => {
     return customerLoginController.validatePhoneOTP(req, res);
 });
 
