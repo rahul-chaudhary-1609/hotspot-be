@@ -81,12 +81,16 @@ router.get('/customer-profile', customerAuthentication.authenticateCustomer, (re
     return customerLoginController.getCustomerProfile(req, res);
 });
 
-router.put('/customer-update-profile', customerAuthentication.authenticateCustomer, (req, res) => {
-    return customerLoginController.updateCustomerProfile(req, res);
+router.put('/customer-update-name', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.updateCustomerName(req, res);
 });
 
 router.put('/customer-update-email', customerAuthentication.authenticateCustomer, (req, res) => {
     return customerLoginController.updateCustomerEmail(req, res);
+});
+
+router.put('/customer-update-phone', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.updateCustomerphone(req, res);
 });
 
 router.post('/customer-add-address', customerAuthentication.authenticateCustomer, (req, res) => {

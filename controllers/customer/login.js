@@ -999,7 +999,7 @@ module.exports = {
 
     },
 
-    updateCustomerProfile: async (req, res) => {
+    updateCustomerName: async (req, res) => {
     
         try {
             const customer = await Customer.findOne({
@@ -1011,71 +1011,25 @@ module.exports = {
             if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
             const resultName = nameSchema.validate({ name: req.body.name });
-            
-            let resultPhone = null;
-            let phone_no = null;
-            let country_code = null;
-            if (req.body.phone) {
-                resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
-
-                if (resultPhone.error) {
-                    return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
-                }
-
-                phone_no = parseInt(resultPhone.value.phone);
-                country_code = resultPhone.value.country_code;
-            }
 
             if (resultName.error) {
                 return res.status(400).json({ status: 400, message: resultName.error.details[0].message });
             }            
 
             let name = resultName.value.name;
+                
+        
+            await Customer.update({
+                name
+            }, {
+                where: {
+                    email: (req.user.email).toLowerCase()
+                },
+                returning: true,
+            });
             
 
-            if (!phone_no && customer.getDataValue('phone_no')) {
-                phone_no = parseInt(customer.getDataValue('phone_no'));
-            }
-
-            if (!country_code) {
-                country_code = customer.getDataValue('country_code');
-            }
-        
-
-            if (parseInt(customer.getDataValue('phone_no')) !== phone_no && phone_no !==null && phone_no!=="") {
-                
-                const customer_phone = await Customer.findOne({
-                    where: {
-                        phone_no
-                    }
-                });
-
-                if (customer_phone) return res.status(409).json({ status: 409, message: "Customer already exist with same phone!" });
-                
-                const is_phone_verified = false;
-
-
-                await Customer.update({
-                    name, country_code, phone_no, is_phone_verified
-                }, {
-                    where: {
-                        email: (req.user.email).toLowerCase()
-                    },
-                    returning: true,
-                });
-            }
-            else {
-                await Customer.update({
-                    name, country_code, phone_no,
-                }, {
-                    where: {
-                        email: (req.user.email).toLowerCase()
-                    },
-                    returning: true,
-                });
-            }
-
-            return res.status(200).json({ status: 200, message: `Profile Updated Successfully.` });
+            return res.status(200).json({ status: 200, message: `Name Updated Successfully.` });
 
         
         } catch (error) {
@@ -1158,6 +1112,54 @@ module.exports = {
             console.log(error)
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
+    },
+
+    updateCustomerphone: async (req, res) => {
+        try {
+
+            const customer = await Customer.findOne({
+                where: {
+                    email: (req.user.email).toLowerCase()
+                }
+            });
+
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+          
+        
+            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+
+            if (resultPhone.error) {
+                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
+            }
+
+            const phone_no = parseInt(resultPhone.value.phone);
+            const country_code = resultPhone.value.country_code;
+
+            const customer_phone = await Customer.findOne({
+                where: {
+                    phone_no
+                }
+            });
+
+            if (customer_phone) return res.status(409).json({ status: 409, message: "Customer already exist with same phone!" });
+
+            const is_phone_verified = false;
+
+
+            await Customer.update({
+                 country_code, phone_no, is_phone_verified
+            }, {
+                where: {
+                    email: (req.user.email).toLowerCase()
+                },
+                returning: true,
+            });
+
+            return res.status(200).json({ status: 200, message: `Phone Updated Successfully.` });
+      } catch (error) {
+          console.log(error)
+          return res.status(500).json({ status: 500, message: `Internal Server Error` });
+      }
     },
 
     addCustomerAddress: async (req, res) => {
