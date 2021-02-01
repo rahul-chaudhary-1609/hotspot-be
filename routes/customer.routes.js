@@ -48,11 +48,11 @@ router.post('/customer-facebook-signup', async (req, res) => {
 });
 
 
-router.get('/verify-phone', (req, res) => {
+router.post('/verify-phone', (req, res) => {
     return customerLoginController.generatePhoneOTP(req,res)            
 });
 
-router.get('/validate-phone', async (req, res) => {
+router.post('/validate-phone', async (req, res) => {
     return customerLoginController.validatePhoneOTP(req, res);
 });
 
@@ -65,11 +65,11 @@ router.get('/validate-email', async (req, res) => {
     return customerLoginController.validateEmailOTP(req, res);  
 });
 
-router.get('/send-password-reset-code', async(req, res) => {
+router.post('/send-password-reset-code', async(req, res) => {
     return customerLoginController.generatePassResetCode(req, res)   
 })
 
-router.get('/validate-password-reset-code', async (req, res) => {
+router.post('/validate-password-reset-code', async (req, res) => {
     return customerLoginController.validatePassResetCode(req, res);        
 });
 

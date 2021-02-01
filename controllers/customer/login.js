@@ -58,14 +58,21 @@ module.exports = {
     loginWithPhone: async (req, res) => {
 
         try {
-            const phone_no = parseInt(req.body.phone);
+            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+
+            if (resultPhone.error) {
+                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
+            }
+
+            const phone_no = parseInt(resultPhone.value.phone);
+            const country_code = resultPhone.value.country_code;
             const password = req.body.password;
 
-            if (!phone_no || !password) return res.status(400).json({ status: 400, message: `Please provide valid phone and password` });
+            if (!phone_no || !password || !country_code) return res.status(400).json({ status: 400, message: `Please provide valid phone and password` });
 
             const customer = await Customer.findOne({
                 where: {
-                    phone_no
+                    phone_no, country_code
                 }
             });
 
@@ -301,18 +308,19 @@ module.exports = {
     generatePhoneOTP: async (req, res) => {
     
         try {
-            const result = onlyPhoneSchema.validate({ phone: req.query.phone });
+            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
 
-            if (result.error) {
-                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            if (resultPhone.error) {
+                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
             }
 
-            const phone_no = parseInt(result.value.phone);
+            const phone_no = parseInt(resultPhone.value.phone);
+            const country_code = resultPhone.value.country_code;
 
 
             let customer = await Customer.findOne({
                 where: {
-                    phone_no
+                    country_code,phone_no
                 }
             });
 
@@ -363,18 +371,19 @@ module.exports = {
     validatePhoneOTP: async (req, res) => {
     
         try {
-            const result = onlyPhoneSchema.validate({ phone: req.query.phone });
+            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
 
-            if (result.error) {
-                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            if (resultPhone.error) {
+                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
             }
 
-            const phone_no = parseInt(result.value.phone);
+            const phone_no = parseInt(resultPhone.value.phone);
+            const country_code = resultPhone.value.country_code;
 
 
             let customer = await Customer.findOne({
                 where: {
-                    phone_no
+                    country_code,phone_no
                 }
             });
 
@@ -400,7 +409,7 @@ module.exports = {
                 .verificationChecks
                 .create({
                     to: `${customer.getDataValue('country_code')}${phone_no}`,
-                    code: req.query.code
+                    code: req.body.code
                 })
                 .then((resp) => {
                     if (resp.status === "approved") {
@@ -600,15 +609,16 @@ module.exports = {
             let is_phone = false;
             let is_email = false;
 
-            const phoneResult = onlyPhoneSchema.validate({ phone: req.query.emailOrPhone });
+            const phoneResult = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.emailOrPhone });
 
             if (!phoneResult.error) {
-                is_phone = true;
+                is_phone = true;               
             }
 
             const phone_no = parseInt(phoneResult.value.phone);
+            const country_code = phoneResult.value.country_code;
 
-            const emailResult = emailSchema.validate({ email: req.query.emailOrPhone });
+            const emailResult = emailSchema.validate({ email: req.body.emailOrPhone });
 
             if (!emailResult.error) {
                 is_email = true;
@@ -631,10 +641,8 @@ module.exports = {
             }
             else {
                 customer = await Customer.findOne({
-                    where: {
-                        [Op.or]: {
-                            email, phone_no,
-                        }
+                    where: {                        
+                            country_code, phone_no,
                     }
                 });
             }
@@ -721,15 +729,16 @@ module.exports = {
             let is_phone = false;
             let is_email = false;
 
-            const phoneResult = onlyPhoneSchema.validate({ phone: req.query.emailOrPhone });
+            const phoneResult = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.emailOrPhone });
 
             if (!phoneResult.error) {
                 is_phone = true;
             }
 
             const phone_no = parseInt(phoneResult.value.phone);
+            const country_code = phoneResult.value.country_code;
 
-            const emailResult = emailSchema.validate({ email: req.query.emailOrPhone });
+            const emailResult = emailSchema.validate({ email: req.body.emailOrPhone });
 
             if (!emailResult.error) {
                 is_email = true;
@@ -753,13 +762,10 @@ module.exports = {
             else {
                 customer = await Customer.findOne({
                     where: {
-                        [Op.or]: {
-                            email, phone_no,
-                        }
+                        country_code, phone_no,
                     }
                 });
             }
-
 
             if (!customer) {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
@@ -782,7 +788,7 @@ module.exports = {
                     .verificationChecks
                     .create({
                         to: `${customer.getDataValue('country_code')}${phone_no}`,
-                        code: req.query.code
+                        code: req.body.code
                     })
                     .then((resp) => {
                         if (resp.status === "approved") {
@@ -810,7 +816,7 @@ module.exports = {
                 const reset_pass_otp = customer.getDataValue('reset_pass_otp');
             
 
-                if (reset_pass_otp != null && reset_pass_otp === req.query.code) {
+                if (reset_pass_otp != null && reset_pass_otp === req.body.code) {
                     return res.status(200).json({ status: 200, message: `OTP is verified.` });
                 }
                 else {
@@ -835,6 +841,9 @@ module.exports = {
 
             const phone_no = parseInt(req.body.emailOrPhone);
             const email = (req.body.emailOrPhone).toLowerCase();
+            const country_code = req.body.country_code
+
+            console.log(phone_no,email,country_code)
 
             let customer = null;
 
@@ -848,9 +857,7 @@ module.exports = {
             else {
                 customer = await Customer.findOne({
                     where: {
-                        [Op.or]: {
-                            email, phone_no,
-                        }
+                            country_code, phone_no,
                     }
                 });
             }
