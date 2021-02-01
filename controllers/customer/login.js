@@ -308,19 +308,18 @@ module.exports = {
     generatePhoneOTP: async (req, res) => {
     
         try {
-            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+            const result = onlyPhoneSchema.validate({ phone: req.query.phone });
 
-            if (resultPhone.error) {
-                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
             }
 
-            const phone_no = parseInt(resultPhone.value.phone);
-            const country_code = resultPhone.value.country_code;
+            const phone_no = parseInt(result.value.phone);
 
 
             let customer = await Customer.findOne({
                 where: {
-                    country_code,phone_no
+                    phone_no
                 }
             });
 
@@ -371,19 +370,18 @@ module.exports = {
     validatePhoneOTP: async (req, res) => {
     
         try {
-            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+            const result = onlyPhoneSchema.validate({ phone: req.query.phone });
 
-            if (resultPhone.error) {
-                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
             }
 
-            const phone_no = parseInt(resultPhone.value.phone);
-            const country_code = resultPhone.value.country_code;
+            const phone_no = parseInt(result.value.phone);
 
 
             let customer = await Customer.findOne({
                 where: {
-                    country_code,phone_no
+                    phone_no
                 }
             });
 
@@ -409,7 +407,7 @@ module.exports = {
                 .verificationChecks
                 .create({
                     to: `${customer.getDataValue('country_code')}${phone_no}`,
-                    code: req.body.code
+                    code: req.query.code
                 })
                 .then((resp) => {
                     if (resp.status === "approved") {
