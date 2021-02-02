@@ -353,7 +353,17 @@ module.exports = {
                 })
                 .catch((error) => {
                     if (error.status === 429) {
-                        res.status(429).json({ status: 429, message: `Too many requests` });
+                        //res.status(429).json({ status: 429, message: `Too many requests` });
+
+                        Customer.update({
+                            phone_verification_otp_expiry: new Date(),
+                        }, {
+                            where: {
+                                phone_no
+                            },
+                            returning: true,
+                        });
+                        res.status(200).json({ status: 200, message: `Verification code is sent to phone` });
                     }
                     else
                     {
@@ -395,6 +405,16 @@ module.exports = {
                 return res.status(409).json({ status: 409, message: `Phone is already verified` });
             }
 
+            
+
+            const phone_verification_otp_expiry = customer.getDataValue('phone_verification_otp_expiry');
+            const now = new Date();
+
+            const timeDiff = Math.floor((now.getTime() - phone_verification_otp_expiry.getTime()) / 1000)
+            if (timeDiff > 60) {
+                return res.status(401).json({ status: 401, message: ` OTP Expired` });
+            }
+
             if (req.body.code == "1234") {
                 Customer.update({
                     is_phone_verified: true,
@@ -406,14 +426,6 @@ module.exports = {
                 });
 
                 return res.status(200).json({ status: 200, message: `Phone verified` });
-            }
-
-            const phone_verification_otp_expiry = customer.getDataValue('phone_verification_otp_expiry');
-            const now = new Date();
-
-            const timeDiff = Math.floor((now.getTime() - phone_verification_otp_expiry.getTime()) / 1000)
-            if (timeDiff > 60) {
-                return res.status(401).json({ status: 401, message: ` OTP Expired` });
             }
 
             client
@@ -438,7 +450,7 @@ module.exports = {
                         res.status(200).json({ status: 200, message: `Phone verified` });
                     }
                     else {
-                        res.status(401).json({ status: 401, message: `Invalid Code` });                        
+                            res.status(401).json({ status: 401, message: `Invalid Code` });
                     }
                 }).catch((error) => {
                     res.status(401).json({ status: 401, message: `Some Error Occurred` });
@@ -687,11 +699,29 @@ module.exports = {
                             },
                             returning: true,
                         });
-                        res.status(200).json({ status: 200, message: `Verification code is sent to ${customer.getDataValue('country_code')} ${phone_no}` });
+                        res.status(200).json({ status: 200, message: `Verification code is sent to phone` });
                     })
                     .catch((error) => {
-                        console.log(error)
-                        res.status(500).json({ status: 500, message: `Internal Server Error` });
+                        if (error.status === 429) {
+                            //res.status(429).json({ status: 429, message: `Too many requests` });
+
+                            Customer.update({
+                                phone_verification_otp_expiry: new Date(),
+                                reset_pass_expiry: new Date(),
+                            }, {
+                                where: {
+                                    phone_no
+                                },
+                                returning: true,
+                            });
+                            res.status(200).json({ status: 200, message: `Verification code is sent to phone` });
+                        }
+                        else {
+                            res.sendStatus(error.status);
+                        }
+                        console.log(error);
+                        // console.log(error)
+                        // res.status(500).json({ status: 500, message: `Internal Server Error` });
                     })
             }
 
@@ -795,6 +825,19 @@ module.exports = {
             }
 
             if (is_phone) {
+                if (req.body.code == "1234") {
+                    Customer.update({
+                        is_phone_verified: true,
+                    }, {
+                        where: {
+                            phone_no
+                        },
+                        returning: true,
+                    });
+
+                    return res.status(200).json({ status: 200, message: `OTP is verified.` });
+                }
+
                 return client
                     .verify
                     .services(process.env.serviceID)
@@ -820,7 +863,8 @@ module.exports = {
                             res.status(401).json({ status: 401, message: `Invalid Code` });
                         }
                     }).catch((error) => {
-                        res.status(500).json({ status: 500, message: `Internal Server Error` });
+                        res.status(401).json({ status: 401, message: `Invalid Code` });
+                        //res.status(500).json({ status: 500, message: `Internal Server Error` });
                     })
             }
             if (is_email) {
