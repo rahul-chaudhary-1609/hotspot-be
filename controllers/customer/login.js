@@ -447,7 +447,13 @@ module.exports = {
                             returning: true,
                         });
 
-                        res.status(200).json({ status: 200, message: `Phone verified` });
+                        const user = {
+                            email: customer.getDataValue('email'),
+                        };
+
+                        const accessToken = customerAuthentication.generateAccessToken(user);
+
+                        res.status(200).json({ status: 200, message: `Phone verified`, accessToken: accessToken });
                     }
                     else {
                             res.status(401).json({ status: 401, message: `Invalid Code` });
