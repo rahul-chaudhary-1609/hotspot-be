@@ -22,7 +22,7 @@ const customerSchema = Joi.object({
 
 const nameSchema = Joi.object({
     name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
-        'string.pattern.base': `Please enter a valid customer name`,
+        'string.pattern.base': `Name should not have numeric or special characters`,
     }),
 });
 
