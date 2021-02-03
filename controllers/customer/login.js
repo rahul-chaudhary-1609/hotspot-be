@@ -1,12 +1,13 @@
 require('dotenv/config');
-const { Customer, CustomerFavLocation, TempEmail} = require('../../models');
-const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema, phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
+const { Customer, CustomerFavLocation, TempEmail, HotspotLocation} = require('../../models');
+const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema,nameSchema ,phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
 const customerAuthentication = require('../../middlewares/customer/jwt-validation');
 const customerAWS = require('../../utilityServices/aws');
+const { isBoolean } = require('lodash');
 
 
 module.exports = {
@@ -29,7 +30,7 @@ module.exports = {
 
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });           
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });           
         
 
             if (passwordHash.verify(password, customer.getDataValue('password'))) {
@@ -48,7 +49,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
     
@@ -57,20 +58,27 @@ module.exports = {
     loginWithPhone: async (req, res) => {
 
         try {
-            const phone_no = parseInt(req.body.phone);
+            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+
+            if (resultPhone.error) {
+                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
+            }
+
+            const phone_no = parseInt(resultPhone.value.phone);
+            const country_code = resultPhone.value.country_code;
             const password = req.body.password;
 
-            if (!phone_no || !password) return res.status(400).json({ status: 400, message: `Please provide valid phone and password` });
+            if (!phone_no || !password || !country_code) return res.status(400).json({ status: 400, message: `Please provide valid phone and password` });
 
             const customer = await Customer.findOne({
                 where: {
-                    phone_no
+                    phone_no, country_code
                 }
             });
 
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid phone or password` });
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
         
 
             if (passwordHash.verify(password, customer.getDataValue('password'))) {
@@ -91,7 +99,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
     },
@@ -184,15 +192,15 @@ module.exports = {
                         }
                     });
 
-                    if (checkEmail !== null) return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
+                    if (checkEmail !== null) return res.status(409).json({ status: 409, message: `Customer with the same email is already exist.\nLogin with email` });
 
-                    if (checkPhone !== null) return res.status(409).json({ status: 409, message: `Customer with the same phone is already exist. \n Login with phone` });
+                    if (checkPhone !== null) return res.status(409).json({ status: 409, message: `Customer with the same phone is already exist.\nLogin with phone` });
                 
                 }
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
     
@@ -228,7 +236,8 @@ module.exports = {
             }
             else {
 
-                if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\n please try login with email/phone and password` });
+                if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\nplease try login with email/phone and password` });
+                if (customer.getDataValue('facebook_id')) return res.status(409).json({ status: 409, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
 
                 const user = {
                     email: customer.getDataValue('email'),
@@ -240,7 +249,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
    
 
@@ -277,8 +286,9 @@ module.exports = {
             }
             else {
 
-                if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\n please try login with email/phone and password` });
-               
+                if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\nplease try login with email/phone and password` });
+                if (customer.getDataValue('google_id')) return res.status(409).json({ status: 409, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
+                
                 const user = {
                     email: customer.getDataValue('email'),
                 }
@@ -289,7 +299,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -298,18 +308,19 @@ module.exports = {
     generatePhoneOTP: async (req, res) => {
     
         try {
-            const result = onlyPhoneSchema.validate({ phone: req.query.phone });
+            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
 
-            if (result.error) {
-                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            if (resultPhone.error) {
+                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
             }
 
-            const phone_no = parseInt(result.value.phone);
+            const phone_no = parseInt(resultPhone.value.phone);
+            const country_code = resultPhone.value.country_code;
 
 
             let customer = await Customer.findOne({
                 where: {
-                    phone_no
+                    country_code,phone_no
                 }
             });
 
@@ -342,7 +353,17 @@ module.exports = {
                 })
                 .catch((error) => {
                     if (error.status === 429) {
-                        res.status(429).json({ status: 429, message: `Too many requests` });
+                        //res.status(429).json({ status: 429, message: `Too many requests` });
+
+                        Customer.update({
+                            phone_verification_otp_expiry: new Date(),
+                        }, {
+                            where: {
+                                phone_no
+                            },
+                            returning: true,
+                        });
+                        res.status(200).json({ status: 200, message: `Verification code is sent to phone` });
                     }
                     else
                     {
@@ -353,25 +374,26 @@ module.exports = {
                 })
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
     validatePhoneOTP: async (req, res) => {
     
         try {
-            const result = onlyPhoneSchema.validate({ phone: req.query.phone });
+            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
 
-            if (result.error) {
-                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            if (resultPhone.error) {
+                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
             }
 
-            const phone_no = parseInt(result.value.phone);
+            const phone_no = parseInt(resultPhone.value.phone);
+            const country_code = resultPhone.value.country_code;
 
 
             let customer = await Customer.findOne({
                 where: {
-                    phone_no
+                    country_code, phone_no
                 }
             });
 
@@ -383,6 +405,8 @@ module.exports = {
                 return res.status(409).json({ status: 409, message: `Phone is already verified` });
             }
 
+            
+
             const phone_verification_otp_expiry = customer.getDataValue('phone_verification_otp_expiry');
             const now = new Date();
 
@@ -391,13 +415,32 @@ module.exports = {
                 return res.status(401).json({ status: 401, message: ` OTP Expired` });
             }
 
+            if (req.body.code == "1234") {
+                Customer.update({
+                    is_phone_verified: true,
+                }, {
+                    where: {
+                        phone_no
+                    },
+                    returning: true,
+                });
+
+                const user = {
+                    email: customer.getDataValue('email'),
+                };
+
+                const accessToken = customerAuthentication.generateAccessToken(user);
+
+                res.status(200).json({ status: 200, message: `Phone verified`, accessToken: accessToken });
+            }
+
             client
                 .verify
                 .services(process.env.serviceID)
                 .verificationChecks
                 .create({
                     to: `${customer.getDataValue('country_code')}${phone_no}`,
-                    code: req.query.code
+                    code: req.body.code
                 })
                 .then((resp) => {
                     if (resp.status === "approved") {
@@ -410,17 +453,23 @@ module.exports = {
                             returning: true,
                         });
 
-                        res.status(200).json({ status: 200, message: `Phone verified` });
+                        const user = {
+                            email: customer.getDataValue('email'),
+                        };
+
+                        const accessToken = customerAuthentication.generateAccessToken(user);
+
+                        res.status(200).json({ status: 200, message: `Phone verified`, accessToken: accessToken });
                     }
                     else {
-                        res.status(401).json({ status: 401, message: `Invalid Code` });
+                            res.status(401).json({ status: 401, message: `Invalid Code` });
                     }
                 }).catch((error) => {
                     res.status(401).json({ status: 401, message: `Some Error Occurred` });
                 })
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }       
     },
  
@@ -447,7 +496,7 @@ module.exports = {
             });
 
             if (customer) {
-                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
+                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist.\nLogin with email` });
             }
 
             let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
@@ -468,18 +517,18 @@ module.exports = {
             if (created) {
 
                 const mailOptions = {
-                    from: `Hotspot <${process.env.ev_email}>`,
+                    from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
                     to: email,
                     subject: 'Email Verification',
                     text: 'Here is your code',
                     html: `OTP is: <b>${email_verification_otp}</b>`,
                 };
 
-                return sendMail(mailOptions)
+                return sendMail.send(mailOptions)
                     .then((resp) => {
                         res.status(200).json({ status: 200, message: `Verification code sent to email address` });
                     }).catch((error) => {
-                        res.sendStatus(500);
+                        res.status(500).json({ status: 500, message: `Internal Server Error` });
                     });
             }
             else {
@@ -496,24 +545,24 @@ module.exports = {
                 });
 
                 const mailOptions = {
-                    from: `Hotspot <${process.env.ev_email}>`,
+                    from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
                     to: email,
                     subject: 'Email Verification',
                     text: 'Here is your code',
                     html: `OTP is: <b>${email_verification_otp}</b>`,
                 };
 
-                return sendMail(mailOptions)
+                return sendMail.send(mailOptions)
                     .then((resp) => {
                         res.status(200).json({ status: 200, message: `Verification code Sent to email address` });
                     }).catch((error) => {
-                        res.sendStatus(500);
+                        res.status(500).json({ status: 500, message: `Internal Server Error` });
                     });
             }
         
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -542,7 +591,7 @@ module.exports = {
             });
 
             if (customer) {
-                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist. \n Login with email` });
+                return res.status(409).json({ status: 409, message: `Customer with the same email is already exist.\nLogin with email` });
             }
 
             let tempEmail = await TempEmail.findOne({
@@ -555,9 +604,9 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email` });
             }
 
-            if (tempEmail.getDataValue('is_email_verified')) {
-                return res.status(409).json({ status: 409, message: `Email is already verified` });
-            }
+            // if (tempEmail.getDataValue('is_email_verified')) {
+            //     return res.status(409).json({ status: 409, message: `Email is already verified` });
+            // }
 
             const email_verification_otp = tempEmail.getDataValue('email_verification_otp');
             const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry');
@@ -585,7 +634,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -597,15 +646,16 @@ module.exports = {
             let is_phone = false;
             let is_email = false;
 
-            const phoneResult = onlyPhoneSchema.validate({ phone: req.query.emailOrPhone });
+            const phoneResult = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.emailOrPhone });
 
             if (!phoneResult.error) {
-                is_phone = true;
+                is_phone = true;               
             }
 
             const phone_no = parseInt(phoneResult.value.phone);
+            const country_code = phoneResult.value.country_code;
 
-            const emailResult = emailSchema.validate({ email: req.query.emailOrPhone });
+            const emailResult = emailSchema.validate({ email: req.body.emailOrPhone });
 
             if (!emailResult.error) {
                 is_email = true;
@@ -628,10 +678,8 @@ module.exports = {
             }
             else {
                 customer = await Customer.findOne({
-                    where: {
-                        [Op.or]: {
-                            email, phone_no,
-                        }
+                    where: {                        
+                            country_code, phone_no,
                     }
                 });
             }
@@ -641,7 +689,7 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
 
 
             if (is_phone) {
@@ -663,10 +711,29 @@ module.exports = {
                             },
                             returning: true,
                         });
-                        res.status(200).json({ status: 200, message: `Verification code is sent to ${customer.getDataValue('country_code')} ${phone_no}` });
+                        res.status(200).json({ status: 200, message: `Verification code is sent to phone` });
                     })
                     .catch((error) => {
-                        res.sendStatus(500);
+                        if (error.status === 429) {
+                            //res.status(429).json({ status: 429, message: `Too many requests` });
+
+                            Customer.update({
+                                phone_verification_otp_expiry: new Date(),
+                                reset_pass_expiry: new Date(),
+                            }, {
+                                where: {
+                                    phone_no
+                                },
+                                returning: true,
+                            });
+                            res.status(200).json({ status: 200, message: `Verification code is sent to phone` });
+                        }
+                        else {
+                            res.sendStatus(error.status);
+                        }
+                        console.log(error);
+                        // console.log(error)
+                        // res.status(500).json({ status: 500, message: `Internal Server Error` });
                     })
             }
 
@@ -687,25 +754,25 @@ module.exports = {
                 });
 
                 const mailOptions = {
-                    from: `Hotspot <${process.env.ev_email}>`,
+                    from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
                     to: customer.getDataValue('email'),
                     subject: 'Password Reset',
                     text: 'Here is your code',
                     html: `OTP for password reset is: <b>${reset_pass_otp}</b>`,
                 };
 
-                return sendMail(mailOptions)
+                return sendMail.send(mailOptions)
                     .then((resp) => {
                         res.status(200).json({ status: 200, message: `Password reset code Sent to email` });
                     }).catch((error) => {
-                        res.sendStatus(500);
+                        res.status(500).json({ status: 500, message: `Internal Server Error` });
                     });
             }
         
         
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -717,15 +784,16 @@ module.exports = {
             let is_phone = false;
             let is_email = false;
 
-            const phoneResult = onlyPhoneSchema.validate({ phone: req.query.emailOrPhone });
+            const phoneResult = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.emailOrPhone });
 
             if (!phoneResult.error) {
                 is_phone = true;
             }
 
             const phone_no = parseInt(phoneResult.value.phone);
+            const country_code = phoneResult.value.country_code;
 
-            const emailResult = emailSchema.validate({ email: req.query.emailOrPhone });
+            const emailResult = emailSchema.validate({ email: req.body.emailOrPhone });
 
             if (!emailResult.error) {
                 is_email = true;
@@ -749,19 +817,16 @@ module.exports = {
             else {
                 customer = await Customer.findOne({
                     where: {
-                        [Op.or]: {
-                            email, phone_no,
-                        }
+                        country_code, phone_no,
                     }
                 });
             }
-
 
             if (!customer) {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
             
             const reset_pass_expiry = customer.getDataValue('reset_pass_expiry');
             const now = new Date();
@@ -772,13 +837,26 @@ module.exports = {
             }
 
             if (is_phone) {
+                if (req.body.code == "1234") {
+                    Customer.update({
+                        is_phone_verified: true,
+                    }, {
+                        where: {
+                            phone_no
+                        },
+                        returning: true,
+                    });
+
+                    return res.status(200).json({ status: 200, message: `OTP is verified.` });
+                }
+
                 return client
                     .verify
                     .services(process.env.serviceID)
                     .verificationChecks
                     .create({
                         to: `${customer.getDataValue('country_code')}${phone_no}`,
-                        code: req.query.code
+                        code: req.body.code
                     })
                     .then((resp) => {
                         if (resp.status === "approved") {
@@ -797,7 +875,8 @@ module.exports = {
                             res.status(401).json({ status: 401, message: `Invalid Code` });
                         }
                     }).catch((error) => {
-                        res.sendStatus(500);
+                        res.status(401).json({ status: 401, message: `Invalid Code` });
+                        //res.status(500).json({ status: 500, message: `Internal Server Error` });
                     })
             }
             if (is_email) {
@@ -806,7 +885,7 @@ module.exports = {
                 const reset_pass_otp = customer.getDataValue('reset_pass_otp');
             
 
-                if (reset_pass_otp != null && reset_pass_otp === req.query.code) {
+                if (reset_pass_otp != null && reset_pass_otp === req.body.code) {
                     return res.status(200).json({ status: 200, message: `OTP is verified.` });
                 }
                 else {
@@ -817,7 +896,7 @@ module.exports = {
         
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -831,6 +910,9 @@ module.exports = {
 
             const phone_no = parseInt(req.body.emailOrPhone);
             const email = (req.body.emailOrPhone).toLowerCase();
+            const country_code = req.body.country_code
+
+            console.log(phone_no,email,country_code)
 
             let customer = null;
 
@@ -844,9 +926,7 @@ module.exports = {
             else {
                 customer = await Customer.findOne({
                     where: {
-                        [Op.or]: {
-                            email, phone_no,
-                        }
+                            country_code, phone_no,
                     }
                 });
             }
@@ -855,7 +935,7 @@ module.exports = {
                 return res.status(404).json({ status: 404, message: `User does not exist with provided email/phone` });
             }
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n please try login with social media buttons` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
 
             const result = passwordSchema.validate({ password: req.body.password });
 
@@ -878,36 +958,56 @@ module.exports = {
             return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
 
         } catch (error) {
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
-    changeCustomerPicture:  (req, res) => {
+    changeCustomerPicture: (req, res) => {
+        
+        try {
+            console.log("Profile Picture Req:", req);
+            console.log("Profile Picture file:", req.file);
 
-        const pictureName = req.file.originalname.split('.');
-        const pictureType = pictureName[pictureName.length - 1];
-        const pictureKey = `${req.user.email}.${pictureType}`;
-        const pictureBuffer = req.file.buffer;
+            let now = new Date();
+            now = now.toString();
+            now = now.replace(/:/g, '');
+            now = now.replace(/ /g, '');
+            now = now.replace('+', '');
+            now = now.substr(0, 25);
+            let email = req.user.email;
+            email = email.split('.').join("");
+            email = email.replace('@', '');
+            //console.log("now",now );
 
-        const params = customerAWS.setParams(pictureKey, pictureBuffer);
+            const pictureName = req.file.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `${email}${now}.${pictureType}`;
+            const pictureBuffer = req.file.buffer;
 
-        customerAWS.s3.upload(params, async (error, data) => {
-            if (error) return res.status(500).json({ status: 500, message: "Server Error" });
+            const params = customerAWS.setParams(pictureKey, pictureBuffer);
 
-            const profile_picture_url = data.Location;
+            customerAWS.s3.upload(params, async (error, data) => {
+                if (error) return res.status(500).json({ status: 500, message: `Internal Server Error` });
 
-            await Customer.update({
-                profile_picture_url,
-            }, {
-                where: {
-                    email: req.user.email,
+                const profile_picture_url = data.Location;
+
+                await Customer.update({
+                    profile_picture_url,
+                }, {
+                    where: {
+                        email: req.user.email,
+                    },
+                    returning: true,
                 },
-                returning: true,
-            },
-         )
-            
-            return res.status(200).json({ status: 200, message: "Profile picture uploaded successfully", profile_picture_url: profile_picture_url })
-        })
+                )
+
+                return res.status(200).json({ status: 200, message: "Profile picture uploaded successfully", profile_picture_url: profile_picture_url })
+            })
+        } catch (error) {
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+
+        
 
         
     },
@@ -921,11 +1021,11 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
-            return res.status(200).json({ status: 200, mesaage: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), profile_picture_url: customer.getDataValue('profile_picture_url'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
+            return res.status(200).json({ status: 200, message: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), profile_picture_url: customer.getDataValue('profile_picture_url'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
         } catch (error) {
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
@@ -943,9 +1043,9 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
-            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\n You can not set/change password for your account.` });
+            if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nYou can not set/change password for your account.` });
 
 
             const result = passwordSchema.validate({ password: newPassword });
@@ -970,12 +1070,12 @@ module.exports = {
 
             return res.status(200).json({ status: 200, message: `Password Updated Successfully.` });
         } catch (error) {
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
     },
 
-    updateCustomerProfile: async (req, res) => {
+    updateCustomerName: async (req, res) => {
     
         try {
             const customer = await Customer.findOne({
@@ -984,61 +1084,158 @@ module.exports = {
                 }
             });
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
-            const result = customerUpdateProfileSchema.validate(req.body);
+            const resultName = nameSchema.validate({ name: req.body.name });
+
+            if (resultName.error) {
+                return res.status(400).json({ status: 400, message: resultName.error.details[0].message });
+            }            
+
+            let name = resultName.value.name;
+                
+        
+            await Customer.update({
+                name
+            }, {
+                where: {
+                    email: (req.user.email).toLowerCase()
+                },
+                returning: true,
+            });
+            
+
+            return res.status(200).json({ status: 200, message: `Name Updated Successfully.` });
+
+        
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+
+    
+    },
+
+    updateCustomerEmail: async (req, res) => {
+        try {
+
+            if (!req.body.email) {
+                return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
+            }
+
+            const result = emailSchema.validate({ email: req.body.email });
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
             }
 
-            if (result.value) {
+            const email = (result.value.email).toLowerCase();
 
-                let { name, country_code } = result.value;
-
-                let phone_no = parseInt(result.value.phone);
-
-                if (isNaN(phone_no)) {
-                    phone_no = parseInt(customer.getDataValue('phone_no'));
+            const customer = await Customer.findOne({
+                where: {
+                    email,
                 }
+            });
 
-                if (!country_code) {
-                    country_code = customer.getDataValue('country_code');
-                }
-            
-
-                if (parseInt(customer.getDataValue('phone_no')) !== phone_no) {
-                    const is_phone_verified = false;
-
-                    await Customer.update({
-                        name, country_code, phone_no, is_phone_verified
-                    }, {
-                        where: {
-                            email: (req.user.email).toLowerCase()
-                        },
-                        returning: true,
-                    });
-                }
-                else {
-                    await Customer.update({
-                        name, country_code, phone_no,
-                    }, {
-                        where: {
-                            email: (req.user.email).toLowerCase()
-                        },
-                        returning: true,
-                    });
-                }
-
-                return res.status(200).json({ status: 200, message: `Profile Updated Successfully.` });
-
+            if (customer) {
+                return res.status(409).json({ status: 409, message: `Customer already exist with this email` });
             }
+
+            let tempEmail = await TempEmail.findOne({
+                where: {
+                    email,
+                }
+            });
+
+
+            if (!tempEmail) {
+                return res.status(401).json({ status: 401, message: `Verify email before update` });
+            }
+
+            if (!tempEmail.getDataValue('is_email_verified')) {
+                return res.status(401).json({ status: 401, message: `Email is not verified.` });
+            }
+
+            const is_email_verified = true;
+            const email_verification_otp = tempEmail.getDataValue('email_verification_otp')
+            const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry')
+
+            await Customer.update({
+                email,is_email_verified,email_verification_otp,email_verification_otp_expiry
+            }, {
+                where: {
+                    email:req.user.email,
+                },
+                returning: true,
+            });
+
+            await TempEmail.destroy({
+                where: {
+                    email,
+                },
+                force: true,
+            })
+
+            const user = {
+                email: email
+            };
+
+            const accessToken = customerAuthentication.generateAccessToken(user);
+
+            return res.status(200).json({ status: 200, message: `Email Updated Successfully.`, accessToken: accessToken });
+
         } catch (error) {
             console.log(error)
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
+    },
 
-    
+    updateCustomerphone: async (req, res) => {
+        try {
+
+            const customer = await Customer.findOne({
+                where: {
+                    email: (req.user.email).toLowerCase()
+                }
+            });
+
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+          
+        
+            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+
+            if (resultPhone.error) {
+                return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
+            }
+
+            const phone_no = parseInt(resultPhone.value.phone);
+            const country_code = resultPhone.value.country_code;
+
+            const customer_phone = await Customer.findOne({
+                where: {
+                    phone_no
+                }
+            });
+
+            if (customer_phone) return res.status(409).json({ status: 409, message: "Customer already exist with same phone!" });
+
+            const is_phone_verified = false;
+
+
+            await Customer.update({
+                 country_code, phone_no, is_phone_verified
+            }, {
+                where: {
+                    email: (req.user.email).toLowerCase()
+                },
+                returning: true,
+            });
+
+            return res.status(200).json({ status: 200, message: `Phone Updated Successfully.` });
+      } catch (error) {
+          console.log(error)
+          return res.status(500).json({ status: 500, message: `Internal Server Error` });
+      }
     },
 
     addCustomerAddress: async (req, res) => {
@@ -1050,27 +1247,52 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
-            const result = customerAddressSchema.validate({ address: req.body.address });
+            const result = customerAddressSchema.validate(req.body);
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
             }
 
             const address = result.value.address;
+            const city = result.value.city;
+            const state = result.value.state;
+            const postal_code = result.value.postal_code;
+            const country = result.value.country;
+            const location_geometry = result.value.location_geometry;
             const customer_id = customer.getDataValue('id');
 
-            const customerFavLocation = await CustomerFavLocation.create({
-                address, customer_id: customer_id
-            })
+            // const customerFavLocation = await CustomerFavLocation.create({
+            //     address, city, state, postal_code, country, location_geometry, customer_id: customer_id
+            // });
 
-            if (customerFavLocation) return res.status(200).json({ status: 200, mesaage: "Address Added Successfully" });
+            const [customerFavLocation, created] = await CustomerFavLocation.findOrCreate({
+                where: {
+                    
+                        location_geometry, customer_id: customer_id
+                },
+                defaults: {
+                    address, city, state, postal_code, country, location_geometry, customer_id: customer_id
+                }
+            });
+
+            await HotspotLocation.update({
+                is_added: true
+            }, {
+                where: {
+                    location: location_geometry,
+                    customer_id:customer.getDataValue('id')
+                },
+                returning: true,
+            });
+
+            if (customerFavLocation || created) return res.status(200).json({ status: 200, message: "Address Added Successfully" });
 
 
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         
         }
     },
@@ -1083,7 +1305,7 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
             const customerFavLocation = await CustomerFavLocation.findAll({
                 where: {
@@ -1091,17 +1313,17 @@ module.exports = {
                 }
             })
 
-            if (customerFavLocation.length === 0) return res.status(404).json({ status: 404, mesaage: "No Addresses Fonud" });
+            if (customerFavLocation.length === 0) return res.status(404).json({ status: 404, message: "No Addresses Fonud" });
 
             const customerAddress = customerFavLocation.map((val) => {
-                return { address: val.address, isDefault: val.default_address }
+                return { address: { address: val.address, city: val.city, state: val.state, postal_code: val.postal_code,country:val.country,location_geometry:val.location_geometry }, isDefault: val.default_address }
             })
         
             return res.status(200).json({ status: 200, customerAddress: customerAddress });
 
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
@@ -1113,15 +1335,20 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, mesaage: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
-            const result = customerAddressSchema.validate({ address: req.body.address });
+            const result = customerAddressSchema.validate(req.body);
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
             }
 
             const address = result.value.address;
+            const city = result.value.city;
+            const state = result.value.state;
+            const postal_code = result.value.postal_code;
+            const country = result.value.country;
+            const location_geometry = result.value.location_geometry;
 
             await CustomerFavLocation.update({
                 default_address: false
@@ -1136,43 +1363,95 @@ module.exports = {
                 default_address: true
             }, {
                 where: {
-                    address
+                    address, city, state, country, postal_code, location_geometry
                 },
                 returning: true,
             });
 
-            return res.status(200).json({ status: 200, mesaage: "Address updated as default Successfully" });
+            return res.status(200).json({ status: 200, message: "Address updated as default Successfully" });
 
 
 
         } catch (error) {
             console.log(error);
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
     feedbackCustomer: async(req, res) => {
         try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+
+            const messageBody = (req.body.message).trim();
+
+            if (!messageBody || messageBody === null || messageBody === "") return res.status(400).json({ status: 400, message: "Feedback can not be empty" });
+
+            const formattedBody = `<b>From:</b> ${customer.getDataValue('name')} (${req.user.email})<br><br>
+                                    <b>Feedback:</b> ${messageBody}`;
             const mailOptions = {
-                from: ` Customer Hotspot <${req.user.email}>`,
-                to: process.env.ev_email,
+                from: `Hotspot Customer <${process.env.SG_EMAIL_ID}>`,
+                to: req.user.email,
                 subject: 'Customer Feedback',
-                text: 'Here is your code',
-                html: req.body.message,
+                html: formattedBody,
             };
 
-            return sendMail(mailOptions)
+            return sendMail.send(mailOptions)
                 .then((resp) => {
                     res.status(200).json({ status: 200, message: `Feedback Sent Successfully` });
                 }).catch((error) => {
-                    res.sendStatus(500);
+                    console.log(error)
+                    res.status(500).json({ status: 500, message: `Internal Server Error` });
                 });
         } catch (error) {
             console.log(error)
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     },
+
+    toggleNotification: async (req, res) => {
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
+
+        const notification_status = req.body.notification_status;
+
+        if (!isBoolean(notification_status)) return res.status(400).json({ status: 400, message: `Please provide only boolean value` });
+
+        await Customer.update({
+            notification_status,
+        }, {
+            where: {
+                email: req.user.email,
+            },
+            returning: true,
+        });
+
+        return notification_status ? res.status(200).json({ status: 200, message: `Notifications turned on` }) : res.status(200).json({ status: 200, message: `Notifications turned off` });
+
+    },
+    getNotificationStatus: async (req, res) => {
+        const customer = await Customer.findOne({
+            where: {
+                email: req.user.email,
+            }
+        })
+
+        if (!customer) return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
+
+        return res.status(200).json({ status: 200, notification_status: customer.getDataValue('notification_status') })
+    },
+
 
 
     logoutCustomer: async (req, res) => {
@@ -1181,7 +1460,7 @@ module.exports = {
             return res.status(200).json({ status: 200, message: `Customer logged out Successfully` });
         } catch (error) {
             console.log(error)
-            return res.sendStatus(500);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     
     

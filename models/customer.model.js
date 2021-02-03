@@ -25,14 +25,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     }, 
     profile_picture_url: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING,
     },
     email: {
       type: DataTypes.STRING(45),
       allowNull:false,
     },
     address: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.JSON,
     },
     country_code: {
       type: DataTypes.STRING(45),
@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
     },
     password: {
-      type: DataTypes.STRING(60),
+      type: DataTypes.STRING,
     },
     email_verification_otp: {
       type: DataTypes.STRING(45),
@@ -90,6 +90,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    notification_status: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
     },
   }, {
       sequelize,

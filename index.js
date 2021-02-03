@@ -1,7 +1,8 @@
 require('dotenv/config');
 const express=require('express')
 const router=require('./routes')
-const {sequelize}=require('./models')
+const { sequelize } = require('./models')
+const { QueryTypes } = require('sequelize')
 const cors=require("cors");
 const cookieSession = require('cookie-session');
 const swaggerUi = require('swagger-ui-express');
@@ -37,6 +38,7 @@ app.listen(port, async (err)=>{
         console.log(`Server is started successfully at port: ${port}`);        
     }
     try {
+        //await sequelize.query("CREATE EXTENSION postgis;", { type: QueryTypes.CREATE });
         await sequelize.sync({alter:true});
         console.log("Database synced")
     } catch (error) {

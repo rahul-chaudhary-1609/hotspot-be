@@ -13,7 +13,7 @@ const customerSchema = Joi.object({
         'string.pattern.base': `Please enter a valid phone no`,
     }),
     password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
-        'string.pattern.base': `Password must contain at least one 1 lowercase, 1 uppercase, 1 numeric and 1 special (!@#$%^&*) character`,
+        'string.pattern.base': `Password must contain at least 1 lowercase, 1 uppercase, 1 numeric and 1 special (!@#$%^&*) character`,
     }),
     apple_id: Joi.string().trim().max(45),
     google_id: Joi.string().trim().max(45),
@@ -22,7 +22,7 @@ const customerSchema = Joi.object({
 
 const nameSchema = Joi.object({
     name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
-        'string.pattern.base': `Please enter a valid customer name`,
+        'string.pattern.base': `Name should not have numeric or special characters`,
     }),
 });
 
@@ -66,8 +66,17 @@ const customerUpdateProfileSchema = Joi.object({
 });
 
 const customerAddressSchema = Joi.object({    
-    address: Joi.string().max(45).required(),
+    address: Joi.string().required(),
+    city: Joi.string().max(45).required(),
+    state: Joi.string().max(45).required(),
+    postal_code: Joi.string().max(45).required(),
+    country: Joi.string().max(45).required(),
+    location_geometry: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
+});
+
+const locationGeometrySchema = Joi.object({
+    location_geometry: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
 });
 
 
-module.exports = { onlyPhoneSchema,customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};
+module.exports = { locationGeometrySchema,onlyPhoneSchema,customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};

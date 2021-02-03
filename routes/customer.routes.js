@@ -6,6 +6,7 @@ const passport = require('passport');
 const { phoneSchema } = require('../middlewares/customer/validation');
 const customerAuthentication = require('../middlewares/customer/jwt-validation');
 const customerLoginController = require('../controllers/customer/login');
+const HotspotLocationController = require('../controllers/customer/hotspot_location');
 const customerMulter = require('../middlewares/customer/multer');
 
 const router=express.Router();
@@ -47,11 +48,11 @@ router.post('/customer-facebook-signup', async (req, res) => {
 });
 
 
-router.get('/verify-phone', (req, res) => {
+router.post('/verify-phone', (req, res) => {
     return customerLoginController.generatePhoneOTP(req,res)            
 });
 
-router.get('/validate-phone', async (req, res) => {
+router.post('/validate-phone', async (req, res) => {
     return customerLoginController.validatePhoneOTP(req, res);
 });
 
@@ -64,11 +65,11 @@ router.get('/validate-email', async (req, res) => {
     return customerLoginController.validateEmailOTP(req, res);  
 });
 
-router.get('/send-password-reset-code', async(req, res) => {
+router.post('/send-password-reset-code', async(req, res) => {
     return customerLoginController.generatePassResetCode(req, res)   
 })
 
-router.get('/validate-password-reset-code', async (req, res) => {
+router.post('/validate-password-reset-code', async (req, res) => {
     return customerLoginController.validatePassResetCode(req, res);        
 });
 
@@ -80,8 +81,16 @@ router.get('/customer-profile', customerAuthentication.authenticateCustomer, (re
     return customerLoginController.getCustomerProfile(req, res);
 });
 
-router.put('/customer-update-profile', customerAuthentication.authenticateCustomer, (req, res) => {
-    return customerLoginController.updateCustomerProfile(req, res);
+router.put('/customer-update-name', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.updateCustomerName(req, res);
+});
+
+router.put('/customer-update-email', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.updateCustomerEmail(req, res);
+});
+
+router.put('/customer-update-phone', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.updateCustomerphone(req, res);
 });
 
 router.post('/customer-add-address', customerAuthentication.authenticateCustomer, (req, res) => {
@@ -108,9 +117,30 @@ router.post('/customer-feedback', customerAuthentication.authenticateCustomer, (
     return customerLoginController.feedbackCustomer(req, res);
 });
 
+router.put('/customer-toggle-notification', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.toggleNotification(req, res);
+});
+
+router.get('/get-notification-status', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.getNotificationStatus(req, res);
+});
+
 router.delete('/customer-logout', (req, res) => {
     return customerLoginController.logoutCustomer(req, res);
 });
+
+
+
+//Hotspot Locations Routes
+
+
+router.get('/get-hotspot-location', customerAuthentication.authenticateCustomer, (req, res) => {
+    return HotspotLocationController.getHotspotLocation(req, res);
+});
+
+// router.get('/get-hotspot-addresses', customerAuthentication.authenticateCustomer, (req, res) => {
+//     return HotspotLocationController.getHotspotAddresses(req, res);
+// });
 
 
 module.exports=router;

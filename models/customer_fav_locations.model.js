@@ -25,6 +25,26 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    city: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    state: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    postal_code: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    country: {
+      type: DataTypes.STRING(45),
+      allowNull: false,
+    },
+    location_geometry: {
+      type: DataTypes.ARRAY(DataTypes.FLOAT),
+      allowNull: false,
+    },
     default_address: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

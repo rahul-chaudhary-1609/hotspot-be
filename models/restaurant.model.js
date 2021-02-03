@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            //Restaurant.belongsTo(models.RestaurantCategory)
+            Restaurant.belongsTo(models.RestaurantCategory)
         }
     }
     Restaurant.init({
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         restaurant_image_url: {
-            type: DataTypes.STRING(100),
+            type: DataTypes.STRING,
             allowNull: false,
         },
         owner_name: {
@@ -38,11 +38,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         location: {
-            type: DataTypes.STRING,
+            type: DataTypes.ARRAY(DataTypes.FLOAT),
             allowNull: false,
         },
         address: {
-            type: DataTypes.STRING(45),
+            type: DataTypes.JSON,
         },
         deliveries_per_shift: {
             type: DataTypes.INTEGER,
