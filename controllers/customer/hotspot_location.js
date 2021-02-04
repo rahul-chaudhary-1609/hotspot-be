@@ -1,14 +1,10 @@
 require('dotenv/config');
-const { Customer,HotspotLocation } = require('../../models');
+const { Customer, HotspotLocation, HotspotDropoff } = require('../../models');
 const { locationGeometrySchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const request = require('request');
-//const passwordHash = require('password-hash');
-//const sendMail = require('../../utilityServices/mail');
-//const client = require('twilio')(process.env.accountSID, process.env.authToken);
-//const customerAuthentication = require('../../middlewares/customer/jwt-validation');
-//const customerAWS = require('../../utilityServices/aws');
+
 
 module.exports = {
     getHotspotLocation: async (req, res) => {
@@ -39,7 +35,7 @@ module.exports = {
 
             //const L = [{ location: P, distance: `${Math.floor(randomLocation.distance(P, P))} m`}]
 
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 15; i++) {
                 let nP = randomLocation.randomCirclePoint(P, R);
                 nP = {
                     latitude: parseFloat((nP.latitude).toFixed(7)),
@@ -69,9 +65,16 @@ module.exports = {
                         console.log("customer", hotspotLocation.count)
 
                         if (hotspotLocation.count < 3) {
-                            await HotspotLocation.create({
+                            const hotspotLocationID = await HotspotLocation.create({
                                 location, location_detail, full_address, customer_id
                             });
+
+                            const hotspot_location_id = hotspotLocationID.getDataValue('id');
+                            const dropoff_detail = location_detail.split(',').slice(0,2).join(',');
+                            
+                            await HotspotDropoff.create({
+                                hotspot_location_id,dropoff_detail
+                            });                            
                         }
                     }
                 });
@@ -92,11 +95,6 @@ module.exports = {
                     is_added: val.is_added,
                 }
             });
-
-            // HotspotLocation.destroy({
-            //     where: {},
-            //     truncate: true
-            // });
 
             if (locations.length === 0) return res.status(404).json({ status: 404, message: `No Hotspot Found` });
 
@@ -137,6 +135,7 @@ module.exports = {
 
             const locations = hotspotLocations.map((val) => {
                 return {
+                    hotspot_location_id: val.id,
                     formatted_address: val.location_detail,
                     location_geometry: { latitude: val.location[0], longitude: val.location[1] },
                 }
@@ -151,5 +150,41 @@ module.exports = {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
-    }
+    },
+    getHotspotDropoff: async (req, res) => {
+      try {
+          const customer = await Customer.findOne({
+              where: {
+                  email: req.user.email,
+              }
+          })
+
+          if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+          const hotspot_location_id = req.query.hotspot_location_id;
+
+          if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+
+          const hotspotLocations = await HotspotLocation.findOne({
+              where: {
+                  id:hotspot_location_id
+              }
+          });
+
+          const hotspotDropoff = await HotspotDropoff.findOne({
+              where: {
+                  hotspot_location_id
+              }
+          });
+
+          if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
+
+          return res.status(200).json({ status: 200, hotspot_loctions_detail: hotspotLocations.getDataValue('location_detail'), hotspot_dropoff_detail: hotspotDropoff.getDataValue('dropoff_detail') });
+
+
+      } catch (error) {
+          console.log(error);
+          return res.status(500).json({ status: 500, message: `Internal Server Error` });
+      } 
+    },
 }
