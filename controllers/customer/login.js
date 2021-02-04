@@ -1368,6 +1368,15 @@ module.exports = {
                 returning: true,
             });
 
+            await Customer.update({
+                address, city, state, country, postal_code,
+            }, {
+                where: {
+                    id:customer.getDataValue('id')
+                },
+                returning: true,
+            });
+
             return res.status(200).json({ status: 200, message: "Address updated as default Successfully" });
 
 

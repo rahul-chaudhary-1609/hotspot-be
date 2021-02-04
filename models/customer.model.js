@@ -34,6 +34,18 @@ module.exports = (sequelize, DataTypes) => {
     address: {
       type: DataTypes.JSON,
     },
+    city: {
+      type: DataTypes.STRING(45),
+    },
+    state: {
+      type: DataTypes.STRING(45),
+    },
+    postal_code: {
+      type: DataTypes.STRING(45),
+    },
+    country: {
+      type: DataTypes.STRING(45),
+    },
     country_code: {
       type: DataTypes.STRING(45),
     },
