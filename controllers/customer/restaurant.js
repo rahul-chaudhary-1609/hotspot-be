@@ -91,6 +91,7 @@ module.exports = {
                   restaurant_id:val.id,
                   restaurant_name: val.restaurant_name,
                   address: val.address,
+                  location:val.location,
                   distance: `${parseFloat(((Math.floor(randomLocation.distance({
                       latitude: req.query.latitude,
                       longitude: req.query.longitude
