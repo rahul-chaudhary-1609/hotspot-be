@@ -148,7 +148,7 @@ router.get('/get-hotspot-dropoff', customerAuthentication.authenticateCustomer, 
 });
 
 //Restaurants Routes
-router.post('/get-restaurant', customerAuthentication.authenticateCustomer, (req, res) => {
+router.get('/get-restaurant', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getRestaurant(req, res);
 });
 
