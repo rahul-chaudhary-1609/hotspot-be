@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
             Restaurant.belongsTo(models.RestaurantCategory)
+            Restaurant.belongsTo(models.Customer)
         }
     }
     Restaurant.init({
@@ -51,10 +52,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
         },
         working_hours_from: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.TIME,
         },
         working_hours_to: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.TIME,
         },
         order_type: {
             type: DataTypes.INTEGER,
@@ -63,7 +64,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-
+        customer_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         status: {
             type: DataTypes.INTEGER,
         },

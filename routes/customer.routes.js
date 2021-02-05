@@ -7,6 +7,7 @@ const { phoneSchema } = require('../middlewares/customer/validation');
 const customerAuthentication = require('../middlewares/customer/jwt-validation');
 const customerLoginController = require('../controllers/customer/login');
 const HotspotLocationController = require('../controllers/customer/hotspot_location');
+const RestaurantController = require('../controllers/customer/restaurant');
 const customerMulter = require('../middlewares/customer/multer');
 
 const router=express.Router();
@@ -145,5 +146,15 @@ router.get('/check-hotspot-location', customerAuthentication.authenticateCustome
 router.get('/get-hotspot-dropoff', customerAuthentication.authenticateCustomer, (req, res) => {
     return HotspotLocationController.getHotspotDropoff(req, res);
 });
+
+//Restaurants Routes
+router.post('/get-restaurant', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getRestaurant(req, res);
+});
+
+router.get('/get-restaurant-details', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getRestaurantDetails(req, res);
+})
+
 
 module.exports=router;
