@@ -39,7 +39,7 @@ app.listen(port, async (err)=>{
     }
     try {
         //await sequelize.query("CREATE EXTENSION postgis;", { type: QueryTypes.CREATE });
-        await sequelize.sync({alter:true});
+        await sequelize.sync({force:true});
         console.log("Database synced")
     } catch (error) {
         console.log("Error in database sync",error);

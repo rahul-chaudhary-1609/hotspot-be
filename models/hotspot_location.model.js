@@ -29,6 +29,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        delivery_shifts: {
+            type: DataTypes.ARRAY(DataTypes.TIME),
+        },
         customer_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
