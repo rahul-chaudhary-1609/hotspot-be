@@ -160,5 +160,8 @@ router.get('/get-hotspot-restaurant', customerAuthentication.authenticateCustome
     return RestaurantController.getHotspotRestaurant(req, res);
 });
 
+router.post('/set-favorite-restaurant', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.setFavoriteRestaurant(req, res);
+});
 
 module.exports=router;

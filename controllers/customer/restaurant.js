@@ -330,7 +330,6 @@ module.exports = {
                     where: {
                         restaurant_id: val.id,
                         customer_id,
-
                     }
                 });
 
@@ -371,6 +370,62 @@ module.exports = {
             return res.status(200).json({ status: 200, message: `restaurants`,restaurants });
 
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    },
+    setFavoriteRestaurant: async(req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const customer_id = customer.getDataValue('id');
+            const restaurant_id = req.body.restaurant_id;
+
+            if (!restaurant_id || isNaN(restaurant_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant id` });
+
+            const restaurant = await Restaurant.findOne({
+                where: {
+                    id: restaurant_id,
+                }
+            })
+
+            if (!restaurant) return res.status(404).json({ status: 404, message: `No restaurant found with the provided id` });
+
+
+            const favRestaurant = await FavRestaurant.findOne({
+                where: {
+                    restaurant_id,
+                    customer_id,
+                }
+            });
+
+            if (favRestaurant) {
+                await FavRestaurant.destroy({
+                    where: {
+                        restaurant_id,
+                        customer_id,
+                    },
+                    force: true,
+                });
+
+                return res.status(200).json({ status: 200, message: `Restaurant removed from favorite` });
+            }
+            else {
+                await FavRestaurant.create({
+                    restaurant_id,
+                    customer_id,
+                });
+
+                return res.status(200).json({ status: 200, message: `Restaurant added as favorite` });
+            }
+            
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
