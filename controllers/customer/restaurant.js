@@ -1,9 +1,10 @@
 require('dotenv/config');
-const { Customer, Restaurant ,RestaurantCategory } = require('../../models');
+const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant } = require('../../models');
 const { locationGeometrySchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
+const moment = require('moment');
 
 module.exports = {
     getRestaurant: async (req, res) => {
@@ -41,8 +42,28 @@ module.exports = {
 
           const categories = await restaurantCategory.map((val) => val.id);
 
-          const owner_names = ['Alan Mehew', 'Seshu Madabushi', 'Kenneth Marikos'];
-          const owner_emails = ['khana.khajana@hotspot.com', 'tost.host@hotspot.com','sweets.here@hotspot.com']
+          const owners = [
+              { name: 'Alan Mehew', email: 'khana.khajana@hotspot.com' },
+              { name: 'Seshu Madabushi', email: 'tost.host@hotspot.com' },
+              { name: 'Kenneth Marikos', email: 'sweets.here@hotspot.com'}
+          ];
+
+          const restaurant_image_urls = [
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140815GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140854GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140933GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141009GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141039GMT0530.jpg",
+          ];
+
+          const working_hours = [
+              { from: "08:00 AM", to: "09:00 PM" },
+              { from: "08:30 AM", to: "09:30 PM" },
+              { from: "09:00 AM", to: "10:00 PM" },
+              { from: "09:30 AM", to: "10:30 PM" },
+          ];
+
+          const cut_off_times = [0.5, 1, 1.5];
 
 
           let restaurant = await Restaurant.findAndCountAll({
@@ -60,17 +81,19 @@ module.exports = {
           const jsonResponse = await response.json();
 
               const restaurants = jsonResponse.response.groups[0].items.map((item) => {
+                  const owner = owners[Math.floor(Math.random() * owners.length)];
+                  const working_hour = working_hours[Math.floor(Math.random() * working_hours.length)];
                   return {
                       restaurant_name: item.venue.name,
-                      restaurant_image_url: 'https://tse4.mm.bing.net/th?id=OIP.pH-UhwB0moUEZKUG9obMiwHaDq&pid=Api&P=0&w=362&h=180',
-                      owner_name: owner_names[Math.floor(Math.random() * owner_names.length)],
-                      owner_email: owner_emails[Math.floor(Math.random() * owner_emails.length)],
+                      restaurant_image_url: restaurant_image_urls[Math.floor(Math.random() * restaurant_image_urls.length)],
+                      owner_name: owner.name,
+                      owner_email: owner.email,
                       address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
                       location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
                       deliveries_per_shift: 20,
-                      cut_off_time: 1,
-                      working_hours_from: '08:00:00',
-                      working_hours_to: '22:00:00',
+                      cut_off_time: cut_off_times[Math.floor(Math.random() * cut_off_times.length)],
+                      working_hours_from: working_hour.from,
+                      working_hours_to: working_hour.to,
                       order_type: 3,
                       restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
                       customer_id,
@@ -154,5 +177,204 @@ module.exports = {
         } 
         
     },
+
+    getHotspotRestaurant: async (req, res) => {
+        try {
+
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const customer_id = customer.getDataValue('id');
+
+            const hotspot_location_id = req.query.hotspot_location_id;
+
+            if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+
+            const hotspotLocation = await HotspotLocation.findOne({
+                where: {
+                    id: hotspot_location_id,
+                }
+            })
+
+            if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
+
+            const delivery_shifts = req.query.delivery_shifts || "12:30 PM";
+
+            const result = locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
+
+            if (result.error) {
+                return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            }
+            
+            let restaurantCategory = await RestaurantCategory.findAndCountAll();
+
+            if (restaurantCategory.count === 0) {
+                await RestaurantCategory.bulkCreate(
+                    [{ name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
+                );
+            }
+
+            restaurantCategory = await RestaurantCategory.findAll({
+                attributes: [
+                    'id'
+                ],
+            });
+
+            const categories = await restaurantCategory.map((val) => val.id);
+
+            const owners = [
+                { name: 'Alan Mehew', email: 'khana.khajana@hotspot.com' },
+                { name: 'Seshu Madabushi', email: 'tost.host@hotspot.com' },
+                { name: 'Kenneth Marikos', email: 'sweets.here@hotspot.com' }
+            ];
+
+            const restaurant_image_urls = [
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140815GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140854GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140933GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141009GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141039GMT0530.jpg",
+            ];
+
+            const working_hours = [
+                { from: "08:00 AM", to: "09:00 PM" },
+                { from: "08:30 AM", to: "09:30 PM" },
+                { from: "09:00 AM", to: "10:00 PM" },
+                { from: "09:30 AM", to: "10:30 PM" },
+            ];
+
+            const cut_off_times = [0.5, 1, 1.5];
+
+
+            let restaurantHotspot = await RestaurantHotspot.findAndCountAll({
+                where: {
+                    hotspot_location_id
+                }
+            });
+
+            if (restaurantHotspot.count === 0) {
+
+                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=3&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
+
+                const response = await fetch(`${URL}`);
+
+                const jsonResponse = await response.json();
+
+                const restaurants = jsonResponse.response.groups[0].items.map((item) => {
+                    const owner = owners[Math.floor(Math.random() * owners.length)];
+                    const working_hour = working_hours[Math.floor(Math.random() * working_hours.length)];
+                    return {
+                        restaurant_name: item.venue.name,
+                        restaurant_image_url: restaurant_image_urls[Math.floor(Math.random() * restaurant_image_urls.length)],
+                        owner_name: owner.name,
+                        owner_email: owner.email,
+                        address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
+                        location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
+                        deliveries_per_shift: 20,
+                        cut_off_time: cut_off_times[Math.floor(Math.random() * cut_off_times.length)],
+                        working_hours_from: working_hour.from,
+                        working_hours_to: working_hour.to,
+                        order_type: 3,
+                        restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
+                        customer_id,
+                    }
+                });
+
+                const restaurantBulkCreate = await Restaurant.bulkCreate(restaurants);
+                const restaurantHotspotRows = restaurantBulkCreate.map((val) => {
+                    return {
+                        hotspot_location_id: hotspot_location_id,
+                        restaurant_id: val.id,
+                    }
+
+                })
+
+                console.log("restaurantHotspotRows", restaurantHotspotRows);
+
+                await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
+            }
+
+            restaurantHotspot = await RestaurantHotspot.findAll({
+                attributes: [
+                    'restaurant_id'
+                ],
+                where: {
+                    hotspot_location_id
+                }
+            });
+
+            const restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+
+            const restaurant = await Restaurant.findAll({
+                where: {
+                    id: restaurant_ids,
+                }
+            });
+
+
+            const restaurants = [];
+            for (const val of restaurant) {
+                const is_favorite = false;
+                const restaurantCategory = await RestaurantCategory.findOne({
+                    where: {
+                        id: val.restaurant_category_id,
+                    }
+                });
+
+                const favRestaurant = await FavRestaurant.findOne({
+                    where: {
+                        restaurant_id: val.id,
+                        customer_id,
+
+                    }
+                });
+
+                const hotspotLocation = await HotspotLocation.findOne({
+                    where: {
+                        id: hotspot_location_id,
+                    }
+                });
+
+                const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                    return parseInt(moment().format("HHmmss")) <= parseInt(time.replace(/:/g, ''));
+                }); 
+
+                const next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
+
+                const avg_food_prices=['$100', '$150', '$200', '$250', '$300']
+
+                const getCutOffTime = (time) => {
+                    const new_time = (parseInt(time.replace(/:/g, '')) - parseInt(`0${Math.floor((val.cut_off_time * 60) / 60)}${(val.cut_off_time * 60) % 60}00`)).toString();
+                    
+                    if (new_time.length === 6) return `${new_time.slice(0, 2)}:${new_time.slice(2, 4)}:${new_time.slice(4, 6)}`;
+                    else return `${new_time.slice(0, 1)}:${new_time.slice(1, 3)}:${new_time.slice(3, 5)}`;
+                }
+
+                if (favRestaurant) is_favorite = true;
+
+                restaurants.push( {
+                    restaurant_id: val.id,
+                    restaurant_name: val.restaurant_name,
+                    restaurant_image_url: val.restaurant_image_url,
+                    category: restaurantCategory.name,
+                    avg_food_price: avg_food_prices[Math.floor(Math.random() * avg_food_prices.length)],                   
+                    next_delivery_time,
+                    cut_off_time: getCutOffTime(next_delivery_time)
+                })
+            };
+
+            return res.status(200).json({ status: 200, message: `restaurants`,restaurants });
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    }
 
 }

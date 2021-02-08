@@ -156,5 +156,9 @@ router.get('/get-restaurant-details', customerAuthentication.authenticateCustome
     return RestaurantController.getRestaurantDetails(req, res);
 })
 
+router.get('/get-hotspot-restaurant', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getHotspotRestaurant(req, res);
+});
+
 
 module.exports=router;

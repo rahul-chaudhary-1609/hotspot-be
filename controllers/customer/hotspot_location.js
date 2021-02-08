@@ -33,6 +33,13 @@ module.exports = {
 
             const R = 5000 // meters
 
+            const available_delivery_shifts = [
+                ['09:00 AM', '12:00 PM', '03:30 PM'],
+                ['09:30 AM', '12:30 PM', '04:00 PM'],
+                ['10:00 AM', '01:00 PM', '04:30 PM'],
+                ['10:30 AM', '01:30 PM', '05:00 PM']
+            ];
+
             //const L = [{ location: P, distance: `${Math.floor(randomLocation.distance(P, P))} m`}]
             const hotspotLocation = await HotspotLocation.findAndCountAll({
                 where: {
@@ -60,7 +67,7 @@ module.exports = {
                 console.log("body: ", body);
                 const location_detail = body.display_name;
                 const location = [nP.latitude, nP.longitude];
-                const delivery_shifts = ['09:00 AM','12:00 PM','03:30 PM'];
+                const delivery_shifts = available_delivery_shifts[Math.floor(Math.random() * available_delivery_shifts.length)];
                 const full_address = {
                     city: body.address.county,
                     state: body.address.state,

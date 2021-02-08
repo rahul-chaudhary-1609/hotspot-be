@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
         },
         cut_off_time: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.FLOAT,
         },
         working_hours_from: {
             type: DataTypes.TIME,
