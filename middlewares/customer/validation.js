@@ -78,5 +78,11 @@ const locationGeometrySchema = Joi.object({
     location_geometry: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
 });
 
+const timeSchema = Joi.object({
+    time: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2} ([AaPp][Mm]))$/).min(7).max(8).messages({
+        'string.pattern.base': `Please enter a valid time for delivery shift`,
+    }),
+});
 
-module.exports = { locationGeometrySchema,onlyPhoneSchema,customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};
+
+module.exports = { timeSchema, locationGeometrySchema,onlyPhoneSchema,customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};

@@ -1,6 +1,6 @@
 require('dotenv/config');
 const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant } = require('../../models');
-const { locationGeometrySchema } = require('../../middlewares/customer/validation');
+const { locationGeometrySchema, timeSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
@@ -203,7 +203,13 @@ module.exports = {
 
             if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
 
-            const delivery_shifts = req.query.delivery_shifts || "12:30 PM";
+            const delivery_shift = req.query.delivery_shift || "12:00 PM";
+
+            const timeResult = timeSchema.validate({ time: delivery_shift });
+
+            if (timeResult.error) {
+                return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
+            }
 
             const result = locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
 
@@ -313,6 +319,12 @@ module.exports = {
             const restaurant = await Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
+                    working_hours_from: {
+                        [Op.lte]: delivery_shift,
+                    },
+                    working_hours_to: {
+                        [Op.gte]: delivery_shift,
+                    }
                 }
             });
 
@@ -348,10 +360,13 @@ module.exports = {
                 const avg_food_prices=['$100', '$150', '$200', '$250', '$300']
 
                 const getCutOffTime = (time) => {
-                    const new_time = (parseInt(time.replace(/:/g, '')) - parseInt(`0${Math.floor((val.cut_off_time * 60) / 60)}${(val.cut_off_time * 60) % 60}00`)).toString();
-                    
-                    if (new_time.length === 6) return `${new_time.slice(0, 2)}:${new_time.slice(2, 4)}:${new_time.slice(4, 6)}`;
-                    else return `${new_time.slice(0, 1)}:${new_time.slice(1, 3)}:${new_time.slice(3, 5)}`;
+                    let ndtHours = parseInt(time.split(':')[0]);
+                    let ndtMinutes = parseInt(time.split(':')[1]);
+
+                    let cotHours = Math.floor((val.cut_off_time * 60) / 60);
+                    let cotMinutes = (val.cut_off_time * 60) % 60;
+
+                    return `${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
                 }
 
                 if (favRestaurant) is_favorite = true;
@@ -367,7 +382,9 @@ module.exports = {
                 })
             };
 
-            return res.status(200).json({ status: 200, message: `restaurants`,restaurants });
+            if (restaurants.length === 0) return res.status(404).json({ status: 404, message: `no restaurants found`, });
+            
+            return res.status(200).json({ status: 200, message: `restaurants`, restaurants });
 
 
         } catch (error) {
