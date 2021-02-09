@@ -45,7 +45,9 @@ module.exports = {
           const owners = [
               { name: 'Alan Mehew', email: 'khana.khajana@hotspot.com' },
               { name: 'Seshu Madabushi', email: 'tost.host@hotspot.com' },
-              { name: 'Kenneth Marikos', email: 'sweets.here@hotspot.com'}
+              { name: 'Kenneth Marikos', email: 'sweets.here@hotspot.com' },
+              { name: 'Ray Kroc', email: 'kroc.foods@hotspot.com' },
+              { name:'Steve Ells',email:'steve.kichen@hotspot.com'},
           ];
 
           const restaurant_image_urls = [
@@ -54,13 +56,19 @@ module.exports = {
               "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140933GMT0530.jpg",
               "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141009GMT0530.jpg",
               "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141039GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021175927GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180042GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180149GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180235GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180323GMT0530.jpg",
           ];
 
           const working_hours = [
-              { from: "08:00 AM", to: "09:00 PM" },
-              { from: "08:30 AM", to: "09:30 PM" },
-              { from: "09:00 AM", to: "10:00 PM" },
-              { from: "09:30 AM", to: "10:30 PM" },
+              { from: "07:00 AM", to: "09:00 PM" },
+              { from: "07:30 AM", to: "09:00 PM" },
+              { from: "08:00 AM", to: "09:30 PM" },
+              { from: "08:30 AM", to: "10:00 PM" },
+              { from: "08:45 AM", to: "10:30 PM" },
           ];
 
           const cut_off_times = [0.5, 1, 1.5];
@@ -74,7 +82,7 @@ module.exports = {
 
           if (restaurant.count === 0) {
 
-          const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=3&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
+          const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=5&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
 
           const response = await fetch(`${URL}`);
 
@@ -236,7 +244,9 @@ module.exports = {
             const owners = [
                 { name: 'Alan Mehew', email: 'khana.khajana@hotspot.com' },
                 { name: 'Seshu Madabushi', email: 'tost.host@hotspot.com' },
-                { name: 'Kenneth Marikos', email: 'sweets.here@hotspot.com' }
+                { name: 'Kenneth Marikos', email: 'sweets.here@hotspot.com' },
+                { name: 'Ray Kroc', email: 'kroc.foods@hotspot.com' },
+                { name: 'Steve Ells', email: 'steve.kichen@hotspot.com' },
             ];
 
             const restaurant_image_urls = [
@@ -245,13 +255,19 @@ module.exports = {
                 "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140933GMT0530.jpg",
                 "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141009GMT0530.jpg",
                 "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141039GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021175927GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180042GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180149GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180235GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180323GMT0530.jpg",
             ];
 
             const working_hours = [
-                { from: "08:00 AM", to: "09:00 PM" },
-                { from: "08:30 AM", to: "09:30 PM" },
-                { from: "09:00 AM", to: "10:00 PM" },
-                { from: "09:30 AM", to: "10:30 PM" },
+                { from: "07:00 AM", to: "09:00 PM" },
+                { from: "07:30 AM", to: "09:00 PM" },
+                { from: "08:00 AM", to: "09:30 PM" },
+                { from: "08:30 AM", to: "10:00 PM" },
+                { from: "08:45 AM", to: "10:30 PM" },
             ];
 
             const cut_off_times = [0.5, 1, 1.5];
@@ -265,7 +281,7 @@ module.exports = {
 
             if (restaurantHotspot.count === 0) {
 
-                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=3&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
+                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=5&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
 
                 const response = await fetch(`${URL}`);
 
@@ -366,7 +382,12 @@ module.exports = {
                     let cotHours = Math.floor((val.cut_off_time * 60) / 60);
                     let cotMinutes = (val.cut_off_time * 60) % 60;
 
-                    return `${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
+                    if (Math.abs(ndtMinutes - cotMinutes) < 10 && Math.abs(ndtHours - cotHours)<10) return `0${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
+                    else if (Math.abs(ndtMinutes - cotMinutes) < 10) return `${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
+                    else if (Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
+                    else return `${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
+
+                    
                 }
 
                 if (favRestaurant) is_favorite = true;
