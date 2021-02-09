@@ -322,7 +322,7 @@ module.exports = {
 
                 })
 
-                console.log("restaurantHotspotRows", restaurantHotspotRows);
+                //console.log("restaurantHotspotRows", restaurantHotspotRows);
 
                 await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
             }
@@ -353,7 +353,7 @@ module.exports = {
 
             const restaurants = [];
             for (const val of restaurant) {
-                const is_favorite = false;
+                let is_favorite = false;
                 const restaurantCategory = await RestaurantCategory.findOne({
                     where: {
                         id: val.restaurant_category_id,
@@ -405,7 +405,8 @@ module.exports = {
                     category: restaurantCategory.name,
                     avg_food_price:val.avg_food_price,                  
                     next_delivery_time,
-                    cut_off_time: getCutOffTime(next_delivery_time)
+                    cut_off_time: getCutOffTime(next_delivery_time),
+                    is_favorite,
                 })
             };
 
@@ -486,7 +487,6 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
 
-            //const customer_id = customer.getDataValue('id');
 
             let dishCategory = await DishCategory.findAndCountAll();
 
@@ -513,6 +513,187 @@ module.exports = {
             const dish_categories = await dishCategory.map((val) => val.name);
 
             return res.status(200).json({ status: 200, dish_categories });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    },
+
+    getHotspotRestaurantWithFilter: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const customer_id = customer.getDataValue('id');
+
+            const hotspot_location_id = req.body.hotspot_location_id;
+
+            if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+
+            const hotspotLocation = await HotspotLocation.findOne({
+                where: {
+                    id: hotspot_location_id,
+                }
+            })
+
+            if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
+
+            const delivery_shift = req.query.delivery_shift || "12:00 PM";
+
+            const timeResult = timeSchema.validate({ time: delivery_shift });
+
+            if (timeResult.error) {
+                return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
+            }
+
+            const restaurantHotspot = await RestaurantHotspot.findAll({
+                attributes: [
+                    'restaurant_id'
+                ],
+                where: {
+                    hotspot_location_id
+                }
+            });
+
+            const restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+
+            let restaurant = [];
+
+            if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price high to low" ) {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        avg_food_price: {
+                            [Op.lte]: req.body.max_price,
+                        },
+                        working_hours_from: {
+                            [Op.lte]: delivery_shift,
+                        },
+                        working_hours_to: {
+                            [Op.gte]: delivery_shift,
+                        }
+                    },
+                    order: [
+                        ['avg_food_price', 'DESC'],
+                    ],
+                });
+            }
+            else if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price low to high") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        avg_food_price: {
+                            [Op.lte]: req.body.max_price,
+                        },
+                        working_hours_from: {
+                            [Op.lte]: delivery_shift,
+                        },
+                        working_hours_to: {
+                            [Op.gte]: delivery_shift,
+                        }
+                    },
+                    order: [
+                        ['avg_food_price', 'ASC'],
+                    ],
+                });
+            }
+            else {
+                 restaurant = await Restaurant.findAll({
+                where: {
+                    id: restaurant_ids,
+                    working_hours_from: {
+                        [Op.lte]: delivery_shift,
+                    },
+                    working_hours_to: {
+                        [Op.gte]: delivery_shift,
+                    }
+                }
+            });
+            }             
+
+
+            const restaurants = [];
+            for (const val of restaurant) {
+                let is_favorite = false;
+                const restaurantCategory = await RestaurantCategory.findOne({
+                    where: {
+                        id: val.restaurant_category_id,
+                    }
+                });
+
+                if (req.body.category) {
+                    const catFound = req.body.category.find((cat) => {
+                        return cat === restaurantCategory.name;
+                    });
+
+                    console.log("Category", catFound)
+                    if (!catFound) continue;
+                }
+
+                const favRestaurant = await FavRestaurant.findOne({
+                    where: {
+                        restaurant_id: val.id,
+                        customer_id,
+                    }
+                });
+
+                const hotspotLocation = await HotspotLocation.findOne({
+                    where: {
+                        id: hotspot_location_id,
+                    }
+                });
+
+                const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                    return parseInt(moment().format("HHmmss")) <= parseInt(time.replace(/:/g, ''));
+                });
+
+                const next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
+
+
+
+                const getCutOffTime = (time) => {
+                    let ndtHours = parseInt(time.split(':')[0]);
+                    let ndtMinutes = parseInt(time.split(':')[1]);
+
+                    let cotHours = Math.floor((val.cut_off_time * 60) / 60);
+                    let cotMinutes = (val.cut_off_time * 60) % 60;
+
+                    if (Math.abs(ndtMinutes - cotMinutes) < 10 && Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
+                    else if (Math.abs(ndtMinutes - cotMinutes) < 10) return `${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
+                    else if (Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
+                    else return `${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
+
+
+                }
+
+                if (favRestaurant) is_favorite = true;
+
+                restaurants.push({
+                    restaurant_id: val.id,
+                    restaurant_name: val.restaurant_name,
+                    restaurant_image_url: val.restaurant_image_url,
+                    category: restaurantCategory.name,
+                    avg_food_price: val.avg_food_price,
+                    next_delivery_time,
+                    cut_off_time: getCutOffTime(next_delivery_time),
+                    is_favorite,
+                })
+            };
+
+
+            if (restaurants.length === 0) return res.status(404).json({ status: 404, message: `no restaurants found`, });
+
+            return res.status(200).json({ status: 200, message: `restaurants`, restaurants });
+
+
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
