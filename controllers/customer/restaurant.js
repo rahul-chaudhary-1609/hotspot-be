@@ -1,5 +1,5 @@
 require('dotenv/config');
-const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant } = require('../../models');
+const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish } = require('../../models');
 const { locationGeometrySchema, timeSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
@@ -443,6 +443,49 @@ module.exports = {
                 return res.status(200).json({ status: 200, message: `Restaurant added as favorite` });
             }
             
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    },
+
+    getFoodCategory: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            //const customer_id = customer.getDataValue('id');
+
+            let dishCategory = await DishCategory.findAndCountAll();
+
+            if (dishCategory.count === 0) {
+                await DishCategory.bulkCreate(
+                    [
+                        { name: "Breakfast" },
+                        { name: "Pizza" },
+                        { name: "Burger" },
+                        { name: "Chinese" },
+                        { name: "Thai" },
+                        { name: "Asian" },
+                        { name: "Indian" },
+                        { name: "Sushi" },
+                        { name: "Italian" },
+                        { name: "Meat" },
+                    ],
+                    { returning: ['id'] },
+                );
+            }
+
+            dishCategory = await DishCategory.findAll();
+
+            const dish_categories = await dishCategory.map((val) => val.name);
+
+            return res.status(200).json({ status: 200, dish_categories });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });

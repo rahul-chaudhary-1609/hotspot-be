@@ -164,4 +164,8 @@ router.post('/set-favorite-restaurant', customerAuthentication.authenticateCusto
     return RestaurantController.setFavoriteRestaurant(req, res);
 });
 
+router.get('/get-food-category', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getFoodCategory(req, res);
+});
+
 module.exports=router;
