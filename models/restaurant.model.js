@@ -51,6 +51,9 @@ module.exports = (sequelize, DataTypes) => {
         cut_off_time: {
             type: DataTypes.FLOAT,
         },
+        avg_food_price: {
+            type: DataTypes.INTEGER,
+        },
         working_hours_from: {
             type: DataTypes.TIME,
         },

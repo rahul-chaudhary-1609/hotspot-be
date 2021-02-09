@@ -73,6 +73,8 @@ module.exports = {
 
           const cut_off_times = [0.5, 1, 1.5];
 
+          const avg_food_prices = [100, 150, 200, 250, 300, 350, 400, 450, 500]
+
 
           let restaurant = await Restaurant.findAndCountAll({
               where: {
@@ -100,6 +102,7 @@ module.exports = {
                       location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
                       deliveries_per_shift: 20,
                       cut_off_time: cut_off_times[Math.floor(Math.random() * cut_off_times.length)],
+                      avg_food_price: avg_food_prices[Math.floor(Math.random() * avg_food_prices.length)],
                       working_hours_from: working_hour.from,
                       working_hours_to: working_hour.to,
                       order_type: 3,
@@ -270,6 +273,8 @@ module.exports = {
                 { from: "08:45 AM", to: "10:30 PM" },
             ];
 
+            const avg_food_prices = [100, 150, 200, 250, 300, 350, 400, 450, 500 ]
+
             const cut_off_times = [0.5, 1, 1.5];
 
 
@@ -299,6 +304,7 @@ module.exports = {
                         location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
                         deliveries_per_shift: 20,
                         cut_off_time: cut_off_times[Math.floor(Math.random() * cut_off_times.length)],
+                        avg_food_price: avg_food_prices[Math.floor(Math.random() * avg_food_prices.length)],
                         working_hours_from: working_hour.from,
                         working_hours_to: working_hour.to,
                         order_type: 3,
@@ -373,7 +379,7 @@ module.exports = {
 
                 const next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
 
-                const avg_food_prices=['$100', '$150', '$200', '$250', '$300']
+                
 
                 const getCutOffTime = (time) => {
                     let ndtHours = parseInt(time.split(':')[0]);
@@ -397,7 +403,7 @@ module.exports = {
                     restaurant_name: val.restaurant_name,
                     restaurant_image_url: val.restaurant_image_url,
                     category: restaurantCategory.name,
-                    avg_food_price: avg_food_prices[Math.floor(Math.random() * avg_food_prices.length)],                   
+                    avg_food_price:val.avg_food_price,                  
                     next_delivery_time,
                     cut_off_time: getCutOffTime(next_delivery_time)
                 })
