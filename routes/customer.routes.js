@@ -176,6 +176,10 @@ router.get('/get-food-category', customerAuthentication.authenticateCustomer, (r
     return RestaurantController.getFoodCategory(req, res);
 });
 
+router.get('/get-search-suggestion', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getSearchSuggestion(req, res);
+});
+
 router.post('/get-hotspot-restaurant-with-filter', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getHotspotRestaurantWithFilter(req, res);
 });

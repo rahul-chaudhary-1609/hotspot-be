@@ -6,6 +6,89 @@ const randomLocation = require('random-location');
 const fetch = require('node-fetch');
 const moment = require('moment');
 
+const getRestaurantCard =  async (restaurant, customer_id,hotspot_location_id, res, req = null) => {
+    try {
+        const restaurants = [];
+        for (const val of restaurant) {
+            let is_favorite = false;
+            const restaurantCategory = await RestaurantCategory.findOne({
+                where: {
+                    id: val.restaurant_category_id,
+                }
+            });
+
+            if (req && req.body.category) {
+                const catFound = req.body.category.find((cat) => {
+                    return cat === restaurantCategory.name;
+                });
+
+                if (!catFound) continue;
+            }
+
+            const favRestaurant = await FavRestaurant.findOne({
+                where: {
+                    restaurant_id: val.id,
+                    customer_id,
+                }
+            });
+
+            const hotspotLocation = await HotspotLocation.findOne({
+                where: {
+                    id: hotspot_location_id,
+                }
+            });
+
+            const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                return parseInt(moment().format("HHmmss")) <= parseInt(time.replace(/:/g, ''));
+            });
+
+            const next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
+
+
+
+            const getCutOffTime = (time) => {
+                let ndtHours = parseInt(time.split(':')[0]);
+                let ndtMinutes = parseInt(time.split(':')[1]);
+
+                let cotHours = Math.floor((val.cut_off_time * 60) / 60);
+                let cotMinutes = (val.cut_off_time * 60) % 60;
+
+                if (Math.abs(ndtMinutes - cotMinutes) < 10 && Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
+                else if (Math.abs(ndtMinutes - cotMinutes) < 10) return `${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
+                else if (Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
+                else return `${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
+
+
+            }
+
+            if (favRestaurant) is_favorite = true;
+
+            restaurants.push({
+                restaurant_id: val.id,
+                restaurant_name: val.restaurant_name,
+                restaurant_image_url: val.restaurant_image_url,
+                category: restaurantCategory.name,
+                avg_food_price: val.avg_food_price,
+                next_delivery_time,
+                cut_off_time: getCutOffTime(next_delivery_time),
+                is_favorite,
+            })
+        }
+
+        if (restaurants.length === 0) return res.status(404).json({ status: 404, message: `no restaurants found`, });
+
+        return res.status(200).json({ status: 200, restaurants });
+
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+    } 
+
+
+};
+
+
 module.exports = {
     getRestaurant: async (req, res) => {
       try {
@@ -30,7 +113,7 @@ module.exports = {
 
           if (restaurantCategory.count === 0) {
               await RestaurantCategory.bulkCreate(
-                  [{ name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
+                  [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" },{ name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
               );
           }
 
@@ -61,6 +144,20 @@ module.exports = {
               "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180149GMT0530.jpg",
               "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180235GMT0530.jpg",
               "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180323GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021173853GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174146GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174247GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174319GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174400GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174448GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174523GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174611GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174648GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174719GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174846GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174942GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021175020GMT0530.jpg",
+              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021175118GMT0530.jpg",
           ];
 
           const working_hours = [
@@ -75,6 +172,8 @@ module.exports = {
 
           const avg_food_prices = [100, 150, 200, 250, 300, 350, 400, 450, 500]
 
+          const order_types = [2, 3];
+
 
           let restaurant = await Restaurant.findAndCountAll({
               where: {
@@ -84,7 +183,7 @@ module.exports = {
 
           if (restaurant.count === 0) {
 
-          const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=5&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
+          const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=10&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
 
           const response = await fetch(`${URL}`);
 
@@ -105,7 +204,7 @@ module.exports = {
                       avg_food_price: avg_food_prices[Math.floor(Math.random() * avg_food_prices.length)],
                       working_hours_from: working_hour.from,
                       working_hours_to: working_hour.to,
-                      order_type: 3,
+                      order_type: order_types[Math.floor(Math.random() * order_types.length)],
                       restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
                       customer_id,
                   }
@@ -232,7 +331,7 @@ module.exports = {
 
             if (restaurantCategory.count === 0) {
                 await RestaurantCategory.bulkCreate(
-                    [{ name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
+                    [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" }, { name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
                 );
             }
 
@@ -263,6 +362,20 @@ module.exports = {
                 "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180149GMT0530.jpg",
                 "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180235GMT0530.jpg",
                 "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180323GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021173853GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174146GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174247GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174319GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174400GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174448GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174523GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174611GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174648GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174719GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174846GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174942GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021175020GMT0530.jpg",
+                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021175118GMT0530.jpg",
             ];
 
             const working_hours = [
@@ -277,6 +390,8 @@ module.exports = {
 
             const cut_off_times = [0.5, 1, 1.5];
 
+            const order_types = [1, 2, 3];
+
 
             let restaurantHotspot = await RestaurantHotspot.findAndCountAll({
                 where: {
@@ -286,7 +401,7 @@ module.exports = {
 
             if (restaurantHotspot.count === 0) {
 
-                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=5&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
+                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=20&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
 
                 const response = await fetch(`${URL}`);
 
@@ -307,7 +422,7 @@ module.exports = {
                         avg_food_price: avg_food_prices[Math.floor(Math.random() * avg_food_prices.length)],
                         working_hours_from: working_hour.from,
                         working_hours_to: working_hour.to,
-                        order_type: 3,
+                        order_type: order_types[Math.floor(Math.random() * order_types.length)],
                         restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
                         customer_id,
                     }
@@ -350,69 +465,7 @@ module.exports = {
                 }
             });
 
-
-            const restaurants = [];
-            for (const val of restaurant) {
-                let is_favorite = false;
-                const restaurantCategory = await RestaurantCategory.findOne({
-                    where: {
-                        id: val.restaurant_category_id,
-                    }
-                });
-
-                const favRestaurant = await FavRestaurant.findOne({
-                    where: {
-                        restaurant_id: val.id,
-                        customer_id,
-                    }
-                });
-
-                const hotspotLocation = await HotspotLocation.findOne({
-                    where: {
-                        id: hotspot_location_id,
-                    }
-                });
-
-                const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                    return parseInt(moment().format("HHmmss")) <= parseInt(time.replace(/:/g, ''));
-                }); 
-
-                const next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
-
-                
-
-                const getCutOffTime = (time) => {
-                    let ndtHours = parseInt(time.split(':')[0]);
-                    let ndtMinutes = parseInt(time.split(':')[1]);
-
-                    let cotHours = Math.floor((val.cut_off_time * 60) / 60);
-                    let cotMinutes = (val.cut_off_time * 60) % 60;
-
-                    if (Math.abs(ndtMinutes - cotMinutes) < 10 && Math.abs(ndtHours - cotHours)<10) return `0${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
-                    else if (Math.abs(ndtMinutes - cotMinutes) < 10) return `${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
-                    else if (Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
-                    else return `${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
-
-                    
-                }
-
-                if (favRestaurant) is_favorite = true;
-
-                restaurants.push( {
-                    restaurant_id: val.id,
-                    restaurant_name: val.restaurant_name,
-                    restaurant_image_url: val.restaurant_image_url,
-                    category: restaurantCategory.name,
-                    avg_food_price:val.avg_food_price,                  
-                    next_delivery_time,
-                    cut_off_time: getCutOffTime(next_delivery_time),
-                    is_favorite,
-                })
-            };
-
-            if (restaurants.length === 0) return res.status(404).json({ status: 404, message: `no restaurants found`, });
-            
-            return res.status(200).json({ status: 200, message: `restaurants`, restaurants });
+            getRestaurantCard(restaurant, customer_id, hotspot_location_id,res);
 
 
         } catch (error) {
@@ -529,80 +582,8 @@ module.exports = {
               }
           });
 
-          const restaurants = [];
-          for (const val of restaurant) {
-              let is_favorite = false;
-              const restaurantCategory = await RestaurantCategory.findOne({
-                  where: {
-                      id: val.restaurant_category_id,
-                  }
-              });
+          getRestaurantCard(restaurant, customer_id, hotspot_location_id,res);
 
-              if (req.body.category) {
-                  const catFound = req.body.category.find((cat) => {
-                      return cat === restaurantCategory.name;
-                  });
-
-                  //console.log("Category", catFound)
-                  if (!catFound) continue;
-              }
-
-              const favRestaurant = await FavRestaurant.findOne({
-                  where: {
-                      restaurant_id: val.id,
-                      customer_id,
-                  }
-              });
-
-              const hotspotLocation = await HotspotLocation.findOne({
-                  where: {
-                      id: hotspot_location_id,
-                  }
-              });
-
-              const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                  return parseInt(moment().format("HHmmss")) <= parseInt(time.replace(/:/g, ''));
-              });
-
-              const next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
-
-
-
-              const getCutOffTime = (time) => {
-                  let ndtHours = parseInt(time.split(':')[0]);
-                  let ndtMinutes = parseInt(time.split(':')[1]);
-
-                  let cotHours = Math.floor((val.cut_off_time * 60) / 60);
-                  let cotMinutes = (val.cut_off_time * 60) % 60;
-
-                  if (Math.abs(ndtMinutes - cotMinutes) < 10 && Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
-                  else if (Math.abs(ndtMinutes - cotMinutes) < 10) return `${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
-                  else if (Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
-                  else return `${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
-
-
-              }
-
-              if (favRestaurant) is_favorite = true;
-
-              restaurants.push({
-                  restaurant_id: val.id,
-                  restaurant_name: val.restaurant_name,
-                  restaurant_image_url: val.restaurant_image_url,
-                  category: restaurantCategory.name,
-                  avg_food_price: val.avg_food_price,
-                  next_delivery_time,
-                  cut_off_time: getCutOffTime(next_delivery_time),
-                  is_favorite,
-              })
-          };
-
-
-          if (restaurants.length === 0) return res.status(404).json({ status: 404, message: `no restaurants found`, });
-
-
-
-          return res.status(200).json({ status: 200, restaurants });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
@@ -753,81 +734,57 @@ module.exports = {
             });
             }             
 
+            getRestaurantCard(restaurant, customer_id,hotspot_location_id,res,req);
 
-            const restaurants = [];
-            for (const val of restaurant) {
-                let is_favorite = false;
-                const restaurantCategory = await RestaurantCategory.findOne({
-                    where: {
-                        id: val.restaurant_category_id,
-                    }
-                });
-
-                if (req.body.category) {
-                    const catFound = req.body.category.find((cat) => {
-                        return cat === restaurantCategory.name;
-                    });
-
-                    //console.log("Category", catFound)
-                    if (!catFound) continue;
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    },
+    getSearchSuggestion: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
                 }
+            })
 
-                const favRestaurant = await FavRestaurant.findOne({
-                    where: {
-                        restaurant_id: val.id,
-                        customer_id,
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const searchPhrase = req.query.searchPhrase;
+
+            const restaurant = await Restaurant.findAll({
+                where: {
+                    restaurant_name: {
+                        [Op.iLike]: `${searchPhrase}%`,
                     }
-                });
-
-                const hotspotLocation = await HotspotLocation.findOne({
-                    where: {
-                        id: hotspot_location_id,
-                    }
-                });
-
-                const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                    return parseInt(moment().format("HHmmss")) <= parseInt(time.replace(/:/g, ''));
-                });
-
-                const next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
-
-
-
-                const getCutOffTime = (time) => {
-                    let ndtHours = parseInt(time.split(':')[0]);
-                    let ndtMinutes = parseInt(time.split(':')[1]);
-
-                    let cotHours = Math.floor((val.cut_off_time * 60) / 60);
-                    let cotMinutes = (val.cut_off_time * 60) % 60;
-
-                    if (Math.abs(ndtMinutes - cotMinutes) < 10 && Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
-                    else if (Math.abs(ndtMinutes - cotMinutes) < 10) return `${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
-                    else if (Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
-                    else return `${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
-
-
                 }
+            });
 
-                if (favRestaurant) is_favorite = true;
+            const restaurantCategory = await RestaurantCategory.findAll({
+                where: {
+                    name: {
+                        [Op.iLike]: `${searchPhrase}%`,
+                    }
+                }
+            });
 
-                restaurants.push({
-                    restaurant_id: val.id,
-                    restaurant_name: val.restaurant_name,
-                    restaurant_image_url: val.restaurant_image_url,
-                    category: restaurantCategory.name,
-                    avg_food_price: val.avg_food_price,
-                    next_delivery_time,
-                    cut_off_time: getCutOffTime(next_delivery_time),
-                    is_favorite,
-                })
-            };
+            const dishCategory = await DishCategory.findAll({
+                where: {
+                    name: {
+                        [Op.iLike]: `${searchPhrase}%`,
+                    }
+                }
+            });
 
+            const restaurants = restaurant.map(val => val.restaurant_name);
+            const restaurantCategories = restaurantCategory.map(val => val.name);
+            const foodCategories = dishCategory.map(val => val.name);
 
-            if (restaurants.length === 0) return res.status(404).json({ status: 404, message: `no restaurants found`, });
+            const searchSuggestion = { restaurants, restaurantCategories, foodCategories};
 
-            return res.status(200).json({ status: 200, message: `restaurants`, restaurants });
-
-
+            return res.status(200).json({ status: 200, searchSuggestion });
 
         } catch (error) {
             console.log(error);
