@@ -493,16 +493,14 @@ module.exports = {
             if (dishCategory.count === 0) {
                 await DishCategory.bulkCreate(
                     [
-                        { name: "Breakfast" },
-                        { name: "Pizza" },
-                        { name: "Burger" },
-                        { name: "Chinese" },
-                        { name: "Thai" },
-                        { name: "Asian" },
-                        { name: "Indian" },
-                        { name: "Sushi" },
-                        { name: "Italian" },
-                        { name: "Meat" },
+                        { name: "Sushi", image_url:"https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },                        
+                        { name: "Pizza", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
+                        { name: "Burger", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png"  },                        
+                        { name: "Fries", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png"  },
+                        { name: "Meat", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png"  },
+                        { name: "Chinese", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
+                        { name: "Breakfast", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
+                                                
                     ],
                     { returning: ['id'] },
                 );
@@ -510,7 +508,12 @@ module.exports = {
 
             dishCategory = await DishCategory.findAll();
 
-            const dish_categories = await dishCategory.map((val) => val.name);
+            const dish_categories = await dishCategory.map((val) => {
+                return {
+                    name: val.name,
+                    image_url:val.image_url,
+                }
+            });
 
             return res.status(200).json({ status: 200, dish_categories });
         } catch (error) {

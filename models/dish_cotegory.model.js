@@ -24,7 +24,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(45),
             allowNull: false,
         },
-
+        image_url: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         is_deleted: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
