@@ -633,7 +633,7 @@ module.exports = {
                         return cat === restaurantCategory.name;
                     });
 
-                    console.log("Category", catFound)
+                    //console.log("Category", catFound)
                     if (!catFound) continue;
                 }
 

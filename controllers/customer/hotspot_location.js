@@ -190,7 +190,7 @@ module.exports = {
 
           if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
 
-          return res.status(200).json({ status: 200, hotspot_loctions_detail: hotspotLocations.getDataValue('location_detail'), hotspot_dropoff_detail: hotspotDropoff.getDataValue('dropoff_detail'), delivery_shifts: hotspotLocations.delivery_shifts });
+          return res.status(200).json({ status: 200, hotspot_location_id , hotspot_loctions_detail: hotspotLocations.getDataValue('location_detail'), hotspot_dropoff_detail: hotspotDropoff.getDataValue('dropoff_detail'), delivery_shifts: hotspotLocations.delivery_shifts });
 
 
       } catch (error) {
