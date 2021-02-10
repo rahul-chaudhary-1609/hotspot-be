@@ -313,7 +313,7 @@ module.exports = {
 
             if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
 
-            const delivery_shift = req.query.delivery_shift || "12:00 PM";
+            const delivery_shift = req.query.delivery_shift || "12:00:00";
 
             const timeResult = timeSchema.validate({ time: delivery_shift });
 
@@ -554,7 +554,7 @@ module.exports = {
 
           if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
 
-          const delivery_shift = req.query.delivery_shift || "12:00 PM";
+          const delivery_shift = req.query.delivery_shift || "12:00:00";
 
           const timeResult = timeSchema.validate({ time: delivery_shift });
 
@@ -659,7 +659,7 @@ module.exports = {
 
             if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
 
-            const delivery_shift = req.query.delivery_shift || "12:00 PM";
+            const delivery_shift = req.body.delivery_shift || "12:00:00";
 
             const timeResult = timeSchema.validate({ time: delivery_shift });
 

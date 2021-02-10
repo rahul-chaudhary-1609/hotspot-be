@@ -79,7 +79,7 @@ const locationGeometrySchema = Joi.object({
 });
 
 const timeSchema = Joi.object({
-    time: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2} ([AaPp][Mm]))$/).min(7).max(8).messages({
+    time: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
         'string.pattern.base': `Please enter a valid time for delivery shift`,
     }),
 });
