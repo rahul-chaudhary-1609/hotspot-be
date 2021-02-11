@@ -180,6 +180,10 @@ router.get('/get-search-suggestion', customerAuthentication.authenticateCustomer
     return RestaurantController.getSearchSuggestion(req, res);
 });
 
+router.get('/get-search-result', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getSearchResult(req, res);
+});
+
 router.post('/get-hotspot-restaurant-with-filter', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getHotspotRestaurantWithFilter(req, res);
 });
