@@ -1,5 +1,5 @@
 require('dotenv/config');
-const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish } = require('../../models');
+const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish, HotspotOffer } = require('../../models');
 const { locationGeometrySchema, timeSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
@@ -838,6 +838,43 @@ module.exports = {
 
             //return res.status(200).json({ status: 200, customer });
 
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    },
+    getOfferBanner: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            let hotspotOffer = await HotspotOffer.findAndCountAll();
+
+            if (hotspotOffer.count === 0) {
+                await HotspotOffer.bulkCreate(
+                    [
+                        { name: "Sushi Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165522GMT0530.jfif" },
+                        { name: "Pizza Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165558GMT0530.jfif" },
+                        { name: "Burger Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165633GMT0530.jfif" },
+                        { name: "Fries Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165710GMT0530.jfif" },
+                        { name: "Meat Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165757GMT0530.png" },
+                       
+                    ],
+                    { returning: ['id'] },
+                );
+            }
+
+            hotspotOffer = await HotspotOffer.findAll();
+
+            const hotspot_offers = await hotspotOffer.map((val) => {return val.image_url });
+
+            return res.status(200).json({ status: 200, hotspot_offers });
 
         } catch (error) {
             console.log(error);

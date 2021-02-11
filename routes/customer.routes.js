@@ -188,4 +188,8 @@ router.post('/get-hotspot-restaurant-with-filter', customerAuthentication.authen
     return RestaurantController.getHotspotRestaurantWithFilter(req, res);
 });
 
+router.post('/get-offer-banner', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getOfferBanner(req, res);
+});
+
 module.exports=router;
