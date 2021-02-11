@@ -729,35 +729,47 @@ module.exports = {
 
             const searchPhrase = req.query.searchPhrase;
 
-            const restaurant = await Restaurant.findAll({
-                where: {
-                    restaurant_name: {
-                        [Op.iLike]: `${searchPhrase}%`,
+            let searchSuggestion = null;
+
+            if (searchPhrase) {
+
+                const restaurant = await Restaurant.findAll({
+                    where: {
+                        restaurant_name: {
+                            [Op.iLike]: `${searchPhrase}%`,
+                        }
                     }
-                }
-            });
+                });
 
-            const restaurantCategory = await RestaurantCategory.findAll({
-                where: {
-                    name: {
-                        [Op.iLike]: `${searchPhrase}%`,
+                const restaurantCategory = await RestaurantCategory.findAll({
+                    where: {
+                        name: {
+                            [Op.iLike]: `${searchPhrase}%`,
+                        }
                     }
-                }
-            });
+                });
 
-            const dishCategory = await DishCategory.findAll({
-                where: {
-                    name: {
-                        [Op.iLike]: `${searchPhrase}%`,
+                const dishCategory = await DishCategory.findAll({
+                    where: {
+                        name: {
+                            [Op.iLike]: `${searchPhrase}%`,
+                        }
                     }
-                }
-            });
+                });
 
-            const restaurants = restaurant.map(val => val.restaurant_name);
-            const restaurantCategories = restaurantCategory.map(val => val.name);
-            const foodCategories = dishCategory.map(val => val.name);
+                const restaurants = restaurant.map(val => val.restaurant_name);
+                const restaurantCategories = restaurantCategory.map(val => val.name);
+                const foodCategories = dishCategory.map(val => val.name);
 
-            const searchSuggestion = { restaurants, restaurantCategories, foodCategories};
+                searchSuggestion = { restaurants, restaurantCategories, foodCategories };
+            }
+            else {
+                const restaurants = [];
+                const restaurantCategories = [];
+                const foodCategories = [];
+
+                searchSuggestion = { restaurants, restaurantCategories, foodCategories };
+            }
 
             return res.status(200).json({ status: 200, searchSuggestion });
 
