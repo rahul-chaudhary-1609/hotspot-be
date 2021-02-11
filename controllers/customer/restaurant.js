@@ -6,10 +6,11 @@ const randomLocation = require('random-location');
 const fetch = require('node-fetch');
 const moment = require('moment');
 
-const getRestaurantCard =  async (restaurant, customer_id,hotspot_location_id, res, req = null) => {
+const getRestaurantCard =  async (args) => {
     try {
+        console.log("delivery_shift", args.delivery_shift)
         const restaurants = [];
-        for (const val of restaurant) {
+        for (const val of args.restaurant) {
             let is_favorite = false;
             const restaurantCategory = await RestaurantCategory.findOne({
                 where: {
@@ -17,8 +18,8 @@ const getRestaurantCard =  async (restaurant, customer_id,hotspot_location_id, r
                 }
             });
 
-            if (req && req.body.category) {
-                const catFound = req.body.category.find((cat) => {
+            if (args.req && args.req.body.category && args.req.body.category.length!==0) {
+                const catFound = args.req.body.category.find((cat) => {
                     return cat === restaurantCategory.name;
                 });
 
@@ -28,18 +29,19 @@ const getRestaurantCard =  async (restaurant, customer_id,hotspot_location_id, r
             const favRestaurant = await FavRestaurant.findOne({
                 where: {
                     restaurant_id: val.id,
-                    customer_id,
+                    customer_id:args.customer_id,
                 }
             });
 
             const hotspotLocation = await HotspotLocation.findOne({
                 where: {
-                    id: hotspot_location_id,
+                    id: args.hotspot_location_id,
                 }
             });
 
             const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                return parseInt(moment().format("HHmmss")) <= parseInt(time.replace(/:/g, ''));
+                //return parseInt(args.delivery_shift) === parseInt(time.replace(/:/g, ''));
+                return args.delivery_shift === time;
             });
 
             const next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
@@ -75,14 +77,14 @@ const getRestaurantCard =  async (restaurant, customer_id,hotspot_location_id, r
             })
         }
 
-        if (restaurants.length === 0) return res.status(404).json({ status: 404, message: `no restaurants found`, });
+        if (restaurants.length === 0) return args.res.status(404).json({ status: 404, message: `no restaurants found`, });
 
-        return res.status(200).json({ status: 200, restaurants });
+        return args.res.status(200).json({ status: 200, restaurants });
 
 
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        return args.res.status(500).json({ status: 500, message: `Internal Server Error` });
     } 
 
 
@@ -456,16 +458,10 @@ module.exports = {
             const restaurant = await Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
-                    working_hours_from: {
-                        [Op.lte]: delivery_shift,
-                    },
-                    working_hours_to: {
-                        [Op.gte]: delivery_shift,
-                    }
                 }
             });
 
-            getRestaurantCard(restaurant, customer_id, hotspot_location_id,res);
+            getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res });
 
 
         } catch (error) {
@@ -573,16 +569,10 @@ module.exports = {
           const restaurant = await Restaurant.findAll({
               where: {
                   id: restaurant_ids,
-                  working_hours_from: {
-                      [Op.lte]: delivery_shift,
-                  },
-                  working_hours_to: {
-                      [Op.gte]: delivery_shift,
-                  }
               }
           });
 
-          getRestaurantCard(restaurant, customer_id, hotspot_location_id,res);
+          getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res });
 
         } catch (error) {
             console.log(error);
@@ -688,12 +678,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: req.body.max_price,
                         },
-                        working_hours_from: {
-                            [Op.lte]: delivery_shift,
-                        },
-                        working_hours_to: {
-                            [Op.gte]: delivery_shift,
-                        }
+                        
                     },
                     order: [
                         ['avg_food_price', 'DESC'],
@@ -708,12 +693,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: req.body.max_price,
                         },
-                        working_hours_from: {
-                            [Op.lte]: delivery_shift,
-                        },
-                        working_hours_to: {
-                            [Op.gte]: delivery_shift,
-                        }
+                        
                     },
                     order: [
                         ['avg_food_price', 'ASC'],
@@ -724,17 +704,12 @@ module.exports = {
                  restaurant = await Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
-                    working_hours_from: {
-                        [Op.lte]: delivery_shift,
-                    },
-                    working_hours_to: {
-                        [Op.gte]: delivery_shift,
-                    }
+                    
                 }
             });
             }             
 
-            getRestaurantCard(restaurant, customer_id,hotspot_location_id,res,req);
+            getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res, req });
 
             
         } catch (error) {
