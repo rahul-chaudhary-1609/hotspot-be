@@ -836,7 +836,6 @@ module.exports = {
 
             getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res });
 
-            //return res.status(200).json({ status: 200, customer });
 
 
         } catch (error) {
@@ -875,6 +874,101 @@ module.exports = {
             const hotspot_offers = await hotspotOffer.map((val) => {return val.image_url });
 
             return res.status(200).json({ status: 200, hotspot_offers });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    },
+
+    getHotspotRestaurantPickup: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const customer_id = customer.getDataValue('id');
+
+            const hotspot_location_id = req.query.hotspot_location_id;
+
+            if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+
+            const hotspotLocation = await HotspotLocation.findOne({
+                where: {
+                    id: hotspot_location_id,
+                }
+            })
+
+            if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
+
+            const delivery_shift = req.query.delivery_shift || "12:00:00";
+
+            const timeResult = timeSchema.validate({ time: delivery_shift });
+
+            if (timeResult.error) {
+                return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
+            }
+
+            const restaurant = await Restaurant.findAll({
+                where: {
+                    order_type:[2,3],
+                }
+            });
+
+            getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res });
+
+
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    },
+    getHotspotRestaurantDelivery: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const customer_id = customer.getDataValue('id');
+
+            const hotspot_location_id = req.query.hotspot_location_id;
+
+            if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+
+            const hotspotLocation = await HotspotLocation.findOne({
+                where: {
+                    id: hotspot_location_id,
+                }
+            })
+
+            if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
+
+            const delivery_shift = req.query.delivery_shift || "12:00:00";
+
+            const timeResult = timeSchema.validate({ time: delivery_shift });
+
+            if (timeResult.error) {
+                return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
+            }
+
+            const restaurant = await Restaurant.findAll({
+                where: {
+                    order_type: [1, 3],
+                }
+            });
+
+            getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res });
+
+
 
         } catch (error) {
             console.log(error);
