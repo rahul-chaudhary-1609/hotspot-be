@@ -713,7 +713,24 @@ module.exports = {
                 }
             });
 
-            const restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+            let restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+
+            if (req.body.dish_category_id) {
+                const hotspot_restaurant_ids = restaurant_ids;
+                const restaurantDish = await RestaurantDish.findAll({
+                    where: {
+                        dish_category_id: req.body.dish_category_id,
+                    }
+                });
+
+                const dish_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+                console.log("hotspot_restaurant_ids", hotspot_restaurant_ids)
+                console.log("dish_restaurant_ids", dish_restaurant_ids)
+                console.log("restaurant_ids", restaurant_ids)
+
+                restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
+                console.log("restaurant_ids", restaurant_ids)
+            }
 
             let restaurant = [];
 
@@ -747,6 +764,29 @@ module.exports = {
                     ],
                 });
             }
+            else if (req.body.max_price) {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        avg_food_price: {
+                            [Op.lte]: req.body.max_price,
+                        },
+                    },
+                });
+            }
+            else if (req.body.sort_by  && req.body.sort_by === "price low to high") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                    },
+                    order: [
+                        ['avg_food_price', 'ASC'],
+                    ],
+                });
+            }
+            
             else {
                  restaurant = await Restaurant.findAll({
                 where: {
@@ -940,7 +980,7 @@ module.exports = {
 
             const customer_id = customer.getDataValue('id');
 
-            const hotspot_location_id = req.query.hotspot_location_id;
+            const hotspot_location_id = req.body.hotspot_location_id;
 
             if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
@@ -952,7 +992,7 @@ module.exports = {
 
             if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
 
-            const delivery_shift = req.query.delivery_shift || "12:00:00";
+            const delivery_shift = req.body.delivery_shift || "12:00:00";
 
             const timeResult = timeSchema.validate({ time: delivery_shift });
 
@@ -960,13 +1000,101 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
             }
 
-            const restaurant = await Restaurant.findAll({
+            const restaurantHotspot = await RestaurantHotspot.findAll({
+                attributes: [
+                    'restaurant_id'
+                ],
                 where: {
-                    order_type:[2,3],
+                    hotspot_location_id
                 }
             });
 
-            getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res });
+            let restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+
+            if (req.body.dish_category_id) {
+                const hotspot_restaurant_ids = restaurant_ids;
+                const restaurantDish = await RestaurantDish.findAll({
+                    where: {
+                        dish_category_id: req.body.dish_category_id,
+                    }
+                });
+
+                const dish_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+               
+                restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
+                console.log("restaurant_ids", restaurant_ids)
+            }
+
+            let restaurant = [];
+
+            if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price high to low") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type:[2,3],
+                        avg_food_price: {
+                            [Op.lte]: req.body.max_price,
+                        },
+
+                    },
+                    order: [
+                        ['avg_food_price', 'DESC'],
+                    ],
+                });
+            }
+            else if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price low to high") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [2, 3],
+                        avg_food_price: {
+                            [Op.lte]: req.body.max_price,
+                        },
+
+                    },
+                    order: [
+                        ['avg_food_price', 'ASC'],
+                    ],
+                });
+            }
+            else if (req.body.max_price) {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [2, 3],
+                        avg_food_price: {
+                            [Op.lte]: req.body.max_price,
+                        },
+                    },
+                });
+            }
+            else if (req.body.sort_by && req.body.sort_by === "price low to high") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [2, 3],
+                    },
+                    order: [
+                        ['avg_food_price', 'ASC'],
+                    ],
+                });
+            }
+
+            else {
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [2, 3],
+
+                    }
+                });
+            }
+
+            getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res, req });
 
 
 
@@ -984,10 +1112,10 @@ module.exports = {
             })
 
             if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
-
+            
             const customer_id = customer.getDataValue('id');
 
-            const hotspot_location_id = req.query.hotspot_location_id;
+            const hotspot_location_id = req.body.hotspot_location_id;
 
             if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
@@ -999,7 +1127,7 @@ module.exports = {
 
             if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
 
-            const delivery_shift = req.query.delivery_shift || "12:00:00";
+            const delivery_shift = req.body.delivery_shift || "12:00:00";
 
             const timeResult = timeSchema.validate({ time: delivery_shift });
 
@@ -1007,13 +1135,101 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
             }
 
-            const restaurant = await Restaurant.findAll({
+            const restaurantHotspot = await RestaurantHotspot.findAll({
+                attributes: [
+                    'restaurant_id'
+                ],
                 where: {
-                    order_type: [1, 3],
+                    hotspot_location_id
                 }
             });
 
-            getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res });
+            let restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+
+            if (req.body.dish_category_id) {
+                const hotspot_restaurant_ids = restaurant_ids;
+                const restaurantDish = await RestaurantDish.findAll({
+                    where: {
+                        dish_category_id: req.body.dish_category_id,
+                    }
+                });
+
+                const dish_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+
+                restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
+                console.log("restaurant_ids", restaurant_ids)
+            }
+
+            let restaurant = [];
+
+            if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price high to low") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [1, 3],
+                        avg_food_price: {
+                            [Op.lte]: req.body.max_price,
+                        },
+
+                    },
+                    order: [
+                        ['avg_food_price', 'DESC'],
+                    ],
+                });
+            }
+            else if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price low to high") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [1, 3],
+                        avg_food_price: {
+                            [Op.lte]: req.body.max_price,
+                        },
+
+                    },
+                    order: [
+                        ['avg_food_price', 'ASC'],
+                    ],
+                });
+            }
+            else if (req.body.max_price) {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [1, 3],
+                        avg_food_price: {
+                            [Op.lte]: req.body.max_price,
+                        },
+                    },
+                });
+            }
+            else if (req.body.sort_by && req.body.sort_by === "price low to high") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [1, 3],
+                    },
+                    order: [
+                        ['avg_food_price', 'ASC'],
+                    ],
+                });
+            }
+
+            else {
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [1, 3],
+
+                    }
+                });
+            }
+
+            getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res, req });
 
 
 
@@ -1072,7 +1288,6 @@ module.exports = {
                 }
             });
 
-            console.log("restaurantDish", restaurantDish)
             const restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
 
             const restaurant = await Restaurant.findAll({

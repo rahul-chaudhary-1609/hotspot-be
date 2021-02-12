@@ -196,11 +196,11 @@ router.post('/get-hotspot-restaurant-with-filter', customerAuthentication.authen
     return RestaurantController.getHotspotRestaurantWithFilter(req, res);
 });
 
-router.get('/get-hotspot-restaurant-pickup', customerAuthentication.authenticateCustomer, (req, res) => {
+router.post('/get-hotspot-restaurant-pickup', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getHotspotRestaurantPickup(req, res);
 });
 
-router.get('/get-hotspot-restaurant-delivery', customerAuthentication.authenticateCustomer, (req, res) => {
+router.post('/get-hotspot-restaurant-delivery', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getHotspotRestaurantDelivery(req, res);
 });
 
