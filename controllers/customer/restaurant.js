@@ -394,6 +394,39 @@ module.exports = {
 
             const order_types = [1, 2, 3];
 
+            let dishCategory = await DishCategory.findAndCountAll();
+
+            if (dishCategory.count === 0) {
+                await DishCategory.bulkCreate(
+                    [
+                        { name: "Sushi", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },
+                        { name: "Pizza", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
+                        { name: "Burger", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png" },
+                        { name: "Fries", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png" },
+                        { name: "Meat", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png" },
+                        { name: "Chinese", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
+                        { name: "Breakfast", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
+
+                    ],
+                    { returning: ['id'] },
+                );
+            }
+
+            dishCategory = await DishCategory.findAll();
+
+            const dish_category_ids = await dishCategory.map(val=>val.id);
+
+            const dishes=[
+                { name: "Food", price: 200, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },
+                { name: "Food", price: 400, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
+                { name: "Food", price: 100, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png" },
+                { name: "Food", price: 150, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png" },
+                { name: "Food", price: 400, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png" },
+                { name: "Food", price: 300, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
+                { name: "Food", price: 250, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
+
+            ]
+
 
             let restaurantHotspot = await RestaurantHotspot.findAndCountAll({
                 where: {
@@ -439,8 +472,21 @@ module.exports = {
 
                 })
 
-                //console.log("restaurantHotspotRows", restaurantHotspotRows);
+                const restaurantDishRows = restaurantBulkCreate.map((val) => {
+                    const dish = dishes[Math.floor(Math.random() * dishes.length)]
+                    return {
+                        name: dish.name,
+                        price: dish.price,
+                        description: dish.descrption,
+                        restaurant_id: val.id,
+                        dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
+                        image_url:dish.image_url,
+                    }
 
+                })
+
+                //console.log("restaurantHotspotRows", restaurantHotspotRows);
+                await RestaurantDish.bulkCreate(restaurantDishRows);
                 await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
             }
 
@@ -613,6 +659,7 @@ module.exports = {
 
             const dish_categories = await dishCategory.map((val) => {
                 return {
+                    dish_category_id:val.id,
                     name: val.name,
                     image_url:val.image_url,
                 }
@@ -970,6 +1017,73 @@ module.exports = {
 
 
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    },
+    getHotspotRestaurantWithQuickFilter: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const customer_id = customer.getDataValue('id');
+
+            const hotspot_location_id = req.query.hotspot_location_id;
+
+            if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+
+            const hotspotLocation = await HotspotLocation.findOne({
+                where: {
+                    id: hotspot_location_id,
+                }
+            })
+
+            if (!hotspotLocation) return res.status(404).json({ status: 404, message: `No hotspot found with the provided id` });
+
+            const dish_category_id = req.query.dish_category_id;
+
+            if (!dish_category_id || isNaN(dish_category_id)) return res.status(400).json({ status: 400, message: `provide a valid dish category id` });
+
+            const dishCategory = await DishCategory.findOne({
+                where: {
+                    id: dish_category_id,
+                }
+            })
+
+            if (!dishCategory) return res.status(404).json({ status: 404, message: `No dish found with the provided id` });
+
+            const delivery_shift = req.query.delivery_shift || "12:00:00";
+
+            const timeResult = timeSchema.validate({ time: delivery_shift });
+
+            if (timeResult.error) {
+                return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
+            }
+
+            const restaurantDish = await RestaurantDish.findAll({
+                where: {
+                    dish_category_id,
+                }
+            });
+
+            console.log("restaurantDish", restaurantDish)
+            const restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+
+            const restaurant = await Restaurant.findAll({
+                where: {
+                    id: restaurant_ids,
+                }
+            });
+
+            getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, res });
+
+            
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });

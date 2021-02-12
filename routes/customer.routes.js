@@ -204,6 +204,10 @@ router.get('/get-hotspot-restaurant-delivery', customerAuthentication.authentica
     return RestaurantController.getHotspotRestaurantDelivery(req, res);
 });
 
+router.get('/get-hotspot-restaurant-with-quick-filter', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getHotspotRestaurantWithQuickFilter(req, res);
+});
+
 router.get('/get-offer-banner', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getOfferBanner(req, res);
 });
