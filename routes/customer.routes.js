@@ -110,6 +110,10 @@ router.put('/customer-change-password', customerAuthentication.authenticateCusto
     return customerLoginController.changeCustomerPassword(req, res);
 });
 
+router.get('/check-default-address', customerAuthentication.authenticateCustomer, (req, res) => {
+    return customerLoginController.checkDefaultAddress(req, res);
+});
+
 router.put('/customer-change-profile-picture', customerAuthentication.authenticateCustomer, customerMulter.upload, (req, res) => {
     return customerLoginController.changeCustomerPicture(req, res);
 });
@@ -145,6 +149,10 @@ router.get('/check-hotspot-location', customerAuthentication.authenticateCustome
 
 router.get('/get-hotspot-dropoff', customerAuthentication.authenticateCustomer, (req, res) => {
     return HotspotLocationController.getHotspotDropoff(req, res);
+});
+
+router.get('/get-default-hotspot', customerAuthentication.authenticateCustomer, (req, res) => {
+    return HotspotLocationController.getDefaultHotspot(req, res);
 });
 
 

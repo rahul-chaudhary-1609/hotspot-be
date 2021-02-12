@@ -1387,6 +1387,36 @@ module.exports = {
         }
     },
 
+    checkDefaultAddress: async (req, res) => {
+      try {
+          const customer = await Customer.findOne({
+              where: {
+                  email: req.user.email,
+                  
+              }
+          })
+
+          let isDefaultFound = false;
+
+          if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+
+          const customerFavLocation = await CustomerFavLocation.findOne({
+              where: {
+                  customer_id: customer.id,
+                  default_address: true,
+              }
+          })
+
+          if (customerFavLocation) isDefaultFound = true;
+
+          return res.status(200).json({ status: 200, isDefaultFound });
+
+      } catch (error) {
+          console.log(error);
+          return res.status(500).json({ status: 500, message: `Internal Server Error` });
+      } 
+    },
+
     feedbackCustomer: async(req, res) => {
         try {
             const customer = await Customer.findOne({

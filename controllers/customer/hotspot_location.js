@@ -1,5 +1,5 @@
 require('dotenv/config');
-const { Customer, HotspotLocation, HotspotDropoff } = require('../../models');
+const { Customer, CustomerFavLocation, HotspotLocation, HotspotDropoff } = require('../../models');
 const { locationGeometrySchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
@@ -71,7 +71,7 @@ module.exports = {
                 const full_address = {
                     city: body.address.county,
                     state: body.address.state,
-                    postal_code: body.address.posdtcode,
+                    postal_code: body.address.postcode,
                     country: body.address.country
                 }
                 if (location_detail) {
@@ -190,7 +190,67 @@ module.exports = {
 
           if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
 
-          return res.status(200).json({ status: 200, hotspot_location_id , hotspot_loctions_detail: hotspotLocations.getDataValue('location_detail'), hotspot_dropoff_detail: hotspotDropoff.getDataValue('dropoff_detail'), delivery_shifts: hotspotLocations.delivery_shifts });
+          const address = hotspotLocations.location_detail;
+          const city = hotspotLocations.full_address.city;
+          const state = hotspotLocations.full_address.state;
+          const postal_code = hotspotLocations.full_address.postal_code;
+          const country = hotspotLocations.full_address.country;
+          const location_geometry = hotspotLocations.location;
+          const customer_id = customer.id;
+
+          // const customerFavLocation = await CustomerFavLocation.create({
+          //     address, city, state, postal_code, country, location_geometry, customer_id: customer_id
+          // });
+
+          const [customerFavLocation, created] = await CustomerFavLocation.findOrCreate({
+              where: {
+
+                  location_geometry, customer_id: customer_id
+              },
+              defaults: {
+                  address, city, state, postal_code, country, location_geometry, customer_id: customer_id
+              }
+          });
+
+          await HotspotLocation.update({
+              is_added: true
+          }, {
+              where: {
+                  location: location_geometry,
+                  customer_id: customer.getDataValue('id')
+              },
+              returning: true,
+          });
+
+          await CustomerFavLocation.update({
+              default_address: false
+          }, {
+              where: {
+                  default_address: true
+              },
+              returning: true,
+          });
+
+          await CustomerFavLocation.update({
+              default_address: true
+          }, {
+              where: {
+                  address, city, state, country, postal_code, location_geometry
+              },
+              returning: true,
+          });
+
+          await Customer.update({
+              address, city, state, country, postal_code,
+          }, {
+              where: {
+                  id: customer.getDataValue('id')
+              },
+              returning: true,
+          });
+
+
+          return res.status(200).json({ status: 200,hotspot_location_id , hotspot_loctions_detail: hotspotLocations.location_detail, hotspot_dropoff_detail: hotspotDropoff.dropoff_detail, delivery_shifts: hotspotLocations.delivery_shifts });
 
 
       } catch (error) {
@@ -198,4 +258,43 @@ module.exports = {
           return res.status(500).json({ status: 500, message: `Internal Server Error` });
       } 
     },
+    getDefaultHotspot: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const customerFavLocation = await CustomerFavLocation.findOne({
+                where: {
+                    customer_id: customer.id,
+                    default_address: true,
+                }
+            });
+
+            const hotspotLocations = await HotspotLocation.findOne({
+                where: {
+                    location: customerFavLocation.location_geometry
+                }
+            });
+
+            const hotspotDropoff = await HotspotDropoff.findOne({
+                where: {
+                    hotspot_location_id: hotspotLocations.id
+                }
+            });
+
+            if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
+
+
+            return res.status(200).json({ status: 200, hotspot_location_id: hotspotLocations.id, hotspot_loctions_detail: hotspotLocations.location_detail, hotspot_dropoff_detail: hotspotDropoff.dropoff_detail, delivery_shifts: hotspotLocations.delivery_shifts });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        } 
+    }
 }
