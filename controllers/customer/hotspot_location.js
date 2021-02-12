@@ -65,6 +65,7 @@ module.exports = {
 
                 const body = await response.json();
                 console.log("body: ", body);
+                const name = body.display_name.split(',')[0];
                 const location_detail = body.display_name;
                 const location = [nP.latitude, nP.longitude];
                 const delivery_shifts = available_delivery_shifts[Math.floor(Math.random() * available_delivery_shifts.length)];
@@ -78,7 +79,7 @@ module.exports = {
 
                     
                         const hotspotLocationID = await HotspotLocation.create({
-                            location, location_detail, full_address, delivery_shifts, customer_id
+                            name,location, location_detail, full_address, delivery_shifts, customer_id
                         });
                         const hotspot_location_id = hotspotLocationID.getDataValue('id');
                         const dropoff_detail = location_detail.split(',').slice(0,2).join(',');
@@ -100,6 +101,7 @@ module.exports = {
 
             const locations = hotspotLocations.map((val) => {
                 return {
+                    name: val.name,
                     formatted_address: val.location_detail,
                     full_address: val.full_address,
                     location_geometry: { latitude: val.location[0], longitude: val.location[1] },
@@ -147,6 +149,7 @@ module.exports = {
             const locations = hotspotLocations.map((val) => {
                 return {
                     hotspot_location_id: val.id,
+                    name:val.name,
                     formatted_address: val.location_detail,
                     location_geometry: { latitude: val.location[0], longitude: val.location[1] },
                 }
@@ -182,13 +185,15 @@ module.exports = {
               }
           });
 
-          const hotspotDropoff = await HotspotDropoff.findOne({
+          const hotspotDropoff = await HotspotDropoff.findAll({
               where: {
                   hotspot_location_id
               }
           });
 
           if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
+
+          const dropoffs = hotspotDropoff.map(val => val.dropoff_detail);
 
           const address = hotspotLocations.location_detail;
           const city = hotspotLocations.full_address.city;
@@ -249,8 +254,16 @@ module.exports = {
               returning: true,
           });
 
+          const hotspotLocationDetails = {
+              hotspot_location_id,
+              name: hotspotLocations.name,
+              formatted_address: hotspotLocations.location_detail,
+              dropoffs,
+              delivery_shifts: hotspotLocations.delivery_shifts
+          }
 
-          return res.status(200).json({ status: 200,hotspot_location_id , hotspot_loctions_detail: hotspotLocations.location_detail, hotspot_dropoff_detail: hotspotDropoff.dropoff_detail, delivery_shifts: hotspotLocations.delivery_shifts });
+
+          return res.status(200).json({ status: 200, hotspotLocationDetails });
 
 
       } catch (error) {
@@ -281,7 +294,7 @@ module.exports = {
                 }
             });
 
-            const hotspotDropoff = await HotspotDropoff.findOne({
+            const hotspotDropoff = await HotspotDropoff.findAll({
                 where: {
                     hotspot_location_id: hotspotLocations.id
                 }
@@ -289,8 +302,18 @@ module.exports = {
 
             if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
 
+            const dropoffs = hotspotDropoff.map(val => val.dropoff_detail);
 
-            return res.status(200).json({ status: 200, hotspot_location_id: hotspotLocations.id, hotspot_loctions_detail: hotspotLocations.location_detail, hotspot_dropoff_detail: hotspotDropoff.dropoff_detail, delivery_shifts: hotspotLocations.delivery_shifts });
+            const hotspotLocationDetails = {
+                hotspot_location_id: `${hotspotLocations.id}`,
+                name: hotspotLocations.name,
+                formatted_address: hotspotLocations.location_detail,
+                dropoffs,
+                delivery_shifts: hotspotLocations.delivery_shifts
+            }
+
+
+            return res.status(200).json({ status: 200, hotspotLocationDetails });
 
         } catch (error) {
             console.log(error);
