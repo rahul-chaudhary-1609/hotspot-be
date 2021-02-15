@@ -127,69 +127,426 @@
               ],
               "responses": {}
             }
-          },
-          "/admin/resetPassword": {
-            "post": {
-              "tags": [
-                "admin"
-              ],
-              "description": "Admin reset password",
-              "consumes": [
-                "application/x-www-form-urlencoded"
-              ],
-              "parameters": [
-                {
-                  "name": "otp",
-                  "in": "formData",
-                  "description": "forget pass otp",
-                  "required": true,
-                  "type": "number"
-                },
-                {
-                  "name": "email",
-                  "in": "formData",
-                  "description": "email id",
-                  "required": true,
-                  "type": "string"
-                },
-                {
-                  "name": "password",
-                  "in": "formData",
-                  "description": "password",
-                  "required": true,
-                  "type": "string"
-                },
-                {
-                  "name": "confirmPassword",
-                  "in": "formData",
-                  "description": "confirmPassword",
-                  "required": true,
-                  "type": "string"
-                }
-              ],
-              "responses": {}
-            }
-          },
-          "/admin/logout": {
-            "get": {
-              "tags": [
-                "admin"
-              ],
-              "description": "Api to get admin logout",
-              "consumes": [
-                "application/x-www-form-urlencoded"
-              ],
-              "parameters": [
-                {
-                  "name": "Authorization",
-                  "in": "header",
-                  "description": "Enter jwt token for authentication",
-                  "required": true,
-                  "type": "string"
-                }
-              ],
-              "responses": {}
-            }
+        },
+        "/admin/resetPassword": {
+          "post": {
+            "tags": [
+              "admin"
+            ],
+            "description": "Admin reset password",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "otp",
+                "in": "formData",
+                "description": "forget pass otp",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "email id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "password",
+                "in": "formData",
+                "description": "password",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "confirmPassword",
+                "in": "formData",
+                "description": "confirmPassword",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
           }
+        },
+        "/admin/logout": {
+          "get": {
+            "tags": [
+              "admin"
+            ],
+            "description": "Api to get admin logout",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/restaurantCategoryList": {
+          "get": {
+            "tags": [
+              "admin"
+            ],
+            "description": "Api to get restaurant category list",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/addNewRestaurant": {
+          "post": {
+          "tags": [
+              "admin"
+          ],
+          "description": "To add a new restaurant",
+          "consumes": [
+          "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                  "name": "restaurant_name",
+                  "in": "formData",
+                  "description": "restaurant name",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "restaurant_image_url",
+                  "in": "formData",
+                  "description": "restaurant image url",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "owner_name",
+                  "in": "formData",
+                  "description": "owner name",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "owner_email",
+                  "in": "formData",
+                  "description": "owner email",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "owner_phone",
+                  "in": "formData",
+                  "description": "owner phone",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "country_code",
+                  "in": "formData",
+                  "description": "country code",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                "name": "lat",
+                "in": "formData",
+                "description": "location lattitude",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "long",
+                "in": "formData",
+                "description": "location longitude",
+                "required": true,
+                "type": "number"
+              },
+              {
+                  "name": "address",
+                  "in": "formData",
+                  "description": "address",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "deliveries_per_shift",
+                  "in": "formData",
+                  "description": "deliveries per shift in number",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "cut_off_time",
+                  "in": "formData",
+                  "description": "cut off time in HH:MM",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "working_hours_from",
+                  "in": "formData",
+                  "description": "working hours from in HH:MM",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "working_hours_to",
+                  "in": "formData",
+                  "description": "working hours to in HH:MM",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "order_type",
+                  "in": "formData",
+                  "description": "order type",
+                  "required": true,
+                  "type": "string"
+              },
+              {
+                  "name": "restaurant_category_id",
+                  "in": "formData",
+                  "description": "restaurant category id in number",
+                  "required": true,
+                  "type": "string"
+              }
+              ],
+              "responses": {}
+          }
+        },
+        "/admin/getRestaurant": {
+          "get": {
+            "tags": [
+              "admin"
+            ],
+            "description": "Api to get restaurant list",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "searchKey",
+                "in": "query",
+                "description": "search restaurant by its name, email, phone, owner name",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "curent page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/editRestaurant/{reataurantId}": {
+          "put": {
+          "tags": [
+              "admin"
+          ],
+          "description": "To edit a existing restaurant",
+          "consumes": [
+          "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "reataurantId",
+                "in": "path",
+                "description": "restaurant id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                  "name": "restaurant_name",
+                  "in": "formData",
+                  "description": "restaurant name",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "restaurant_image_url",
+                  "in": "formData",
+                  "description": "restaurant image url",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "owner_name",
+                  "in": "formData",
+                  "description": "owner name",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "owner_email",
+                  "in": "formData",
+                  "description": "owner email",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "owner_phone",
+                  "in": "formData",
+                  "description": "owner phone",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "country_code",
+                  "in": "formData",
+                  "description": "country code",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                "name": "lat",
+                "in": "formData",
+                "description": "location lattitude",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "long",
+                "in": "formData",
+                "description": "location longitude",
+                "required": false,
+                "type": "number"
+              },
+              {
+                  "name": "address",
+                  "in": "formData",
+                  "description": "address",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "deliveries_per_shift",
+                  "in": "formData",
+                  "description": "deliveries per shift in number",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "cut_off_time",
+                  "in": "formData",
+                  "description": "cut off time in HH:MM",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "working_hours_from",
+                  "in": "formData",
+                  "description": "working hours from in HH:MM",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "working_hours_to",
+                  "in": "formData",
+                  "description": "working hours to in HH:MM",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "order_type",
+                  "in": "formData",
+                  "description": "order type",
+                  "required": false,
+                  "type": "string"
+              },
+              {
+                  "name": "restaurant_category_id",
+                  "in": "formData",
+                  "description": "restaurant category id in number",
+                  "required": false,
+                  "type": "string"
+              }
+              ],
+              "responses": {}
+          }
+        },
+        "/admin/changeRestaurantStatus": {
+          "put": {
+            "tags": [
+              "admin"
+            ],
+            "description": "Api to get restaurant status changed",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurantId",
+                "in": "formData",
+                "description": "restaurant id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "actionType",
+                "in": "formData",
+                "description": "activate/deactivate/delete",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        }
     }
 }

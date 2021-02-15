@@ -81,3 +81,17 @@ module.exports.bcryptPassword = async (myPlaintextPassword) => {
 module.exports.comparePassword = async (myPlaintextPassword, hash) => {
     return bcrypt.compare(myPlaintextPassword, hash);
 }
+
+module.exports.pagination = (page, page_size) => {
+    if (page_size) {
+        page_size = Number(page_size)
+    } else {
+        page_size = 10
+    }
+    if (page) {
+        page = ((Number(page) - 1) * Number(page_size))
+    } else {
+        page = 0
+    }
+    return [page, page_size];
+}

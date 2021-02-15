@@ -3,6 +3,7 @@ const router=express.Router();
 const { check, body, query, param, oneOf, validationResult } = require('express-validator');
 
 const adminLoginController = require('../controllers/admin/login');
+const adminRestaurantController = require('../controllers/admin/restaurantManagement');
 const adminMiddleware = require('../middlewares/adminMiddleware');
 
 router.route('/login').post([
@@ -28,5 +29,20 @@ router.route('/resetPassword').post([
 
 router.route('/logout').get([adminMiddleware.checkToken
 ], adminLoginController.logout);
+
+router.route('/restaurantCategoryList').get([adminMiddleware.checkToken
+], adminRestaurantController.restaurantCategoryList);
+
+router.route('/addRestaurant').post([adminMiddleware.checkToken
+], adminRestaurantController.addRestaurant);
+
+router.route('/listRestaurant').get([adminMiddleware.checkToken
+], adminRestaurantController.listRestaurant);
+
+router.route('/changeRestaurantStatus').put([adminMiddleware.checkToken
+], adminRestaurantController.changeRestaurantStatus);
+
+router.route('/editRestaurant').put([adminMiddleware.checkToken
+], adminRestaurantController.editRestaurant);
 
 module.exports = router;
