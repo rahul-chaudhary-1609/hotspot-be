@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         location: {
-            type: DataTypes.GEOGRAPHY("POINT"),
+            type: DataTypes.ARRAY(DataTypes.FLOAT),
             allowNull: false,
         },
         address: {

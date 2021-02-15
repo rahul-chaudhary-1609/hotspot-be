@@ -128,11 +128,11 @@ module.exports = {
           const categories = await restaurantCategory.map((val) => val.id);
 
           const owners = [
-              { name: 'Alan Mehew', email: 'khana.khajana@hotspot.com' },
-              { name: 'Seshu Madabushi', email: 'tost.host@hotspot.com' },
-              { name: 'Kenneth Marikos', email: 'sweets.here@hotspot.com' },
-              { name: 'Ray Kroc', email: 'kroc.foods@hotspot.com' },
-              { name:'Steve Ells',email:'steve.kichen@hotspot.com'},
+              { name: 'Alan Mehew', country_code: '+91', phone: "9989898989", email: 'khana.khajana@hotspot.com' },
+              { name: 'Seshu Madabushi', country_code: '+91', phone: "9989898989", email: 'tost.host@hotspot.com' },
+              { name: 'Kenneth Marikos', country_code: '+91', phone: "9989898989",email: 'sweets.here@hotspot.com' },
+              { name: 'Ray Kroc', country_code: '+91', phone: "9989898989", email: 'kroc.foods@hotspot.com' },
+              { name: 'Steve Ells', country_code: '+91', phone: "9989898989",email:'steve.kichen@hotspot.com'},
           ];
 
           const restaurant_image_urls = [
@@ -198,6 +198,8 @@ module.exports = {
                       restaurant_name: item.venue.name,
                       restaurant_image_url: restaurant_image_urls[Math.floor(Math.random() * restaurant_image_urls.length)],
                       owner_name: owner.name,
+                      country_code: owner.country_code,
+                      owner_phone:owner.phone,
                       owner_email: owner.email,
                       address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
                       location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
@@ -346,11 +348,11 @@ module.exports = {
             const categories = await restaurantCategory.map((val) => val.id);
 
             const owners = [
-                { name: 'Alan Mehew', email: 'khana.khajana@hotspot.com' },
-                { name: 'Seshu Madabushi', email: 'tost.host@hotspot.com' },
-                { name: 'Kenneth Marikos', email: 'sweets.here@hotspot.com' },
-                { name: 'Ray Kroc', email: 'kroc.foods@hotspot.com' },
-                { name: 'Steve Ells', email: 'steve.kichen@hotspot.com' },
+                { name: 'Alan Mehew',country_code:'+91',phone:"9989898989" ,email: 'khana.khajana@hotspot.com' },
+                { name: 'Seshu Madabushi', country_code: '+91', phone: "9989898989" , email: 'tost.host@hotspot.com' },
+                { name: 'Kenneth Marikos', country_code: '+91', phone: "9989898989", email: 'sweets.here@hotspot.com' },
+                { name: 'Ray Kroc', country_code: '+91', phone: "9989898989", email: 'kroc.foods@hotspot.com' },
+                { name: 'Steve Ells', country_code: '+91', phone: "9989898989", email: 'steve.kichen@hotspot.com' },
             ];
 
             const restaurant_image_urls = [
@@ -449,6 +451,8 @@ module.exports = {
                         restaurant_name: item.venue.name,
                         restaurant_image_url: restaurant_image_urls[Math.floor(Math.random() * restaurant_image_urls.length)],
                         owner_name: owner.name,
+                        country_code: owner.country_code,
+                        owner_phone: owner.phone,
                         owner_email: owner.email,
                         address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
                         location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
