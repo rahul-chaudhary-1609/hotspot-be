@@ -626,6 +626,40 @@ module.exports = {
         }  
     },
 
+    getRestaurantCategory: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            let restaurantCategory = await RestaurantCategory.findAndCountAll();
+
+            if (restaurantCategory.count === 0) {
+                await RestaurantCategory.bulkCreate(
+                    [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" }, { name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
+                );
+            }
+
+            restaurantCategory = await RestaurantCategory.findAll();
+
+            const categories = await restaurantCategory.map((val) => {
+                return {
+                    restaurant_category_id: val.id,
+                    name:val.name,
+                }
+            });
+
+            return res.status(200).json({ status: 200, categories });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }  
+    },
+
     getFoodCategory: async (req, res) => {
         try {
             const customer = await Customer.findOne({

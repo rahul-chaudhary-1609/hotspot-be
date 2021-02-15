@@ -184,6 +184,10 @@ router.get('/get-food-category', customerAuthentication.authenticateCustomer, (r
     return RestaurantController.getFoodCategory(req, res);
 });
 
+router.get('/get-restaurant-category', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getRestaurantCategory(req, res);
+});
+
 router.get('/get-search-suggestion', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getSearchSuggestion(req, res);
 });
