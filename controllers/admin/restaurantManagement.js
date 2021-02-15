@@ -1,6 +1,7 @@
 const { Admin, Restaurant, RestaurantCategory } = require('../../models');
 const { ReE, ReS, pagination, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utilityServices/utilityFunctions');
 const { Op } = require("sequelize");
+const adminAWS = require('../../utilityServices/aws');
 
 module.exports = {
     listRestaurant: async(req, res) => {
@@ -44,13 +45,14 @@ module.exports = {
         try {
             let restaurantExists = await Restaurant.findOne({where: {owner_email: req.body.owner_email}});
             if(!restaurantExists) {
-                const point = { type: 'Point', coordinates: [] };
-                point.coordinates.push(req.body.long);
-                point.coordinates.push(req.body.lat);
-                req.body.location = point;
+                // const point = { type: 'Point', coordinates: [] };
+                // point.coordinates.push(req.body.long);
+                // point.coordinates.push(req.body.lat);
+                //req.body.location = point;
+                req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
                 let restaurantCreated = await Restaurant.create(req.body);
                 if(restaurantCreated)
-                ReS(res, {}, 200, "Restaurant added successfully.");
+                 ReS(res, {}, 200, "Restaurant added successfully.");
             } else {
                 ReE(res, "Restaurant with this email id already exists", 401, {});
             }
@@ -105,10 +107,11 @@ module.exports = {
             let restaurantExists = await Restaurant.findOne(query);
             if(restaurantExists) {
                 if(req.body.lat && req.body.long) {
-                    const point = { type: 'Point', coordinates: [] };
-                    point.coordinates.push(req.body.long);
-                    point.coordinates.push(req.body.lat);
-                    req.body.location = point;
+                    // const point = { type: 'Point', coordinates: [] };
+                    // point.coordinates.push(req.body.long);
+                    // point.coordinates.push(req.body.lat);
+                    // req.body.location = point;
+                    req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
                 }
                 await Restaurant.update(updates, query);
                 ReS(res, {}, 200, "Restaurant data updated successfully.");
@@ -121,12 +124,33 @@ module.exports = {
         }
     },
 
-    uploadSingleFile: async (req, res) => {
+    uploadRestaurantImage: async (req, res) => {
         try {
-            
-        } catch (err) {
-            console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            let now = new Date();
+            now = now.toString();
+            now = now.replace(/:/g, '');
+            now = now.replace(/ /g, '');
+            now = now.replace('+', '');
+            now = now.substr(0, 25);
+
+            const pictureName = req.file.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `${now}.${pictureType}`;
+            const pictureBuffer = req.file.buffer;
+
+            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+
+            adminAWS.s3.upload(params, async (error, data) => {
+                if (error) return res.status(500).json({ status: 500, message: `Internal Server Error`,error });
+
+                const profile_picture_url = data.Location;
+                
+
+                return res.status(200).json({ status: 200, message: "picture uploaded successfully", profile_picture_url: profile_picture_url })
+            })
+        } catch (error) {
+            console.log(error );
+            return res.status(500).json({ status: 500, message: `Internal Server Error`, error });
         }
     },
 

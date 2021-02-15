@@ -45,4 +45,7 @@ router.route('/changeRestaurantStatus').put([adminMiddleware.checkToken
 router.route('/editRestaurant').put([adminMiddleware.checkToken
 ], adminRestaurantController.editRestaurant);
 
+router.route('/uploadRestaurantImage').put([adminMiddleware.checkToken,adminMiddleware.upload
+], adminRestaurantController.uploadRestaurantImage);
+
 module.exports = router;

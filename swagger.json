@@ -547,6 +547,34 @@
             ],
             "responses": {}
           }
+        },
+        "/admin/uploadRestaurantImage": {
+          "put": {
+            "tags": [
+              "admin"
+            ],
+            "description": "Api to upload restaurant image",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "picture",
+                "in": "formData",
+                "description": "upload image file",
+                "required": true,
+                "type": "file"
+              }
+            ],
+            "responses": {}
+          }
         }
     }
 }

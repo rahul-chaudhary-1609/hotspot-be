@@ -73,11 +73,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         restaurant_category_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
         },
         customer_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
         },
         status: {
             type: DataTypes.INTEGER,
