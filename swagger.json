@@ -566,7 +566,7 @@
                 "type": "string"
               },
               {
-                "name": "picture",
+                "name": "image",
                 "in": "formData",
                 "description": "upload image file",
                 "required": true,

@@ -41,5 +41,5 @@ module.exports =
         res.json({ success: false, message: 'No token provided' });
       }   
   },
-  upload: multer({ storage }).single('picture'), 
+  upload: multer({ storage }).single('image'), 
 }
