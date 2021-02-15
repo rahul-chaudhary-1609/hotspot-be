@@ -436,7 +436,7 @@ module.exports = {
 
             if (restaurantHotspot.count === 0) {
 
-                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=20&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
+                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=40&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
 
                 const response = await fetch(`${URL}`);
 
@@ -724,12 +724,8 @@ module.exports = {
                 });
 
                 const dish_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
-                console.log("hotspot_restaurant_ids", hotspot_restaurant_ids)
-                console.log("dish_restaurant_ids", dish_restaurant_ids)
-                console.log("restaurant_ids", restaurant_ids)
 
                 restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
-                console.log("restaurant_ids", restaurant_ids)
             }
 
             let restaurant = [];
@@ -909,9 +905,28 @@ module.exports = {
 
             const restaurant_category_ids = restaurantCategory.map(val => val.id);
 
+            const dishCategory = await DishCategory.findAll({
+                where: {
+                    name: {
+                        [Op.iLike]: `${searchPhrase}%`,
+                    }
+                }
+            });
+
+            const dish_category_ids = dishCategory.map(val => val.id);
+
+            const restaurantDish = await RestaurantDish.findAll({
+                where: {
+                    dish_category_id: dish_category_ids,
+                }
+            });
+
+            const restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+
             const restaurant = await Restaurant.findAll({
                 where: {
                     [Op.or]: {
+                        id: restaurant_ids,
                         restaurant_category_id: restaurant_category_ids,
                         restaurant_name: {
                             [Op.iLike]: `${searchPhrase}%`,
