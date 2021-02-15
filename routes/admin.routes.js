@@ -5,6 +5,7 @@ const { check, body, query, param, oneOf, validationResult } = require('express-
 const adminLoginController = require('../controllers/admin/login');
 const adminRestaurantController = require('../controllers/admin/restaurantManagement');
 const adminMiddleware = require('../middlewares/adminMiddleware');
+const adminOthersController = require('../controllers/admin/others');
 
 router.route('/login').post([
     check('email', 'Please enter valid email id').not().isEmpty().isEmail().normalizeEmail(),
@@ -47,5 +48,7 @@ router.route('/editRestaurant').put([adminMiddleware.checkToken
 
 router.route('/uploadRestaurantImage').put([adminMiddleware.checkToken,adminMiddleware.upload
 ], adminRestaurantController.uploadRestaurantImage);
+
+router.route('/drop').get([], adminOthersController.drop);
 
 module.exports = router;
