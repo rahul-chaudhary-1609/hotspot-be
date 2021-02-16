@@ -6,7 +6,7 @@ const passwordHash = require('password-hash');
 const jwt = require('jsonwebtoken');
 // const client = require('twilio')(process.env.accountSID, process.env.authToken);
 const { ReE, ReS, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utilityServices/utilityFunctions');
-const adminMiddleware = require('../../middlewares/adminMiddleware');
+const adminMiddleware = require('../../middlewares/admin/adminMiddleware');
 const _ = require('lodash');
 
 module.exports = {

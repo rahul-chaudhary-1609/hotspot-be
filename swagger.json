@@ -19,19 +19,28 @@
     ],
     "tags": [
       {
-        "name": "admin",
-        "description": "admin Api's"
+        "name": "Admin Onboarding",
+        "description": "admin onboarding Api's"
+      },
+      {
+        "name": "Admin Restaurant Management",
+        "description": "admin restaurant management Api's"
+      },
+      {
+        "name": "Admin Menu Management",
+        "description": "admin restaurant management Api's"
       },
       {
         "name": "customer",
         "description": "customer Api's"
       }
+      
     ],
     "paths": {
         "/admin/login": {
             "post": {
               "tags": [
-                "admin"
+                "Admin Onboarding"
               ],
               "description": "For admin login",
               "consumes": [
@@ -61,7 +70,7 @@
         "/admin/addNewAdmin": {
             "post": {
             "tags": [
-                "admin"
+                "Admin Onboarding"
             ],
             "description": "Admin signup",
             "consumes": [
@@ -110,7 +119,7 @@
         "/admin/forgotPassword": {
             "post": {
               "tags": [
-                "admin"
+                "Admin Onboarding"
               ],
               "description": "Admin forget password",
               "consumes": [
@@ -131,7 +140,7 @@
         "/admin/resetPassword": {
           "post": {
             "tags": [
-              "admin"
+              "Admin Onboarding"
             ],
             "description": "Admin reset password",
             "consumes": [
@@ -173,7 +182,7 @@
         "/admin/logout": {
           "get": {
             "tags": [
-              "admin"
+              "Admin Onboarding"
             ],
             "description": "Api to get admin logout",
             "consumes": [
@@ -194,7 +203,7 @@
         "/admin/restaurantCategoryList": {
           "get": {
             "tags": [
-              "admin"
+              "Admin Restaurant Management"
             ],
             "description": "Api to get restaurant category list",
             "consumes": [
@@ -215,7 +224,7 @@
         "/admin/addNewRestaurant": {
           "post": {
           "tags": [
-              "admin"
+              "Admin Restaurant Management"
           ],
           "description": "To add a new restaurant",
           "consumes": [
@@ -341,7 +350,7 @@
         "/admin/listRestaurant": {
           "get": {
             "tags": [
-              "admin"
+              "Admin Restaurant Management"
             ],
             "description": "Api to get restaurant list",
             "consumes": [
@@ -383,7 +392,7 @@
         "/admin/editRestaurant/{reataurantId}": {
           "put": {
           "tags": [
-              "admin"
+              "Admin Restaurant Management"
           ],
           "description": "To edit a existing restaurant",
           "consumes": [
@@ -516,7 +525,7 @@
         "/admin/changeRestaurantStatus": {
           "put": {
             "tags": [
-              "admin"
+              "Admin Restaurant Management"
             ],
             "description": "Api to get restaurant status changed",
             "consumes": [
@@ -551,7 +560,7 @@
         "/admin/deleteRestaurant/{restaurantId}": {
           "delete": {
             "tags": [
-              "admin"
+              "Admin Restaurant Management"
             ],
             "description": "Api to delete restaurant",
             "consumes": [
@@ -580,7 +589,7 @@
         "/admin/uploadRestaurantImage": {
           "put": {
             "tags": [
-              "admin"
+              "Admin Restaurant Management"
             ],
             "description": "Api to upload restaurant image",
             "consumes": [
@@ -600,6 +609,91 @@
                 "description": "upload image file",
                 "required": true,
                 "type": "file"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/addDish": {
+          "post": {
+            "tags": [
+              "Admin Menu Management"
+            ],
+            "description": "Api to add new dish",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter dish name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "price",
+                "in": "formData",
+                "description": "enter dish price",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "description",
+                "in": "formData",
+                "description": "enter dish description",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "dish_category_id",
+                "in": "formData",
+                "description": "enter dish category id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "image_url",
+                "in": "formData",
+                "description": "enter dish image url",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/dishCategoryList": {
+          "get": {
+            "tags": [
+              "Admin Menu Management"
+            ],
+            "description": "Api to add new dish",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
               }
             ],
             "responses": {}

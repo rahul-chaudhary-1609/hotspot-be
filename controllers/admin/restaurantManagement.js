@@ -1,7 +1,8 @@
-const { Admin, Restaurant, RestaurantCategory,DishCategory } = require('../../models');
+const { Admin, Restaurant, RestaurantCategory,DishCategory,RestaurantDish } = require('../../models');
 const { ReE, ReS, pagination, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utilityServices/utilityFunctions');
 const { Op } = require("sequelize");
 const adminAWS = require('../../utilityServices/aws');
+const validation = require("../../middlewares/admin/validation");
 
 module.exports = {
     listRestaurant: async(req, res) => {
@@ -221,6 +222,25 @@ module.exports = {
         }
     },
 
-    //addDish: async(req, res)={}
+    addDish: async (req, res) => {
+        try {
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const dish = validation.dishSchema.validate(req.body);
+
+            if (dish.error) return res.status(400).json({ status: 400, message: dish.error.details[0].message });
+
+            
+
+            const restaurantDish=await RestaurantDish.create(dish.value);
+
+            return res.status(200).json({ status: 200, dish:restaurantDish });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    }
 
 }

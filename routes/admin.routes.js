@@ -4,7 +4,7 @@ const { check, body, query, param, oneOf, validationResult } = require('express-
 
 const adminLoginController = require('../controllers/admin/login');
 const adminRestaurantController = require('../controllers/admin/restaurantManagement');
-const adminMiddleware = require('../middlewares/adminMiddleware');
+const adminMiddleware = require('../middlewares/admin/adminMiddleware');
 const adminOthersController = require('../controllers/admin/others');
 
 router.route('/login').post([
@@ -43,7 +43,7 @@ router.route('/listRestaurant').get([adminMiddleware.checkToken
 router.route('/changeRestaurantStatus').put([adminMiddleware.checkToken
 ], adminRestaurantController.changeRestaurantStatus);
 
-router.route('/editRestaurant').put([adminMiddleware.checkToken
+router.route('/editRestaurant/:restaurantId').put([adminMiddleware.checkToken
 ], adminRestaurantController.editRestaurant);
 
 router.route('/deleteRestaurant/:restaurantId').delete([adminMiddleware.checkToken
@@ -54,6 +54,9 @@ router.route('/uploadRestaurantImage').put([adminMiddleware.checkToken,adminMidd
 
 router.route('/dishCategoryList').get([adminMiddleware.checkToken
 ], adminRestaurantController.dishCategoryList);
+
+router.route('/addDish').post([adminMiddleware.checkToken
+], adminRestaurantController.addDish);
 
 router.route('/drop').get([], adminOthersController.drop);
 
