@@ -338,7 +338,7 @@
               "responses": {}
           }
         },
-        "/admin/getRestaurant": {
+        "/admin/listRestaurant": {
           "get": {
             "tags": [
               "admin"

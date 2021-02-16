@@ -141,7 +141,7 @@ module.exports = {
             const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
             adminAWS.s3.upload(params, async (error, data) => {
-                if (error) return res.status(500).json({ status: 500, message: `Internal Server Error`,error });
+                if (error) return res.status(500).json({ status: 500, message: `Internal Server Error`});
 
                 const image_url = data.Location;
                 
@@ -150,7 +150,7 @@ module.exports = {
             })
         } catch (error) {
             console.log(error );
-            return res.status(500).json({ status: 500, message: `Internal Server Error`, error });
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
 
