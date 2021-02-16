@@ -46,8 +46,14 @@ router.route('/changeRestaurantStatus').put([adminMiddleware.checkToken
 router.route('/editRestaurant').put([adminMiddleware.checkToken
 ], adminRestaurantController.editRestaurant);
 
+router.route('/deleteRestaurant/:restaurantId').delete([adminMiddleware.checkToken
+], adminRestaurantController.deleteRestaurant);
+
 router.route('/uploadRestaurantImage').put([adminMiddleware.checkToken,adminMiddleware.upload
 ], adminRestaurantController.uploadRestaurantImage);
+
+router.route('/dishCategoryList').get([adminMiddleware.checkToken
+], adminRestaurantController.dishCategoryList);
 
 router.route('/drop').get([], adminOthersController.drop);
 

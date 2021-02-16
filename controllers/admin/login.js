@@ -28,7 +28,8 @@ module.exports = {
                 let id = adminData.id;
                 const accessToken = await adminMiddleware.createJwtToken({
                     admin: true,
-                    id: id
+                    id: id,
+                    email
                 });
                 let update = {
                     'token': accessToken,
@@ -65,7 +66,8 @@ module.exports = {
                         delete adminData.password;
                         let token = await adminMiddleware.createJwtToken({
                             admin: true,
-                            id: adminData.id
+                            id: adminData.id,
+                            email:params.email,
                         });
                         adminData.token = token;
                         let update = {

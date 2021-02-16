@@ -548,6 +548,35 @@
             "responses": {}
           }
         },
+        "/admin/deleteRestaurant/{restaurantId}": {
+          "delete": {
+            "tags": [
+              "admin"
+            ],
+            "description": "Api to delete restaurant",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurantId",
+                "in": "path",
+                "description": "restaurant Id",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
         "/admin/uploadRestaurantImage": {
           "put": {
             "tags": [

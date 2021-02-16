@@ -1,4 +1,4 @@
-const { Admin, Restaurant, RestaurantCategory } = require('../../models');
+const { Admin, Restaurant, RestaurantCategory,DishCategory } = require('../../models');
 const { ReE, ReS, pagination, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utilityServices/utilityFunctions');
 const { Op } = require("sequelize");
 const adminAWS = require('../../utilityServices/aws');
@@ -11,7 +11,7 @@ module.exports = {
                 offset = (parseInt(req.query.page) - 1) * parseInt(req.query.page_size);
 
             let query = {};
-            query.where = {};
+            query.where = {is_deleted:false};
             if(req.query.searchKey) {
                 let searchKey = req.query.searchKey;
                 query.where = {
@@ -124,6 +124,26 @@ module.exports = {
         }
     },
 
+    deleteRestaurant: async (req, res) => { 
+        try {
+            let restaurantId = req.params.restaurantId;
+
+            await Restaurant.update({
+                is_deleted: true,
+                },
+                {
+                    where: {
+                        id: restaurantId,
+                    },
+                    returning: true,
+                })
+            res.status(200).json({ status: 200, message: "Restaurant Deleted Successfully" });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
     uploadRestaurantImage: async (req, res) => {
         try {
             let now = new Date();
@@ -163,6 +183,44 @@ module.exports = {
             console.log(err);
             ReE(res, "Internal server error", 500, err);
         }
-    }
+    },
+
+    dishCategoryList: async (req, res) => {
+        try {
+            let dishCategory = await DishCategory.findAndCountAll();
+
+            if (dishCategory.count === 0) {
+                await DishCategory.bulkCreate(
+                    [
+                        { name: "Sushi", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },
+                        { name: "Pizza", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
+                        { name: "Burger", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png" },
+                        { name: "Fries", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png" },
+                        { name: "Meat", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png" },
+                        { name: "Chinese", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
+                        { name: "Breakfast", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
+
+                    ],
+                    { returning: ['id'] },
+                );
+            }
+
+            dishCategory = await DishCategory.findAll();
+
+            const dishCategories = await dishCategory.map((val) => {
+                return {
+                    id: val.id,
+                    name: val.name,
+                }
+            });
+
+            return res.status(200).json({ status: 200, dishCategories });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
+    //addDish: async(req, res)={}
 
 }
