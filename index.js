@@ -20,7 +20,7 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use('/apiDocs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/apiDocs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { swaggerOptions: { docExpansion: "none"}}));
 app.use('/',router);
 
 // // For an actual app you should configure this with an experation time, better keys, proxy and secure
