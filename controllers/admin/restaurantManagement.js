@@ -25,7 +25,7 @@ module.exports = {
                 };
             }
             query.order = [
-                ['create_time', 'DESC']
+                ['created_at', 'DESC']
             ];
             query.limit = limit;
             query.offset = offset;
