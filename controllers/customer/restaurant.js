@@ -766,6 +766,56 @@ module.exports = {
                 restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
             }
 
+            if (req.body.searchPhrase) {
+                const searchPhrase = req.body.searchPhrase;
+                const hotspot_dish_restaurant_ids = restaurant_ids;
+
+                const restaurantCategory = await RestaurantCategory.findAll({
+                    where: {
+                        name: {
+                            [Op.iLike]: `${searchPhrase}%`,
+                        }
+                    }
+                });
+
+                const restaurant_category_ids = restaurantCategory.map(val => val.id);
+
+                const dishCategory = await DishCategory.findAll({
+                    where: {
+                        name: {
+                            [Op.iLike]: `${searchPhrase}%`,
+                        }
+                    }
+                });
+
+                const dish_category_ids = dishCategory.map(val => val.id);
+
+                const restaurantDish = await RestaurantDish.findAll({
+                    where: {
+                        dish_category_id: dish_category_ids,
+                    }
+                });
+
+                const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+
+                const searchPhrase_restaurant = await Restaurant.findAll({
+                    where: {
+                        [Op.or]: {
+                            id: dish_category_restaurant_ids,
+                            restaurant_category_id: restaurant_category_ids,
+                            restaurant_name: {
+                                [Op.iLike]: `${searchPhrase}%`,
+                            },
+                        }
+
+                    }
+                });
+
+                const searchPhrase_restaurant_ids = await searchPhrase_restaurant.map(val => val.id);
+
+                restaurant_ids = hotspot_dish_restaurant_ids.filter(val => searchPhrase_restaurant_ids.includes(val));
+            }
+
             let restaurant = [];
 
             if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price high to low" ) {
