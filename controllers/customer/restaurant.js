@@ -55,12 +55,18 @@ const getRestaurantCard =  async (args) => {
                 let cotHours = Math.floor((val.cut_off_time * 60) / 60);
                 let cotMinutes = (val.cut_off_time * 60) % 60;
 
-                if (Math.abs(ndtMinutes - cotMinutes) < 10 && Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
-                else if (Math.abs(ndtMinutes - cotMinutes) < 10) return `${Math.abs(ndtHours - cotHours)}:0${Math.abs(ndtMinutes - cotMinutes)}:00`
-                else if (Math.abs(ndtHours - cotHours) < 10) return `0${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
-                else return `${Math.abs(ndtHours - cotHours)}:${Math.abs(ndtMinutes - cotMinutes)}:00`
+                let displayHours = Math.abs(ndtHours - cotHours);
+                let displayMinutes = Math.abs(ndtMinutes-cotMinutes);
 
-
+                if ((ndtMinutes - cotMinutes) < 0) {
+                    --displayHours;
+                    displayMinutes = 60+ (ndtMinutes - cotMinutes)
+                }
+                
+                if (displayMinutes < 10 && displayHours < 10) return `0${displayHours}:0${displayMinutes}:00`
+                else if (displayMinutes < 10) return `${displayHours}:0${displayMinutes}:00`
+                else if (displayHours < 10) return `0${displayHours}:${displayMinutes}:00`
+                else return `${displayHours}:${displayMinutes}:00`
             }
 
             if (favRestaurant) is_favorite = true;
