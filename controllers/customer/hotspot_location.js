@@ -231,7 +231,8 @@ module.exports = {
               default_address: false
           }, {
               where: {
-                  default_address: true
+                  default_address: true,
+                  customer_id: customer.getDataValue('id')
               },
               returning: true,
           });
@@ -240,7 +241,7 @@ module.exports = {
               default_address: true
           }, {
               where: {
-                  address, city, state, country, postal_code, location_geometry
+                  address, city, state, country, postal_code, location_geometry, customer_id: customer.getDataValue('id')
               },
               returning: true,
           });
