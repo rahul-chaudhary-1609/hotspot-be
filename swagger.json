@@ -311,28 +311,28 @@
               {
                   "name": "cut_off_time",
                   "in": "formData",
-                  "description": "cut off time in HH:MM",
+                  "description": "cut off time in HH:MM:SS",
                   "required": true,
                   "type": "string"
               },
               {
                   "name": "working_hours_from",
                   "in": "formData",
-                  "description": "working hours from in HH:MM",
+                  "description": "working hours from in HH:MM:SS",
                   "required": true,
                   "type": "string"
               },
               {
                   "name": "working_hours_to",
                   "in": "formData",
-                  "description": "working hours to in HH:MM",
+                  "description": "working hours to in HH:MM:SS",
                   "required": true,
                   "type": "string"
               },
               {
                   "name": "order_type",
                   "in": "formData",
-                  "description": "order type",
+                  "description": "1: Delivery, 2: Pickup, 3: Both",
                   "required": true,
                   "type": "string"
               },
@@ -445,106 +445,106 @@
                   "name": "restaurant_name",
                   "in": "formData",
                   "description": "restaurant name",
-                  "required": false,
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "restaurant_image_url",
                   "in": "formData",
                   "description": "restaurant image url",
-                  "required": false,
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "owner_name",
                   "in": "formData",
                   "description": "owner name",
-                  "required": false,
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "owner_email",
                   "in": "formData",
                   "description": "owner email",
-                  "required": false,
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "owner_phone",
                   "in": "formData",
                   "description": "owner phone",
-                  "required": false,
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "country_code",
                   "in": "formData",
                   "description": "country code",
-                  "required": false,
+                  "required": true,
                   "type": "string"
               },
               {
                 "name": "lat",
                 "in": "formData",
                 "description": "location lattitude",
-                "required": false,
+                "required": true,
                 "type": "number"
               },
               {
                 "name": "long",
                 "in": "formData",
                 "description": "location longitude",
-                "required": false,
+                "required": true,
                 "type": "number"
               },
               {
                   "name": "address",
                   "in": "formData",
                   "description": "address",
-                  "required": false,
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "deliveries_per_shift",
                   "in": "formData",
                   "description": "deliveries per shift in number",
-                  "required": false,
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "cut_off_time",
                   "in": "formData",
-                  "description": "cut off time in HH:MM",
-                  "required": false,
+                  "description": "cut off time in HH:MM:SS",
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "working_hours_from",
                   "in": "formData",
-                  "description": "working hours from in HH:MM",
-                  "required": false,
+                  "description": "working hours from in HH:MM:SS",
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "working_hours_to",
                   "in": "formData",
-                  "description": "working hours to in HH:MM",
-                  "required": false,
+                  "description": "working hours to in HH:MM:SS",
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "order_type",
                   "in": "formData",
-                  "description": "order type",
-                  "required": false,
+                  "description": "1: Delivery, 2: Pickup, 3: Both",
+                  "required": true,
                   "type": "string"
               },
               {
                   "name": "restaurant_category_id",
                   "in": "formData",
                   "description": "restaurant category id in number",
-                  "required": false,
-                  "type": "string"
+                  "required": true,
+                  "type": "number"
               }
               ],
               "responses": {}
