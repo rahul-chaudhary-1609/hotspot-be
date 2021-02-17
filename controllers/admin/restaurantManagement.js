@@ -101,6 +101,29 @@ module.exports = {
         }
     },
 
+    getRestaurant: async (req, res) => {
+        try {
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            let restaurantId = req.params.restaurantId;
+
+            const restaurant = await Restaurant.findByPk(restaurantId);
+
+            if (!restaurant) return res.status(404).json({ status: 404, message: `No restaurant found with provided id` });
+
+            
+            return res.status(200).json({ status: 200, restaurant });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+        
+
+    },
+
     editRestaurant: async (req, res) => {
         try {
             let query = {where:{id: req.params.restaurantId}};

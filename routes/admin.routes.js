@@ -43,6 +43,9 @@ router.route('/listRestaurant').get([adminMiddleware.checkToken
 router.route('/changeRestaurantStatus').put([adminMiddleware.checkToken
 ], adminRestaurantController.changeRestaurantStatus);
 
+router.route('/getRestaurant/:restaurantId').get([adminMiddleware.checkToken
+], adminRestaurantController.getRestaurant);
+
 router.route('/editRestaurant/:restaurantId').put([adminMiddleware.checkToken
 ], adminRestaurantController.editRestaurant);
 

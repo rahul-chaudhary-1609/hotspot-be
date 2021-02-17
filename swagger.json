@@ -389,6 +389,34 @@
             "responses": {}
           }
         },
+        "/admin/getRestaurant/{restaurantId}": {
+          "get": {
+            "tags": [
+              "Admin Restaurant Management"
+            ],
+            "description": "Api to get a restaurant by restaurant ID",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurantId",
+                "in": "path",
+                "description": "restaurant Id",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
         "/admin/editRestaurant/{reataurantId}": {
           "put": {
           "tags": [
