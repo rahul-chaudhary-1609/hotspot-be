@@ -62,7 +62,7 @@ const getRestaurantCard =  async (args) => {
                     --displayHours;
                     displayMinutes = 60+ (ndtMinutes - cotMinutes)
                 }
-                
+
                 if (displayMinutes < 10 && displayHours < 10) return `0${displayHours}:0${displayMinutes}:00`
                 else if (displayMinutes < 10) return `${displayHours}:0${displayMinutes}:00`
                 else if (displayHours < 10) return `0${displayHours}:${displayMinutes}:00`
@@ -935,17 +935,21 @@ module.exports = {
                 });
 
                 const restaurants = restaurant.map(val => val.restaurant_name);
-                const restaurantCategories = restaurantCategory.map(val => val.name);
+                const restaurantCategoriesSuggestions = restaurantCategory.map(val => val.name);
                 const foodCategories = dishCategory.map(val => val.name);
 
-                searchSuggestion = { restaurants, restaurantCategories, foodCategories };
+                const restaurantCategories = [...restaurants, ...restaurantCategoriesSuggestions, ...foodCategories]
+
+                searchSuggestion = {restaurantCategories};
             }
             else {
                 const restaurants = [];
-                const restaurantCategories = [];
+                const restaurantCategoriesSuggestions = [];
                 const foodCategories = [];
 
-                searchSuggestion = { restaurants, restaurantCategories, foodCategories };
+                const restaurantCategories = [...restaurants, ...restaurantCategoriesSuggestions, ...foodCategories]
+
+                searchSuggestion = { restaurantCategories };
             }
 
             return res.status(200).json({ status: 200, searchSuggestion });
