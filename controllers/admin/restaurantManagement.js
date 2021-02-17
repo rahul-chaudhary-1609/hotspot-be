@@ -15,13 +15,14 @@ module.exports = {
             query.where = {is_deleted:false};
             if(req.query.searchKey) {
                 let searchKey = req.query.searchKey;
+                console.log("searchKey", searchKey,"\n\n")
                 query.where = {
                     ...query.where,
-                    [Op.Or]: [
-                        {restaurant_name: { [Op.iLike]: `%${searchKey}%` }},
-                        {owner_name: { [Op.iLike]: `%${searchKey}%` }},
-                        {owner_email: { [Op.iLike]: `%${searchKey}%` }},
-                        {owner_phone: { [Op.iLike]: `%${searchKey}%` }}
+                    [Op.or]: [
+                        {restaurant_name: { [Op.iLike]: `${searchKey}%` }},
+                        {owner_name: { [Op.iLike]: `${searchKey}%` }},
+                        {owner_email: { [Op.iLike]: `${searchKey}%` }},
+                        {owner_phone: { [Op.iLike]: `${searchKey}%` }}
                     ]
                 };
             }
@@ -237,6 +238,52 @@ module.exports = {
             const restaurantDish=await RestaurantDish.create(dish.value);
 
             return res.status(200).json({ status: 200, dish:restaurantDish });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+    
+    listDishes: async (req, res) => {
+        try {
+            let [offset, limit] = pagination(req.query.page, req.query.page_size);
+            if (offset)
+                offset = (parseInt(req.query.page) - 1) * parseInt(req.query.page_size);
+
+            let query = {};
+            query.where = { is_deleted: false };
+            if (req.query.searchKey) {
+                let searchKey = req.query.searchKey;
+
+                const dishCategory = await DishCategory.findAll({
+                    where: {
+                        name: { [Op.iLike]: `${searchKey}%` }
+                    }
+                });
+
+                const dishCategoryIds = dishCategory.map(val => val.id);
+
+                console.log("dishCategoryIds", dishCategoryIds)
+
+                query.where = {
+                    ...query.where,
+                    [Op.or]: [
+                        { name: { [Op.iLike]: `${searchKey}%` } },
+                        { dish_category_id: dishCategoryIds}
+                        
+                    ]
+                };
+            }
+            query.order = [
+                ['created_at', 'DESC']
+            ];
+            query.limit = limit;
+            query.offset = offset;
+            query.raw = true;
+
+            let dishes = await RestaurantDish.findAndCountAll(query);
+
+            return res.status(200).json({ status: 200, dishes });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });

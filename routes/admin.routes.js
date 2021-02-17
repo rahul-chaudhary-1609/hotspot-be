@@ -58,6 +58,9 @@ router.route('/dishCategoryList').get([adminMiddleware.checkToken
 router.route('/addDish').post([adminMiddleware.checkToken
 ], adminRestaurantController.addDish);
 
+router.route('/listDishes').get([adminMiddleware.checkToken
+], adminRestaurantController.listDishes);
+
 router.route('/drop').get([], adminOthersController.drop);
 
 module.exports = router;
