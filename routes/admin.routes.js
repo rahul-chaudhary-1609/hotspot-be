@@ -61,6 +61,9 @@ router.route('/dishCategoryList').get([adminMiddleware.checkToken
 router.route('/addDish').post([adminMiddleware.checkToken
 ], adminRestaurantController.addDish);
 
+router.route('/getDish/:dishId').get([adminMiddleware.checkToken
+], adminRestaurantController.getDish);
+
 router.route('/listDishes').get([adminMiddleware.checkToken
 ], adminRestaurantController.listDishes);
 

@@ -411,7 +411,7 @@
                 "in": "path",
                 "description": "restaurant Id",
                 "required": true,
-                "type": "string"
+                "type": "number"
               }
             ],
             "responses": {}
@@ -439,7 +439,7 @@
                 "in": "path",
                 "description": "restaurant id",
                 "required": true,
-                "type": "string"
+                "type": "number"
               },
               {
                   "name": "restaurant_name",
@@ -607,7 +607,7 @@
                 "in": "path",
                 "description": "restaurant Id",
                 "required": true,
-                "type": "string"
+                "type": "number"
               }
             ],
             "responses": {}
@@ -765,6 +765,35 @@
                 "in": "query",
                 "description": "no of items per page",
                 "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getDish/{dishId}": {
+          "get": {
+            "tags": [
+              "Admin Menu Management"
+            ],
+            "description": "Api to get a dish by dish Id",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dishId",
+                "in": "path",
+                "description": "enter dish Id",
+                "required": true,
                 "type": "number"
               }
             ],
