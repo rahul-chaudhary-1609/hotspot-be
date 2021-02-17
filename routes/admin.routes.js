@@ -67,6 +67,9 @@ router.route('/getDish/:dishId').get([adminMiddleware.checkToken
 router.route('/listDishes').get([adminMiddleware.checkToken
 ], adminRestaurantController.listDishes);
 
+router.route('/editDish/:dishId').put([adminMiddleware.checkToken
+], adminRestaurantController.editDish);
+
 router.route('/drop').get([], adminOthersController.drop);
 
 module.exports = router;

@@ -333,4 +333,39 @@ module.exports = {
 
     },
 
+    editDish: async (req, res) => {
+        try {
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            let dishId = req.params.dishId;
+
+            const dish = await RestaurantDish.findByPk(dishId);
+
+            if (!dish) return res.status(404).json({ status: 404, message: `No dish found with provided id` });
+
+            const dishResult = validation.dishSchema.validate(req.body);
+
+            if (dishResult.error) return res.status(400).json({ status: 400, message: dishResult.error.details[0].message });
+
+            await RestaurantDish.update(
+                dishResult.value
+            ,
+                {
+                    where: {
+                        id: dishId,
+                    },
+                    returning: true,
+                });
+            
+            return res.status(200).json({ status: 200, message:`Dish updated successfully` });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+
+    },
+
 }
