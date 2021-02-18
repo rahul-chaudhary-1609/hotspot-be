@@ -8,7 +8,7 @@ const validation = require("../../middlewares/admin/validation");
 module.exports = {
     listCustomers: async (req, res) => {
         try {
-            const admin = await Admin.findByPk(req.adminInfo.id);
+            const admin = await model.Admin.findByPk(req.adminInfo.id);
 
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
