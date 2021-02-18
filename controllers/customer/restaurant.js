@@ -991,6 +991,17 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
             }
 
+            const restaurantHotspot = await RestaurantHotspot.findAll({
+                attributes: [
+                    'restaurant_id'
+                ],
+                where: {
+                    hotspot_location_id
+                }
+            });
+
+            let restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+
             const searchPhrase = req.query.searchPhrase;
 
             const restaurantCategory = await RestaurantCategory.findAll({
@@ -1024,7 +1035,7 @@ module.exports = {
             const restaurant = await Restaurant.findAll({
                 where: {
                     [Op.or]: {
-                        //id: restaurant_ids,
+                        id: restaurant_ids,
                         restaurant_category_id: restaurant_category_ids,
                         restaurant_name: {
                             [Op.iLike]: `%${searchPhrase}%`,
