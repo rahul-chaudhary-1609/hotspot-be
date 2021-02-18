@@ -786,28 +786,28 @@ module.exports = {
 
                 const restaurant_category_ids = restaurantCategory.map(val => val.id);
 
-                const dishCategory = await DishCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]: `%${searchPhrase}%`,
-                        }
-                    }
-                });
+                // const dishCategory = await DishCategory.findAll({
+                //     where: {
+                //         name: {
+                //             [Op.iLike]: `%${searchPhrase}%`,
+                //         }
+                //     }
+                // });
 
-                const dish_category_ids = dishCategory.map(val => val.id);
+                // const dish_category_ids = dishCategory.map(val => val.id);
 
-                const restaurantDish = await RestaurantDish.findAll({
-                    where: {
-                        dish_category_id: dish_category_ids,
-                    }
-                });
+                // const restaurantDish = await RestaurantDish.findAll({
+                //     where: {
+                //         dish_category_id: dish_category_ids,
+                //     }
+                // });
 
-                const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+                // const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
 
                 const searchPhrase_restaurant = await Restaurant.findAll({
                     where: {
                         [Op.or]: {
-                            id: dish_category_restaurant_ids,
+                            //id: dish_category_restaurant_ids,
                             restaurant_category_id: restaurant_category_ids,
                             restaurant_name: {
                                 [Op.iLike]: `%${searchPhrase}%`,
@@ -926,17 +926,17 @@ module.exports = {
                     }
                 });
 
-                const dishCategory = await DishCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]: `%${searchPhrase}%`,
-                        }
-                    }
-                });
+                // const dishCategory = await DishCategory.findAll({
+                //     where: {
+                //         name: {
+                //             [Op.iLike]: `%${searchPhrase}%`,
+                //         }
+                //     }
+                // });
 
                 const restaurants = restaurant.map(val => val.restaurant_name);
                 const restaurantCategoriesSuggestions = restaurantCategory.map(val => val.name);
-                const foodCategories = dishCategory.map(val => val.name);
+                const foodCategories = [];//dishCategory.map(val => val.name);
 
                 const restaurantCategories = [...restaurants, ...restaurantCategoriesSuggestions, ...foodCategories]
 
@@ -1003,28 +1003,28 @@ module.exports = {
 
             const restaurant_category_ids = restaurantCategory.map(val => val.id);
 
-            const dishCategory = await DishCategory.findAll({
-                where: {
-                    name: {
-                        [Op.iLike]: `%${searchPhrase}%`,
-                    }
-                }
-            });
+            // const dishCategory = await DishCategory.findAll({
+            //     where: {
+            //         name: {
+            //             [Op.iLike]: `%${searchPhrase}%`,
+            //         }
+            //     }
+            // });
 
-            const dish_category_ids = dishCategory.map(val => val.id);
+            // const dish_category_ids = dishCategory.map(val => val.id);
 
-            const restaurantDish = await RestaurantDish.findAll({
-                where: {
-                    dish_category_id: dish_category_ids,
-                }
-            });
+            // const restaurantDish = await RestaurantDish.findAll({
+            //     where: {
+            //         dish_category_id: dish_category_ids,
+            //     }
+            // });
 
-            const restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+            // const restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
 
             const restaurant = await Restaurant.findAll({
                 where: {
                     [Op.or]: {
-                        id: restaurant_ids,
+                        //id: restaurant_ids,
                         restaurant_category_id: restaurant_category_ids,
                         restaurant_name: {
                             [Op.iLike]: `%${searchPhrase}%`,
@@ -1152,28 +1152,28 @@ module.exports = {
 
                 const restaurant_category_ids = restaurantCategory.map(val => val.id);
 
-                const dishCategory = await DishCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]: `%${searchPhrase}%`,
-                        }
-                    }
-                });
+                // const dishCategory = await DishCategory.findAll({
+                //     where: {
+                //         name: {
+                //             [Op.iLike]: `%${searchPhrase}%`,
+                //         }
+                //     }
+                // });
 
-                const dish_category_ids = dishCategory.map(val => val.id);
+                // const dish_category_ids = dishCategory.map(val => val.id);
 
-                const restaurantDish = await RestaurantDish.findAll({
-                    where: {
-                        dish_category_id: dish_category_ids,
-                    }
-                });
+                // const restaurantDish = await RestaurantDish.findAll({
+                //     where: {
+                //         dish_category_id: dish_category_ids,
+                //     }
+                // });
 
-                const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+                // const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
 
                 const searchPhrase_restaurant = await Restaurant.findAll({
                     where: {
                         [Op.or]: {
-                            id: dish_category_restaurant_ids,
+                            //id: dish_category_restaurant_ids,
                             restaurant_category_id: restaurant_category_ids,
                             restaurant_name: {
                                 [Op.iLike]: `%${searchPhrase}%`,
@@ -1337,28 +1337,28 @@ module.exports = {
 
                 const restaurant_category_ids = restaurantCategory.map(val => val.id);
 
-                const dishCategory = await DishCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]: `${searchPhrase}%`,
-                        }
-                    }
-                });
+                // const dishCategory = await DishCategory.findAll({
+                //     where: {
+                //         name: {
+                //             [Op.iLike]: `${searchPhrase}%`,
+                //         }
+                //     }
+                // });
 
-                const dish_category_ids = dishCategory.map(val => val.id);
+                // const dish_category_ids = dishCategory.map(val => val.id);
 
-                const restaurantDish = await RestaurantDish.findAll({
-                    where: {
-                        dish_category_id: dish_category_ids,
-                    }
-                });
+                // const restaurantDish = await RestaurantDish.findAll({
+                //     where: {
+                //         dish_category_id: dish_category_ids,
+                //     }
+                // });
 
-                const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+                // const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
 
                 const searchPhrase_restaurant = await Restaurant.findAll({
                     where: {
                         [Op.or]: {
-                            id: dish_category_restaurant_ids,
+                            //id: dish_category_restaurant_ids,
                             restaurant_category_id: restaurant_category_ids,
                             restaurant_name: {
                                 [Op.iLike]: `%${searchPhrase}%`,
