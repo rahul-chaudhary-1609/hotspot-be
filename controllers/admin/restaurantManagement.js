@@ -19,10 +19,10 @@ module.exports = {
                 query.where = {
                     ...query.where,
                     [Op.or]: [
-                        {restaurant_name: { [Op.iLike]: `${searchKey}%` }},
-                        {owner_name: { [Op.iLike]: `${searchKey}%` }},
-                        {owner_email: { [Op.iLike]: `${searchKey}%` }},
-                        {owner_phone: { [Op.iLike]: `${searchKey}%` }}
+                        {restaurant_name: { [Op.iLike]: `%${searchKey}%` }},
+                        {owner_name: { [Op.iLike]: `%${searchKey}%` }},
+                        {owner_email: { [Op.iLike]: `%${searchKey}%` }},
+                        {owner_phone: { [Op.iLike]: `%${searchKey}%` }}
                     ]
                 };
             }
@@ -279,7 +279,7 @@ module.exports = {
 
                 const dishCategory = await DishCategory.findAll({
                     where: {
-                        name: { [Op.iLike]: `${searchKey}%` }
+                        name: { [Op.iLike]: `%${searchKey}%` }
                     }
                 });
 
@@ -290,7 +290,7 @@ module.exports = {
                 query.where = {
                     ...query.where,
                     [Op.or]: [
-                        { name: { [Op.iLike]: `${searchKey}%` } },
+                        { name: { [Op.iLike]: `%${searchKey}%` } },
                         { dish_category_id: dishCategoryIds}
                         
                     ]
@@ -366,6 +366,26 @@ module.exports = {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
 
+    },
+
+    deleteDish: async (req, res) => {
+        try {
+            let dishId = req.params.dishId;
+
+            await RestaurantDish.update({
+                is_deleted: true,
+            },
+                {
+                    where: {
+                        id: dishId,
+                    },
+                    returning: true,
+                })
+            res.status(200).json({ status: 200, message: "Dish Deleted Successfully" });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
     },
 
 }
