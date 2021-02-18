@@ -1507,13 +1507,26 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
             }
 
+            const restaurantHotspot = await RestaurantHotspot.findAll({
+                attributes: [
+                    'restaurant_id'
+                ],
+                where: {
+                    hotspot_location_id
+                }
+            });
+
+            const hotspot_restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+
             const restaurantDish = await RestaurantDish.findAll({
                 where: {
                     dish_category_id,
                 }
             });
 
-            const restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+            const dish_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+
+            const restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
 
             const restaurant = await Restaurant.findAll({
                 where: {
