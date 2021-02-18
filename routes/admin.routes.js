@@ -88,6 +88,8 @@ router.route('/uploadDishImage').put([adminMiddleware.checkToken, adminMiddlewar
 router.route('/listCustomers').get([adminMiddleware.checkToken
 ], adminCustomerController.listCustomers);
 
+router.route('/viewCustomerProfile/:customerId').get([adminMiddleware.checkToken
+], adminCustomerController.viewCustomerProfile);
 
 //others
 

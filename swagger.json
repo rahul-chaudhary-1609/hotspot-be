@@ -972,6 +972,34 @@
             ],
             "responses": {}
           }
+        },
+        "/admin/viewCustomerProfile/{customerId}": {
+          "get": {
+            "tags": [
+              "Admin Customer Management"
+            ],
+            "description": "Api to get a customer by customer Id",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "customerId",
+                "in": "path",
+                "description": "enter customer Id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
         }
     }
 }

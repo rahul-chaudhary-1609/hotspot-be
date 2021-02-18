@@ -49,12 +49,44 @@ module.exports = {
                     phone: val.phone_no ? `${val.country_code} ${val.phone_no}`: null,
                     city: val.city,
                     state: val.state,
-                    signupDate:val.createdAt,
+                    signupDate: val.createdAt,
+                    status:val.status,
+                    
                 }
             })
             
             return res.status(200).json({ status: 200, customerList });
             
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+    viewCustomerProfile: async (req, res) => {
+        try {
+            const admin = await model.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const customerId = req.params.customerId;
+
+            let customer = await model.Customer.findByPk(customerId);
+
+            if (!customer) return res.status(404).json({ status: 404, message: `No customer found with provided id` });
+
+            customer = {
+                id: customer.id,
+                name: customer.name,
+                email: customer.email,
+                phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
+                city: customer.city,
+                state: customer.state,
+                signupDate: customer.createdAt,
+                status: customer.status,
+                profilePictureURL: customer.profile_picture_url
+            }
+
+            return res.status(200).json({ status: 200, customer });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
