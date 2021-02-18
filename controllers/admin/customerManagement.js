@@ -8,6 +8,10 @@ const validation = require("../../middlewares/admin/validation");
 module.exports = {
     listCustomers: async (req, res) => {
         try {
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let [offset, limit] = utility.pagination(req.query.page, req.query.page_size);
             if (offset)
                 offset = (parseInt(req.query.page) - 1) * parseInt(limit);
@@ -42,7 +46,7 @@ module.exports = {
                     id:val.id,
                     name: val.name,
                     email: val.email,
-                    phone: `${val.country_code} ${val.phone_no}`,
+                    phone: val.phone_no ? `${val.country_code} ${val.phone_no}`: null,
                     city: val.city,
                     state: val.state,
                     signupDate:val.createdAt,
