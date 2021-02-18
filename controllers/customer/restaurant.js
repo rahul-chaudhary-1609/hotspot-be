@@ -1034,8 +1034,9 @@ module.exports = {
 
             const restaurant = await Restaurant.findAll({
                 where: {
+                    id: restaurant_ids,
                     [Op.or]: {
-                        id: restaurant_ids,
+                        
                         restaurant_category_id: restaurant_category_ids,
                         restaurant_name: {
                             [Op.iLike]: `%${searchPhrase}%`,
