@@ -779,7 +779,7 @@ module.exports = {
                 const restaurantCategory = await RestaurantCategory.findAll({
                     where: {
                         name: {
-                            [Op.iLike]: `${searchPhrase}%`,
+                            [Op.iLike]: `%${searchPhrase}%`,
                         }
                     }
                 });
@@ -789,7 +789,7 @@ module.exports = {
                 const dishCategory = await DishCategory.findAll({
                     where: {
                         name: {
-                            [Op.iLike]: `${searchPhrase}%`,
+                            [Op.iLike]: `%${searchPhrase}%`,
                         }
                     }
                 });
@@ -810,7 +810,7 @@ module.exports = {
                             id: dish_category_restaurant_ids,
                             restaurant_category_id: restaurant_category_ids,
                             restaurant_name: {
-                                [Op.iLike]: `${searchPhrase}%`,
+                                [Op.iLike]: `%${searchPhrase}%`,
                             },
                         }
 
@@ -913,7 +913,7 @@ module.exports = {
                 const restaurant = await Restaurant.findAll({
                     where: {
                         restaurant_name: {
-                            [Op.iLike]: `${searchPhrase}%`,
+                            [Op.iLike]: `%${searchPhrase}%`,
                         }
                     }
                 });
@@ -921,7 +921,7 @@ module.exports = {
                 const restaurantCategory = await RestaurantCategory.findAll({
                     where: {
                         name: {
-                            [Op.iLike]: `${searchPhrase}%`,
+                            [Op.iLike]: `%${searchPhrase}%`,
                         }
                     }
                 });
@@ -929,7 +929,7 @@ module.exports = {
                 const dishCategory = await DishCategory.findAll({
                     where: {
                         name: {
-                            [Op.iLike]: `${searchPhrase}%`,
+                            [Op.iLike]: `%${searchPhrase}%`,
                         }
                     }
                 });
@@ -996,7 +996,7 @@ module.exports = {
             const restaurantCategory = await RestaurantCategory.findAll({
                 where: {
                     name: {
-                        [Op.iLike]: `${searchPhrase}%`,
+                        [Op.iLike]: `%${searchPhrase}%`,
                     }
                 }
             });
@@ -1006,7 +1006,7 @@ module.exports = {
             const dishCategory = await DishCategory.findAll({
                 where: {
                     name: {
-                        [Op.iLike]: `${searchPhrase}%`,
+                        [Op.iLike]: `%${searchPhrase}%`,
                     }
                 }
             });
@@ -1027,7 +1027,7 @@ module.exports = {
                         id: restaurant_ids,
                         restaurant_category_id: restaurant_category_ids,
                         restaurant_name: {
-                            [Op.iLike]: `${searchPhrase}%`,
+                            [Op.iLike]: `%${searchPhrase}%`,
                         },
                     }
                    
@@ -1145,7 +1145,7 @@ module.exports = {
                 const restaurantCategory = await RestaurantCategory.findAll({
                     where: {
                         name: {
-                            [Op.iLike]: `${searchPhrase}%`,
+                            [Op.iLike]: `%${searchPhrase}%`,
                         }
                     }
                 });
@@ -1155,7 +1155,7 @@ module.exports = {
                 const dishCategory = await DishCategory.findAll({
                     where: {
                         name: {
-                            [Op.iLike]: `${searchPhrase}%`,
+                            [Op.iLike]: `%${searchPhrase}%`,
                         }
                     }
                 });
@@ -1176,7 +1176,7 @@ module.exports = {
                             id: dish_category_restaurant_ids,
                             restaurant_category_id: restaurant_category_ids,
                             restaurant_name: {
-                                [Op.iLike]: `${searchPhrase}%`,
+                                [Op.iLike]: `%${searchPhrase}%`,
                             },
                         }
 
@@ -1330,7 +1330,7 @@ module.exports = {
                 const restaurantCategory = await RestaurantCategory.findAll({
                     where: {
                         name: {
-                            [Op.iLike]: `${searchPhrase}%`,
+                            [Op.iLike]: `%${searchPhrase}%`,
                         }
                     }
                 });
@@ -1361,7 +1361,7 @@ module.exports = {
                             id: dish_category_restaurant_ids,
                             restaurant_category_id: restaurant_category_ids,
                             restaurant_name: {
-                                [Op.iLike]: `${searchPhrase}%`,
+                                [Op.iLike]: `%${searchPhrase}%`,
                             },
                         }
 
