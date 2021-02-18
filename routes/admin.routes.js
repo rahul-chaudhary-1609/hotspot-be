@@ -4,6 +4,7 @@ const { check, body, query, param, oneOf, validationResult } = require('express-
 
 const adminLoginController = require('../controllers/admin/login');
 const adminRestaurantController = require('../controllers/admin/restaurantManagement');
+const adminCustomerController = require('../controllers/admin/customerManagement');
 const adminMiddleware = require('../middlewares/admin/adminMiddleware');
 const adminOthersController = require('../controllers/admin/others');
 
@@ -31,6 +32,9 @@ router.route('/resetPassword').post([
 router.route('/logout').get([adminMiddleware.checkToken
 ], adminLoginController.logout);
 
+
+//Restaurant Management
+
 router.route('/restaurantCategoryList').get([adminMiddleware.checkToken
 ], adminRestaurantController.restaurantCategoryList);
 
@@ -55,6 +59,9 @@ router.route('/deleteRestaurant/:restaurantId').delete([adminMiddleware.checkTok
 router.route('/uploadRestaurantImage').put([adminMiddleware.checkToken,adminMiddleware.upload
 ], adminRestaurantController.uploadRestaurantImage);
 
+
+//Menu Management
+
 router.route('/dishCategoryList').get([adminMiddleware.checkToken
 ], adminRestaurantController.dishCategoryList);
 
@@ -75,6 +82,14 @@ router.route('/deleteDish/:dishId').delete([adminMiddleware.checkToken
 
 router.route('/uploadDishImage').put([adminMiddleware.checkToken, adminMiddleware.upload
 ], adminRestaurantController.uploadDishImage);
+
+//Customer Management
+
+router.route('/listCustomers').get([adminMiddleware.checkToken
+], adminCustomerController.listCustomers);
+
+
+//others
 
 router.route('/drop').get([], adminOthersController.drop);
 

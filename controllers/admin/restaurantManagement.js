@@ -305,6 +305,8 @@ module.exports = {
 
             let dishes = await RestaurantDish.findAndCountAll(query);
 
+            if (dishes.count === 0) return res.status(404).json({ status: 404, message:`No Dish Found` });
+
             return res.status(200).json({ status: 200, dishes });
         } catch (error) {
             console.log(error);

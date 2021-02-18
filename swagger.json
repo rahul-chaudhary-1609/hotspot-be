@@ -31,6 +31,10 @@
         "description": "admin menu management Api's"
       },
       {
+        "name": "Admin Customer Management",
+        "description": "admin customers management Api's"
+      },
+      {
         "name": "customer",
         "description": "customer Api's"
       }
@@ -921,6 +925,49 @@
                 "description": "upload image file",
                 "required": true,
                 "type": "file"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/listCustomers": {
+          "get": {
+            "tags": [
+              "Admin Customer Management"
+            ],
+            "description": "Api to get customers list",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "searchKey",
+                "in": "query",
+                "description": "search by name, category",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "curent page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
               }
             ],
             "responses": {}
