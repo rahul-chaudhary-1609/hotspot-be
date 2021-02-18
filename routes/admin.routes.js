@@ -73,6 +73,9 @@ router.route('/editDish/:dishId').put([adminMiddleware.checkToken
 router.route('/deleteDish/:dishId').delete([adminMiddleware.checkToken
 ], adminRestaurantController.deleteDish);
 
+router.route('/uploadDishImage').put([adminMiddleware.checkToken, adminMiddleware.upload
+], adminRestaurantController.uploadDishImage);
+
 router.route('/drop').get([], adminOthersController.drop);
 
 module.exports = router;

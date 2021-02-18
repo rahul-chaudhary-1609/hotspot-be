@@ -897,6 +897,34 @@
             ],
             "responses": {}
           }
+        },
+        "/admin/uploadDishImage": {
+          "put": {
+            "tags": [
+              "Admin Menu Management"
+            ],
+            "description": "Api to upload dish image",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "image",
+                "in": "formData",
+                "description": "upload image file",
+                "required": true,
+                "type": "file"
+              }
+            ],
+            "responses": {}
+          }
         }
     }
 }
