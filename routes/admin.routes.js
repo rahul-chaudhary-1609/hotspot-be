@@ -44,7 +44,7 @@ router.route('/addRestaurant').post([adminMiddleware.checkToken
 router.route('/listRestaurant').get([adminMiddleware.checkToken
 ], adminRestaurantController.listRestaurant);
 
-router.route('/changeRestaurantStatus').put([adminMiddleware.checkToken
+router.route('/changeRestaurantStatus/:restaurantId').put([adminMiddleware.checkToken
 ], adminRestaurantController.changeRestaurantStatus);
 
 router.route('/getRestaurant/:restaurantId').get([adminMiddleware.checkToken
@@ -90,6 +90,9 @@ router.route('/listCustomers').get([adminMiddleware.checkToken
 
 router.route('/viewCustomerProfile/:customerId').get([adminMiddleware.checkToken
 ], adminCustomerController.viewCustomerProfile);
+
+router.route('/changeCustomerStatus/:customerId').put([adminMiddleware.checkToken
+], adminCustomerController.changeCustomerStatus);
 
 //others
 

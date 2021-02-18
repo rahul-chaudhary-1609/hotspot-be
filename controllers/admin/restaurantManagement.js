@@ -66,39 +66,70 @@ module.exports = {
 
     changeRestaurantStatus: async (req, res) => {
         try {
-            let params = req.body;
-            let query = {where:{id: params.restaurantId}};
-            query.raw = true;
-            let updates = {};
-            let restaurantExists = await Restaurant.findOne(query);
-            if(restaurantExists) {
-                if(params.actionType == "activate") {
-                    if(restaurantExists.status == 1)
-                    ReE(res, "Already Activated", 401, {});
-                    else
-                    updates.status = 1;
-                } else if(params.actionType == "deactivate") {
-                    if(restaurantExists.status == 2)
-                    ReE(res, "Already Deactivated", 401, {});
-                    else
-                    updates.status = 2;
-                } else if(params.actionType == "delete") {
-                    if(restaurantExists.is_deleted == true)
-                    ReE(res, "Already Deleted", 401, {});
-                    else
-                    updates.is_deleted = true;
-                } else {
-                    ReE(res, "Invalid action request", 401, {});
-                }
-                await Restaurant.update(updates, query);
-                ReS(res, {}, 200, "Restaurant status updated successfully.");
-            } else {
-                ReE(res, "Invalid restaurant id", 401, {});
-            }
-        } catch (err) {
-            console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            const restaurantId = req.params.restaurantId;
+            const status = parseInt(req.body.status);
+
+            const restaurant = await Restaurant.findByPk(restaurantId);
+
+            if (!restaurant) return res.status(404).json({ status: 404, message: `No restaurant found with provided id` });
+
+
+            console.log("status", status);
+
+            if (!([0, 1].includes(status))) return res.status(400).json({ status: 400, message: "Please send a valid status" });
+
+            await Restaurant.update({
+                status,
+            },
+                {
+                    where: {
+                        id: restaurantId,
+                    },
+                    returning: true,
+                });
+            
+            if (status) return res.status(200).json({ status: 200, message: "Restaurant Activated Successfully" });
+            
+            return res.status(200).json({ status: 200, message: "Restaurant Deactivated Successfully" });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
+        // try {
+        //     let params = req.body;
+        //     let query = {where:{id: params.restaurantId}};
+        //     query.raw = true;
+        //     let updates = {};
+        //     let restaurantExists = await Restaurant.findOne(query);
+        //     if(restaurantExists) {
+        //         if(params.actionType == "activate") {
+        //             if(restaurantExists.status == 1)
+        //             ReE(res, "Already Activated", 401, {});
+        //             else
+        //             updates.status = 1;
+        //         } else if(params.actionType == "deactivate") {
+        //             if(restaurantExists.status == 2)
+        //             ReE(res, "Already Deactivated", 401, {});
+        //             else
+        //             updates.status = 2;
+        //         } else if(params.actionType == "delete") {
+        //             if(restaurantExists.is_deleted == true)
+        //             ReE(res, "Already Deleted", 401, {});
+        //             else
+        //             updates.is_deleted = true;
+        //         } else {
+        //             ReE(res, "Invalid action request", 401, {});
+        //         }
+        //         await Restaurant.update(updates, query);
+        //         ReS(res, {}, 200, "Restaurant status updated successfully.");
+        //     } else {
+        //         ReE(res, "Invalid restaurant id", 401, {});
+        //     }
+        // } catch (err) {
+        //     console.log(err);
+        //     ReE(res, "Internal server error", 500, err);
+        // }
     },
 
     getRestaurant: async (req, res) => {

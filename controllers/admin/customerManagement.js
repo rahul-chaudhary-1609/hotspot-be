@@ -91,5 +91,39 @@ module.exports = {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
+    },
+
+    changeCustomerStatus: async (req, res) => {
+        try {
+            const customerId = req.params.customerId;
+            const status = parseInt(req.body.status);
+
+            console.log("customer", customerId)
+
+            const customer = await model.Customer.findByPk(customerId);
+
+            if (!customer) return res.status(404).json({ status: 404, message: `No customer found with provided id` });
+
+
+            if (!([0, 1].includes(status))) return res.status(400).json({ status: 400, message: "Please send a valid status" });
+
+            await model.Customer.update({
+                status,
+            },
+                {
+                    where: {
+                        id: customerId,
+                    },
+                    returning: true,
+                });
+
+            if (status) return res.status(200).json({ status: 200, message: "Customer Activated Successfully" });
+
+            return res.status(200).json({ status: 200, message: "Customer Deactivated Successfully" });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
     }
 }

@@ -554,7 +554,7 @@
               "responses": {}
           }
         },
-        "/admin/changeRestaurantStatus": {
+        "/admin/changeRestaurantStatus/{restaurantId}": {
           "put": {
             "tags": [
               "Admin Restaurant Management"
@@ -573,17 +573,17 @@
               },
               {
                 "name": "restaurantId",
-                "in": "formData",
+                "in": "path",
                 "description": "restaurant id",
                 "required": true,
                 "type": "string"
               },
               {
-                "name": "actionType",
+                "name": "status",
                 "in": "formData",
-                "description": "activate/deactivate/delete",
+                "description": "1 for activate, 0 for deactivate",
                 "required": true,
-                "type": "string"
+                "type": "number"
               }
             ],
             "responses": {}
@@ -994,6 +994,41 @@
                 "name": "customerId",
                 "in": "path",
                 "description": "enter customer Id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/changeCustomerStatus/{customerId}": {
+          "put": {
+            "tags": [
+              "Admin Customer Management"
+            ],
+            "description": "Api to get customer status changed",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "customerId",
+                "in": "path",
+                "description": "customer id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "in": "formData",
+                "description": "1 for activate, 0 for deactivate",
                 "required": true,
                 "type": "number"
               }
