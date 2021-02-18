@@ -180,7 +180,7 @@ module.exports = {
 
           const avg_food_prices = [100, 150, 200, 250, 300, 350, 400, 450, 500]
 
-          const order_types = [2, 3];
+          const order_types = [2];
 
 
           let restaurant = await Restaurant.findAndCountAll({
@@ -400,7 +400,7 @@ module.exports = {
 
             const cut_off_times = [0.5, 1, 1.5];
 
-            const order_types = [1, 2, 3];
+            const order_types = [1 , 3];
 
             let dishCategory = await DishCategory.findAndCountAll();
 
@@ -1207,7 +1207,7 @@ module.exports = {
                 restaurant = await Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
-                        order_type:[2,3],
+                        order_type:3,
                         avg_food_price: {
                             [Op.lte]: req.body.max_price,
                         },
@@ -1223,7 +1223,7 @@ module.exports = {
                 restaurant = await Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
-                        order_type: [2, 3],
+                        order_type:3,
                         avg_food_price: {
                             [Op.lte]: req.body.max_price,
                         },
@@ -1239,7 +1239,7 @@ module.exports = {
                 restaurant = await Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
-                        order_type: [2, 3],
+                        order_type:3,
                         avg_food_price: {
                             [Op.lte]: req.body.max_price,
                         },
@@ -1251,7 +1251,7 @@ module.exports = {
                 restaurant = await Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
-                        order_type: [2, 3],
+                        order_type:3,
                     },
                     order: [
                         ['avg_food_price', 'ASC'],
@@ -1263,7 +1263,7 @@ module.exports = {
                 restaurant = await Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
-                        order_type: [2, 3],
+                        order_type:3,
 
                     }
                 });
