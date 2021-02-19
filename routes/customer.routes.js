@@ -164,10 +164,6 @@ router.get('/get-restaurant', customerAuthentication.authenticateCustomer, (req,
     return RestaurantController.getRestaurant(req, res);
 });
 
-router.get('/get-restaurant-details', customerAuthentication.authenticateCustomer, (req, res) => {
-    return RestaurantController.getRestaurantDetails(req, res);
-})
-
 router.get('/get-hotspot-restaurant', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getHotspotRestaurant(req, res);
 });
@@ -215,5 +211,14 @@ router.get('/get-hotspot-restaurant-with-quick-filter', customerAuthentication.a
 router.get('/get-offer-banner', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getOfferBanner(req, res);
 });
+
+router.get('/get-restaurant-details', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getRestaurantDetails(req, res);
+})
+
+router.get('/get-menu-card-details', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getMenuCardDetails(req, res);
+})
+
 
 module.exports=router;

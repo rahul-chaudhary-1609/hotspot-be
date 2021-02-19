@@ -9,6 +9,14 @@
       "http",
       "https"
     ],
+    "securityDefinitions":{
+      "Bearer":{
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+
+  },
     "consumes": [
       "application/json",
       "application/x-www-form-urlencoded",
@@ -35,8 +43,12 @@
         "description": "admin customers management Api's"
       },
       {
-        "name": "customer",
+        "name": "Customer",
         "description": "customer Api's"
+      },
+      {
+        "name": "Customer Restaurant",
+        "description": "customer restaurant Api's"
       }
       
     ],
@@ -1066,6 +1078,33 @@
                 "description": "reason of deletion",
                 "required": true,
                 "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/get-menu-card-details": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to delete a customer",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "restaurantId",
+                "in": "query",
+                "description": "restaurant Id",
+                "required": true,
+                "type": "number"
               }
             ],
             "responses": {}

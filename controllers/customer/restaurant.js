@@ -1589,7 +1589,23 @@ module.exports = {
 
             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
 
-            return res.status(200).json({ status: 200, customer });
+            const restaurantDish = await RestaurantDish.findAll({
+                where: {
+                    restaurant_id: req.query.restaurantId
+                }
+            });
+
+            const menuCards = restaurantDish.map((val) => {
+                return {
+                    id: val.id,
+                    name: val.name,
+                    price:val.price,
+                    description: val.description,
+                    image:val.image_url
+                }                
+            })
+
+            return res.status(200).json({ status: 200, menuCards });
 
         } catch (error) {
             console.log(error);
