@@ -730,7 +730,7 @@ module.exports = {
             }
 
             if (req.body.searchPhrase) {
-                console.log("\n\nFilter searchPhrase", searchPhrase,"\n\n")
+                console.log("\n\nFilter searchPhrase", req.body.searchPhrase,"\n\n")
                 const searchPhrase = req.body.searchPhrase;
                 const hotspot_dish_restaurant_ids = restaurant_ids;
 
@@ -1122,7 +1122,7 @@ module.exports = {
             }
 
             if (req.body.searchPhrase) {
-                console.log("\n\nPickup searchPhrase", searchPhrase, "\n\n")
+                console.log("\n\nPickup searchPhrase", req.body.searchPhrase, "\n\n")
                 const searchPhrase = req.body.searchPhrase;
                 const hotspot_dish_restaurant_ids = restaurant_ids;
 
@@ -1320,7 +1320,7 @@ module.exports = {
             }
 
             if (req.body.searchPhrase) {
-                console.log("\n\nDelivery searchPhrase", searchPhrase, "\n\n")
+                console.log("\n\nDelivery searchPhrase", req.body.searchPhrase, "\n\n")
                 const searchPhrase = req.body.searchPhrase;
                 const hotspot_dish_restaurant_ids = restaurant_ids;
 
