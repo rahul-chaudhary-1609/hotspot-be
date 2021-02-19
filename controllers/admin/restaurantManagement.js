@@ -7,9 +7,14 @@ const validation = require("../../middlewares/admin/validation");
 module.exports = {
     listRestaurant: async(req, res) => {
         try {
+
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let [offset, limit] = pagination(req.query.page, req.query.page_size);
             if (offset)
-                offset = (parseInt(req.query.page) - 1) * parseInt(req.query.page_size);
+                offset = (parseInt(offset) - 1) * parseInt(limit);
 
             let query = {};
             query.where = {is_deleted:false};
@@ -45,6 +50,11 @@ module.exports = {
 
     addRestaurant: async(req, res) => {
         try {
+
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let restaurantExists = await Restaurant.findOne({where: {owner_email: req.body.owner_email}});
             if(!restaurantExists) {
                 // const point = { type: 'Point', coordinates: [] };
@@ -66,6 +76,11 @@ module.exports = {
 
     changeRestaurantStatus: async (req, res) => {
         try {
+
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             const restaurantId = req.params.restaurantId;
             const status = parseInt(req.body.status);
 
@@ -156,6 +171,11 @@ module.exports = {
 
     editRestaurant: async (req, res) => {
         try {
+
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let query = {where:{id: req.params.restaurantId}};
             query.raw = true;
             let updates = req.body;
@@ -181,6 +201,10 @@ module.exports = {
 
     deleteRestaurant: async (req, res) => { 
         try {
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let restaurantId = req.params.restaurantId;
 
             await Restaurant.update({
@@ -201,6 +225,11 @@ module.exports = {
 
     uploadRestaurantImage: async (req, res) => {
         try {
+
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let now = new Date();
             now = now.toString();
             now = now.replace(/:/g, '');
@@ -231,6 +260,10 @@ module.exports = {
 
     restaurantCategoryList: async (req, res) => {
         try {
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let restaurantCategoryList = await RestaurantCategory.findAndCountAll({where:{is_deleted: false},raw: true});
             if(restaurantCategoryList)
              ReS(res, restaurantCategoryList, 200, "Restaurant category data fetched successfully.");
@@ -242,6 +275,11 @@ module.exports = {
 
     dishCategoryList: async (req, res) => {
         try {
+
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let dishCategory = await DishCategory.findAndCountAll();
 
             if (dishCategory.count === 0) {
@@ -299,9 +337,13 @@ module.exports = {
     
     listDishes: async (req, res) => {
         try {
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let [offset, limit] = pagination(req.query.page, req.query.page_size);
             if (offset)
-                offset = (parseInt(req.query.page) - 1) * parseInt(req.query.page_size);
+                offset = (parseInt(offset) - 1) * parseInt(limit);
 
             let query = {};
             query.where = { is_deleted: false };
@@ -403,6 +445,11 @@ module.exports = {
 
     deleteDish: async (req, res) => {
         try {
+
+            const admin = await Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             let dishId = req.params.dishId;
 
             await RestaurantDish.update({

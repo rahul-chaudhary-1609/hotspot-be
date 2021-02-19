@@ -14,7 +14,7 @@ module.exports = {
 
             let [offset, limit] = utility.pagination(req.query.page, req.query.page_size);
             if (offset)
-                offset = (parseInt(req.query.page) - 1) * parseInt(limit);
+                offset = (parseInt(offset) - 1) * parseInt(limit);
 
             let query = {};
             query.where = { is_deleted: false };
@@ -95,6 +95,11 @@ module.exports = {
 
     changeCustomerStatus: async (req, res) => {
         try {
+
+            const admin = await model.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
             const customerId = req.params.customerId;
             const status = parseInt(req.body.status);
 
