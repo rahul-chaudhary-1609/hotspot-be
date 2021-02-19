@@ -730,6 +730,7 @@ module.exports = {
             }
 
             if (req.body.searchPhrase) {
+                console.log("\n\nFilter searchPhrase", searchPhrase,"\n\n")
                 const searchPhrase = req.body.searchPhrase;
                 const hotspot_dish_restaurant_ids = restaurant_ids;
 
@@ -972,6 +973,8 @@ module.exports = {
 
             const searchPhrase = req.query.searchPhrase;
 
+            console.log("\n\nSearch searchPhrase", searchPhrase, "\n\n")
+
             const restaurantCategory = await RestaurantCategory.findAll({
                 where: {
                     name: {
@@ -1119,6 +1122,7 @@ module.exports = {
             }
 
             if (req.body.searchPhrase) {
+                console.log("\n\nPickup searchPhrase", searchPhrase, "\n\n")
                 const searchPhrase = req.body.searchPhrase;
                 const hotspot_dish_restaurant_ids = restaurant_ids;
 
@@ -1316,6 +1320,7 @@ module.exports = {
             }
 
             if (req.body.searchPhrase) {
+                console.log("\n\nDelivery searchPhrase", searchPhrase, "\n\n")
                 const searchPhrase = req.body.searchPhrase;
                 const hotspot_dish_restaurant_ids = restaurant_ids;
 
