@@ -72,7 +72,7 @@ module.exports = {
 
             let customer = await model.Customer.findByPk(customerId);
 
-            if (!customer) return res.status(404).json({ status: 404, message: `No customer found with provided id` });
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `No customer found with provided id` });
 
             customer = {
                 id: customer.id,
@@ -126,6 +126,39 @@ module.exports = {
 
             return res.status(200).json({ status: 200, message: "Customer Deactivated Successfully" });
 
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+    deleteCustomer : async (req, res) => {
+        try {
+            const admin = await model.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const customerId = req.params.customerId;
+
+            const customer = await model.Customer.findByPk(customerId);
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `No customer found with provided id` });
+
+            await model.Customer.update({
+                is_deleted: true,
+            },
+                {
+                    where: {
+                        id: customerId,
+                    },
+                    returning: true,
+                })
+            
+            await model.DeletedCustomer.create({
+                customer_id: customerId,
+                admin_id: req.adminInfo.id,
+                reason:req.body.reason,
+            })
+            return res.status(200).json({ status: 200, message: "Customer Deleted Successfully" });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });

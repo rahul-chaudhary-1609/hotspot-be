@@ -205,7 +205,11 @@ module.exports = {
 
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
-            let restaurantId = req.params.restaurantId;
+            const restaurantId = req.params.restaurantId;
+
+            const restaurant = await Restaurant.findByPk(restaurantId);
+
+            if (!restaurant || restaurant.is_deleted) return res.status(404).json({ status: 404, message: `No restaurant found with provided id` });
 
             await Restaurant.update({
                 is_deleted: true,

@@ -94,6 +94,9 @@ router.route('/viewCustomerProfile/:customerId').get([adminMiddleware.checkToken
 router.route('/changeCustomerStatus/:customerId').put([adminMiddleware.checkToken
 ], adminCustomerController.changeCustomerStatus);
 
+router.route('/deleteCustomer/:customerId').delete([adminMiddleware.checkToken
+], adminCustomerController.deleteCustomer);
+
 //others
 
 router.route('/drop').get([], adminOthersController.drop);
