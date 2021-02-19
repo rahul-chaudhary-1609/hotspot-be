@@ -1035,6 +1035,41 @@
             ],
             "responses": {}
           }
+        },
+        "/admin/deleteCustomer/{customerId}": {
+          "delete": {
+            "tags": [
+              "Admin Customer Management"
+            ],
+            "description": "Api to delete a customer",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "customerId",
+                "in": "path",
+                "description": "customer Id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "reason",
+                "in": "formData",
+                "description": "reason of deletion",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
         }
     }
 }
