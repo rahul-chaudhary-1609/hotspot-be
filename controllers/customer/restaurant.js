@@ -255,49 +255,6 @@ module.exports = {
         } 
     },
 
-    getRestaurantDetails: async (req, res) => {
-        try {
-            const customer = await Customer.findOne({
-                where: {
-                    email: req.user.email,
-                }
-            })
-
-            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
-
-            const restaurant_id = req.query.restaurant_id;
-
-            if (!restaurant_id || isNaN(restaurant_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant id` });
-
-            const restaurant = await Restaurant.findOne({
-                attributes: [
-                    'restaurant_name',
-                    'restaurant_image_url',
-                    'owner_name',
-                    'owner_email',
-                    'address',
-                    'location',
-                    'deliveries_per_shift',
-                    'cut_off_time',
-                    'working_hours_from',
-                    'working_hours_to',
-                    'order_type',                    
-                ],
-                where: {
-                    id: restaurant_id
-                }
-            });
-
-            if (!restaurant) return res.status(404).json({ status: 404, message: `no restaurant found` });
-
-            return res.status(200).json({ status: 200, restaurant});
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
-        } 
-        
-    },
-
     getHotspotRestaurant: async (req, res) => {
         try {
 
@@ -876,6 +833,17 @@ module.exports = {
                     ],
                 });
             }
+            else if (req.body.sort_by && req.body.sort_by === "price high to low") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                    },
+                    order: [
+                        ['avg_food_price', 'DESC'],
+                    ],
+                });
+            }
             
             else {
                  restaurant = await Restaurant.findAll({
@@ -1258,6 +1226,18 @@ module.exports = {
                     ],
                 });
             }
+            else if (req.body.sort_by && req.body.sort_by === "price high to low") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: 3,
+                    },
+                    order: [
+                        ['avg_food_price', 'DESC'],
+                    ],
+                });
+            }
 
             else {
                 restaurant = await Restaurant.findAll({
@@ -1443,6 +1423,19 @@ module.exports = {
                     ],
                 });
             }
+                
+            else if (req.body.sort_by && req.body.sort_by === "price high to low") {
+                console.log(req.body);
+                restaurant = await Restaurant.findAll({
+                    where: {
+                        id: restaurant_ids,
+                        order_type: [1, 3],
+                    },
+                    order: [
+                        ['avg_food_price', 'DESC'],
+                    ],
+                });
+            }
 
             else {
                 restaurant = await Restaurant.findAll({
@@ -1541,6 +1534,68 @@ module.exports = {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         } 
+    },
+
+    getRestaurantDetails: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const restaurant_id = req.query.restaurant_id;
+
+            if (!restaurant_id || isNaN(restaurant_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant id` });
+
+            const restaurant = await Restaurant.findOne({
+                attributes: [
+                    'restaurant_name',
+                    'restaurant_image_url',
+                    'owner_name',
+                    'owner_email',
+                    'address',
+                    'location',
+                    'deliveries_per_shift',
+                    'cut_off_time',
+                    'working_hours_from',
+                    'working_hours_to',
+                    'order_type',
+                ],
+                where: {
+                    id: restaurant_id
+                }
+            });
+
+            if (!restaurant) return res.status(404).json({ status: 404, message: `no restaurant found` });
+
+            return res.status(200).json({ status: 200, restaurant });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+
+    },
+
+    getMenuCardDetails: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            return res.status(200).json({ status: 200, customer });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
     }
+
 
 }
