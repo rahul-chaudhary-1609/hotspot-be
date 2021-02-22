@@ -220,5 +220,9 @@ router.get('/get-menu-card-details', customerAuthentication.authenticateCustomer
     return RestaurantController.getMenuCardDetails(req, res);
 })
 
+router.put('/set-favorite-food', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.setFavoriteFood(req, res);
+})
+
 
 module.exports=router;

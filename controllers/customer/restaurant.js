@@ -1,5 +1,5 @@
 require('dotenv/config');
-const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish, HotspotOffer } = require('../../models');
+const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish, HotspotOffer,FavFood } = require('../../models');
 const { locationGeometrySchema, timeSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
@@ -1626,6 +1626,61 @@ module.exports = {
             })
 
             return res.status(200).json({ status: 200, menuCards });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
+    setFavoriteFood: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            }); 
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const restaurant_dish_id = req.body.restaurant_dish_id;
+            
+            if (!restaurant_dish_id || isNaN(restaurant_dish_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant dish id` });
+
+            const restaurantDish = await RestaurantDish.findOne({
+                where: {
+                    id: restaurant_dish_id,
+                }
+            })
+
+            if (!restaurantDish) return res.status(404).json({ status: 404, message: `No restaurant dish id with the provided id` });
+
+            const favFood = await FavFood.findOne({
+                where: {
+                    restaurant_dish_id,
+                    customer_id:customer.id,
+                }
+            });
+
+            if (favFood) {
+                await FavFood.destroy({
+                    where: {
+                        restaurant_dish_id,
+                        customer_id:customer.id,
+                    },
+                    force: true,
+                });
+
+                return res.status(200).json({ status: 200, message: `Food removed from favorite` });
+            }
+            else {
+                await FavFood.create({
+                    restaurant_dish_id,
+                    customer_id:customer.id,
+                });
+
+                return res.status(200).json({ status: 200, message: `Food added as favorite` });
+            }
 
         } catch (error) {
             console.log(error);
