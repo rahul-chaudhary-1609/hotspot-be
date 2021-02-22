@@ -1249,6 +1249,10 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
+            if (!Array.isArray(req.body.location_geometry)) {
+                req.body.location_geometry=[req.body.location_geometry.split(',')[0],req.body.location_geometry.split(',')[1]]
+            }
+
             const result = customerAddressSchema.validate(req.body);
 
             if (result.error) {
@@ -1337,6 +1341,10 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
+            if (!Array.isArray(req.body.location_geometry)) {
+                req.body.location_geometry=[req.body.location_geometry.split(',')[0],req.body.location_geometry.split(',')[1]]
+            }
+            
             const result = customerAddressSchema.validate(req.body);
 
             if (result.error) {
@@ -1464,7 +1472,12 @@ module.exports = {
 
         if (!customer) return res.status(404).json({ status: 404, message: `User does not exist with this phone` });
 
-        const notification_status = req.body.notification_status;
+        let notification_status = req.body.notification_status;
+
+        if (!isBoolean(notification_status) && (notification_status === "true" || notification_status === "false")) {
+            if (notification_status === "true") notification_status = true;
+            else if(notification_status === "false") notification_status = false;
+        }
 
         if (!isBoolean(notification_status)) return res.status(400).json({ status: 400, message: `Please provide only boolean value` });
 

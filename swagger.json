@@ -51,6 +51,14 @@
         "description": "customer login Api's"
       },
       {
+        "name": "Customer Forget Password",
+        "description": "customer forget password Api's"
+      },
+      {
+        "name": "Customer Account",
+        "description": "customer Account Api's"
+      },
+      {
         "name": "Customer Hotspot",
         "description": "customer hotspot Api's"
       },
@@ -1475,6 +1483,553 @@
             "responses": {}
           }
         },
+
+
+
+
+
+
+
+
+
+
+
+        "/send-password-reset-code": {
+          "post": {
+            "tags": [
+              "Customer Forget Password"
+            ],
+            "description": "Api to send password reset code on customer email/phone",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [              
+              {
+                "name": "emailOrPhone",
+                "in": "formData",
+                "description": "enter email/phone no",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "enter country code (in case of phone no)",
+                "required": false,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+        "/validate-password-reset-code": {
+          "post": {
+            "tags": [
+              "Customer Forget Password"
+            ],
+            "description": "Api to validate password reset code",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "emailOrPhone",
+                "in": "formData",
+                "description": "enter email/phone no",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "enter country code (in case of phone no)",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "code",
+                "in": "formData",
+                "description": "enter verification code",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+
+        "/reset-password": {
+          "put": {
+            "tags": [
+              "Customer Forget Password"
+            ],
+            "description": "Api to validate password reset code",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "emailOrPhone",
+                "in": "formData",
+                "description": "enter email/phone no",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "enter country code (in case of phone no)",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "password",
+                "in": "formData",
+                "description": "enter new pasword",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+
+
+
+
+
+
+
+
+
+
+        "/customer-profile": {
+          "get": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to get profile of the customer",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
+        "/customer-update-name": {
+          "put": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to update customer name",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer-change-password": {
+          "put": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to update customer login password",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "newPassword",
+                "in": "formData",
+                "description": "enter new password",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "oldPassword",
+                "in": "formData",
+                "description": "enter current password",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer-add-address": {
+          "post": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to add customer address",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "address",
+                "in": "formData",
+                "description": "enter address",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "city",
+                "in": "formData",
+                "description": "enter city",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "state",
+                "in": "formData",
+                "description": "enter state",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "postal_code",
+                "in": "formData",
+                "description": "enter postal code",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "country",
+                "in": "formData",
+                "description": "enter country",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "location_geometry",
+                "in": "formData",
+                "description": "latitude,longitude",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer-get-address": {
+          "get": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to get customer's all addresses",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
+        "/customer-set-default-address": {
+          "put": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to set an address as default customer address",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "address",
+                "in": "formData",
+                "description": "enter address",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "city",
+                "in": "formData",
+                "description": "enter city",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "state",
+                "in": "formData",
+                "description": "enter state",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "postal_code",
+                "in": "formData",
+                "description": "enter postal code",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "country",
+                "in": "formData",
+                "description": "enter country",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "location_geometry",
+                "in": "formData",
+                "description": "latitude,longitude",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer-feedback": {
+          "post": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to get customer's feedback",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "message",
+                "in": "formData",
+                "description": "enter your feedback",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer-change-profile-picture": {
+          "put": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to change customer profile picture",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "customer_profile_picture",
+                "in": "formData",
+                "description": "upload profile picture",
+                "required": true,
+                "type": "file"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer-toggle-notification": {
+          "put": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to toggle customer notification status",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "notification_status",
+                "in": "formData",
+                "description": "true | false",
+                "required": true,
+                "type": "boolean"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/get-notification-status": {
+          "get": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to get customer notification status",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
+        "/customer-update-email": {
+          "put": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to update customer email",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+
+            "parameters": [
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer-update-phone": {
+          "put": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to update customer phone",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],   
+            
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+
+            "parameters": [
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "enter country code",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "phone",
+                "in": "formData",
+                "description": "enter phone",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer-logout": {
+          "delete": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to update customer phone",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
         "/get-hotspot-location": {
           "get": {
             "tags": [
