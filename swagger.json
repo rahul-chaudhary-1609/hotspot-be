@@ -43,13 +43,22 @@
         "description": "admin customers management Api's"
       },
       {
-        "name": "Customer",
-        "description": "customer Api's"
+        "name": "Customer Signup",
+        "description": "customer signup Api's"
+      },
+      {
+        "name": "Customer Login",
+        "description": "customer login Api's"
+      },
+      {
+        "name": "Customer Hotspot",
+        "description": "customer hotspot Api's"
       },
       {
         "name": "Customer Restaurant",
         "description": "customer restaurant Api's"
       }
+      
       
     ],
     "paths": {
@@ -1083,6 +1092,1073 @@
             "responses": {}
           }
         },
+
+
+
+
+
+
+
+
+
+
+
+        "/verify-email": {
+          "get": {
+            "tags": [
+              "Customer Signup"
+            ],
+            "description": "Api to verify customer email",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "email",
+                "in": "query",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/validate-email": {
+          "get": {
+            "tags": [
+              "Customer Signup"
+            ],
+            "description": "Api to validate customer email",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "email",
+                "in": "query",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "code",
+                "in": "query",
+                "description": "enter verification code",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/customer-email-signup": {
+          "post": {
+            "tags": [
+              "Customer Signup"
+            ],
+            "description": "Api to signup with email and phone",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "enter country code",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "phone",
+                "in": "formData",
+                "description": "enter phone no",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "password",
+                "in": "formData",
+                "description": "enter password",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/verify-phone": {
+          "post": {
+            "tags": [
+              "Customer Signup"
+            ],
+            "description": "Api to verify customer phone",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "enter country code",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "phone",
+                "in": "formData",
+                "description": "enter phone no",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+        "/validate-phone": {
+          "post": {
+            "tags": [
+              "Customer Signup"
+            ],
+            "description": "Api to validate customer phone",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "enter country code",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "phone",
+                "in": "formData",
+                "description": "enter phone no",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "code",
+                "in": "formData",
+                "description": "enter verification code",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+        "/customer-google-signup": {
+          "post": {
+            "tags": [
+              "Customer Signup"
+            ],
+            "description": "Api to signup with customer google account",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "google_id",
+                "in": "formData",
+                "description": "enter google id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+        "/customer-facebook-signup": {
+          "post": {
+            "tags": [
+              "Customer Signup"
+            ],
+            "description": "Api to signup with customer facebook account",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "facebook_id",
+                "in": "formData",
+                "description": "enter facebook id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+        "/customer-email-login": {
+          "post": {
+            "tags": [
+              "Customer Login"
+            ],
+            "description": "Api to login with customer email",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "password",
+                "in": "formData",
+                "description": "enter password",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+        "/customer-phone-login": {
+          "post": {
+            "tags": [
+              "Customer Login"
+            ],
+            "description": "Api to login with customer phone",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "enter country code",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "phone",
+                "in": "formData",
+                "description": "enter phone",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "password",
+                "in": "formData",
+                "description": "enter password",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+         "/customer-google-login": {
+          "post": {
+            "tags": [
+              "Customer Login"
+            ],
+            "description": "Api to login with customer google account",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "google_id",
+                "in": "formData",
+                "description": "enter google id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+        "/customer-facebook-login": {
+          "post": {
+            "tags": [
+              "Customer Login"
+            ],
+            "description": "Api to login with customer facebook account",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "facebook_id",
+                "in": "formData",
+                "description": "enter facebook id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+        "/get-hotspot-location": {
+          "get": {
+            "tags": [
+              "Customer Hotspot"
+            ],
+            "description": "Api to get hotspot locations",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "latitude",
+                "in": "query",
+                "description": "enter latitude",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "longitude",
+                "in": "query",
+                "description": "enater longitude",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/check-hotspot-location": {
+          "get": {
+            "tags": [
+              "Customer Hotspot"
+            ],
+            "description": "Api to check hotspot locations exists or not",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+        "/get-hotspot-dropoff": {
+          "get": {
+            "tags": [
+              "Customer Hotspot"
+            ],
+            "description": "Api to get hotspot dropoff locations",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/get-default-hotspot": {
+          "get": {
+            "tags": [
+              "Customer Hotspot"
+            ],
+            "description": "Api to get default hotspot of a customer",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
+
+
+
+
+
+
+
+        "/get-restaurant": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get pickup restaurants out of hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "latitude",
+                "in": "query",
+                "description": "enter latitude",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "longitude",
+                "in": "query",
+                "description": "enater longitude",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        
+        "/get-hotspot-restaurant": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get restaurants in a hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "latitude",
+                "in": "query",
+                "description": "enter latitude",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "longitude",
+                "in": "query",
+                "description": "enater longitude",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "hotspot_location_id",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "delivery_shift",
+                "in": "query",
+                "description": "enter delivery shift HH:MM:SS",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/set-favorite-restaurant": {
+          "post": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to set a restaurant as favorite",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/get-food-category": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get all food categories",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+        
+        "/get-hotspot-restaurant-with-filter": {
+          "post": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get restaurants in a hotspot with filter",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "formData",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "delivery_shift",
+                "in": "formData",
+                "description": "enter delivery shift HH:MM:SS",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dish_category_id",
+                "in": "formData",
+                "description": "enter dish category id",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "sort_by",
+                "in": "formData",
+                "description": "price high to low | price low to high",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "max_price",
+                "in": "formData",
+                "description": "enter max price (in $)",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "category",
+                "in": "formData",
+                "description": "Indian,Thai,Bakery,...",
+                "required": false,
+                "type": "string"               
+              },
+              {
+                "name": "searchPhrase",
+                "in": "formData",
+                "description": "enter the phrase for search",
+                "required": false,
+                "type": "string"
+              }
+              
+            ],
+            "responses": {}
+          }
+        },
+        "/get-favorite-restaurant": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get favorite restaurants in a hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "delivery_shift",
+                "in": "query",
+                "description": "enter delivery shift HH:MM:SS",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/get-search-suggestion": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get search suggestion",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "searchPhrase",
+                "in": "query",
+                "description": "enter the phrase for search",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/get-search-result": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get search result",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "delivery_shift",
+                "in": "query",
+                "description": "enter delivery shift HH:MM:SS",
+                "required": true,
+                "type": "string"
+              },
+               {
+                "name": "searchPhrase",
+                "in": "query",
+                "description": "enter the phrase for search",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/get-offer-banner": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get all offer details",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+        
+        "/get-hotspot-restaurant-pickup": {
+          "post": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get pickup type restaurants in a hotspot with filter",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "formData",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "delivery_shift",
+                "in": "formData",
+                "description": "enter delivery shift HH:MM:SS",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dish_category_id",
+                "in": "formData",
+                "description": "enter dish category id",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "sort_by",
+                "in": "formData",
+                "description": "price high to low | price low to high",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "max_price",
+                "in": "formData",
+                "description": "enter max price (in $)",
+                "required": false,
+                "type": "number"
+              },
+             {
+                "name": "category",
+                "in": "formData",
+                "description": "Indian,Thai,Bakery,...",
+                "required": false,
+                "type": "string"               
+              },
+              {
+                "name": "searchPhrase",
+                "in": "formData",
+                "description": "enter the phrase for search",
+                "required": false,
+                "type": "string"
+              }
+              
+            ],
+            "responses": {}
+          }
+        },
+        
+        "/get-hotspot-restaurant-delivery": {
+          "post": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get delivery type restaurants in a hotspot with filter",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "formData",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "delivery_shift",
+                "in": "formData",
+                "description": "enter delivery shift HH:MM:SS",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dish_category_id",
+                "in": "formData",
+                "description": "enter dish category id",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "sort_by",
+                "in": "formData",
+                "description": "price high to low | price low to high",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "max_price",
+                "in": "formData",
+                "description": "enter max price (in $)",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "category",
+                "in": "formData",
+                "description": "Indian,Thai,Bakery,...",
+                "required": false,
+                "type": "string"               
+              },
+              {
+                "name": "searchPhrase",
+                "in": "formData",
+                "description": "enter the phrase for search",
+                "required": false,
+                "type": "string"
+              }
+              
+            ],
+            "responses": {}
+          }
+        },
+
+        "/check-default-address": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to check whether default address available or not",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
+        "/get-hotspot-restaurant-with-quick-filter": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get search result",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "delivery_shift",
+                "in": "query",
+                "description": "enter delivery shift HH:MM:SS",
+                "required": true,
+                "type": "string"
+              },
+               {
+                "name": "dish_category_id",
+                "in": "query",
+                "description": "enter dish category id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/get-restaurant-category": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get all restaurant categories",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
+        "/get-restaurant-details": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get details of a restaurant",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "restaurant_id",
+                "in": "query",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        
         "/get-menu-card-details": {
           "get": {
             "tags": [

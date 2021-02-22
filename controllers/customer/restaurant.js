@@ -705,6 +705,11 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
             }
 
+            if (req.body.category && !Array.isArray(req.body.category)) {
+
+                req.body.category=req.body.category.split(",")
+            }
+
             const restaurantHotspot = await RestaurantHotspot.findAll({
                 attributes: [
                     'restaurant_id'
@@ -959,7 +964,7 @@ module.exports = {
             if (timeResult.error) {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
             }
-
+            
             const restaurantHotspot = await RestaurantHotspot.findAll({
                 attributes: [
                     'restaurant_id'
@@ -1094,6 +1099,11 @@ module.exports = {
 
             if (timeResult.error) {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
+            }
+
+            if (req.body.category && !Array.isArray(req.body.category)) {
+
+                req.body.category=req.body.category.split(",")
             }
 
             const restaurantHotspot = await RestaurantHotspot.findAll({
@@ -1292,6 +1302,11 @@ module.exports = {
 
             if (timeResult.error) {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
+            }
+
+            if (req.body.category && !Array.isArray(req.body.category)) {
+
+                req.body.category=req.body.category.split(",")
             }
 
             const restaurantHotspot = await RestaurantHotspot.findAll({
