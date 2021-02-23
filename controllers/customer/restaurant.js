@@ -8,7 +8,6 @@ const moment = require('moment');
 
 const getRestaurantCard =  async (args) => {
     try {
-        console.log("delivery_shift", args.delivery_shift)
         const restaurants = [];
         for (const val of args.restaurant) {
             let is_favorite = false;
@@ -86,6 +85,32 @@ const getRestaurantCard =  async (args) => {
         if (restaurants.length === 0) return args.res.status(404).json({ status: 404, message: `no restaurants found`, });
 
         return args.res.status(200).json({ status: 200, restaurants });
+
+
+    } catch (error) {
+        console.log(error);
+        return args.res.status(500).json({ status: 500, message: `Internal Server Error` });
+    } 
+
+
+};
+
+const getFoodCard =  async (args) => {
+    try {      
+        
+        const foodCards = args.restaurantDish.map((val) => {
+            return {
+                id: val.id,
+                name: val.name,
+                price: val.price,
+                description: val.description,
+                image: val.image_url
+            }
+        });
+        
+        if (foodCards.length === 0) return args.res.status(404).json({ status: 404, message: `no food found`, });
+
+        return args.res.status(200).json({ status: 200, foodCards });
 
 
     } catch (error) {
@@ -1570,28 +1595,51 @@ module.exports = {
 
             if (!restaurant_id || isNaN(restaurant_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant id` });
 
+            const restaurantHotspot = await RestaurantHotspot.findOne({
+                where: {
+                    restaurant_id
+                }
+            });
+
+            const hotspotLocation = await HotspotLocation.findOne({
+                where: {
+                    id:restaurantHotspot.hotspot_location_id
+                }
+            });
+
+            let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                return parseInt(((new Date()).toTimeString().slice(0,8)).replace(/:/g, '')) <= parseInt(time.replace(/:/g, ''));
+                //return args.delivery_shift === time;
+            });
+
+            if (!nextDeliveryTime) nextDeliveryTime = hotspotLocation.delivery_shifts[0];
+
+            
             const restaurant = await Restaurant.findOne({
-                attributes: [
-                    'restaurant_name',
-                    'restaurant_image_url',
-                    'owner_name',
-                    'owner_email',
-                    'address',
-                    'location',
-                    'deliveries_per_shift',
-                    'cut_off_time',
-                    'working_hours_from',
-                    'working_hours_to',
-                    'order_type',
-                ],
                 where: {
                     id: restaurant_id
                 }
             });
 
+            const restaurantDetails = {
+                id: restaurant.id,
+                name:   restaurant.restaurant_name,
+                image:  restaurant.restaurant_image_url,
+                ownerName:  restaurant.owner_name,
+                ownerEmail: restaurant.owner_email,
+                address:    restaurant.address,
+                location:   restaurant.location,
+                deliveriesPerShift: restaurant.deliveries_per_shift,
+                cutOffTime: restaurant.cut_off_time,
+                workingHourFrom:    restaurant.working_hours_from,
+                workingHourTo:  restaurant.working_hours_to,
+                orderType:  restaurant.order_type,
+                nextDeliveryTime,
+            }
+
             if (!restaurant) return res.status(404).json({ status: 404, message: `no restaurant found` });
 
-            return res.status(200).json({ status: 200, restaurant });
+            return res.status(200).json({ status: 200, restaurantDetails});
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
@@ -1615,17 +1663,7 @@ module.exports = {
                 }
             });
 
-            const menuCards = restaurantDish.map((val) => {
-                return {
-                    id: val.id,
-                    name: val.name,
-                    price:val.price,
-                    description: val.description,
-                    image:val.image_url
-                }                
-            })
-
-            return res.status(200).json({ status: 200, menuCards });
+            getFoodCard({ restaurantDish, res });
 
         } catch (error) {
             console.log(error);
@@ -1645,7 +1683,7 @@ module.exports = {
 
             const restaurant_dish_id = req.body.restaurant_dish_id;
             
-            if (!restaurant_dish_id || isNaN(restaurant_dish_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant dish id` });
+            if (!restaurant_dish_id || isNaN(restaurant_dish_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant dish id0` });
 
             const restaurantDish = await RestaurantDish.findOne({
                 where: {
@@ -1686,7 +1724,42 @@ module.exports = {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
-    }
+    },
+
+    getFavoriteFood: async (req, res) => {
+      try {
+          const customer = await Customer.findOne({
+              where: {
+                  email: req.user.email,
+              }
+          })
+
+          if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+          const customer_id = customer.id;
+
+          const favFood = await FavFood.findAll({
+              where: {
+                  customer_id,
+              }
+          });
+
+          const restaurant_dish_ids = await favFood.map(val => val.restaurant_dish_id);
+
+          const restaurantDish = await RestaurantDish.findAll({
+              where: {
+                  id: restaurant_dish_ids,
+              }
+          });
+
+          getFoodCard({ restaurantDish, res });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }  
+    },
+
 
 
 }

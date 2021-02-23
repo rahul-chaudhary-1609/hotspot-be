@@ -2767,6 +2767,25 @@
             ],
             "responses": {}
           }
+        },
+        "/get-favorite-food": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get all favorite foods",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
         }
     }
 }
