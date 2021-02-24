@@ -1346,6 +1346,57 @@
             "responses": {}
           }
         },
+        "/customer-apple-signup": {
+          "post": {
+            "tags": [
+              "Customer Signup"
+            ],
+            "description": "Api to signup with customer apple account",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "apple_id",
+                "in": "formData",
+                "description": "enter apple id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         "/customer-email-login": {
           "post": {
             "tags": [
@@ -1461,6 +1512,42 @@
                 "name": "facebook_id",
                 "in": "formData",
                 "description": "enter facebook id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": true,
+                "type": "string"
+              }
+            
+            ],
+            "responses": {}
+          }
+        },
+        "/customer-apple-login": {
+          "post": {
+            "tags": [
+              "Customer Login"
+            ],
+            "description": "Api to login with customer apple account",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],            
+            "parameters": [
+              {
+                "name": "apple_id",
+                "in": "formData",
+                "description": "enter apple id",
                 "required": true,
                 "type": "string"
               },

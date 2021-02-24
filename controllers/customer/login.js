@@ -304,6 +304,54 @@ module.exports = {
     
     },
 
+    loginWithApple: async (req, res) => {
+
+        try {
+            const body = { apple_id: req.body.id, name: req.body.name, email: req.body.email };
+
+            const { apple_id, name, email } = body;
+
+            const is_email_verified = true;
+            const is_social = true;
+            
+
+            const [customer, created] = await Customer.findOrCreate({
+                where: {
+                    email,
+                },
+                defaults: {
+                    name, email, is_email_verified, apple_id, is_social
+                }
+            });
+
+            if (created) {
+                const user = {
+                    email: body.email,
+                }
+
+                const accessToken = customerAuthentication.generateAccessToken(user);
+
+                return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
+            }
+            else {
+
+                if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\nplease try login with email/phone and password` });
+                if (customer.getDataValue('apple_id')) return res.status(409).json({ status: 409, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
+                
+                const user = {
+                    email: customer.getDataValue('email'),
+                }
+
+                const accessToken = customerAuthentication.generateAccessToken(user);
+
+                return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    
+    },    
 
     generatePhoneOTP: async (req, res) => {
     

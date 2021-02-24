@@ -32,6 +32,10 @@ router.post('/customer-facebook-login', (req, res) => {
     return customerLoginController.loginWithFacebook(req, res);
 });
 
+router.post('/customer-apple-login', (req, res) => {
+    return customerLoginController.loginWithApple(req, res);
+});
+
 // Route for customer signup with email and phone
 router.post('/customer-email-signup', (req, res) => {
     return customerLoginController.signupCustomer(req, res);      
@@ -46,6 +50,10 @@ router.post('/customer-google-signup', async (req, res) => {
 // Route for customer signup with facebook
 router.post('/customer-facebook-signup', async (req, res) => {
     return customerLoginController.loginWithFacebook(req, res);
+});
+
+router.post('/customer-apple-signup', async (req, res) => {
+    return customerLoginController.loginWithApple(req, res);
 });
 
 
