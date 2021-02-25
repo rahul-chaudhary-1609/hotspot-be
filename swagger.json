@@ -65,6 +65,10 @@
       {
         "name": "Customer Restaurant",
         "description": "customer restaurant Api's"
+      },
+      {
+        "name": "Customer Food",
+        "description": "customer food Api's"
       }
       
       
@@ -2829,10 +2833,10 @@
         },
 
         
-        "/get-menu-card-details": {
+        "/get-food-card-details": {
           "get": {
             "tags": [
-              "Customer Restaurant"
+              "Customer Food"
             ],
             "description": "Api to delete a customer",
             "consumes": [
@@ -2856,10 +2860,11 @@
             "responses": {}
           }
         },
+
         "/set-favorite-food": {
           "put": {
             "tags": [
-              "Customer Restaurant"
+              "Customer Food"
             ],
             "description": "Api to set a dish as favorite",
             "consumes": [
@@ -2883,10 +2888,11 @@
             "responses": {}
           }
         },
+
         "/get-favorite-food": {
           "get": {
             "tags": [
-              "Customer Restaurant"
+              "Customer Food"
             ],
             "description": "Api to get all favorite foods",
             "consumes": [
