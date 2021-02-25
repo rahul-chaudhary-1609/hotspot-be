@@ -1797,6 +1797,36 @@ module.exports = {
         }  
     },
 
+    getFoodDetails: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            }); 
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const restaurant_dish_id = req.params.restaurant_dish_id;
+            
+            if (!restaurant_dish_id || isNaN(restaurant_dish_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant dish id0` });
+
+            const restaurantDish = await RestaurantDish.findOne({
+                where: {
+                    id: restaurant_dish_id,
+                }
+            })
+
+            if (!restaurantDish || restaurantDish.is_deleted) return res.status(404).json({ status: 404, message: `No restaurant dish id with the provided id` });
+
+            return res.status(200).json({ status: 200, restaurantDish});
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
 
 
 }

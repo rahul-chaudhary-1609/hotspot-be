@@ -232,12 +232,17 @@ router.get('/get-food-card-details', customerAuthentication.authenticateCustomer
     return RestaurantController.getFoodCardDetails(req, res);
 })
 
+
 router.put('/set-favorite-food', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.setFavoriteFood(req, res);
 })
 
 router.get('/get-favorite-food', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getFavoriteFood(req, res);
+})
+
+router.get('/get-food-details/:restaurant_dish_id', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getFoodDetails(req, res);
 })
 
 

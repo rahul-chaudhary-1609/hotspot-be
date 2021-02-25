@@ -2907,6 +2907,34 @@
             "parameters": [],
             "responses": {}
           }
+        },
+
+         "/get-food-details/{restaurant_dish_id}": {
+          "get": {
+            "tags": [
+              "Customer Food"
+            ],
+            "description": "Api to get a dish details",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "restaurant_dish_id",
+                "in": "path",
+                "description": "enter restaurant dish id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
         }
     }
 }
