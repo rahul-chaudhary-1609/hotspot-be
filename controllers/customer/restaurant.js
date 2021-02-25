@@ -1647,7 +1647,44 @@ module.exports = {
 
     },
 
-    getMenuCardDetails: async (req, res) => {
+    getRestaurantSchedule: async (req, res) => {
+        try {
+            const customer = await Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const restaurant_id = req.query.restaurant_id;
+
+            if (!restaurant_id || isNaN(restaurant_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant id` });
+
+            const restaurantHotspot = await RestaurantHotspot.findOne({
+                where: {
+                    restaurant_id
+                }
+            });
+
+            if (!restaurantHotspot || restaurantHotspot.is_deleted) return res.status(404).json({ status: 404, message: `Sorry! Only pickups available in your area.` });
+
+
+            const hotspotLocation = await HotspotLocation.findOne({
+                where: {
+                    id:restaurantHotspot.hotspot_location_id
+                }
+            });
+
+            return res.status(200).json({ status: 200, schedules:hotspotLocation.delivery_shifts});
+            
+         } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
+    getFoodCardDetails: async (req, res) => {
         try {
             const customer = await Customer.findOne({
                 where: {

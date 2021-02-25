@@ -2137,14 +2137,14 @@
                 "name": "latitude",
                 "in": "query",
                 "description": "enter latitude",
-                "required": true,
+                "required": false,
                 "type": "number"
               },
               {
                 "name": "longitude",
                 "in": "query",
                 "description": "enater longitude",
-                "required": true,
+                "required": false,
                 "type": "number"
               }
             ],
@@ -2244,14 +2244,14 @@
                 "name": "latitude",
                 "in": "query",
                 "description": "enter latitude",
-                "required": true,
+                "required": false,
                 "type": "number"
               },
               {
                 "name": "longitude",
                 "in": "query",
                 "description": "enater longitude",
-                "required": true,
+                "required": false,
                 "type": "number"
               }
             ],
@@ -2279,14 +2279,14 @@
                 "name": "latitude",
                 "in": "query",
                 "description": "enter latitude",
-                "required": true,
+                "required": false,
                 "type": "number"
               },
               {
                 "name": "longitude",
                 "in": "query",
                 "description": "enater longitude",
-                "required": true,
+                "required": false,
                 "type": "number"
               },
               {
@@ -2793,6 +2793,34 @@
                 "in": "query",
                 "description": "enter restaurant id",
                 "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/get-restaurant-schedule": {
+          "get": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get schedules of restaurant",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "restaurant_id",
+                "in": "query",
+                "description": "enter restaurant id",
+                "required": false,
                 "type": "number"
               }
             ],

@@ -224,8 +224,12 @@ router.get('/get-restaurant-details', customerAuthentication.authenticateCustome
     return RestaurantController.getRestaurantDetails(req, res);
 })
 
-router.get('/get-menu-card-details', customerAuthentication.authenticateCustomer, (req, res) => {
-    return RestaurantController.getMenuCardDetails(req, res);
+router.get('/get-restaurant-schedule', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getRestaurantSchedule(req, res);
+})
+
+router.get('/get-food-card-details', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getFoodCardDetails(req, res);
 })
 
 router.put('/set-favorite-food', customerAuthentication.authenticateCustomer, (req, res) => {
