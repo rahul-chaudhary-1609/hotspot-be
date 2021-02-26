@@ -1,10 +1,9 @@
 require('dotenv/config');
-const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish, HotspotOffer,FavFood } = require('../../models');
+const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish, HotspotOffer,FavFood,DishAddOn } = require('../../models');
 const { locationGeometrySchema, timeSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
-const moment = require('moment');
 
 const getRestaurantCard =  async (args) => {
     try {
@@ -97,16 +96,46 @@ const getRestaurantCard =  async (args) => {
 
 const getFoodCard =  async (args) => {
     try {      
-        
-        const foodCards = args.restaurantDish.map((val) => {
-            return {
-                id: val.id,
-                name: val.name,
-                price: val.price,
-                description: val.description,
-                image: val.image_url
+
+        const foodCards = [];
+
+        for (const dish of args.restaurantDish) {
+            let is_favorite = false;
+            let is_added_to_cart = false;
+            let cart_count = 0;
+            const cart = await Cart.findOne({
+                where: {
+                    restaurant_category_id: dish.id,
+                    customer_id:args.customer_id,
+                }
+            });
+
+            const favFood = await FavFood.findOne({
+                where: {
+                    restaurant_category_id: dish.id,
+                    customer_id:args.customer_id,
+                }
+            });
+            
+            if (favFood) is_favorite = true;
+            if (cart) {
+                is_added_to_cart = true;
+                cart_count = cart.cart_count;
             }
-        });
+            
+
+            foodCards.push({
+                id: dish.id,
+                name: dish.name,
+                price: dish.price,
+                description: dish.description,
+                image: dish.image_url,
+                is_added_to_cart,
+                cart_count,
+                is_favorite,
+            })
+        }
+        
         
         if (foodCards.length === 0) return args.res.status(404).json({ status: 404, message: `no food found`, });
 
@@ -1700,7 +1729,7 @@ module.exports = {
                 }
             });
 
-            getFoodCard({ restaurantDish, res });
+            getFoodCard({ restaurantDish,customer_id, res });
 
         } catch (error) {
             console.log(error);
@@ -1789,7 +1818,7 @@ module.exports = {
               }
           });
 
-          getFoodCard({ restaurantDish, res });
+          getFoodCard({ restaurantDish,customer_id, res });
 
         } catch (error) {
             console.log(error);
@@ -1819,7 +1848,18 @@ module.exports = {
 
             if (!restaurantDish || restaurantDish.is_deleted) return res.status(404).json({ status: 404, message: `No restaurant dish id with the provided id` });
 
-            return res.status(200).json({ status: 200, restaurantDish});
+            const dishAddOn = await DishAddOn.findAll({
+                where: {
+                    restaurant_dish_id,
+                }
+            })
+
+            const dishdetails = {
+                dish: restaurantDish,
+                dishAddOn: dishAddOn ? dishAddOn.map(addOn=>addOn): "no add-ons available for this food",
+            }
+
+            return res.status(200).json({ status: 200, dishdetails});
             
         } catch (error) {
             console.log(error);
