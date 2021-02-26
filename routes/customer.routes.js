@@ -254,5 +254,9 @@ router.post('/add-to-cart', customerAuthentication.authenticateCustomer, (req, r
     return OrderController.addToCart(req, res);
 })
 
+// router.get('/get-cart-items', customerAuthentication.authenticateCustomer, (req, res) => {
+//     return OrderController.getCartItems(req, res);
+// })
+
 
 module.exports=router;

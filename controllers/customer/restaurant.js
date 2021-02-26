@@ -1,5 +1,5 @@
 require('dotenv/config');
-const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish, HotspotOffer,FavFood,DishAddOn } = require('../../models');
+const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish, HotspotOffer,FavFood,DishAddOn,Cart } = require('../../models');
 const { locationGeometrySchema, timeSchema } = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
@@ -67,6 +67,27 @@ const getRestaurantCard =  async (args) => {
                 else return `${displayHours}:${displayMinutes}:00`
             }
 
+            const dishes=[
+                { name: "Food", price: 200, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png",restaurant_id: val.id, },
+                { name: "Food", price: 400, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png",restaurant_id: val.id, },
+                { name: "Food", price: 100, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png",restaurant_id: val.id, },
+                { name: "Food", price: 150, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png", restaurant_id: val.id,},
+                { name: "Food", price: 400, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png",restaurant_id: val.id, },
+                { name: "Food", price: 300, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png",restaurant_id: val.id, },
+                { name: "Food", price: 250, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png",restaurant_id: val.id, },
+
+            ]
+
+            const restaurantDish = await RestaurantDish.findAndCountAll({
+                where: {
+                    restaurant_id: val.id,
+                }
+            });
+            if (restaurantDish.count === 0) {
+                await RestaurantDish.bulkCreate(dishes);
+            }
+
+
             if (favRestaurant) is_favorite = true;
 
             restaurants.push({
@@ -105,17 +126,32 @@ const getFoodCard =  async (args) => {
             let cart_count = 0;
             const cart = await Cart.findOne({
                 where: {
-                    restaurant_category_id: dish.id,
+                    restaurant_dish_id: dish.id,
                     customer_id:args.customer_id,
                 }
             });
 
             const favFood = await FavFood.findOne({
                 where: {
-                    restaurant_category_id: dish.id,
+                    restaurant_dish_id: dish.id,
                     customer_id:args.customer_id,
                 }
             });
+
+            const dishAddOn = await DishAddOn.findAndCountAll({
+                where: {
+                    restaurant_dish_id: dish.id,
+                }
+            });
+            if (dishAddOn.count === 0) {
+                await DishAddOn.bulkCreate(
+                    [
+                        { name: "Add coke", price: 1.5, image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomFriFeb262021192436GMT0530.png",restaurant_dish_id:dish.id },
+                        { name: "Add extra cheese", price: 2.0, image_url:"https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomFriFeb262021192744GMT0530.png",restaurant_dish_id:dish.id},
+                        { name: "Add extra salt", price: 1.0, image_url:"https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomFriFeb262021192829GMT0530.png",restaurant_dish_id:dish.id},
+                    ]
+                );
+            }
             
             if (favFood) is_favorite = true;
             if (cart) {
@@ -493,21 +529,21 @@ module.exports = {
 
                 })
 
-                const restaurantDishRows = restaurantBulkCreate.map((val) => {
-                    const dish = dishes[Math.floor(Math.random() * dishes.length)]
-                    return {
-                        name: dish.name,
-                        price: dish.price,
-                        description: dish.descrption,
-                        restaurant_id: val.id,
-                        dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                        image_url:dish.image_url,
-                    }
+                // const restaurantDishRows = restaurantBulkCreate.map((val) => {
+                //     const dish = dishes[Math.floor(Math.random() * dishes.length)]
+                //     return {
+                //         name: dish.name,
+                //         price: dish.price,
+                //         description: dish.descrption,
+                //         restaurant_id: val.id,
+                //         dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
+                //         image_url:dish.image_url,
+                //     }
 
-                })
+                // })
 
-                //console.log("restaurantHotspotRows", restaurantHotspotRows);
-                await RestaurantDish.bulkCreate(restaurantDishRows);
+                // //console.log("restaurantHotspotRows", restaurantHotspotRows);
+                // await RestaurantDish.bulkCreate(restaurantDishRows);
                 await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
             }
 
@@ -1729,7 +1765,7 @@ module.exports = {
                 }
             });
 
-            getFoodCard({ restaurantDish,customer_id, res });
+            getFoodCard({ restaurantDish,customer_id:customer.id, res });
 
         } catch (error) {
             console.log(error);

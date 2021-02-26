@@ -35,7 +35,6 @@ module.exports = (sequelize, DataTypes) => {
 
         dish_add_on_ids: {
             type: DataTypes.ARRAY(DataTypes.INTEGER),
-            allowNull: false,
         },
         
         customer_id: {

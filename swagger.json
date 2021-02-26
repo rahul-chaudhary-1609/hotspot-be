@@ -2987,7 +2987,7 @@
                 "name": "dish_add_on_ids",
                 "in": "formData",
                 "description": "enter dish add-on ids: 1,2,3,...",
-                "required": true,
+                "required": false,
                 "type": "string"
               }
             ],
