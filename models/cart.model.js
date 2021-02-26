@@ -28,6 +28,16 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
+        cart_count: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+
+        dish_add_on_ids: {
+            type: DataTypes.ARRAY(DataTypes.INTEGER),
+            allowNull: false,
+        },
+        
         customer_id: {
             type: DataTypes.INTEGER,
             allowNull: false,

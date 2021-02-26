@@ -8,6 +8,7 @@ const customerAuthentication = require('../middlewares/customer/jwt-validation')
 const customerLoginController = require('../controllers/customer/login');
 const HotspotLocationController = require('../controllers/customer/hotspot_location');
 const RestaurantController = require('../controllers/customer/restaurant');
+const OrderController = require('../controllers/customer/order');
 const customerMulter = require('../middlewares/customer/multer');
 
 const router=express.Router();
@@ -228,10 +229,12 @@ router.get('/get-restaurant-schedule', customerAuthentication.authenticateCustom
     return RestaurantController.getRestaurantSchedule(req, res);
 })
 
+
+//Foods Routes
+
 router.get('/get-food-card-details', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getFoodCardDetails(req, res);
 })
-
 
 router.put('/set-favorite-food', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.setFavoriteFood(req, res);
@@ -243,6 +246,12 @@ router.get('/get-favorite-food', customerAuthentication.authenticateCustomer, (r
 
 router.get('/get-food-details/:restaurant_dish_id', customerAuthentication.authenticateCustomer, (req, res) => {
     return RestaurantController.getFoodDetails(req, res);
+})
+
+
+//Orders routes
+router.post('/add-to-cart', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.addToCart(req, res);
 })
 
 
