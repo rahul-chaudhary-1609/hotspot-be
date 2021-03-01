@@ -2993,6 +2993,25 @@
             ],
             "responses": {}
           }
+        },
+        "/get-cart-items": {
+          "get": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to get all cart items",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
         }
     }
 }

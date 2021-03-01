@@ -3,6 +3,15 @@ const models = require('../../models');
 const validate = require('../../middlewares/customer/validation');
 const { Op } = require("sequelize");
 
+// const getItems = async (args) => {
+//     try {
+        
+//    } catch (error) {
+//         console.log(error);
+//         return args.res.status(500).json({ status: 500, message: `Internal Server Error` });
+//     }
+// }
+
 module.exports = {
     addToCart: async (req, res) => {
         try {
@@ -54,22 +63,64 @@ module.exports = {
         }
     },
 
-    // getCartItems: async (req, res) => {
-    //     try {
-    //         const customer = await models.Customer.findOne({
-    //             where: {
-    //                 email: req.user.email,
-    //             }
-    //         });
+    getCartItems: async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
 
-    //         if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const cart = await models.Cart.findAndCountAll({
+                where: {
+                    customer_id: customer.id,
+                    is_deleted:false,
+                }
+            });
+
+            if (cart.count === 0) return res.status(404).json({ status: 404, message: `no item found` });
+            
+            let cartItems = [];
+
+            for (const item of cart.rows) {
+
+                const dish = await models.RestaurantDish.findOne({
+                    where: {
+                        id: item.restaurant_dish_id,
+                        is_deleted: false,
+                    }
+                })
+
+                const dishAddOn=await models.DishAddOn.findAll({
+                    where: {
+                        id: item.dish_add_on_ids,
+                        is_deleted:false,
+                    }
+                })
+
+                let addOnPrice = 0;
+                
+                const addOns = dishAddOn.map((addOn) => {
+                    addOnPrice = addOnPrice + addOn.price
+                    return addOn.name
+                })
+
+                cartItems.push({
+                    itemName: dish.name,
+                    itemCount: item.cart_count,
+                    itemAddOn: addOns,
+                    itemPrice:(dish.price*item.cart_count)+addOnPrice                    
+                })
+            }
  
 
-    //         return res.status(200).json({ status: 200, customer });
+            return res.status(200).json({ status: 200, cartItems });
 
-    //      } catch (error) {
-    //     console.log(error);
-    //     return res.status(500).json({ status: 500, message: `Internal Server Error` });
-    //     }
-    // }
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    }
 }
