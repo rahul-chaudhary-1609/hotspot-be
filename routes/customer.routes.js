@@ -262,8 +262,8 @@ router.post('/add-to-cart', customerAuthentication.authenticateCustomer, (req, r
     return OrderController.addToCart(req, res);
 })
 
-router.get('/get-cart-items/:restaurant_id', customerAuthentication.authenticateCustomer, (req, res) => {
-    return OrderController.getCartItems(req, res);
+router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.getCart(req, res);
 })
 
 

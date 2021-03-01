@@ -64,7 +64,9 @@ module.exports = {
         }
     },
 
-    getCartItems: async (req, res) => {
+
+    
+    getCart: async (req, res) => {
         try {
             const customer = await models.Customer.findOne({
                 where: {
@@ -75,6 +77,51 @@ module.exports = {
             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
 
             const restaurant_id = parseInt(req.params.restaurant_id);
+
+            let cartInfo = {};
+
+            if (req.params.order_type === "delivery") {
+                const customerFavLocation = await models.CustomerFavLocation.findOne({
+                    where: {
+                        customer_id: customer.id,
+                        default_address: true,
+                    }
+                });
+
+                const hotspotLocations = await models.HotspotLocation.findOne({
+                    where: {
+                        location: customerFavLocation.location_geometry
+                    }
+                });
+
+                const hotspotDropoff = await models.HotspotDropoff.findOne({
+                    where: {
+                        id: customerFavLocation.hotspot_dropoff_id
+                    }
+                });
+
+
+                cartInfo = {
+                    hotspot_location_id:hotspotLocations.id,
+                    name: hotspotLocations.name,
+                    address: hotspotLocations.location_detail,
+                    dropoff:hotspotDropoff.dropoff_detail,
+                }
+            }
+            else if (req.params.order_type === "pickup") {
+                const restaurant = await models.Restaurant.findOne({
+                    where: {
+                        id:restaurant_id,
+                    }
+                })
+
+                cartInfo = {
+                    restaurant_id:restaurant.id,
+                    name: restaurant.restaurant_name,
+                    address:restaurant.address,
+                    location: restaurant.location,
+                }
+            }
 
             const cart = await models.Cart.findAndCountAll({
                 where: {
@@ -120,7 +167,7 @@ module.exports = {
             }
  
 
-            return res.status(200).json({ status: 200, cartItems });
+            return res.status(200).json({ status: 200, cart: { cartInfo,cartItems } });
 
          } catch (error) {
         console.log(error);

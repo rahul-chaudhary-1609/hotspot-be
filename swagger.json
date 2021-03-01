@@ -3069,12 +3069,12 @@
             "responses": {}
           }
         },
-        "/get-cart-items": {
+        "/get-cart/{restaurant_id}/{order_type}": {
           "get": {
             "tags": [
               "Customer Cart and Order"
             ],
-            "description": "Api to get all cart items of a restaurant",
+            "description": "Api to get cart details",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -3091,6 +3091,13 @@
                 "description": "enter restaurant id",
                 "required": true,
                 "type": "number"
+              },
+              {
+                "name": "order_type",
+                "in": "path",
+                "description": "delivery | pickup",
+                "required": true,
+                "type": "string"
               }
             ],
             "responses": {}
