@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            Cart.belongsTo(models.Restaurant);
             Cart.belongsTo(models.RestaurantDish);
             Cart.belongsTo(models.Customer);
         }
@@ -21,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
+        },
+
+        restaurant_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
         },
 
         restaurant_dish_id: {

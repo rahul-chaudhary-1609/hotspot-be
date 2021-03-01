@@ -3038,6 +3038,13 @@
             
             "parameters": [
               {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
                 "name": "restaurant_dish_id",
                 "in": "formData",
                 "description": "enter restaurant dish id",
@@ -3067,7 +3074,7 @@
             "tags": [
               "Customer Cart and Order"
             ],
-            "description": "Api to get all cart items",
+            "description": "Api to get all cart items of a restaurant",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -3077,7 +3084,15 @@
               }
             ],
             
-            "parameters": [],
+            "parameters": [
+              {
+                "name": "restaurant_id",
+                "in": "path",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              }
+            ],
             "responses": {}
           }
         }

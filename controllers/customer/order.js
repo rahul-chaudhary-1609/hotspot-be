@@ -24,16 +24,17 @@ module.exports = {
             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
 
             const customer_id = customer.id;
+            const restaurant_id = parseInt(req.body.restaurant_id);
             const restaurant_dish_id = parseInt(req.body.restaurant_dish_id);
             const cart_count = parseInt(req.body.cart_count);
             const dish_add_on_ids = req.body.dish_add_on_ids?(Array.isArray(req.body.dish_add_on_ids)?req.body.dish_add_on_ids:req.body.dish_add_on_ids.split(",")):null;
 
             const [cart, created] = await models.Cart.findOrCreate({
                 where: {
-                    restaurant_dish_id, customer_id,
+                    restaurant_id,restaurant_dish_id, customer_id,
                 },
                 defaults: {
-                    restaurant_dish_id, cart_count, dish_add_on_ids, customer_id
+                    restaurant_id,restaurant_dish_id, cart_count, dish_add_on_ids, customer_id
                 }
             });
             
@@ -47,7 +48,7 @@ module.exports = {
                     },
                     {
                         where: {
-                            restaurant_dish_id, customer_id,
+                            restaurant_id,restaurant_dish_id, customer_id,
                         },
                         returning: true,
                     }
@@ -73,9 +74,12 @@ module.exports = {
 
             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
 
+            const restaurant_id = parseInt(req.params.restaurant_id);
+
             const cart = await models.Cart.findAndCountAll({
                 where: {
                     customer_id: customer.id,
+                    restaurant_id,
                     is_deleted:false,
                 }
             });
