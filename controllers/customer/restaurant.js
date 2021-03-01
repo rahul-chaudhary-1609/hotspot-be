@@ -7,6 +7,10 @@ const fetch = require('node-fetch');
 
 const getRestaurantCard =  async (args) => {
     try {
+        const dishCategory = await DishCategory.findAll();
+
+        const dish_category_ids = await dishCategory.map(val => val.id);
+        
         const restaurants = [];
         for (const val of args.restaurant) {
             let is_favorite = false;
@@ -68,13 +72,13 @@ const getRestaurantCard =  async (args) => {
             }
 
             const dishes=[
-                { name: "Food", price: 200, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png",restaurant_id: val.id, },
-                { name: "Food", price: 400, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png",restaurant_id: val.id, },
-                { name: "Food", price: 100, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png",restaurant_id: val.id, },
-                { name: "Food", price: 150, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png", restaurant_id: val.id,},
-                { name: "Food", price: 400, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png",restaurant_id: val.id, },
-                { name: "Food", price: 300, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png",restaurant_id: val.id, },
-                { name: "Food", price: 250, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png",restaurant_id: val.id, },
+                { name: "Food", price: 200, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png",restaurant_id: val.id, dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],},
+                { name: "Food", price: 400, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png",restaurant_id: val.id,dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)], },
+                { name: "Food", price: 100, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png",restaurant_id: val.id,dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)], },
+                { name: "Food", price: 150, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png", restaurant_id: val.id,dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],},
+                { name: "Food", price: 400, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png",restaurant_id: val.id, dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],},
+                { name: "Food", price: 300, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png",restaurant_id: val.id, dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],},
+                { name: "Food", price: 250, description: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png",restaurant_id: val.id,dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)], },
 
             ]
 
