@@ -82,11 +82,15 @@ module.exports = {
                             name,location, location_detail, full_address, delivery_shifts, customer_id
                         });
                         const hotspot_location_id = hotspotLocationID.getDataValue('id');
-                        const dropoff_detail = location_detail.split(',').slice(0,2).join(',');
-                        
-                        await HotspotDropoff.create({
+                        const dropoff_detail = location_detail.split(',').slice(0, 2).join(',');
+                    
+
+                    for (let i = 0; i < 3; i++){
+                         await HotspotDropoff.create({
                             hotspot_location_id,dropoff_detail
-                        });                            
+                        }); 
+                    }                        
+                                                  
                     }
                 }
                 //});
@@ -193,7 +197,12 @@ module.exports = {
 
           if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
 
-          const dropoffs = hotspotDropoff.map(val => val.dropoff_detail);
+          const dropoffs = hotspotDropoff.map((val) => {
+              return {
+                  id: val.id,
+                  dropoff:val.dropoff_detail,
+              }
+          });
 
           const address = hotspotLocations.location_detail;
           const city = hotspotLocations.full_address.city;
@@ -213,7 +222,7 @@ module.exports = {
                   location_geometry, customer_id: customer_id
               },
               defaults: {
-                  address, city, state, postal_code, country, location_geometry, customer_id: customer_id
+                  address, city, state, postal_code, country, location_geometry,hotspot_dropoff_id:dropoffs[0].id, customer_id: customer_id
               }
           });
 
@@ -272,6 +281,97 @@ module.exports = {
           return res.status(500).json({ status: 500, message: `Internal Server Error` });
       } 
     },
+
+    getAddressDropoff: async (req, res) => {
+      try {
+          const customer = await Customer.findOne({
+              where: {
+                  email: req.user.email,
+              }
+          })
+
+          if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+          const hotspot_location_id = req.query.hotspot_location_id;
+
+          if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+
+          const hotspotDropoff = await HotspotDropoff.findAll({
+              where: {
+                  hotspot_location_id
+              }
+          });
+
+          if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
+
+          const dropoffs = hotspotDropoff.map((val) => {
+              return {
+                  id: val.id,
+                  dropoff:val.dropoff_detail,
+              }
+          });
+
+
+          return res.status(200).json({ status: 200, dropoffs });
+
+
+      } catch (error) {
+          console.log(error);
+          return res.status(500).json({ status: 500, message: `Internal Server Error` });
+      } 
+    },
+
+    setDefaultDropoff: async (req, res) => {
+      try {
+          const customer = await Customer.findOne({
+              where: {
+                  email: req.user.email,
+              }
+          })
+
+          if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+          const hotspot_location_id = req.query.hotspot_location_id;
+
+          if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+
+          const hotspot_dropoff_id = req.query.hotspot_dropoff_id;
+
+          if (!hotspot_dropoff_id || isNaN(hotspot_dropoff_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot dropoff id` });
+
+
+          const hotspotLocations = await HotspotLocation.findOne({
+              where: {
+                  id:hotspot_location_id
+              }
+          });
+
+          const location_geometry = hotspotLocations.location;
+          const customer_id = customer.id;
+
+
+
+          await CustomerFavLocation.update({
+              hotspot_dropoff_id
+          }, {
+              where: {
+                  location_geometry,
+                  customer_id: customer_id
+              },
+              returning: true,
+          });
+
+
+
+          return res.status(200).json({ status: 200, message:`Dropoff selected as default` });
+
+
+      } catch (error) {
+          console.log(error);
+          return res.status(500).json({ status: 500, message: `Internal Server Error` });
+      } 
+    },
+
     getDefaultHotspot: async (req, res) => {
         try {
             const customer = await Customer.findOne({
@@ -295,21 +395,19 @@ module.exports = {
                 }
             });
 
-            const hotspotDropoff = await HotspotDropoff.findAll({
+            const hotspotDropoff = await HotspotDropoff.findOne({
                 where: {
-                    hotspot_location_id: hotspotLocations.id
+                    id: customerFavLocation.hotspot_dropoff_id
                 }
             });
 
-            if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
-
-            const dropoffs = hotspotDropoff.map(val => val.dropoff_detail);
+            if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });            
 
             const hotspotLocationDetails = {
                 hotspot_location_id: `${hotspotLocations.id}`,
                 name: hotspotLocations.name,
                 formatted_address: hotspotLocations.location_detail,
-                dropoffs,
+                default_dropoff:hotspotDropoff.dropoff_detail,
                 delivery_shifts: hotspotLocations.delivery_shifts
             }
 

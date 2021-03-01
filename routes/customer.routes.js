@@ -160,6 +160,14 @@ router.get('/get-hotspot-dropoff', customerAuthentication.authenticateCustomer, 
     return HotspotLocationController.getHotspotDropoff(req, res);
 });
 
+router.get('/get-address-dropoff', customerAuthentication.authenticateCustomer, (req, res) => {
+    return HotspotLocationController.getAddressDropoff(req, res);
+});
+
+router.get('/set-default-dropoff', customerAuthentication.authenticateCustomer, (req, res) => {
+    return HotspotLocationController.setDefaultDropoff(req, res);
+});
+
 router.get('/get-default-hotspot', customerAuthentication.authenticateCustomer, (req, res) => {
     return HotspotLocationController.getDefaultHotspot(req, res);
 });

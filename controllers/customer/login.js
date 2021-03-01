@@ -1,7 +1,7 @@
 require('dotenv/config');
-const { Customer, CustomerFavLocation, TempEmail, HotspotLocation} = require('../../models');
+const { Customer, CustomerFavLocation, TempEmail, HotspotLocation,HotspotDropoff} = require('../../models');
 const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema,nameSchema ,phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utilityServices/mail');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
@@ -1319,13 +1319,28 @@ module.exports = {
             //     address, city, state, postal_code, country, location_geometry, customer_id: customer_id
             // });
 
+            const hotspotLocation = await HotspotLocation.findOne({
+                where: {
+                    location: location_geometry,
+                    customer_id:customer.getDataValue('id')
+                }
+            });
+
+            const hotspotDropoff = await HotspotDropoff.findAll({
+                where: {
+                    hotspot_location_id:hotspotLocation.id,
+                }
+            });
+
+            const hotspot_dropoff_id = hotspotDropoff.map(val => val.id);
+
             const [customerFavLocation, created] = await CustomerFavLocation.findOrCreate({
                 where: {
                     
                         location_geometry, customer_id: customer_id
                 },
                 defaults: {
-                    address, city, state, postal_code, country, location_geometry, customer_id: customer_id
+                    address, city, state, postal_code, country, location_geometry,hotspot_dropoff_id:hotspot_dropoff_id[0] ,customer_id: customer_id
                 }
             });
 
@@ -1367,10 +1382,25 @@ module.exports = {
 
             if (customerFavLocation.length === 0) return res.status(404).json({ status: 404, message: "No Addresses Fonud" });
 
-            const customerAddress = customerFavLocation.map((val) => {
-                return { address: { address: val.address, city: val.city, state: val.state, postal_code: val.postal_code,country:val.country,location_geometry:val.location_geometry }, isDefault: val.default_address }
-            })
-        
+            let customerAddress = [];
+
+            for (const val of customerFavLocation){
+                const dropoff = await HotspotDropoff.findOne({ where: { id: val.hotspot_dropoff_id } });
+                customerAddress.push(
+                    {
+                        address: {
+                            address: val.address,
+                            city: val.city,
+                            state: val.state,
+                            postal_code: val.postal_code,
+                            country: val.country,
+                            location_geometry: val.location_geometry
+                        },
+                        default_dropoff: dropoff.dropoff_detail, isDefault: val.default_address
+                    }
+                )
+            }
+
             return res.status(200).json({ status: 200, customerAddress: customerAddress });
 
         } catch (error) {

@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       CustomerFavLocation.belongsTo(models.Customer);
+      CustomerFavLocation.belongsTo(models.HotspotDropoff);
     }
   };
   CustomerFavLocation.init({
@@ -49,6 +50,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    hotspot_dropoff_id: {
+      type: DataTypes.INTEGER,
     },
     customer_id: {
       type: DataTypes.INTEGER,

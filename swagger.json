@@ -2205,6 +2205,36 @@
             "responses": {}
           }
         },
+
+        "/get-address-dropoff": {
+          "get": {
+            "tags": [
+              "Customer Hotspot"
+            ],
+            "description": "Api to get address dropoffs",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        
         "/get-default-hotspot": {
           "get": {
             "tags": [
@@ -2224,6 +2254,44 @@
             "responses": {}
           }
         },
+
+        "/set-default-dropoff": {
+          "get": {
+            "tags": [
+              "Customer Hotspot"
+            ],
+            "description": "Api to set a dropoff as default",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "hotspot_dropoff_id",
+                "in": "query",
+                "description": "enter hotspot dropoff id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+
+
 
 
 
