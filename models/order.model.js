@@ -13,7 +13,8 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             Order.belongsTo(models.Customer);
             Order.belongsTo(models.Restaurant);
-            Order.belongsTo(models.HotspotLocation);            
+            Order.belongsTo(models.HotspotLocation);
+            Order.belongsTo(models.HotspotDropoff);
         }
     }
     Order.init({
@@ -39,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         hotspot_location_id: {
+            type: DataTypes.INTEGER,
+        },
+
+        hotspot_dropoff_id: {
             type: DataTypes.INTEGER,
         },
 

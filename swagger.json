@@ -3135,6 +3135,13 @@
                 "type": "number"
               },
               {
+                "name": "hotspot_dropoff_id",
+                "in": "formData",
+                "description": "enter hotspot dropoff id",
+                "required": false,
+                "type": "number"
+              },
+              {
                 "name": "amount",
                 "in": "formData",
                 "description": "enter total amount",
@@ -3177,6 +3184,34 @@
                 "type": "string"
               }
               
+            ],
+            "responses": {}
+          }
+        },
+
+        "/get-pre-order-info/{order_id}": {
+          "get": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to get pre order info",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "order_id",
+                "in": "path",
+                "description": "enter order id",
+                "required": true,
+                "type": "string"
+              }
             ],
             "responses": {}
           }

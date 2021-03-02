@@ -270,5 +270,9 @@ router.post('/create-order', customerAuthentication.authenticateCustomer, (req, 
     return OrderController.createOrder(req, res);
 })
 
+router.get('/get-pre-order-info/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.getPreOrderInfo(req, res);
+})
+
 
 module.exports=router;
