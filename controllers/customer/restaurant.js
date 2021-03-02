@@ -4,6 +4,7 @@ const { locationGeometrySchema, timeSchema } = require('../../middlewares/custom
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
+const { restaurant_image_urls, owners,working_hours,avg_food_prices,cut_off_times,dishCategories,hotspotOfferBanners,getDishes,getdishAddOns } = require('./dummyData');
 
 const getRestaurantCard =  async (args) => {
     try {
@@ -71,65 +72,7 @@ const getRestaurantCard =  async (args) => {
                 else return `${displayHours}:${displayMinutes}:00`
             }
 
-            const dishes=[
-                {
-                    name: "Pizza",
-                    price: 250,
-                    description: "A delight for veggie lovers! Choose from our wide range of delicious vegetarian pizzas, it's softer and tastier",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021153501GMT0530.jfif",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Rajma Rasila",
-                    price: 300,
-                    description: "Rajma Rasila is a preparation made by cooking Kidney beans with an onion tomato gravy with In-house Masala's.",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155716GMT0530.jfif",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Manchow Soup",
-                    price: 100,
-                    description: "Popular Chinese style soup loaded with assorted vegetables and topped with fried noodles",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155755GMT0530.jfif",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Steamed Momos",
-                    price: 150,
-                    description: "Gorge on these delicious steamed momos filled with assorted vegetables like spring onions, cabbage, and carrots",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155823GMT0530.png",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Chicken Lolipop",
-                    price: 500,
-                    description: "Gorge on these medium spicy chicken lollipops infused with Chinese flavors",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155848GMT0530.jpg",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Chowmein",
-                    price: 300,
-                    description: "Stir fried noodles packed with crunchy bits of vegetables and flavored with Chinese sauces",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155915GMT0530.jpg",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Veg Fried Rice",
-                    price: 350,
-                    description: "Aromatic rice, stir fried with shredded carrots",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155941GMT0530.jpg",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-
-            ]
+            const dishes = getDishes(val, dish_category_ids);
 
             const restaurantDish = await RestaurantDish.findAndCountAll({
                 where: {
@@ -198,11 +141,7 @@ const getFoodCard =  async (args) => {
             });
             if (dishAddOn.count === 0) {
                 await DishAddOn.bulkCreate(
-                    [
-                        { name: "Add coke", price: 1.5, image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomFriFeb262021192436GMT0530.png",restaurant_dish_id:dish.id },
-                        { name: "Add extra cheese", price: 2.0, image_url:"https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomFriFeb262021192744GMT0530.png",restaurant_dish_id:dish.id},
-                        { name: "Add extra salt", price: 1.0, image_url:"https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomFriFeb262021192829GMT0530.png",restaurant_dish_id:dish.id},
-                    ]
+                    getdishAddOns(dish)
                 );
             }
             
@@ -276,52 +215,6 @@ module.exports = {
 
           const categories = await restaurantCategory.map((val) => val.id);
 
-          const owners = [
-              { name: 'Alan Mehew', country_code: '+91', phone: "9989898989", email: 'khana.khajana@hotspot.com' },
-              { name: 'Seshu Madabushi', country_code: '+91', phone: "9989898989", email: 'tost.host@hotspot.com' },
-              { name: 'Kenneth Marikos', country_code: '+91', phone: "9989898989",email: 'sweets.here@hotspot.com' },
-              { name: 'Ray Kroc', country_code: '+91', phone: "9989898989", email: 'kroc.foods@hotspot.com' },
-              { name: 'Steve Ells', country_code: '+91', phone: "9989898989",email:'steve.kichen@hotspot.com'},
-          ];
-
-          const restaurant_image_urls = [
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140815GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140854GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140933GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141009GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141039GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021175927GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180042GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180149GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180235GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180323GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021173853GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174146GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174247GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174319GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174400GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174448GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174523GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174611GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174648GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174719GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174846GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174942GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021175020GMT0530.jpg",
-              "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021175118GMT0530.jpg",
-          ];
-
-          const working_hours = [
-              { from: "07:00 AM", to: "09:00 PM" },
-              { from: "07:30 AM", to: "09:00 PM" },
-              { from: "08:00 AM", to: "09:30 PM" },
-              { from: "08:30 AM", to: "10:00 PM" },
-              { from: "08:45 AM", to: "10:30 PM" },
-          ];
-
-          const cut_off_times = [0.5, 1, 1.5];
-
-          const avg_food_prices = [100, 150, 200, 250, 300, 350, 400, 450, 500]
 
           const order_types = [2];
 
@@ -329,16 +222,7 @@ module.exports = {
 
             if (dishCategory.count === 0) {
                 await DishCategory.bulkCreate(
-                    [
-                        { name: "Sushi", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },
-                        { name: "Pizza", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
-                        { name: "Burger", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png" },
-                        { name: "Fries", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png" },
-                        { name: "Meat", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png" },
-                        { name: "Chinese", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
-                        { name: "Breakfast", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
-
-                    ],
+                    dishCategories,
                     { returning: ['id'] },
                 );
             }
@@ -389,25 +273,6 @@ module.exports = {
                   customer_id
               }
           });
-
-        //   const restaurants = await restaurant.map((val) => {
-        //       return {
-        //           restaurant_id:val.id,
-        //           restaurant_name: val.restaurant_name,
-        //           address: val.address,
-        //           location:val.location,
-        //           distance: `${parseFloat(((Math.floor(randomLocation.distance({
-        //               latitude: req.query.latitude,
-        //               longitude: req.query.longitude
-        //           }, {
-        //               latitude: val.location[0],
-        //                   longitude: val.location[1]
-        //           }))) * 0.00062137).toFixed(2))} miles`,
-        //           ready_in:"30 min"
-                  
-                  
-        //       }
-        //   })
           
         dishCategory = await DishCategory.findAll();
 
@@ -416,65 +281,7 @@ module.exports = {
           const restaurants = [];
           for (const val of restaurant) {
 
-              const dishes=[
-                {
-                    name: "Pizza",
-                    price: 250,
-                    description: "A delight for veggie lovers! Choose from our wide range of delicious vegetarian pizzas, it's softer and tastier",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021153501GMT0530.jfif",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Rajma Rasila",
-                    price: 300,
-                    description: "Rajma Rasila is a preparation made by cooking Kidney beans with an onion tomato gravy with In-house Masala's.",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155716GMT0530.jfif",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Manchow Soup",
-                    price: 100,
-                    description: "Popular Chinese style soup loaded with assorted vegetables and topped with fried noodles",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155755GMT0530.jfif",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Steamed Momos",
-                    price: 150,
-                    description: "Gorge on these delicious steamed momos filled with assorted vegetables like spring onions, cabbage, and carrots",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155823GMT0530.png",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Chicken Lolipop",
-                    price: 500,
-                    description: "Gorge on these medium spicy chicken lollipops infused with Chinese flavors",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155848GMT0530.jpg",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Chowmein",
-                    price: 300,
-                    description: "Stir fried noodles packed with crunchy bits of vegetables and flavored with Chinese sauces",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155915GMT0530.jpg",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-                {
-                    name: "Veg Fried Rice",
-                    price: 350,
-                    description: "Aromatic rice, stir fried with shredded carrots",
-                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155941GMT0530.jpg",
-                    restaurant_id: val.id,
-                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                },
-
-            ]
+              const dishes = getDishes(val, dish_category_ids);
 
             const restaurantDish = await RestaurantDish.findAndCountAll({
                 where: {
@@ -564,69 +371,13 @@ module.exports = {
 
             const categories = await restaurantCategory.map((val) => val.id);
 
-            const owners = [
-                { name: 'Alan Mehew',country_code:'+91',phone:"9989898989" ,email: 'khana.khajana@hotspot.com' },
-                { name: 'Seshu Madabushi', country_code: '+91', phone: "9989898989" , email: 'tost.host@hotspot.com' },
-                { name: 'Kenneth Marikos', country_code: '+91', phone: "9989898989", email: 'sweets.here@hotspot.com' },
-                { name: 'Ray Kroc', country_code: '+91', phone: "9989898989", email: 'kroc.foods@hotspot.com' },
-                { name: 'Steve Ells', country_code: '+91', phone: "9989898989", email: 'steve.kichen@hotspot.com' },
-            ];
-
-            const restaurant_image_urls = [
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140815GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140854GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021140933GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141009GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomMonFeb082021141039GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021175927GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180042GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180149GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180235GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueFeb092021180323GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021173853GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174146GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174247GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174319GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174400GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174448GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174523GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174611GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174648GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174719GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174846GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021174942GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021175020GMT0530.jpg",
-                "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021175118GMT0530.jpg",
-            ];
-
-            const working_hours = [
-                { from: "07:00 AM", to: "09:00 PM" },
-                { from: "07:30 AM", to: "09:00 PM" },
-                { from: "08:00 AM", to: "09:30 PM" },
-                { from: "08:30 AM", to: "10:00 PM" },
-                { from: "08:45 AM", to: "10:30 PM" },
-            ];
-
-            const avg_food_prices = [100, 150, 200, 250, 300, 350, 400, 450, 500 ]
-
-            const cut_off_times = [0.5, 1, 1.5];
-
             const order_types = [1 , 3];
 
             let dishCategory = await DishCategory.findAndCountAll();
 
             if (dishCategory.count === 0) {
                 await DishCategory.bulkCreate(
-                    [
-                        { name: "Sushi", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },
-                        { name: "Pizza", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
-                        { name: "Burger", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png" },
-                        { name: "Fries", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png" },
-                        { name: "Meat", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png" },
-                        { name: "Chinese", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
-                        { name: "Breakfast", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
-
-                    ],
+                   dishCategories,
                     { returning: ['id'] },
                 );
             }
@@ -677,22 +428,6 @@ module.exports = {
                     }
 
                 })
-
-                // const restaurantDishRows = restaurantBulkCreate.map((val) => {
-                //     const dish = dishes[Math.floor(Math.random() * dishes.length)]
-                //     return {
-                //         name: dish.name,
-                //         price: dish.price,
-                //         description: dish.descrption,
-                //         restaurant_id: val.id,
-                //         dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
-                //         image_url:dish.image_url,
-                //     }
-
-                // })
-
-                // //console.log("restaurantHotspotRows", restaurantHotspotRows);
-                // await RestaurantDish.bulkCreate(restaurantDishRows);
                 await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
             }
 
@@ -881,16 +616,7 @@ module.exports = {
 
             if (dishCategory.count === 0) {
                 await DishCategory.bulkCreate(
-                    [
-                        { name: "Sushi", image_url:"https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },                        
-                        { name: "Pizza", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
-                        { name: "Burger", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png"  },                        
-                        { name: "Fries", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png"  },
-                        { name: "Meat", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png"  },
-                        { name: "Chinese", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
-                        { name: "Breakfast", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
-                                                
-                    ],
+                    dishCategories,
                     { returning: ['id'] },
                 );
             }
@@ -1284,14 +1010,7 @@ module.exports = {
 
             if (hotspotOffer.count === 0) {
                 await HotspotOffer.bulkCreate(
-                    [
-                        { name: "Sushi Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165522GMT0530.jfif" },
-                        { name: "Pizza Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165558GMT0530.jfif" },
-                        { name: "Burger Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165633GMT0530.jfif" },
-                        { name: "Fries Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165710GMT0530.jfif" },
-                        { name: "Meat Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165757GMT0530.png" },
-                       
-                    ],
+                    hotspotOfferBanners,
                     { returning: ['id'] },
                 );
             }
