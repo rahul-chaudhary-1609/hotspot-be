@@ -325,6 +325,24 @@ module.exports = {
 
           const order_types = [2];
 
+          let dishCategory = await DishCategory.findAndCountAll();
+
+            if (dishCategory.count === 0) {
+                await DishCategory.bulkCreate(
+                    [
+                        { name: "Sushi", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },
+                        { name: "Pizza", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
+                        { name: "Burger", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png" },
+                        { name: "Fries", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png" },
+                        { name: "Meat", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png" },
+                        { name: "Chinese", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
+                        { name: "Breakfast", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
+
+                    ],
+                    { returning: ['id'] },
+                );
+            }
+
 
           let restaurant = await Restaurant.findAndCountAll({
               where: {
@@ -372,24 +390,117 @@ module.exports = {
               }
           });
 
-          const restaurants = await restaurant.map((val) => {
-              return {
-                  restaurant_id:val.id,
-                  restaurant_name: val.restaurant_name,
-                  address: val.address,
-                  location:val.location,
-                  distance: `${parseFloat(((Math.floor(randomLocation.distance({
-                      latitude: req.query.latitude,
-                      longitude: req.query.longitude
-                  }, {
-                      latitude: val.location[0],
-                          longitude: val.location[1]
-                  }))) * 0.00062137).toFixed(2))} miles`,
-                  ready_in:"30 min"
+        //   const restaurants = await restaurant.map((val) => {
+        //       return {
+        //           restaurant_id:val.id,
+        //           restaurant_name: val.restaurant_name,
+        //           address: val.address,
+        //           location:val.location,
+        //           distance: `${parseFloat(((Math.floor(randomLocation.distance({
+        //               latitude: req.query.latitude,
+        //               longitude: req.query.longitude
+        //           }, {
+        //               latitude: val.location[0],
+        //                   longitude: val.location[1]
+        //           }))) * 0.00062137).toFixed(2))} miles`,
+        //           ready_in:"30 min"
                   
                   
-              }
-          })
+        //       }
+        //   })
+          
+        dishCategory = await DishCategory.findAll();
+
+        const dish_category_ids = await dishCategory.map(val => val.id);
+
+          const restaurants = [];
+          for (const val of restaurant) {
+
+              const dishes=[
+                {
+                    name: "Pizza",
+                    price: 250,
+                    description: "A delight for veggie lovers! Choose from our wide range of delicious vegetarian pizzas, it's softer and tastier",
+                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021153501GMT0530.jfif",
+                    restaurant_id: val.id,
+                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
+                },
+                {
+                    name: "Rajma Rasila",
+                    price: 300,
+                    description: "Rajma Rasila is a preparation made by cooking Kidney beans with an onion tomato gravy with In-house Masala's.",
+                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155716GMT0530.jfif",
+                    restaurant_id: val.id,
+                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
+                },
+                {
+                    name: "Manchow Soup",
+                    price: 100,
+                    description: "Popular Chinese style soup loaded with assorted vegetables and topped with fried noodles",
+                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155755GMT0530.jfif",
+                    restaurant_id: val.id,
+                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
+                },
+                {
+                    name: "Steamed Momos",
+                    price: 150,
+                    description: "Gorge on these delicious steamed momos filled with assorted vegetables like spring onions, cabbage, and carrots",
+                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155823GMT0530.png",
+                    restaurant_id: val.id,
+                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
+                },
+                {
+                    name: "Chicken Lolipop",
+                    price: 500,
+                    description: "Gorge on these medium spicy chicken lollipops infused with Chinese flavors",
+                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155848GMT0530.jpg",
+                    restaurant_id: val.id,
+                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
+                },
+                {
+                    name: "Chowmein",
+                    price: 300,
+                    description: "Stir fried noodles packed with crunchy bits of vegetables and flavored with Chinese sauces",
+                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155915GMT0530.jpg",
+                    restaurant_id: val.id,
+                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
+                },
+                {
+                    name: "Veg Fried Rice",
+                    price: 350,
+                    description: "Aromatic rice, stir fried with shredded carrots",
+                    image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomTueMar022021155941GMT0530.jpg",
+                    restaurant_id: val.id,
+                    dish_category_id: dish_category_ids[Math.floor(Math.random() * dish_category_ids.length)],
+                },
+
+            ]
+
+            const restaurantDish = await RestaurantDish.findAndCountAll({
+                where: {
+                    restaurant_id: val.id,
+                }
+            });
+            if (restaurantDish.count === 0) {
+                await RestaurantDish.bulkCreate(dishes);
+            }
+              
+
+            restaurants.push({
+                restaurant_id:val.id,
+                restaurant_name: val.restaurant_name,
+                address: val.address,
+                location:val.location,
+                distance: `${parseFloat(((Math.floor(randomLocation.distance({
+                    latitude: req.query.latitude,
+                    longitude: req.query.longitude
+                }, {
+                    latitude: val.location[0],
+                        longitude: val.location[1]
+                }))) * 0.00062137).toFixed(2))} miles`,
+                ready_in:"30 min"
+            })
+          }
 
           return res.status(200).json({ status: 200, message: `restaurants`, restaurants});
         } catch (error) {
@@ -519,21 +630,6 @@ module.exports = {
                     { returning: ['id'] },
                 );
             }
-
-            dishCategory = await DishCategory.findAll();
-
-            const dish_category_ids = await dishCategory.map(val=>val.id);
-
-            const dishes=[
-                { name: "Food", price: 200, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },
-                { name: "Food", price: 400, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
-                { name: "Food", price: 100, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png" },
-                { name: "Food", price: 150, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png" },
-                { name: "Food", price: 400, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png" },
-                { name: "Food", price: 300, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
-                { name: "Food", price: 250, descrption: "Comming soon...", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
-
-            ]
 
 
             let restaurantHotspot = await RestaurantHotspot.findAndCountAll({
