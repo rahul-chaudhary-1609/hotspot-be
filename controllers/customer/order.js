@@ -173,5 +173,51 @@ module.exports = {
         console.log(error);
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
-    }
+    },
+
+    createOrder:async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const order_id = "ORD-" + customer.id + "-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
+            const customer_id = customer.id;
+            const restaurant_id = parseInt(req.body.restaurant_id);
+            const hotspot_location_id = req.body.hotspot_location_id? parseInt(req.body.hotspot_location_id):null;
+            const amount = parseFloat(req.body.amount);
+            const tip_amount = parseFloat(req.body.tip_amount);
+            const status = parseInt(req.body.status);
+            const type = req.body.order_type;
+            const cooking_instructions = req.body.cooking_instructions ? req.body.cooking_instructions : null;
+            const delivery_datetime = req.body.delivery_datetime ? new Date(req.body.delivery_datetime) : null;
+            
+
+            const order = await models.Order.create({
+                order_id,
+                customer_id,
+                restaurant_id,
+                hotspot_location_id,
+                amount,
+                tip_amount,
+                status,
+                type,
+                cooking_instructions,
+                delivery_datetime
+            });
+            
+ 
+
+            return res.status(200).json({ status: 200, order_id:order.order_id });
+
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
 }

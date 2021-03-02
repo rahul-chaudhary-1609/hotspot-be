@@ -266,5 +266,9 @@ router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.authen
     return OrderController.getCart(req, res);
 })
 
+router.post('/create-order', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.createOrder(req, res);
+})
+
 
 module.exports=router;

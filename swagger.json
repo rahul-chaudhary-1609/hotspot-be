@@ -3102,6 +3102,84 @@
             ],
             "responses": {}
           }
+        },
+
+        "/create-order": {
+          "post": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to create new order",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "hotspot_location_id",
+                "in": "formData",
+                "description": "enter hotspot location id",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "amount",
+                "in": "formData",
+                "description": "enter total amount",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "tip_amount",
+                "in": "formData",
+                "description": "enter tip amount (if any)",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "status",
+                "in": "formData",
+                "description": "1:pending | 2: confirmed | 3: scheduled | 4: completed",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "order_type",
+                "in": "formData",
+                "description": "delivery | pickup",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "cooking_instructions",
+                "in": "formData",
+                "description": "enter cooking_instructions",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "delivery_datetime",
+                "in": "formData",
+                "description": "YYYY-MM-DD HH:MM:SS",
+                "required": false,
+                "type": "string"
+              }
+              
+            ],
+            "responses": {}
+          }
         }
     }
 }
