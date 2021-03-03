@@ -1386,9 +1386,16 @@ module.exports = {
 
             for (const val of customerFavLocation){
                 const dropoff = await HotspotDropoff.findOne({ where: { id: val.hotspot_dropoff_id } });
+                const hotspotLocation = await HotspotLocation.findOne({
+                    where: {
+                        location: val.location_geometry,
+                        customer_id: customer.id
+                    }
+                });
                 customerAddress.push(
                     {
                         address: {
+                            id:hotspotLocation.id,
                             address: val.address,
                             city: val.city,
                             state: val.state,
@@ -1396,7 +1403,8 @@ module.exports = {
                             country: val.country,
                             location_geometry: val.location_geometry
                         },
-                        default_dropoff: dropoff.dropoff_detail, isDefault: val.default_address
+                        default_dropoff: dropoff.dropoff_detail,
+                        isDefault: val.default_address
                     }
                 )
             }
