@@ -78,6 +78,14 @@ module.exports = {
 
             const restaurant_id = parseInt(req.params.restaurant_id);
 
+            const order = await models.Order.findOne({
+                where: {
+                    customer_id: customer.id,
+                    restaurant_id,
+                    status:1,
+                }
+             })
+
             let cartInfo = {};
 
             if (req.params.order_type === "delivery") {
@@ -167,7 +175,7 @@ module.exports = {
             }
  
 
-            return res.status(200).json({ status: 200, cart: { cartInfo,cartItems } });
+            return res.status(200).json({ status: 200, cart: { cartInfo,cartItems,cooking_instructions:order.cooking_instructions || null } });
 
          } catch (error) {
         console.log(error);
@@ -185,36 +193,118 @@ module.exports = {
 
             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
 
-            const order_id = "ORD-" + customer.id + "-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
             const customer_id = customer.id;
             const restaurant_id = parseInt(req.body.restaurant_id);
-            const hotspot_location_id = req.body.hotspot_location_id ? parseInt(req.body.hotspot_location_id) : null;
-            const hotspot_dropoff_id = req.body.hotspot_dropoff_id? parseInt(req.body.hotspot_dropoff_id):null;
-            const amount = parseFloat(req.body.amount);
-            const tip_amount = parseFloat(req.body.tip_amount);
-            const status = parseInt(req.body.status);
-            const type = req.body.order_type;
-            const cooking_instructions = req.body.cooking_instructions ? req.body.cooking_instructions : null;
-            const delivery_datetime = req.body.delivery_datetime ? new Date(req.body.delivery_datetime) : null;
+
+             const order = await models.Order.findOne({
+                where: {
+                    customer_id,
+                    restaurant_id,
+                    status:1,
+                }
+             })
+            
+            if (order) {
+                const hotspot_location_id = req.body.hotspot_location_id ? parseInt(req.body.hotspot_location_id) : order.hotspot_location_id;
+                const hotspot_dropoff_id = req.body.hotspot_dropoff_id? parseInt(req.body.hotspot_dropoff_id):order.hotspot_dropoff_id;
+                const amount = req.body.amount? parseFloat(req.body.amount): order.amount;
+                const tip_amount = req.body.tip_amount? parseFloat(req.body.tip_amount): order.tip_amount;
+                const status = req.body.status?parseInt(req.body.status):order.status;
+                const type = req.body.order_type || order.type;
+                const cooking_instructions = req.body.cooking_instructions || order.cooking_instructions;
+                const delivery_datetime = req.body.delivery_datetime ? new Date(req.body.delivery_datetime) : order.delivery_datetime;
+
+                await models.Order.update({
+                    hotspot_location_id,
+                    hotspot_dropoff_id,
+                    amount,
+                    tip_amount,
+                    status,
+                    type,
+                    cooking_instructions,
+                    delivery_datetime
+                },
+                    {
+                        where: {
+                            order_id:order.order_id,
+                        },
+                        returning: true,
+                    }
+                );
+
+                return res.status(200).json({ status: 200, order_id:order.order_id });
+            }
+            else {
+                const order_id = "ORD-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
+                const hotspot_location_id = req.body.hotspot_location_id ? parseInt(req.body.hotspot_location_id) : null;
+                const hotspot_dropoff_id = req.body.hotspot_dropoff_id? parseInt(req.body.hotspot_dropoff_id):null;
+                const amount = parseFloat(req.body.amount);
+                const tip_amount = parseFloat(req.body.tip_amount);
+                const status = 1;
+                const type = req.body.order_type;
+                const cooking_instructions = req.body.cooking_instructions ? req.body.cooking_instructions : null;
+                const delivery_datetime = req.body.delivery_datetime ? new Date(req.body.delivery_datetime) : null;
+                
+
+                const newOrder = await models.Order.create({
+                    order_id,
+                    customer_id,
+                    restaurant_id,
+                    hotspot_location_id,
+                    hotspot_dropoff_id,
+                    amount,
+                    tip_amount,
+                    status,
+                    type,
+                    cooking_instructions,
+                    delivery_datetime
+                });
+
+                return res.status(200).json({ status: 200, order_id:newOrder.order_id });
+            }
+        
+
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
+    confirmOrder:async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const order_id = req.params.orderId;
+
+            const order = await models.Order.findOne({
+                where: {
+                    order_id
+                }
+            })
+
+            if (!order || order.is_deleted) return res.status(404).json({ status: 404, message: `order not found` });
             
 
-            const order = await models.Order.create({
-                order_id,
-                customer_id,
-                restaurant_id,
-                hotspot_location_id,
-                hotspot_dropoff_id,
-                amount,
-                tip_amount,
-                status,
-                type,
-                cooking_instructions,
-                delivery_datetime
-            });
+            await models.Order.update({
+                status:2,
+            },
+                {
+                    where: {
+                        order_id
+                    },
+                    returning: true,
+                }
+            );
             
  
 
-            return res.status(200).json({ status: 200, order_id:order.order_id });
+            return res.status(200).json({ status: 200, message:"Order confirmed successfully" });
 
          } catch (error) {
         console.log(error);

@@ -274,5 +274,9 @@ router.get('/get-pre-order-info/:orderId', customerAuthentication.authenticateCu
     return OrderController.getPreOrderInfo(req, res);
 })
 
+router.put('/confirm-order/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.confirmOrder(req, res);
+})
+
 
 module.exports=router;

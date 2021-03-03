@@ -3156,13 +3156,6 @@
                 "type": "number"
               },
               {
-                "name": "status",
-                "in": "formData",
-                "description": "1:pending | 2: confirmed | 3: scheduled | 4: completed",
-                "required": true,
-                "type": "number"
-              },
-              {
                 "name": "order_type",
                 "in": "formData",
                 "description": "delivery | pickup",
@@ -3195,6 +3188,34 @@
               "Customer Cart and Order"
             ],
             "description": "Api to get pre order info",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "order_id",
+                "in": "path",
+                "description": "enter order id",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/confirm-order/{order_id}": {
+          "put": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to confirm the order",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
