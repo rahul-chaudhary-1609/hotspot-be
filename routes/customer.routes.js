@@ -293,4 +293,8 @@ router.get('/get-payment-cards', customerAuthentication.authenticateCustomer, (r
     return PaymentController.getPaymentCards(req, res);
 })
 
+router.put('/set-default-payment-card/:card_number', customerAuthentication.authenticateCustomer, (req, res) => {
+    return PaymentController.setDefaultPaymentCard(req, res);
+})
+
 module.exports=router;

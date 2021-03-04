@@ -132,5 +132,63 @@ module.exports = {
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
+    
+    setDefaultPaymentCard: async (req, res) => {
+        try {
+
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+
+            const card_number = req.params.card_number;
+
+            let card = await models.CustomerCard.findOne({
+                where: {
+                    customer_id: customer.id,
+                    card_number,                       
+                    }
+            });
+            
+            if (!card) {
+                return res.status(404).json({ status: 404, message: `no payment card with this card number ` });
+            }
+
+            await models.CustomerCard.update({                
+                is_default:false
+            },
+                {
+                    where: {
+                        customer_id: customer.id,  
+                    },
+                    returning: true,
+                }
+            );
+
+            await models.CustomerCard.update({                
+                is_default:true,
+            },
+                {
+                    where: {
+                        customer_id: customer.id,
+                        card_number,  
+                    },
+                    returning: true,
+                }
+            );
+            
+            return res.status(200).json({ status: 200, message: `Payment card added as default ` });
+            
+
+            
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
    
 }

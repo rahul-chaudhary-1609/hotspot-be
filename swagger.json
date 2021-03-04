@@ -3371,6 +3371,34 @@
             "parameters": [],
             "responses": {}
           }
+        },
+
+        "/set-default-payment-card/{card_number}": {
+          "put": {
+            "tags": [
+              "Customer Payment"
+            ],
+            "description": "Api to set a payment card as default",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "card_number",
+                "in": "path",
+                "description": "enter card number (length: 12-19 )",
+                "required": true,
+                "type": "string"
+              }
+                ],
+            "responses": {}
+          }
         }
     }
 }
