@@ -35,7 +35,7 @@ module.exports = {
             card = await models.CustomerCard.create(cardResult.value);
         
             if (card) {
-                return res.status(409).json({ status: 409, message: `Payment card saved successfully ` });
+                return res.status(200).json({ status: 200, message: `Payment card saved successfully ` });
             }
 
             
@@ -84,7 +84,46 @@ module.exports = {
                     }
                 );
             
-            return res.status(409).json({ status: 409, message: `Payment card updated successfully ` });
+            return res.status(200).json({ status: 200, message: `Payment card updated successfully ` });
+            
+
+            
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
+    getPaymentCards: async (req, res) => {
+        try {
+
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+
+            let cards = await models.CustomerCard.findAll({
+                where: {
+                    customer_id: customer.id,                      
+                    }
+            });
+            
+            const paymentCards = cards.map((val) => {
+                return {
+                    nameOnCard: val.name_on_card,
+                    cardNumber: val.card_number,
+                    cardExpMonth: val.card_exp_month,
+                    cardExpYear: val.card_exp_year,
+                    isDefault:val.is_default,
+                }
+            })
+            
+            
+            return res.status(200).json({ status: 200, paymentCards });
             
 
             

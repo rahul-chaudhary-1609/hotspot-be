@@ -289,4 +289,8 @@ router.put('/update-payment-card', customerAuthentication.authenticateCustomer, 
     return PaymentController.updatePaymentCard(req, res);
 })
 
+router.get('/get-payment-cards', customerAuthentication.authenticateCustomer, (req, res) => {
+    return PaymentController.getPaymentCards(req, res);
+})
+
 module.exports=router;

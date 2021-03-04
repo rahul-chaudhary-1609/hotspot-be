@@ -3351,6 +3351,26 @@
             ],
             "responses": {}
           }
+        },
+
+        "/get-payment-cards": {
+          "get": {
+            "tags": [
+              "Customer Payment"
+            ],
+            "description": "Api to get all payment cards",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
         }
     }
 }
