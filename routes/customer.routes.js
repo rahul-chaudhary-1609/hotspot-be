@@ -285,8 +285,8 @@ router.post('/add-payment-card', customerAuthentication.authenticateCustomer, (r
     return PaymentController.addPaymentCard(req, res);
 })
 
-// router.put('/update-payment-card', customerAuthentication.authenticateCustomer, (req, res) => {
-//     return PaymentController.updatePaymentCard(req, res);
-// })
+router.put('/update-payment-card', customerAuthentication.authenticateCustomer, (req, res) => {
+    return PaymentController.updatePaymentCard(req, res);
+})
 
 module.exports=router;
