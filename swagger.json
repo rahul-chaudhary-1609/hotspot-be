@@ -73,6 +73,10 @@
       {
         "name": "Customer Cart and Order",
         "description": "customer cart and order Api's"
+      },
+      {
+        "name": "Customer Payment",
+        "description": "customer payment Api's"
       }
       
       
@@ -3230,6 +3234,117 @@
                 "name": "order_id",
                 "in": "path",
                 "description": "enter order id",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        "/add-payment-card": {
+          "post": {
+            "tags": [
+              "Customer Payment"
+            ],
+            "description": "Api to add new payment card",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "name_on_card",
+                "in": "formData",
+                "description": "enter name as on card",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_number",
+                "in": "formData",
+                "description": "enter card number (length: 12-19 )",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_exp_month",
+                "in": "formData",
+                "description": "enter card expiry month eg: 01",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_exp_year",
+                "in": "formData",
+                "description": "enter card expiry year eg: 2030",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/update-payment-card": {
+          "put": {
+            "tags": [
+              "Customer Payment"
+            ],
+            "description": "Api to update new payment card",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "name_on_card",
+                "in": "formData",
+                "description": "enter name as on card",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_number",
+                "in": "formData",
+                "description": "enter card number (length: 12-19 )",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_exp_month",
+                "in": "formData",
+                "description": "enter card expiry month eg: 01",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_exp_year",
+                "in": "formData",
+                "description": "enter card expiry year eg: 2030",
                 "required": true,
                 "type": "string"
               }

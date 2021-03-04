@@ -9,6 +9,7 @@ const customerLoginController = require('../controllers/customer/login');
 const HotspotLocationController = require('../controllers/customer/hotspot_location');
 const RestaurantController = require('../controllers/customer/restaurant');
 const OrderController = require('../controllers/customer/order');
+const PaymentController = require('../controllers/customer/payment');
 const customerMulter = require('../middlewares/customer/multer');
 
 const router=express.Router();
@@ -278,5 +279,14 @@ router.put('/confirm-order/:orderId', customerAuthentication.authenticateCustome
     return OrderController.confirmOrder(req, res);
 })
 
+
+//payment routes
+router.post('/add-payment-card', customerAuthentication.authenticateCustomer, (req, res) => {
+    return PaymentController.addPaymentCard(req, res);
+})
+
+// router.put('/update-payment-card', customerAuthentication.authenticateCustomer, (req, res) => {
+//     return PaymentController.updatePaymentCard(req, res);
+// })
 
 module.exports=router;

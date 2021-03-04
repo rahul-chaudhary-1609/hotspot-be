@@ -84,5 +84,22 @@ const timeSchema = Joi.object({
     }),
 });
 
+const paymentCardSchema = Joi.object({
+    name_on_card: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        'string.pattern.base': `Please enter a valid name on card`,
+    }),
 
-module.exports = { timeSchema, locationGeometrySchema,onlyPhoneSchema,customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};
+    card_number: Joi.string().trim().min(12).max(19).regex(/^\d{12,19}$/).messages({
+        'string.pattern.base': `Please enter a valid card number`,
+    }),
+    card_exp_month: Joi.string().trim().min(2).max(2).regex(/^\d{2}$/).messages({
+        'string.pattern.base': `Please enter a valid card expiry month`,
+    }),
+    card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).messages({
+        'string.pattern.base': `Please enter a valid card expiry year`,
+    }),
+
+});
+
+
+module.exports = { paymentCardSchema,timeSchema, locationGeometrySchema,onlyPhoneSchema,customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};
