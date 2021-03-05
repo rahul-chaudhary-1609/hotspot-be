@@ -1,6 +1,8 @@
 require('dotenv/config');
 const models = require('../../models');
 const validate = require('../../middlewares/customer/validation');
+//const stripe=require('stripe')("sk_test_51IQugbDvURnOPWYX6Utl2vcYWs4jzHt3Wb0OlkwUjyjWTyX81Kt5ZTpyMSwRMAhLEf0PelFmFuNytVxJe0C5YkT500nZgwhlXC")
+
 
 module.exports = {
 
@@ -28,7 +30,7 @@ module.exports = {
                     }
             });
             
-            if (card) {
+            if (card || !card.is_deleted) {
                 return res.status(409).json({ status: 409, message: `Payment card wth same card number already exist ` });
             }
 
@@ -62,23 +64,19 @@ module.exports = {
 
             cardResult.value.customer_id = customer.id;
 
-            let card = await models.CustomerCard.findOne({
-                where: {
-                    customer_id: cardResult.value.customer_id,
-                    card_number:cardResult.value.card_number                        
-                    }
-            });
+            const id = req.params.payment_card_id;
+
+            let card = await models.CustomerCard.findByPk(id);
             
-            if (!card) {
-                return res.status(404).json({ status: 404, message: `no payment card with this card number ` });
+            if (!card || card.is_deleted) {
+                return res.status(404).json({ status: 404, message: `no payment card found ` });
             }
 
             await models.CustomerCard.update(
                 cardResult.value,
                     {
                         where: {
-                            customer_id: cardResult.value.customer_id,
-                            card_number:cardResult.value.card_number   
+                            id,   
                         },
                         returning: true,
                     }
@@ -108,12 +106,14 @@ module.exports = {
 
             let cards = await models.CustomerCard.findAll({
                 where: {
-                    customer_id: customer.id,                      
+                    customer_id: customer.id,
+                    is_deleted:false,
                     }
             });
             
             const paymentCards = cards.map((val) => {
                 return {
+                    id:val.id,
                     nameOnCard: val.name_on_card,
                     cardNumber: val.card_number,
                     cardExpMonth: val.card_exp_month,
@@ -132,7 +132,38 @@ module.exports = {
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
-    
+
+    getPaymentCard: async (req, res) => {
+        try {
+
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+
+            const id = req.params.payment_card_id;
+
+            let card = await models.CustomerCard.findByPk(id);
+            
+            if (!card || card.is_deleted) {
+                return res.status(404).json({ status: 404, message: `no payment card found` });
+            }
+
+            
+            return res.status(200).json({ status: 200, card });
+            
+
+            
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
     setDefaultPaymentCard: async (req, res) => {
         try {
 
@@ -145,17 +176,12 @@ module.exports = {
             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
 
 
-            const card_number = req.params.card_number;
+            const id = req.params.payment_card_id;
 
-            let card = await models.CustomerCard.findOne({
-                where: {
-                    customer_id: customer.id,
-                    card_number,                       
-                    }
-            });
+            let card = await models.CustomerCard.findByPk(id);
             
-            if (!card) {
-                return res.status(404).json({ status: 404, message: `no payment card with this card number ` });
+            if (!card || card.is_deleted) {
+                return res.status(404).json({ status: 404, message: `no payment card found ` });
             }
 
             await models.CustomerCard.update({                
@@ -174,8 +200,7 @@ module.exports = {
             },
                 {
                     where: {
-                        customer_id: customer.id,
-                        card_number,  
+                        id,  
                     },
                     returning: true,
                 }
@@ -190,5 +215,67 @@ module.exports = {
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
+
+    
+    
+
+//     payment: async (req, res) => {
+//         try {
+
+//             const customer = await models.Customer.findOne({
+//                 where: {
+//                     email: req.user.email,
+//                 }
+//             });
+
+//             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+//             const stripeCardToken = await stripe.tokens.create({
+//                     card: {
+//                         number: req.body.card_number,
+//                         exp_month: req.body.card_exp_month,
+//                         exp_year: req.body.card_exp_month,
+//                         cvc: '314',
+//                     },
+//             });
+
+//             console.log("token", stripeCardToken);
+
+//             const stripeCustomer=await stripe.customers.create({
+//                 email: customer.email,
+//                 source: stripeCardToken.id,
+//                 name: "Rahul",
+//                 address: {
+//                     line1: "Near D-88",
+//                     postal_code: "201301",
+//                     city: "Noida",
+//                     state: "Uttar pradesh",
+//                     country:"India"
+//                 }
+//             })
+
+//             console.log("customer", stripeCustomer);
+            
+//             const stripeCharge = await stripe.charges.create({
+//                 amount: 100,
+//                 description: "Learning Rahul",
+//                 currency: "INR",
+//                 customer: stripeCustomer.id
+//             });
+
+//             console.log("charge", stripeCharge);
+
+//             if (stripeCharge) {
+//                 return res.status(200).json({ status: 200, message: `Payment Successfull` });
+//             }
+//             else {
+//                 return res.status(500).json({ status: 500, message: `Payment Unsuccessfull` });
+//             }
+            
+//          } catch (error) {
+//         console.log(error);
+//         return res.status(500).json({ status: 500, message: `Internal Server Error` });
+//         }
+//    },
    
 }

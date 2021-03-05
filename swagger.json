@@ -3304,7 +3304,57 @@
           }
         },
 
-        "/update-payment-card": {
+        
+
+        "/get-payment-card/{payment_card_id}": {
+          "get": {
+            "tags": [
+              "Customer Payment"
+            ],
+            "description": "Api to get a payment card",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "payment_card_id",
+                "in": "path",
+                "description": "enter payment card id",
+                "required": true,
+                "type": "number"
+              }
+                ],
+            "responses": {}
+          }
+        },
+
+        "/get-payment-cards": {
+          "get": {
+            "tags": [
+              "Customer Payment"
+            ],
+            "description": "Api to get all payment cards",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
+        "/update-payment-card/{payment_card_id}": {
           "put": {
             "tags": [
               "Customer Payment"
@@ -3320,6 +3370,13 @@
             ],
             
             "parameters": [
+              {
+                "name": "payment_card_id",
+                "in": "path",
+                "description": "enter payment card id",
+                "required": true,
+                "type": "number"
+              },
               {
                 "name": "name_on_card",
                 "in": "formData",
@@ -3353,27 +3410,7 @@
           }
         },
 
-        "/get-payment-cards": {
-          "get": {
-            "tags": [
-              "Customer Payment"
-            ],
-            "description": "Api to get all payment cards",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [],
-            "responses": {}
-          }
-        },
-
-        "/set-default-payment-card/{card_number}": {
+        "/set-default-payment-card/{payment_card_id}": {
           "put": {
             "tags": [
               "Customer Payment"
@@ -3390,11 +3427,11 @@
             
             "parameters": [
               {
-                "name": "card_number",
+                "name": "payment_card_id",
                 "in": "path",
-                "description": "enter card number (length: 12-19 )",
+                "description": "enter payment card id",
                 "required": true,
-                "type": "string"
+                "type": "number"
               }
                 ],
             "responses": {}

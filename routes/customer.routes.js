@@ -285,16 +285,24 @@ router.post('/add-payment-card', customerAuthentication.authenticateCustomer, (r
     return PaymentController.addPaymentCard(req, res);
 })
 
-router.put('/update-payment-card', customerAuthentication.authenticateCustomer, (req, res) => {
+router.put('/update-payment-card/:payment_card_id', customerAuthentication.authenticateCustomer, (req, res) => {
     return PaymentController.updatePaymentCard(req, res);
+})
+
+router.get('/get-payment-card/:payment_card_id', customerAuthentication.authenticateCustomer, (req, res) => {
+    return PaymentController.getPaymentCard(req, res);
 })
 
 router.get('/get-payment-cards', customerAuthentication.authenticateCustomer, (req, res) => {
     return PaymentController.getPaymentCards(req, res);
 })
 
-router.put('/set-default-payment-card/:card_number', customerAuthentication.authenticateCustomer, (req, res) => {
+router.put('/set-default-payment-card/:payment_card_id', customerAuthentication.authenticateCustomer, (req, res) => {
     return PaymentController.setDefaultPaymentCard(req, res);
 })
+
+// router.get('/payment', customerAuthentication.authenticateCustomer, (req, res) => {
+//     return PaymentController.payment(req, res);
+// })
 
 module.exports=router;
