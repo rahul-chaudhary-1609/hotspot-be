@@ -391,7 +391,7 @@ module.exports = {
 
             if (restaurantHotspot.count === 0) {
 
-                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=40&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
+                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=10&ll=${req.query.latitude},${req.query.longitude}&query=coffee`
 
                 const response = await fetch(`${URL}`);
 
