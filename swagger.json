@@ -3436,6 +3436,34 @@
                 ],
             "responses": {}
           }
+        },
+
+        "/delete-payment-card/{payment_card_id}": {
+          "delete": {
+            "tags": [
+              "Customer Payment"
+            ],
+            "description": "Api to delete a payment card",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "payment_card_id",
+                "in": "path",
+                "description": "enter payment card id",
+                "required": true,
+                "type": "number"
+              }
+                ],
+            "responses": {}
+          }
         }
     }
 }

@@ -216,7 +216,44 @@ module.exports = {
         }
     },
 
-    
+    deletePaymentCard: async (req, res) => {
+        try {
+
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+
+            const id = req.params.payment_card_id;
+
+            let card = await models.CustomerCard.findByPk(id);
+            
+            if (!card  || card.is_deleted) {
+                return res.status(404).json({ status: 404, message: `no payment card found ` });
+            }
+
+            await models.CustomerCard.update({                
+                is_deleted:true,
+            },
+                {
+                    where: {
+                        id,  
+                    },
+                    returning: true,
+                }
+            );
+            
+            return res.status(200).json({ status: 200, message: `Payment card deleted successfully ` });
+            
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
     
 
 //     payment: async (req, res) => {
