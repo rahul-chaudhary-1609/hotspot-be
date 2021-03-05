@@ -1,7 +1,7 @@
 require('dotenv/config');
 const models = require('../../models');
 const validate = require('../../middlewares/customer/validation');
-//const stripe=require('stripe')("sk_test_51IQugbDvURnOPWYX6Utl2vcYWs4jzHt3Wb0OlkwUjyjWTyX81Kt5ZTpyMSwRMAhLEf0PelFmFuNytVxJe0C5YkT500nZgwhlXC")
+const stripe=require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 
 module.exports = {
@@ -256,53 +256,146 @@ module.exports = {
     },
     
 
-//     payment: async (req, res) => {
+    payment: async (req, res) => {
+        try {
+
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const { name_on_card, card_number, card_exp_month, card_exp_year, card_cvc } = req.body;
+
+            const cardResult = validate.paymentCardSchema.validate({ name_on_card, card_number, card_exp_month, card_exp_year, card_cvc });
+
+            if (cardResult.error) return res.status(400).json({ status: 400, message: cardResult.error.details[0].message });
+
+            const stripeCardToken = await stripe.tokens.create({
+                    card: {
+                        number: cardResult.value.card_number,
+                        exp_month: cardResult.value.card_exp_month,
+                        exp_year: cardResult.value.card_exp_year,
+                        cvc: cardResult.value.card_cvc,
+                    },
+            });
+
+            console.log("token", stripeCardToken);
+
+            const customerPayment = await models.CustomerPayment.findOne({
+                where: {
+                    customer_id:customer.id
+                }
+            })
+
+            let stripeCustomer = null;
+
+            if (customerPayment && customerPayment.stripe_customer_id) {
+                stripeCustomer = await stripe.customers.update(
+                customerPayment.stripe_customer_id,
+                    {
+                        email: customer.email,
+                        source: stripeCardToken.id,
+                        name: customer.name,
+                        phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
+                        address: {
+                            line1: customer.address,
+                            postal_code: customer.postal_code,
+                            city: customer.city,
+                            state: customer.state,
+                            country:customer.country,
+                        },
+                        shipping: {
+                            address: {
+                                line1: customer.address,
+                                postal_code: customer.postal_code,
+                                city: customer.city,
+                                state: customer.state,
+                                country:customer.country,
+                            },
+                            name: customer.name,
+                            phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
+                        },
+                        
+                    },
+                );
+            }
+            else {
+                stripeCustomer=await stripe.customers.create({
+                email: customer.email,
+                source: stripeCardToken.id,
+                name: customer.name,
+                phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
+                address: {
+                    line1: customer.address,
+                    postal_code: customer.postal_code,
+                    city: customer.city,
+                    state: customer.state,
+                    country:customer.country,
+                    },
+                shipping: {
+                    address: {
+                        line1: customer.address,
+                        postal_code: customer.postal_code,
+                        city: customer.city,
+                        state: customer.state,
+                        country:customer.country,
+                    },
+                    name: customer.name,
+                    phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
+                },
+                })
+                
+                
+                await models.CustomerPayment.create({
+                    customer_id: customer.id,
+                    stripe_customer_id:stripeCustomer.id,
+                })
+            }            
+
+            console.log("customer", stripeCustomer);
+            
+            const stripeCharge = await stripe.charges.create({
+                amount: req.body.amount,
+                description: "Testing",
+                currency: "INR",
+                customer: stripeCustomer.id,
+                receipt_email:customer.email,
+            });
+
+            console.log("charge", stripeCharge);
+
+            if (stripeCharge && stripeCharge.status === 'succeeded') {
+                
+                return res.status(200).json({ status: 200, message: `Payment Successfull` });
+            }
+            else {
+                return res.status(500).json({ status: 500, message: `Payment Unsuccessfull` });
+            }
+            
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+   },
+   
+//    paymentTest: async (req, res) => {
 //         try {
 
-//             const customer = await models.Customer.findOne({
-//                 where: {
-//                     email: req.user.email,
-//                 }
-//             });
-
-//             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
-
-//             const stripeCardToken = await stripe.tokens.create({
-//                     card: {
-//                         number: req.body.card_number,
-//                         exp_month: req.body.card_exp_month,
-//                         exp_year: req.body.card_exp_month,
-//                         cvc: '314',
-//                     },
-//             });
-
-//             console.log("token", stripeCardToken);
-
-//             const stripeCustomer=await stripe.customers.create({
-//                 email: customer.email,
-//                 source: stripeCardToken.id,
-//                 name: "Rahul",
-//                 address: {
-//                     line1: "Near D-88",
-//                     postal_code: "201301",
-//                     city: "Noida",
-//                     state: "Uttar pradesh",
-//                     country:"India"
-//                 }
-//             })
-
-//             console.log("customer", stripeCustomer);
             
 //             const stripeCharge = await stripe.charges.create({
 //                 amount: 100,
-//                 description: "Learning Rahul",
+//                 description: "Testing",
 //                 currency: "INR",
-//                 customer: stripeCustomer.id
+//                 customer:"cus_J3jCkelHlEKQAf",
 //             });
 
 //             console.log("charge", stripeCharge);
 
-//             if (stripeCharge) {
+//             if (stripeCharge && stripeCharge.status === 'succeeded') {
+                
 //                 return res.status(200).json({ status: 200, message: `Payment Successfull` });
 //             }
 //             else {
@@ -314,5 +407,4 @@ module.exports = {
 //         return res.status(500).json({ status: 500, message: `Internal Server Error` });
 //         }
 //    },
-   
 }

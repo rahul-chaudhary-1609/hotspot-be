@@ -304,8 +304,13 @@ router.put('/set-default-payment-card/:payment_card_id', customerAuthentication.
 router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.authenticateCustomer, (req, res) => {
     return PaymentController.deletePaymentCard(req, res);
 })
-// router.get('/payment', customerAuthentication.authenticateCustomer, (req, res) => {
-//     return PaymentController.payment(req, res);
+
+router.post('/payment', customerAuthentication.authenticateCustomer, (req, res) => {
+    return PaymentController.payment(req, res);
+})
+
+// router.post('/payment-test', (req, res) => {
+//     return PaymentController.paymentTest(req, res);
 // })
 
 module.exports=router;

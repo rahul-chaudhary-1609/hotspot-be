@@ -3464,6 +3464,69 @@
                 ],
             "responses": {}
           }
+        },
+
+        "/payment": {
+          "post": {
+            "tags": [
+              "Customer Payment"
+            ],
+            "description": "Api for payment",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "name_on_card",
+                "in": "formData",
+                "description": "enter name as on card",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_number",
+                "in": "formData",
+                "description": "enter card number (length: 12-19 )",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_exp_month",
+                "in": "formData",
+                "description": "enter card expiry month eg: 01",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_exp_year",
+                "in": "formData",
+                "description": "enter card expiry year eg: 2030",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_cvc",
+                "in": "formData",
+                "description": "enter card cvc",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "amount",
+                "in": "formData",
+                "description": "enter amount",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
         }
     }
 }

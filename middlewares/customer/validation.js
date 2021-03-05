@@ -98,6 +98,9 @@ const paymentCardSchema = Joi.object({
     card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).messages({
         'string.pattern.base': `Please enter a valid card expiry year`,
     }),
+    card_cvc: Joi.string().trim().min(3).max(4).regex(/^\d{3}|\d{4}$/).messages({
+        'string.pattern.base': `Please enter a valid card expiry year`,
+    }),
 
 });
 
