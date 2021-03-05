@@ -95,6 +95,8 @@ const getRestaurantCard =  async (args) => {
                 next_delivery_time,
                 cut_off_time: getCutOffTime(next_delivery_time),
                 is_favorite,
+                workingHourFrom:val.working_hours_from,
+                workingHourTo:val.working_hours_to,
             })
         }
 
