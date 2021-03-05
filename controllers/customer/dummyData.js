@@ -58,7 +58,7 @@ module.exports = {
     ],
 
     hotspotOfferBanners : [
-                        { name: "Sushi Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165522GMT0530.jfif" },
+                        { name: "Sushi Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomFriMar052021114143GMT0530.png" },
                         { name: "Pizza Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165558GMT0530.jfif" },
                         { name: "Burger Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165633GMT0530.jfif" },
                         { name: "Fries Offer", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomThuFeb112021165710GMT0530.jfif" },
