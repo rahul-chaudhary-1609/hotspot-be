@@ -305,12 +305,13 @@ router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.au
     return PaymentController.deletePaymentCard(req, res);
 })
 
-router.post('/payment', customerAuthentication.authenticateCustomer, (req, res) => {
+router.post('/payment',customerAuthentication.authenticateCustomer, (req, res) => {
     return PaymentController.payment(req, res);
 })
 
-// router.post('/payment-test', (req, res) => {
-//     return PaymentController.paymentTest(req, res);
-// })
+router.get('/payment', (req, res) => {
+    return res.render('checkout');
+})
+
 
 module.exports=router;

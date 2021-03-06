@@ -14,34 +14,42 @@ module.exports = (sequelize, DataTypes) => {
             CustomerPayment.belongsTo(models.Customer);
         }
     }
-    CustomerPayment.init({
+    CustomerPayment.init(
+      {
         id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            primaryKey: true,
-            autoIncrement: true
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          primaryKey: true,
+          autoIncrement: true,
         },
         customer_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
+          type: DataTypes.INTEGER,
+          allowNull: false,
         },
 
         stripe_customer_id: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-       
-        is_deleted: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
+          type: DataTypes.STRING,
+          allowNull: false,
         },
 
-    }, {
+        is_live: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
+        
+        is_deleted: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
+      },
+      {
         sequelize,
         underscored: true,
-        tableName: 'customer_payments',
-        modelName: 'CustomerPayment',
-    });
+        tableName: "customer_payments",
+        modelName: "CustomerPayment",
+      }
+    );
     return CustomerPayment;
 };

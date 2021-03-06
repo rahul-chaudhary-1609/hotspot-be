@@ -19,6 +19,8 @@ app.use(cors());
 
 
 app.use(express.json());
+app.set("view engine", "ejs");
+app.use("/static", express.static(__dirname + "/views"));
 
 app.use('/apiDocs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { swaggerOptions: { docExpansion: "none"}}));
 app.use('/',router);

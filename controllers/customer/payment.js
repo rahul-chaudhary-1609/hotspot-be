@@ -254,12 +254,12 @@ module.exports = {
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
-    
 
-    payment: async (req, res) => {
-        try {
 
-            const customer = await models.Customer.findOne({
+   payment: async (req, res) => {
+       try {
+            
+           const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -273,138 +273,148 @@ module.exports = {
 
             if (cardResult.error) return res.status(400).json({ status: 400, message: cardResult.error.details[0].message });
 
-            const stripeCardToken = await stripe.tokens.create({
-                    card: {
-                        number: cardResult.value.card_number,
-                        exp_month: cardResult.value.card_exp_month,
-                        exp_year: cardResult.value.card_exp_year,
-                        cvc: cardResult.value.card_cvc,
-                    },
-            });
-
-            console.log("token", stripeCardToken);
-
-            const customerPayment = await models.CustomerPayment.findOne({
-                where: {
-                    customer_id:customer.id
-                }
-            })
-
-            let stripeCustomer = null;
-
-            if (customerPayment && customerPayment.stripe_customer_id) {
-                stripeCustomer = await stripe.customers.update(
-                customerPayment.stripe_customer_id,
-                    {
-                        email: customer.email,
-                        source: stripeCardToken.id,
-                        name: customer.name,
-                        phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
-                        address: {
-                            line1: customer.address,
-                            postal_code: customer.postal_code,
-                            city: customer.city,
-                            state: customer.state,
-                            country:customer.country,
-                        },
-                        shipping: {
-                            address: {
-                                line1: customer.address,
-                                postal_code: customer.postal_code,
-                                city: customer.city,
-                                state: customer.state,
-                                country:customer.country,
-                            },
-                            name: customer.name,
-                            phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
-                        },
-                        
-                    },
-                );
-            }
-            else {
-                stripeCustomer=await stripe.customers.create({
-                email: customer.email,
-                source: stripeCardToken.id,
-                name: customer.name,
-                phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
+            const stripePaymentMethod = await stripe.paymentMethods.create({
+              type: "card",
+              card: {
+                number: cardResult.value.card_number,
+                exp_month: cardResult.value.card_exp_month,
+                exp_year: cardResult.value.card_exp_year,
+                cvc: cardResult.value.card_cvc,
+              },
+              billing_details: {
                 address: {
-                    line1: customer.address,
-                    postal_code: customer.postal_code,
-                    city: customer.city,
-                    state: customer.state,
-                    country:customer.country,
-                    },
-                shipping: {
-                    address: {
-                        line1: customer.address,
-                        postal_code: customer.postal_code,
-                        city: customer.city,
-                        state: customer.state,
-                        country:customer.country,
-                    },
-                    name: customer.name,
-                    phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
+                  line1: customer.address,
+                  postal_code: customer.postal_code,
+                  city: customer.city,
+                  state: customer.state,
+                  //country: customer.country,
                 },
-                })
-                
-                
-                await models.CustomerPayment.create({
-                    customer_id: customer.id,
-                    stripe_customer_id:stripeCustomer.id,
-                })
-            }            
+                name: customer.name,
+                phone: customer.phone_no
+                  ? `${customer.country_code} ${customer.phone_no}`
+                  : null,
+                email: customer.email,
+              },
+            });
+           
 
-            console.log("customer", stripeCustomer);
-            
-            const stripeCharge = await stripe.charges.create({
-                amount: req.body.amount,
-                description: "Testing",
-                currency: "INR",
-                customer: stripeCustomer.id,
-                receipt_email:customer.email,
+           const customerPayment = await models.CustomerPayment.findOne({
+             where: {
+                   customer_id: customer.id,
+                   is_live: true,
+             },
+           });
+
+           let stripeCustomer = null;
+
+           if (customerPayment && customerPayment.stripe_customer_id) {
+             stripeCustomer = await stripe.customers.update(
+               customerPayment.stripe_customer_id,
+               {
+                 email: customer.email,
+                 name: customer.name,
+                 phone: customer.phone_no
+                   ? `${customer.country_code} ${customer.phone_no}`
+                   : null,
+                 address: {
+                   line1: customer.address,
+                   postal_code: customer.postal_code,
+                   city: customer.city,
+                   state: customer.state,
+                   country: customer.country,
+                 },
+                 shipping: {
+                   address: {
+                     line1: customer.address,
+                     postal_code: customer.postal_code,
+                     city: customer.city,
+                     state: customer.state,
+                     country: customer.country,
+                   },
+                   name: customer.name,
+                   phone: customer.phone_no
+                     ? `${customer.country_code} ${customer.phone_no}`
+                     : null,
+                 },
+               }
+             );
+           } else {
+             stripeCustomer = await stripe.customers.create({
+               email: customer.email,
+               name: customer.name,
+               phone: customer.phone_no
+                 ? `${customer.country_code} ${customer.phone_no}`
+                 : null,
+               address: {
+                 line1: customer.address,
+                 postal_code: customer.postal_code,
+                 city: customer.city,
+                 state: customer.state,
+                 country: customer.country,
+               },
+               shipping: {
+                 address: {
+                   line1: customer.address,
+                   postal_code: customer.postal_code,
+                   city: customer.city,
+                   state: customer.state,
+                   country: customer.country,
+                 },
+                 name: customer.name,
+                 phone: customer.phone_no
+                   ? `${customer.country_code} ${customer.phone_no}`
+                   : null,
+               },
+             });
+
+             await models.CustomerPayment.create({
+               customer_id: customer.id,
+                 stripe_customer_id: stripeCustomer.id,
+               is_live:true,
+             });
+           }
+
+           const paymentMethods = await stripe.paymentMethods.list({
+             customer: stripeCustomer.id,
+             type: "card",
+           });
+           
+
+           let is_payment_method_exist = false;
+               
+           for (let card of paymentMethods.data) {
+               if (card.card.last4 == cardResult.value.card_number.slice(-4) ) {
+                   if (card.card.exp_month == parseInt(cardResult.value.card_exp_month)) {
+                       if (card.card.exp_year == parseInt(cardResult.value.card_exp_year)) {
+                           is_payment_method_exist = true;
+                           break;
+                        }
+                    }
+                } 
+           }
+
+           if (!is_payment_method_exist) {
+            await stripe.paymentMethods.attach(stripePaymentMethod.id, {
+              customer: stripeCustomer.id,
+            });   
+           }
+             
+
+            const stripePaymentIntent = await stripe.paymentIntents.create({
+              amount: req.body.amount*100,
+              currency: "INR",
+              customer: stripeCustomer.id,
             });
 
-            console.log("charge", stripeCharge);
+            return res
+              .status(200)
+              .json({ status: 200, stripePaymentMethod, stripePaymentIntent });
 
-            if (stripeCharge && stripeCharge.status === 'succeeded') {
-                
-                return res.status(200).json({ status: 200, message: `Payment Successfull` });
-            }
-            else {
-                return res.status(500).json({ status: 500, message: `Payment Unsuccessfull` });
-            }
+            
             
          } catch (error) {
         console.log(error);
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
    },
-   
-//    paymentTest: async (req, res) => {
-//         try {
-
-            
-//             const stripeCharge = await stripe.charges.create({
-//                 amount: 100,
-//                 description: "Testing",
-//                 currency: "INR",
-//                 customer:"cus_J3jCkelHlEKQAf",
-//             });
-
-//             console.log("charge", stripeCharge);
-
-//             if (stripeCharge && stripeCharge.status === 'succeeded') {
-                
-//                 return res.status(200).json({ status: 200, message: `Payment Successfull` });
-//             }
-//             else {
-//                 return res.status(500).json({ status: 500, message: `Payment Unsuccessfull` });
-//             }
-            
-//          } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({ status: 500, message: `Internal Server Error` });
-//         }
-//    },
 }
