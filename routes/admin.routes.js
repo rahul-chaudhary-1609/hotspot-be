@@ -102,6 +102,9 @@ router.route('/deleteCustomer/:customerId').delete([adminMiddleware.checkToken
 router.route('/getTotalCustomers').get([adminMiddleware.checkToken
 ], adminDashboardController.getTotalCustomers);
 
+router.route('/getTotalRestaurants').get([adminMiddleware.checkToken
+], adminDashboardController.getTotalRestaurants);
+
 
 //others
 

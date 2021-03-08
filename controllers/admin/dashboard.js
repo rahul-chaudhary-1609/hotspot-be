@@ -21,5 +21,23 @@ module.exports = {
         }
     },
 
-    
+    getTotalRestaurants: async (req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const restaurants = await models.Restaurant.findAndCountAll({
+                where: {
+                    is_deleted: false,
+                }
+            });
+
+            return res.status(200).json({ status: 200, numberOfRestaurants:restaurants.count });
+
+         } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
 }
