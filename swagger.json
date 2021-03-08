@@ -3242,6 +3242,25 @@
           }
         },
 
+        "/get-orders": {
+          "get": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to get all orders of a customer",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
 
 
 

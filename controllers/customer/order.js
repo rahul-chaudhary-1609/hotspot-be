@@ -384,6 +384,38 @@ module.exports = {
         }
     },
 
+    getConfirmedOrders: async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+
+            const orders = await models.Order.findAll({
+                where: {
+                    customer_id: customer.id,
+                    status: [2, 3, 4],
+                    is_deleted:false,
+                }
+            })
+
+            if (!orders) return res.status(404).json({ status: 404, message: `order not found` });
+
+            
+            
+
+            return res.status(200).json({ status: 200, orders });
+
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
     
 
 }

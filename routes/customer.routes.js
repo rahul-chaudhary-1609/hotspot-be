@@ -279,6 +279,10 @@ router.put('/confirm-order/:orderId', customerAuthentication.authenticateCustome
     return OrderController.confirmOrder(req, res);
 })
 
+router.put('/get-orders', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.getConfirmedOrders(req, res);
+})
+
 
 //payment routes
 router.post('/add-payment-card', customerAuthentication.authenticateCustomer, (req, res) => {
