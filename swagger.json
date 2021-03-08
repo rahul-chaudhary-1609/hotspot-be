@@ -327,6 +327,28 @@
           }
         },
 
+        "/admin/getTotalOrders": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total number of orders",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

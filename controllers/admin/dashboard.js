@@ -60,4 +60,25 @@ module.exports = {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
+
+    getTotalOrders: async (req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const orders = await models.Order.findAndCountAll({
+                where: {
+                    is_deleted: false,
+                    status:[2,3,4]
+                }
+            });
+
+            return res.status(200).json({ status: 200, numberOfOrders:orders.count });
+
+         } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
 }
