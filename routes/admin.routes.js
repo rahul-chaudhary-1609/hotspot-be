@@ -116,7 +116,8 @@ router.route('/getTotalOrders').get([adminMiddleware.checkToken
 router.route('/getTotalRevenue').get([adminMiddleware.checkToken
 ], adminDashboardController.getTotalRevenue);
 
-
+router.route('/getTotalRevenueByDate').get([adminMiddleware.checkToken
+], adminDashboardController.getTotalRevenueByDate);
 
 
 //others

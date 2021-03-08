@@ -371,7 +371,41 @@
           }
         },
 
-        
+        "/admin/getTotalRevenueByDate": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total revenue by date",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "start_date",
+                "in": "query",
+                "description": "YYYY-MM-DD",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "end_date",
+                "in": "query",
+                "description": "YYYY-MM-DD",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 
