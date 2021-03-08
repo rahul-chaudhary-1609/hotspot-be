@@ -5,6 +5,7 @@ const { check, body, query, param, oneOf, validationResult } = require('express-
 const adminLoginController = require('../controllers/admin/login');
 const adminRestaurantController = require('../controllers/admin/restaurantManagement');
 const adminCustomerController = require('../controllers/admin/customerManagement');
+const adminDashboardController = require('../controllers/admin/dashboard');
 const adminMiddleware = require('../middlewares/admin/adminMiddleware');
 const adminOthersController = require('../controllers/admin/others');
 
@@ -96,6 +97,11 @@ router.route('/changeCustomerStatus/:customerId').put([adminMiddleware.checkToke
 
 router.route('/deleteCustomer/:customerId').delete([adminMiddleware.checkToken
 ], adminCustomerController.deleteCustomer);
+
+//Dashboard Management
+router.route('/getTotalCustomers').get([adminMiddleware.checkToken
+], adminDashboardController.getTotalCustomers);
+
 
 //others
 

@@ -31,17 +31,22 @@
         "description": "admin onboarding Api's"
       },
       {
+        "name": "Admin Dashboard",
+        "description": "admin customers management Api's"
+      },
+      {
+        "name": "Admin Customer Management",
+        "description": "admin customers management Api's"
+      },
+      {
         "name": "Admin Restaurant Management",
         "description": "admin restaurant management Api's"
       },
       {
         "name": "Admin Menu Management",
         "description": "admin menu management Api's"
-      },
-      {
-        "name": "Admin Customer Management",
-        "description": "admin customers management Api's"
-      },
+      },  
+      
       {
         "name": "Customer Signup",
         "description": "customer signup Api's"
@@ -245,6 +250,52 @@
             "responses": {}
           }
         },
+
+
+
+
+
+
+
+
+
+
+
+        "/admin/getTotalCustomers": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total number of customers",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
         "/admin/restaurantCategoryList": {
           "get": {
             "tags": [
