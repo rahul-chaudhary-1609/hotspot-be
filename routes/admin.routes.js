@@ -105,6 +105,9 @@ router.route('/getTotalCustomers').get([adminMiddleware.checkToken
 router.route('/getTotalRestaurants').get([adminMiddleware.checkToken
 ], adminDashboardController.getTotalRestaurants);
 
+router.route('/getTotalDrivers').get([adminMiddleware.checkToken
+], adminDashboardController.getTotalDrivers);
+
 
 //others
 
