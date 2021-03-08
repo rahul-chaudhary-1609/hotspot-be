@@ -98,6 +98,8 @@ router.route('/changeCustomerStatus/:customerId').put([adminMiddleware.checkToke
 router.route('/deleteCustomer/:customerId').delete([adminMiddleware.checkToken
 ], adminCustomerController.deleteCustomer);
 
+
+
 //Dashboard Management
 router.route('/getTotalCustomers').get([adminMiddleware.checkToken
 ], adminDashboardController.getTotalCustomers);
@@ -110,6 +112,11 @@ router.route('/getTotalDrivers').get([adminMiddleware.checkToken
 
 router.route('/getTotalOrders').get([adminMiddleware.checkToken
 ], adminDashboardController.getTotalOrders);
+
+router.route('/getTotalRevenue').get([adminMiddleware.checkToken
+], adminDashboardController.getTotalRevenue);
+
+
 
 
 //others
