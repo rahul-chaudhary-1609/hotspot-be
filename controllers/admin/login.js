@@ -5,7 +5,7 @@ const passwordHash = require('password-hash');
 // const sendMail = require('../../utilityServices/mail');
 const jwt = require('jsonwebtoken');
 // const client = require('twilio')(process.env.accountSID, process.env.authToken);
-const { ReE, ReS, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utils/utilityFunctions');
+const utilityFunction = require('../../utils/utilityFunctions');
 const adminAuthentication = require('../../middlewares/admin/jwt');
 const _ = require('lodash');
 
@@ -22,8 +22,8 @@ module.exports = {
                 raw: true
             });
 
-            if (!adminData) return ReE(res, "Invalid email Id or password", 400, {});
-            let comparedPassword = await comparePassword(password, adminData.password);
+            if (!adminData) return utilityFunction.ReE(res, "Invalid email Id or password", 400, {});
+            let comparedPassword = await utilityFunction.comparePassword(password, adminData.password);
             if (comparedPassword) {
                 let id = adminData.id;
                 const accessToken = await adminAuthentication.createJwtToken({
@@ -35,13 +35,13 @@ module.exports = {
                     'token': accessToken,
                 };
                 await Admin.update(update,{ where: {id: id} });
-                ReS(res, { 'email': adminData.email, 'id': adminData.id, 'token': accessToken }, 200, "Log in successfully.");
+                utilityFunction.ReS(res, { 'email': adminData.email, 'id': adminData.id, 'token': accessToken }, 200, "Log in successfully.");
             } else {
-                ReE(res, "Invalid email Id or password", 401, {});
+                utilityFunction.ReE(res, "Invalid email Id or password", 401, {});
             }   
         } catch (err) {
             console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            utilityFunction.ReE(res, "Internal server error", 500, err);
         }
     },
 
@@ -57,10 +57,10 @@ module.exports = {
                 qry.raw = true;
                 let existingUser = await Admin.findOne(qry);
                 if (_.isEmpty(existingUser)) {
-                    let comparePassword = params.password === params.confirmPassword;
-                    if (comparePassword) {
+                    let utilityFunction.comparePassword = params.password === params.confirmPassword;
+                    if (utilityFunction.comparePassword) {
                         delete params.confirmPassword;
-                        params.password = await bcryptPassword(params.password);
+                        params.password = await utilityFunction.bcryptPassword(params.password);
                         let newAdmin = await Admin.create(params);
                         let adminData = newAdmin.get({plain:true});
                         delete adminData.password;
@@ -79,19 +79,19 @@ module.exports = {
                         await Admin.update(update, condition);
                         delete adminData.reset_pass_otp;
                         delete adminData.reset_pass_expiry;
-                        ReS(res, adminData, 200, "Account created successfully.");
+                        utilityFunction.ReS(res, adminData, 200, "Account created successfully.");
                     } else {
-                        ReE(res, "Password mismatch", 401, {});
+                        utilityFunction.ReE(res, "Password mismatch", 401, {});
                     }
                 } else {
-                    ReE(res, "Account already exists with this email id", 401, {});
+                    utilityFunction.ReE(res, "Account already exists with this email id", 401, {});
                 }
             } else {
-                ReE(res, "Invalid passkey", 400, {});
+                utilityFunction.ReE(res, "Invalid passkey", 400, {});
             }    
         } catch (err) {
             console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            utilityFunction.ReE(res, "Internal server error", 500, err);
         }
     },
 
@@ -106,7 +106,7 @@ module.exports = {
                 qry.raw = true;
                 let existingUser = await Admin.findOne(qry);
                 if (!_.isEmpty(existingUser)) {
-                    let otp = await gererateOtp();
+                    let otp = await utilityFunction.gererateOtp();
                     // const mailParams = {};
                     // mailParams.to = params.email;
                     // mailParams.toName = existingUser.name;
@@ -121,15 +121,15 @@ module.exports = {
                         reset_pass_otp = otp;
                         reset_pass_expiry = Math.floor(Date.now());
                         userData = await Admin.update({reset_pass_otp, reset_pass_expiry}, { where: { id: existingUser.id } });
-                        ReS(res, {otp}, 200, "Reset mail sent successfully.");
+                        utilityFunction.ReS(res, {otp}, 200, "Reset mail sent successfully.");
                     }
                 } else {
-                    ReE(res, "No user found", 400, { "message": "No user found" });
+                    utilityFunction.ReE(res, "No user found", 400, { "message": "No user found" });
                 }
             }
         } catch (err) {
             console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            utilityFunction.ReE(res, "Internal server error", 500, err);
         }
     },
 
@@ -146,33 +146,33 @@ module.exports = {
             let user = await Admin.findOne(query);
             let userdata = JSON.parse(JSON.stringify(user))
             if (_.isEmpty(userdata)) {
-                ReE(res, "No user found", 400, { "message": "No user found" });
+                utilityFunction.ReE(res, "No user found", 400, { "message": "No user found" });
             } else {
                 if (userdata && userdata.reset_pass_otp) {
-                    let time = calcluateOtpTime(userdata.reset_pass_expiry);
+                    let time = utilityFunction.calcluateOtpTime(userdata.reset_pass_expiry);
                     if (userdata.reset_pass_otp != params.otp) {
-                        ReE(res, "Invalid otp", 401, { "message": "Invalid otp" });
-                    } else if (currentUnixTimeStamp() - time > otp_expiry_time) {
-                        ReE(res, "OTP expired", 401, { "message": "OTP expired" });
+                        utilityFunction.ReE(res, "Invalid otp", 401, { "message": "Invalid otp" });
+                    } else if (utilityFunction.currentUnixTimeStamp() - time > otp_expiry_time) {
+                        utilityFunction.ReE(res, "OTP expired", 401, { "message": "OTP expired" });
                     } else if (params.password !== params.confirmPassword) {
-                        ReE(res, "Passward and confirm password mismatch", 401, { "message": "Passward and confirm password mismatch" });
+                        utilityFunction.ReE(res, "Passward and confirm password mismatch", 401, { "message": "Passward and confirm password mismatch" });
                     } else {
-                        params.password = await bcryptPassword(params.password);
+                        params.password = await utilityFunction.bcryptPassword(params.password);
                         let update = {
                             'password': params.password,
                             'reset_pass_otp': null,
                             'reset_pass_expiry': null,
                         };
                         await Admin.update(update, { where: { id: userdata.id } });
-                        ReS(res, {}, 200, "Password reset successfully.");
+                        utilityFunction.ReS(res, {}, 200, "Password reset successfully.");
                     }
                 } else {
-                    ReE(res, "Invalid request", 400, { "message": "Invalid request" });
+                    utilityFunction.ReE(res, "Invalid request", 400, { "message": "Invalid request" });
                 }
             }
         } catch (err) {
             console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            utilityFunction.ReE(res, "Internal server error", 500, err);
         }
     },
 
@@ -185,10 +185,10 @@ module.exports = {
                 id: req.adminInfo.id
             }
             await Admin.update(update,{ where: condition });
-            ReS(res, {}, 200, "Logout successfully.");
+            utilityFunction.ReS(res, {}, 200, "Logout successfully.");
         } catch (err) {
             console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            utilityFunction.ReE(res, "Internal server error", 500, err);
         }
     }
 }
