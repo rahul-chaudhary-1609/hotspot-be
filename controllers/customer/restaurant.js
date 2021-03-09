@@ -1,6 +1,6 @@
 require('dotenv/config');
 const models = require('../../models');
-const { locationGeometrySchema, timeSchema } = require('../../utils/customer/validation');
+const validation = require('../../utils/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
@@ -195,7 +195,7 @@ module.exports = {
           const customer_id = customer.getDataValue('id');
 
 
-          const result = locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
+          const result = validation.locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
 
           if (result.error) {
               return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -345,13 +345,13 @@ module.exports = {
 
             const delivery_shift = req.query.delivery_shift || "12:00:00";
 
-            const timeResult = timeSchema.validate({ time: delivery_shift });
+            const timeResult = validation.timeSchema.validate({ time: delivery_shift });
 
             if (timeResult.error) {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
             }
 
-            const result = locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
+            const result = validation.locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -541,7 +541,7 @@ module.exports = {
 
           const delivery_shift = req.query.delivery_shift || "12:00:00";
 
-          const timeResult = timeSchema.validate({ time: delivery_shift });
+          const timeResult = validation.timeSchema.validate({ time: delivery_shift });
 
           if (timeResult.error) {
               return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
@@ -666,7 +666,7 @@ module.exports = {
 
             const delivery_shift = req.body.delivery_shift || "12:00:00";
 
-            const timeResult = timeSchema.validate({ time: delivery_shift });
+            const timeResult = validation.timeSchema.validate({ time: delivery_shift });
 
             if (timeResult.error) {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
@@ -926,7 +926,7 @@ module.exports = {
 
             const delivery_shift = req.query.delivery_shift || "12:00:00";
 
-            const timeResult = timeSchema.validate({ time: delivery_shift });
+            const timeResult = validation.timeSchema.validate({ time: delivery_shift });
 
             if (timeResult.error) {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
@@ -1055,7 +1055,7 @@ module.exports = {
 
             const delivery_shift = req.body.delivery_shift || "12:00:00";
 
-            const timeResult = timeSchema.validate({ time: delivery_shift });
+            const timeResult = validation.timeSchema.validate({ time: delivery_shift });
 
             if (timeResult.error) {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
@@ -1258,7 +1258,7 @@ module.exports = {
 
             const delivery_shift = req.body.delivery_shift || "12:00:00";
 
-            const timeResult = timeSchema.validate({ time: delivery_shift });
+            const timeResult = validation.timeSchema.validate({ time: delivery_shift });
 
             if (timeResult.error) {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
@@ -1474,7 +1474,7 @@ module.exports = {
 
             const delivery_shift = req.query.delivery_shift || "12:00:00";
 
-            const timeResult = timeSchema.validate({ time: delivery_shift });
+            const timeResult = validation.timeSchema.validate({ time: delivery_shift });
 
             if (timeResult.error) {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
