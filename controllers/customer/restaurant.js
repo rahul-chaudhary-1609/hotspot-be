@@ -1,21 +1,21 @@
 require('dotenv/config');
-const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish, HotspotOffer,FavFood,DishAddOn,Cart } = require('../../models');
+const models = require('../../models');
 const { locationGeometrySchema, timeSchema } = require('../../utils/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
-const { restaurant_image_urls, owners,working_hours,avg_food_prices,cut_off_times,dishCategories,hotspotOfferBanners,getDishes,getdishAddOns } = require('./dummyData');
+const dummyData = require('./dummyData');
 
 const getRestaurantCard =  async (args) => {
     try {
-        const dishCategory = await DishCategory.findAll();
+        const dishCategory = await models.DishCategory.findAll();
 
         const dish_category_ids = await dishCategory.map(val => val.id);
         
         const restaurants = [];
         for (const val of args.restaurant) {
             let is_favorite = false;
-            const restaurantCategory = await RestaurantCategory.findOne({
+            const restaurantCategory = await models.RestaurantCategory.findOne({
                 where: {
                     id: val.restaurant_category_id,
                 }
@@ -29,14 +29,14 @@ const getRestaurantCard =  async (args) => {
                 if (!catFound) continue;
             }
 
-            const favRestaurant = await FavRestaurant.findOne({
+            const favRestaurant = await models.FavRestaurant.findOne({
                 where: {
                     restaurant_id: val.id,
                     customer_id:args.customer_id,
                 }
             });
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id: args.hotspot_location_id,
                 }
@@ -72,15 +72,15 @@ const getRestaurantCard =  async (args) => {
                 else return `${displayHours}:${displayMinutes}:00`
             }
 
-            const dishes = getDishes(val, dish_category_ids);
+            const dishes = dummyData.getDishes(val, dish_category_ids);
 
-            const restaurantDish = await RestaurantDish.findAndCountAll({
+            const restaurantDish = await models.RestaurantDish.findAndCountAll({
                 where: {
                     restaurant_id: val.id,
                 }
             });
             if (restaurantDish.count === 0) {
-                await RestaurantDish.bulkCreate(dishes);
+                await models.RestaurantDish.bulkCreate(dishes);
             }
 
 
@@ -122,28 +122,28 @@ const getFoodCard =  async (args) => {
             let is_favorite = false;
             let is_added_to_cart = false;
             let cart_count = 0;
-            const cart = await Cart.findOne({
+            const cart = await models.Cart.findOne({
                 where: {
                     restaurant_dish_id: dish.id,
                     customer_id:args.customer_id,
                 }
             });
 
-            const favFood = await FavFood.findOne({
+            const favFood = await models.FavFood.findOne({
                 where: {
                     restaurant_dish_id: dish.id,
                     customer_id:args.customer_id,
                 }
             });
 
-            const dishAddOn = await DishAddOn.findAndCountAll({
+            const dishAddOn = await models.DishAddOn.findAndCountAll({
                 where: {
                     restaurant_dish_id: dish.id,
                 }
             });
             if (dishAddOn.count === 0) {
-                await DishAddOn.bulkCreate(
-                    getdishAddOns(dish)
+                await models.DishAddOn.bulkCreate(
+                    dummyData.getdishAddOns(dish)
                 );
             }
             
@@ -184,7 +184,7 @@ const getFoodCard =  async (args) => {
 module.exports = {
     getRestaurant: async (req, res) => {
       try {
-          const customer = await Customer.findOne({
+          const customer = await models.Customer.findOne({
               where: {
                   email: req.user.email,
               }
@@ -201,15 +201,15 @@ module.exports = {
               return res.status(400).json({ status: 400, message: result.error.details[0].message });
           }
 
-          let restaurantCategory = await RestaurantCategory.findAndCountAll();
+          let restaurantCategory = await models.RestaurantCategory.findAndCountAll();
 
           if (restaurantCategory.count === 0) {
-              await RestaurantCategory.bulkCreate(
+              await models.RestaurantCategory.bulkCreate(
                   [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" },{ name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
               );
           }
 
-          restaurantCategory = await RestaurantCategory.findAll({
+          restaurantCategory = await models.RestaurantCategory.findAll({
               attributes: [
                   'id'
               ],
@@ -220,17 +220,17 @@ module.exports = {
 
           const order_types = [2];
 
-          let dishCategory = await DishCategory.findAndCountAll();
+          let dishCategory = await models.DishCategory.findAndCountAll();
 
             if (dishCategory.count === 0) {
-                await DishCategory.bulkCreate(
-                    dishCategories,
+                await models.DishCategory.bulkCreate(
+                    dummyData.dishCategories,
                     { returning: ['id'] },
                 );
             }
 
 
-          let restaurant = await Restaurant.findAndCountAll({
+          let restaurant = await models.Restaurant.findAndCountAll({
               where: {
                   customer_id
               }
@@ -245,11 +245,11 @@ module.exports = {
           const jsonResponse = await response.json();
 
               const restaurants = jsonResponse.response.groups[0].items.map((item) => {
-                  const owner = owners[Math.floor(Math.random() * owners.length)];
-                  const working_hour = working_hours[Math.floor(Math.random() * working_hours.length)];
+                  const owner = dummyData.owners[Math.floor(Math.random() * dummyData.owners.length)];
+                  const working_hour = dummyData.working_hours[Math.floor(Math.random() * dummyData.working_hours.length)];
                   return {
                       restaurant_name: item.venue.name,
-                      restaurant_image_url: restaurant_image_urls[Math.floor(Math.random() * restaurant_image_urls.length)],
+                      restaurant_image_url: dummyData.restaurant_image_urls[Math.floor(Math.random() * dummyData.restaurant_image_urls.length)],
                       owner_name: owner.name,
                       country_code: owner.country_code,
                       owner_phone:owner.phone,
@@ -257,8 +257,8 @@ module.exports = {
                       address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
                       location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
                       deliveries_per_shift: 20,
-                      cut_off_time: cut_off_times[Math.floor(Math.random() * cut_off_times.length)],
-                      avg_food_price: avg_food_prices[Math.floor(Math.random() * avg_food_prices.length)],
+                      cut_off_time: dummyData.cut_off_times[Math.floor(Math.random() * dummyData.cut_off_times.length)],
+                      avg_food_price: dummyData.avg_food_prices[Math.floor(Math.random() * dummyData.avg_food_prices.length)],
                       working_hours_from: working_hour.from,
                       working_hours_to: working_hour.to,
                       order_type: order_types[Math.floor(Math.random() * order_types.length)],
@@ -267,31 +267,31 @@ module.exports = {
                   }
               });
           
-              await Restaurant.bulkCreate(restaurants);
+              await models.Restaurant.bulkCreate(restaurants);
           }
 
-          restaurant = await Restaurant.findAll({
+          restaurant = await models.Restaurant.findAll({
               where: {
                   customer_id
               }
           });
           
-        dishCategory = await DishCategory.findAll();
+        dishCategory = await models.DishCategory.findAll();
 
         const dish_category_ids = await dishCategory.map(val => val.id);
 
           const restaurants = [];
           for (const val of restaurant) {
 
-              const dishes = getDishes(val, dish_category_ids);
+              const dishes = dummyData.getDishes(val, dish_category_ids);
 
-            const restaurantDish = await RestaurantDish.findAndCountAll({
+            const restaurantDish = await models.RestaurantDish.findAndCountAll({
                 where: {
                     restaurant_id: val.id,
                 }
             });
             if (restaurantDish.count === 0) {
-                await RestaurantDish.bulkCreate(dishes);
+                await models.RestaurantDish.bulkCreate(dishes);
             }
               
 
@@ -321,7 +321,7 @@ module.exports = {
     getHotspotRestaurant: async (req, res) => {
         try {
 
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -335,7 +335,7 @@ module.exports = {
 
             if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id: hotspot_location_id,
                 }
@@ -357,15 +357,15 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
             }
             
-            let restaurantCategory = await RestaurantCategory.findAndCountAll();
+            let restaurantCategory = await models.RestaurantCategory.findAndCountAll();
 
             if (restaurantCategory.count === 0) {
-                await RestaurantCategory.bulkCreate(
+                await models.RestaurantCategory.bulkCreate(
                     [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" }, { name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
                 );
             }
 
-            restaurantCategory = await RestaurantCategory.findAll({
+            restaurantCategory = await models.RestaurantCategory.findAll({
                 attributes: [
                     'id'
                 ],
@@ -375,17 +375,17 @@ module.exports = {
 
             const order_types = [1 , 3];
 
-            let dishCategory = await DishCategory.findAndCountAll();
+            let dishCategory = await models.DishCategory.findAndCountAll();
 
             if (dishCategory.count === 0) {
-                await DishCategory.bulkCreate(
-                   dishCategories,
+                await models.DishCategory.bulkCreate(
+                   dummyData.dishCategories,
                     { returning: ['id'] },
                 );
             }
 
 
-            let restaurantHotspot = await RestaurantHotspot.findAndCountAll({
+            let restaurantHotspot = await models.RestaurantHotspot.findAndCountAll({
                 where: {
                     hotspot_location_id
                 }
@@ -400,11 +400,11 @@ module.exports = {
                 const jsonResponse = await response.json();
 
                 const restaurants = jsonResponse.response.groups[0].items.map((item) => {
-                    const owner = owners[Math.floor(Math.random() * owners.length)];
-                    const working_hour = working_hours[Math.floor(Math.random() * working_hours.length)];
+                    const owner = dummyData.owners[Math.floor(Math.random() * dummyData.owners.length)];
+                    const working_hour = dummyData.working_hours[Math.floor(Math.random() * dummyData.working_hours.length)];
                     return {
                         restaurant_name: item.venue.name,
-                        restaurant_image_url: restaurant_image_urls[Math.floor(Math.random() * restaurant_image_urls.length)],
+                        restaurant_image_url: dummyData.restaurant_image_urls[Math.floor(Math.random() * dummyData.restaurant_image_urls.length)],
                         owner_name: owner.name,
                         country_code: owner.country_code,
                         owner_phone: owner.phone,
@@ -412,8 +412,8 @@ module.exports = {
                         address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
                         location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
                         deliveries_per_shift: 20,
-                        cut_off_time: cut_off_times[Math.floor(Math.random() * cut_off_times.length)],
-                        avg_food_price: avg_food_prices[Math.floor(Math.random() * avg_food_prices.length)],
+                        cut_off_time: dummyData.cut_off_times[Math.floor(Math.random() * dummyData.cut_off_times.length)],
+                        avg_food_price: dummyData.avg_food_prices[Math.floor(Math.random() * dummyData.avg_food_prices.length)],
                         working_hours_from: working_hour.from,
                         working_hours_to: working_hour.to,
                         order_type: order_types[Math.floor(Math.random() * order_types.length)],
@@ -422,7 +422,7 @@ module.exports = {
                     }
                 });
 
-                const restaurantBulkCreate = await Restaurant.bulkCreate(restaurants);
+                const restaurantBulkCreate = await models.Restaurant.bulkCreate(restaurants);
                 const restaurantHotspotRows = restaurantBulkCreate.map((val) => {
                     return {
                         hotspot_location_id: hotspot_location_id,
@@ -430,10 +430,10 @@ module.exports = {
                     }
 
                 })
-                await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
+                await models.RestaurantHotspot.bulkCreate(restaurantHotspotRows);
             }
 
-            restaurantHotspot = await RestaurantHotspot.findAll({
+            restaurantHotspot = await models.RestaurantHotspot.findAll({
                 attributes: [
                     'restaurant_id'
                 ],
@@ -444,7 +444,7 @@ module.exports = {
 
             const restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
 
-            const restaurant = await Restaurant.findAll({
+            const restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
                 }
@@ -460,7 +460,7 @@ module.exports = {
     },
     setFavoriteRestaurant: async(req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -473,7 +473,7 @@ module.exports = {
 
             if (!restaurant_id || isNaN(restaurant_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant id` });
 
-            const restaurant = await Restaurant.findOne({
+            const restaurant = await models.Restaurant.findOne({
                 where: {
                     id: restaurant_id,
                 }
@@ -482,7 +482,7 @@ module.exports = {
             if (!restaurant) return res.status(404).json({ status: 404, message: `No restaurant found with the provided id` });
 
 
-            const favRestaurant = await FavRestaurant.findOne({
+            const favRestaurant = await models.FavRestaurant.findOne({
                 where: {
                     restaurant_id,
                     customer_id,
@@ -490,7 +490,7 @@ module.exports = {
             });
 
             if (favRestaurant) {
-                await FavRestaurant.destroy({
+                await models.FavRestaurant.destroy({
                     where: {
                         restaurant_id,
                         customer_id,
@@ -501,7 +501,7 @@ module.exports = {
                 return res.status(200).json({ status: 200, message: `Restaurant removed from favorite` });
             }
             else {
-                await FavRestaurant.create({
+                await models.FavRestaurant.create({
                     restaurant_id,
                     customer_id,
                 });
@@ -517,7 +517,7 @@ module.exports = {
 
     getFavoriteRestaurant: async (req, res) => {
       try {
-          const customer = await Customer.findOne({
+          const customer = await models.Customer.findOne({
               where: {
                   email: req.user.email,
               }
@@ -531,7 +531,7 @@ module.exports = {
 
           if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-          const hotspotLocation = await HotspotLocation.findOne({
+          const hotspotLocation = await models.HotspotLocation.findOne({
               where: {
                   id: hotspot_location_id,
               }
@@ -547,7 +547,7 @@ module.exports = {
               return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
           }
 
-          const favRestaurant = await FavRestaurant.findAll({
+          const favRestaurant = await models.FavRestaurant.findAll({
               where: {
                   customer_id,
               }
@@ -555,7 +555,7 @@ module.exports = {
 
           const restaurant_ids = await favRestaurant.map(val => val.restaurant_id);
 
-          const restaurant = await Restaurant.findAll({
+          const restaurant = await models.Restaurant.findAll({
               where: {
                   id: restaurant_ids,
               }
@@ -571,7 +571,7 @@ module.exports = {
 
     getRestaurantCategory: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -579,15 +579,15 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
 
-            let restaurantCategory = await RestaurantCategory.findAndCountAll();
+            let restaurantCategory = await models.RestaurantCategory.findAndCountAll();
 
             if (restaurantCategory.count === 0) {
-                await RestaurantCategory.bulkCreate(
+                await models.RestaurantCategory.bulkCreate(
                     [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" }, { name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
                 );
             }
 
-            restaurantCategory = await RestaurantCategory.findAll();
+            restaurantCategory = await models.RestaurantCategory.findAll();
 
             const categories = await restaurantCategory.map((val) => {
                 return {
@@ -605,7 +605,7 @@ module.exports = {
 
     getFoodCategory: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -614,16 +614,16 @@ module.exports = {
             if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
 
 
-            let dishCategory = await DishCategory.findAndCountAll();
+            let dishCategory = await models.DishCategory.findAndCountAll();
 
             if (dishCategory.count === 0) {
-                await DishCategory.bulkCreate(
-                    dishCategories,
+                await models.DishCategory.bulkCreate(
+                    dummyData.dishCategories,
                     { returning: ['id'] },
                 );
             }
 
-            dishCategory = await DishCategory.findAll();
+            dishCategory = await models.DishCategory.findAll();
 
             const dish_categories = await dishCategory.map((val) => {
                 return {
@@ -642,7 +642,7 @@ module.exports = {
 
     getHotspotRestaurantWithFilter: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -656,7 +656,7 @@ module.exports = {
 
             if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id: hotspot_location_id,
                 }
@@ -677,7 +677,7 @@ module.exports = {
                 req.body.category=req.body.category.split(",")
             }
 
-            const restaurantHotspot = await RestaurantHotspot.findAll({
+            const restaurantHotspot = await models.RestaurantHotspot.findAll({
                 attributes: [
                     'restaurant_id'
                 ],
@@ -690,7 +690,7 @@ module.exports = {
 
             if (req.body.dish_category_id) {
                 const hotspot_restaurant_ids = restaurant_ids;
-                const restaurantDish = await RestaurantDish.findAll({
+                const restaurantDish = await models.RestaurantDish.findAll({
                     where: {
                         dish_category_id: req.body.dish_category_id,
                     }
@@ -706,7 +706,7 @@ module.exports = {
                 const searchPhrase = req.body.searchPhrase;
                 const hotspot_dish_restaurant_ids = restaurant_ids;
 
-                const restaurantCategory = await RestaurantCategory.findAll({
+                const restaurantCategory = await models.RestaurantCategory.findAll({
                     where: {
                         name: {
                             [Op.iLike]: `%${searchPhrase}%`,
@@ -716,7 +716,7 @@ module.exports = {
 
                 const restaurant_category_ids = restaurantCategory.map(val => val.id);
 
-                // const dishCategory = await DishCategory.findAll({
+                // const dishCategory = await models.DishCategory.findAll({
                 //     where: {
                 //         name: {
                 //             [Op.iLike]: `%${searchPhrase}%`,
@@ -726,7 +726,7 @@ module.exports = {
 
                 // const dish_category_ids = dishCategory.map(val => val.id);
 
-                // const restaurantDish = await RestaurantDish.findAll({
+                // const restaurantDish = await models.RestaurantDish.findAll({
                 //     where: {
                 //         dish_category_id: dish_category_ids,
                 //     }
@@ -734,7 +734,7 @@ module.exports = {
 
                 // const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
 
-                const searchPhrase_restaurant = await Restaurant.findAll({
+                const searchPhrase_restaurant = await models.Restaurant.findAll({
                     where: {
                         [Op.or]: {
                             //id: dish_category_restaurant_ids,
@@ -756,7 +756,7 @@ module.exports = {
 
             if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price high to low" ) {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         avg_food_price: {
@@ -771,7 +771,7 @@ module.exports = {
             }
             else if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price low to high") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         avg_food_price: {
@@ -786,7 +786,7 @@ module.exports = {
             }
             else if (req.body.max_price) {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         avg_food_price: {
@@ -797,7 +797,7 @@ module.exports = {
             }
             else if (req.body.sort_by  && req.body.sort_by === "price low to high") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                     },
@@ -808,7 +808,7 @@ module.exports = {
             }
             else if (req.body.sort_by && req.body.sort_by === "price high to low") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                     },
@@ -819,7 +819,7 @@ module.exports = {
             }
             
             else {
-                 restaurant = await Restaurant.findAll({
+                 restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
                     
@@ -837,7 +837,7 @@ module.exports = {
     },
     getSearchSuggestion: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -851,7 +851,7 @@ module.exports = {
 
             if (searchPhrase) {
 
-                const restaurant = await Restaurant.findAll({
+                const restaurant = await models.Restaurant.findAll({
                     where: {
                         restaurant_name: {
                             [Op.iLike]: `%${searchPhrase}%`,
@@ -859,7 +859,7 @@ module.exports = {
                     }
                 });
 
-                const restaurantCategory = await RestaurantCategory.findAll({
+                const restaurantCategory = await models.RestaurantCategory.findAll({
                     where: {
                         name: {
                             [Op.iLike]: `%${searchPhrase}%`,
@@ -867,7 +867,7 @@ module.exports = {
                     }
                 });
 
-                // const dishCategory = await DishCategory.findAll({
+                // const dishCategory = await models.DishCategory.findAll({
                 //     where: {
                 //         name: {
                 //             [Op.iLike]: `%${searchPhrase}%`,
@@ -902,7 +902,7 @@ module.exports = {
     },
     getSearchResult: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -916,7 +916,7 @@ module.exports = {
 
             if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id: hotspot_location_id,
                 }
@@ -932,7 +932,7 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
             }
             
-            const restaurantHotspot = await RestaurantHotspot.findAll({
+            const restaurantHotspot = await models.RestaurantHotspot.findAll({
                 attributes: [
                     'restaurant_id'
                 ],
@@ -947,7 +947,7 @@ module.exports = {
 
             console.log("\n\nSearch searchPhrase", searchPhrase, "\n\n")
 
-            const restaurantCategory = await RestaurantCategory.findAll({
+            const restaurantCategory = await models.RestaurantCategory.findAll({
                 where: {
                     name: {
                         [Op.iLike]: `%${searchPhrase}%`,
@@ -957,7 +957,7 @@ module.exports = {
 
             const restaurant_category_ids = restaurantCategory.map(val => val.id);
 
-            // const dishCategory = await DishCategory.findAll({
+            // const dishCategory = await models.DishCategory.findAll({
             //     where: {
             //         name: {
             //             [Op.iLike]: `%${searchPhrase}%`,
@@ -967,7 +967,7 @@ module.exports = {
 
             // const dish_category_ids = dishCategory.map(val => val.id);
 
-            // const restaurantDish = await RestaurantDish.findAll({
+            // const restaurantDish = await models.RestaurantDish.findAll({
             //     where: {
             //         dish_category_id: dish_category_ids,
             //     }
@@ -975,7 +975,7 @@ module.exports = {
 
             // const restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
 
-            const restaurant = await Restaurant.findAll({
+            const restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
                     [Op.or]: {
@@ -1000,7 +1000,7 @@ module.exports = {
     },
     getOfferBanner: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -1008,16 +1008,16 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
 
-            let hotspotOffer = await HotspotOffer.findAndCountAll();
+            let hotspotOffer = await models.HotspotOffer.findAndCountAll();
 
             if (hotspotOffer.count === 0) {
-                await HotspotOffer.bulkCreate(
-                    hotspotOfferBanners,
+                await models.HotspotOffer.bulkCreate(
+                    dummyData.hotspotOfferBanners,
                     { returning: ['id'] },
                 );
             }
 
-            hotspotOffer = await HotspotOffer.findAll();
+            hotspotOffer = await models.HotspotOffer.findAll();
 
             const hotspot_offers = await hotspotOffer.map((val) => {return val.image_url });
 
@@ -1031,7 +1031,7 @@ module.exports = {
 
     getHotspotRestaurantPickup: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -1045,7 +1045,7 @@ module.exports = {
 
             if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id: hotspot_location_id,
                 }
@@ -1066,7 +1066,7 @@ module.exports = {
                 req.body.category=req.body.category.split(",")
             }
 
-            const restaurantHotspot = await RestaurantHotspot.findAll({
+            const restaurantHotspot = await models.RestaurantHotspot.findAll({
                 attributes: [
                     'restaurant_id'
                 ],
@@ -1079,7 +1079,7 @@ module.exports = {
 
             if (req.body.dish_category_id) {
                 const hotspot_restaurant_ids = restaurant_ids;
-                const restaurantDish = await RestaurantDish.findAll({
+                const restaurantDish = await models.RestaurantDish.findAll({
                     where: {
                         dish_category_id: req.body.dish_category_id,
                     }
@@ -1096,7 +1096,7 @@ module.exports = {
                 const searchPhrase = req.body.searchPhrase;
                 const hotspot_dish_restaurant_ids = restaurant_ids;
 
-                const restaurantCategory = await RestaurantCategory.findAll({
+                const restaurantCategory = await models.RestaurantCategory.findAll({
                     where: {
                         name: {
                             [Op.iLike]: `%${searchPhrase}%`,
@@ -1106,7 +1106,7 @@ module.exports = {
 
                 const restaurant_category_ids = restaurantCategory.map(val => val.id);
 
-                // const dishCategory = await DishCategory.findAll({
+                // const dishCategory = await models.DishCategory.findAll({
                 //     where: {
                 //         name: {
                 //             [Op.iLike]: `%${searchPhrase}%`,
@@ -1116,7 +1116,7 @@ module.exports = {
 
                 // const dish_category_ids = dishCategory.map(val => val.id);
 
-                // const restaurantDish = await RestaurantDish.findAll({
+                // const restaurantDish = await models.RestaurantDish.findAll({
                 //     where: {
                 //         dish_category_id: dish_category_ids,
                 //     }
@@ -1124,7 +1124,7 @@ module.exports = {
 
                 // const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
 
-                const searchPhrase_restaurant = await Restaurant.findAll({
+                const searchPhrase_restaurant = await models.Restaurant.findAll({
                     where: {
                         [Op.or]: {
                             //id: dish_category_restaurant_ids,
@@ -1146,7 +1146,7 @@ module.exports = {
 
             if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price high to low") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type:3,
@@ -1162,7 +1162,7 @@ module.exports = {
             }
             else if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price low to high") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type:3,
@@ -1178,7 +1178,7 @@ module.exports = {
             }
             else if (req.body.max_price) {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type:3,
@@ -1190,7 +1190,7 @@ module.exports = {
             }
             else if (req.body.sort_by && req.body.sort_by === "price low to high") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type:3,
@@ -1202,7 +1202,7 @@ module.exports = {
             }
             else if (req.body.sort_by && req.body.sort_by === "price high to low") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type: 3,
@@ -1214,7 +1214,7 @@ module.exports = {
             }
 
             else {
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type:3,
@@ -1234,7 +1234,7 @@ module.exports = {
     },
     getHotspotRestaurantDelivery: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -1248,7 +1248,7 @@ module.exports = {
 
             if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id: hotspot_location_id,
                 }
@@ -1269,7 +1269,7 @@ module.exports = {
                 req.body.category=req.body.category.split(",")
             }
 
-            const restaurantHotspot = await RestaurantHotspot.findAll({
+            const restaurantHotspot = await models.RestaurantHotspot.findAll({
                 attributes: [
                     'restaurant_id'
                 ],
@@ -1282,7 +1282,7 @@ module.exports = {
 
             if (req.body.dish_category_id) {
                 const hotspot_restaurant_ids = restaurant_ids;
-                const restaurantDish = await RestaurantDish.findAll({
+                const restaurantDish = await models.RestaurantDish.findAll({
                     where: {
                         dish_category_id: req.body.dish_category_id,
                     }
@@ -1299,7 +1299,7 @@ module.exports = {
                 const searchPhrase = req.body.searchPhrase;
                 const hotspot_dish_restaurant_ids = restaurant_ids;
 
-                const restaurantCategory = await RestaurantCategory.findAll({
+                const restaurantCategory = await models.RestaurantCategory.findAll({
                     where: {
                         name: {
                             [Op.iLike]: `%${searchPhrase}%`,
@@ -1309,7 +1309,7 @@ module.exports = {
 
                 const restaurant_category_ids = restaurantCategory.map(val => val.id);
 
-                // const dishCategory = await DishCategory.findAll({
+                // const dishCategory = await models.DishCategory.findAll({
                 //     where: {
                 //         name: {
                 //             [Op.iLike]: `${searchPhrase}%`,
@@ -1319,7 +1319,7 @@ module.exports = {
 
                 // const dish_category_ids = dishCategory.map(val => val.id);
 
-                // const restaurantDish = await RestaurantDish.findAll({
+                // const restaurantDish = await models.RestaurantDish.findAll({
                 //     where: {
                 //         dish_category_id: dish_category_ids,
                 //     }
@@ -1327,7 +1327,7 @@ module.exports = {
 
                 // const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
 
-                const searchPhrase_restaurant = await Restaurant.findAll({
+                const searchPhrase_restaurant = await models.Restaurant.findAll({
                     where: {
                         [Op.or]: {
                             //id: dish_category_restaurant_ids,
@@ -1349,7 +1349,7 @@ module.exports = {
 
             if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price high to low") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
@@ -1365,7 +1365,7 @@ module.exports = {
             }
             else if (req.body.sort_by && req.body.max_price && req.body.sort_by === "price low to high") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
@@ -1381,7 +1381,7 @@ module.exports = {
             }
             else if (req.body.max_price) {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
@@ -1393,7 +1393,7 @@ module.exports = {
             }
             else if (req.body.sort_by && req.body.sort_by === "price low to high") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
@@ -1406,7 +1406,7 @@ module.exports = {
                 
             else if (req.body.sort_by && req.body.sort_by === "price high to low") {
                 console.log(req.body);
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
@@ -1418,7 +1418,7 @@ module.exports = {
             }
 
             else {
-                restaurant = await Restaurant.findAll({
+                restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
@@ -1438,7 +1438,7 @@ module.exports = {
     },
     getHotspotRestaurantWithQuickFilter: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -1452,7 +1452,7 @@ module.exports = {
 
             if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id: hotspot_location_id,
                 }
@@ -1464,7 +1464,7 @@ module.exports = {
 
             if (!dish_category_id || isNaN(dish_category_id)) return res.status(400).json({ status: 400, message: `provide a valid dish category id` });
 
-            const dishCategory = await DishCategory.findOne({
+            const dishCategory = await models.DishCategory.findOne({
                 where: {
                     id: dish_category_id,
                 }
@@ -1480,7 +1480,7 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: timeResult.error.details[0].message });
             }
 
-            const restaurantHotspot = await RestaurantHotspot.findAll({
+            const restaurantHotspot = await models.RestaurantHotspot.findAll({
                 attributes: [
                     'restaurant_id'
                 ],
@@ -1491,7 +1491,7 @@ module.exports = {
 
             const hotspot_restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
 
-            const restaurantDish = await RestaurantDish.findAll({
+            const restaurantDish = await models.RestaurantDish.findAll({
                 where: {
                     dish_category_id,
                 }
@@ -1501,7 +1501,7 @@ module.exports = {
 
             const restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
 
-            const restaurant = await Restaurant.findAll({
+            const restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
                 }
@@ -1518,7 +1518,7 @@ module.exports = {
 
     getRestaurantDetails: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -1530,13 +1530,13 @@ module.exports = {
 
             if (!restaurant_id || isNaN(restaurant_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant id` });
 
-            const restaurantHotspot = await RestaurantHotspot.findOne({
+            const restaurantHotspot = await models.RestaurantHotspot.findOne({
                 where: {
                     restaurant_id
                 }
             });
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id:restaurantHotspot.hotspot_location_id
                 }
@@ -1550,7 +1550,7 @@ module.exports = {
             if (!nextDeliveryTime) nextDeliveryTime = hotspotLocation.delivery_shifts[0];
 
             
-            const restaurant = await Restaurant.findOne({
+            const restaurant = await models.Restaurant.findOne({
                 where: {
                     id: restaurant_id
                 }
@@ -1584,7 +1584,7 @@ module.exports = {
 
     getRestaurantSchedule: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -1596,7 +1596,7 @@ module.exports = {
 
             if (!restaurant_id || isNaN(restaurant_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant id` });
 
-            const restaurantHotspot = await RestaurantHotspot.findOne({
+            const restaurantHotspot = await models.RestaurantHotspot.findOne({
                 where: {
                     restaurant_id
                 }
@@ -1605,7 +1605,7 @@ module.exports = {
             if (!restaurantHotspot || restaurantHotspot.is_deleted) return res.status(404).json({ status: 404, message: `Sorry! Only pickups available in your area.` });
 
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id:restaurantHotspot.hotspot_location_id
                 }
@@ -1621,7 +1621,7 @@ module.exports = {
 
     getFoodCardDetails: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -1629,7 +1629,7 @@ module.exports = {
 
             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
 
-            const restaurantDish = await RestaurantDish.findAll({
+            const restaurantDish = await models.RestaurantDish.findAll({
                 where: {
                     restaurant_id: req.query.restaurantId
                 }
@@ -1645,7 +1645,7 @@ module.exports = {
 
     setFavoriteFood: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -1657,7 +1657,7 @@ module.exports = {
             
             if (!restaurant_dish_id || isNaN(restaurant_dish_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant dish id0` });
 
-            const restaurantDish = await RestaurantDish.findOne({
+            const restaurantDish = await models.RestaurantDish.findOne({
                 where: {
                     id: restaurant_dish_id,
                 }
@@ -1665,7 +1665,7 @@ module.exports = {
 
             if (!restaurantDish) return res.status(404).json({ status: 404, message: `No restaurant dish id with the provided id` });
 
-            const favFood = await FavFood.findOne({
+            const favFood = await models.FavFood.findOne({
                 where: {
                     restaurant_dish_id,
                     customer_id:customer.id,
@@ -1673,7 +1673,7 @@ module.exports = {
             });
 
             if (favFood) {
-                await FavFood.destroy({
+                await models.FavFood.destroy({
                     where: {
                         restaurant_dish_id,
                         customer_id:customer.id,
@@ -1684,7 +1684,7 @@ module.exports = {
                 return res.status(200).json({ status: 200, message: `Food removed from favorite` });
             }
             else {
-                await FavFood.create({
+                await models.FavFood.create({
                     restaurant_dish_id,
                     customer_id:customer.id,
                 });
@@ -1700,7 +1700,7 @@ module.exports = {
 
     getFavoriteFood: async (req, res) => {
       try {
-          const customer = await Customer.findOne({
+          const customer = await models.Customer.findOne({
               where: {
                   email: req.user.email,
               }
@@ -1710,7 +1710,7 @@ module.exports = {
 
           const customer_id = customer.id;
 
-          const favFood = await FavFood.findAll({
+          const favFood = await models.FavFood.findAll({
               where: {
                   customer_id,
               }
@@ -1718,7 +1718,7 @@ module.exports = {
 
           const restaurant_dish_ids = await favFood.map(val => val.restaurant_dish_id);
 
-          const restaurantDish = await RestaurantDish.findAll({
+          const restaurantDish = await models.RestaurantDish.findAll({
               where: {
                   id: restaurant_dish_ids,
               }
@@ -1734,7 +1734,7 @@ module.exports = {
 
     getFoodDetails: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -1746,7 +1746,7 @@ module.exports = {
             
             if (!restaurant_dish_id || isNaN(restaurant_dish_id)) return res.status(400).json({ status: 400, message: `provide a valid restaurant dish id0` });
 
-            const restaurantDish = await RestaurantDish.findOne({
+            const restaurantDish = await models.RestaurantDish.findOne({
                 where: {
                     id: restaurant_dish_id,
                 }
@@ -1754,7 +1754,7 @@ module.exports = {
 
             if (!restaurantDish || restaurantDish.is_deleted) return res.status(404).json({ status: 404, message: `No restaurant dish id with the provided id` });
 
-            const dishAddOn = await DishAddOn.findAll({
+            const dishAddOn = await models.DishAddOn.findAll({
                 where: {
                     restaurant_dish_id,
                 }

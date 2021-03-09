@@ -1,6 +1,8 @@
-const Joi=require('joi');
+const Joi = require('joi');
 
-const customerSchema = Joi.object({
+
+module.exports = {
+    customerSchema : Joi.object({
     name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
         'string.pattern.base': `Please enter a valid customer name`,
     }),
@@ -18,40 +20,40 @@ const customerSchema = Joi.object({
     apple_id: Joi.string().trim().max(45),
     google_id: Joi.string().trim().max(45),
     facebook_id: Joi.string().trim().max(45)
-});
+}),
 
-const nameSchema = Joi.object({
+nameSchema : Joi.object({
     name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
         'string.pattern.base': `Name should not have numeric or special characters`,
     }),
-});
+}),
 
-const emailSchema = Joi.object({
+emailSchema : Joi.object({
     email: Joi.string().trim().max(45).email().required(),
-});
+}),
 
-const phoneSchema = Joi.object({
+phoneSchema : Joi.object({
     country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).required().messages({
         'string.pattern.base': `Please enter a valid country code`,
     }),
     phone: Joi.string().trim().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).min(10).max(10).required().messages({
         'string.pattern.base': `Please enter a valid phone no`,
     }),
-});
+}),
 
-const onlyPhoneSchema = Joi.object({
+onlyPhoneSchema : Joi.object({
     phone: Joi.string().trim().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).min(10).max(10).required().messages({
         'string.pattern.base': `Please enter a valid phone no`,
     }),
-});
+}),
 
-const passwordSchema = Joi.object({
+passwordSchema : Joi.object({
     password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
         'string.pattern.base': `Password must contain at least one 1 lowercase, 1 uppercase, 1 numeric and 1 special (!@#$%^&*) character`,
     }),
-});
+}),
 
-const customerUpdateProfileSchema = Joi.object({
+customerUpdateProfileSchema : Joi.object({
     name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
         'string.pattern.base': `Please enter a valid customer name`,
     }),
@@ -63,28 +65,28 @@ const customerUpdateProfileSchema = Joi.object({
         'string.pattern.base': `Please enter a valid phone no`,
     }),
     
-});
+}),
 
-const customerAddressSchema = Joi.object({    
+customerAddressSchema : Joi.object({    
     address: Joi.string().required(),
     city: Joi.string().max(45).required(),
     state: Joi.string().max(45).required(),
     postal_code: Joi.string().max(45).required(),
     country: Joi.string().max(45).required(),
     location_geometry: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
-});
+}),
 
-const locationGeometrySchema = Joi.object({
+locationGeometrySchema : Joi.object({
     location_geometry: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
-});
+}),
 
-const timeSchema = Joi.object({
+timeSchema : Joi.object({
     time: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
         'string.pattern.base': `Please enter a valid time for delivery shift`,
     }),
-});
+}),
 
-const paymentCardSchema = Joi.object({
+paymentCardSchema : Joi.object({
     name_on_card: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
         'string.pattern.base': `Please enter a valid name on card`,
     }),
@@ -102,7 +104,7 @@ const paymentCardSchema = Joi.object({
         'string.pattern.base': `Please enter a valid card cvc`,
     }),
 
-});
+}),
 
+}
 
-module.exports = { paymentCardSchema,timeSchema, locationGeometrySchema,onlyPhoneSchema,customerUpdateProfileSchema, customerAddressSchema, nameSchema,emailSchema,passwordSchema,customerSchema, phoneSchema};

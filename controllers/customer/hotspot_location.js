@@ -1,6 +1,6 @@
 require('dotenv/config');
-const { Customer, CustomerFavLocation, HotspotLocation, HotspotDropoff } = require('../../models');
-const { locationGeometrySchema } = require('../../utils/customer/validation');
+const models = require('../../models');
+const validation = require('../../utils/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
@@ -10,7 +10,7 @@ module.exports = {
     getHotspotLocation: async (req, res) => {
 
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -20,7 +20,7 @@ module.exports = {
 
             const customer_id = customer.getDataValue('id');
 
-            const result = locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
+            const result = validation.locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -41,7 +41,7 @@ module.exports = {
             ];
 
             //const L = [{ location: P, distance: `${Math.floor(randomLocation.distance(P, P))} m`}]
-            const hotspotLocation = await HotspotLocation.findAndCountAll({
+            const hotspotLocation = await models.HotspotLocation.findAndCountAll({
                 where: {
                     customer_id
                 }
@@ -78,7 +78,7 @@ module.exports = {
                 if (location_detail) {
 
                     
-                        const hotspotLocationID = await HotspotLocation.create({
+                        const hotspotLocationID = await models.HotspotLocation.create({
                             name,location, location_detail, full_address, delivery_shifts, customer_id
                         });
                         const hotspot_location_id = hotspotLocationID.getDataValue('id');
@@ -86,7 +86,7 @@ module.exports = {
                     
 
                     for (let i = 0; i < 3; i++){
-                         await HotspotDropoff.create({
+                         await models.HotspotDropoff.create({
                             hotspot_location_id,dropoff_detail
                         }); 
                     }                        
@@ -97,7 +97,7 @@ module.exports = {
 
             }
 
-            const hotspotLocations = await HotspotLocation.findAll({
+            const hotspotLocations = await models.HotspotLocation.findAll({
                 where: {
                     customer_id
                 }
@@ -128,7 +128,7 @@ module.exports = {
 
     checkHotspotLocation: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -144,7 +144,7 @@ module.exports = {
 
             if (choiceType === 'pickup') return res.status(404).json({ status: 404, message: "No hotspot found" });
 
-            const hotspotLocations = await HotspotLocation.findAll({
+            const hotspotLocations = await models.HotspotLocation.findAll({
                 where: {
                     customer_id
                 }
@@ -171,7 +171,7 @@ module.exports = {
     },
     getHotspotDropoff: async (req, res) => {
       try {
-          const customer = await Customer.findOne({
+          const customer = await models.Customer.findOne({
               where: {
                   email: req.user.email,
               }
@@ -183,13 +183,13 @@ module.exports = {
 
           if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-          const hotspotLocations = await HotspotLocation.findOne({
+          const hotspotLocations = await models.HotspotLocation.findOne({
               where: {
                   id:hotspot_location_id
               }
           });
 
-          const hotspotDropoff = await HotspotDropoff.findAll({
+          const hotspotDropoff = await models.HotspotDropoff.findAll({
               where: {
                   hotspot_location_id
               }
@@ -212,11 +212,11 @@ module.exports = {
           const location_geometry = hotspotLocations.location;
           const customer_id = customer.id;
 
-          // const customerFavLocation = await CustomerFavLocation.create({
+          // const customerFavLocation = await models.CustomerFavLocation.create({
           //     address, city, state, postal_code, country, location_geometry, customer_id: customer_id
           // });
 
-          const [customerFavLocation, created] = await CustomerFavLocation.findOrCreate({
+          const [customerFavLocation, created] = await models.CustomerFavLocation.findOrCreate({
               where: {
 
                   location_geometry, customer_id: customer_id
@@ -226,7 +226,7 @@ module.exports = {
               }
           });
 
-          await HotspotLocation.update({
+          await models.HotspotLocation.update({
               is_added: true
           }, {
               where: {
@@ -236,7 +236,7 @@ module.exports = {
               returning: true,
           });
 
-          await CustomerFavLocation.update({
+          await models.CustomerFavLocation.update({
               default_address: false
           }, {
               where: {
@@ -246,7 +246,7 @@ module.exports = {
               returning: true,
           });
 
-          await CustomerFavLocation.update({
+          await models.CustomerFavLocation.update({
               default_address: true
           }, {
               where: {
@@ -255,7 +255,7 @@ module.exports = {
               returning: true,
           });
 
-          await Customer.update({
+          await models.Customer.update({
               address, city, state, country, postal_code,
           }, {
               where: {
@@ -284,7 +284,7 @@ module.exports = {
 
     getAddressDropoff: async (req, res) => {
       try {
-          const customer = await Customer.findOne({
+          const customer = await models.Customer.findOne({
               where: {
                   email: req.user.email,
               }
@@ -296,7 +296,7 @@ module.exports = {
 
           if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-          const hotspotDropoff = await HotspotDropoff.findAll({
+          const hotspotDropoff = await models.HotspotDropoff.findAll({
               where: {
                   hotspot_location_id
               }
@@ -323,7 +323,7 @@ module.exports = {
 
     setDefaultDropoff: async (req, res) => {
       try {
-          const customer = await Customer.findOne({
+          const customer = await models.Customer.findOne({
               where: {
                   email: req.user.email,
               }
@@ -340,7 +340,7 @@ module.exports = {
           if (!hotspot_dropoff_id || isNaN(hotspot_dropoff_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot dropoff id` });
 
 
-          const hotspotLocations = await HotspotLocation.findOne({
+          const hotspotLocations = await models.HotspotLocation.findOne({
               where: {
                   id:hotspot_location_id
               }
@@ -351,7 +351,7 @@ module.exports = {
 
 
 
-          await CustomerFavLocation.update({
+          await models.CustomerFavLocation.update({
               hotspot_dropoff_id
           }, {
               where: {
@@ -374,7 +374,7 @@ module.exports = {
 
     getDefaultHotspot: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
@@ -382,20 +382,20 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
 
-            const customerFavLocation = await CustomerFavLocation.findOne({
+            const customerFavLocation = await models.CustomerFavLocation.findOne({
                 where: {
                     customer_id: customer.id,
                     default_address: true,
                 }
             });
 
-            const hotspotLocations = await HotspotLocation.findOne({
+            const hotspotLocations = await models.HotspotLocation.findOne({
                 where: {
                     location: customerFavLocation.location_geometry
                 }
             });
 
-            const hotspotDropoff = await HotspotDropoff.findOne({
+            const hotspotDropoff = await models.HotspotDropoff.findOne({
                 where: {
                     id: customerFavLocation.hotspot_dropoff_id
                 }

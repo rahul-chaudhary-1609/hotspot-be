@@ -1,6 +1,6 @@
 require('dotenv/config');
-const { Customer, CustomerFavLocation, TempEmail, HotspotLocation,HotspotDropoff} = require('../../models');
-const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema,nameSchema ,phoneSchema, emailSchema } = require('../../utils/customer/validation');
+const models = require('../../models');
+const validation = require('../../utils/customer/validation');
 const { Op, where } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utils/mail');
@@ -20,7 +20,7 @@ module.exports = {
 
             if (!email || !password) return res.status(400).json({ status: 400, message: `Please provide valid email and password` });
 
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email
                 }
@@ -58,7 +58,7 @@ module.exports = {
     loginWithPhone: async (req, res) => {
 
         try {
-            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+            const resultPhone = validation.phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
 
             if (resultPhone.error) {
                 return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
@@ -70,7 +70,7 @@ module.exports = {
 
             if (!phone_no || !password || !country_code) return res.status(400).json({ status: 400, message: `Please provide valid phone and password` });
 
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     phone_no, country_code
                 }
@@ -108,7 +108,7 @@ module.exports = {
     signupCustomer: async (req, res) => {
 
         try {
-            const result = customerSchema.validate(req.body);
+            const result = validation.customerSchema.validate(req.body);
 
             if (result.error) return res.status(400).json({ status: 400, message: result.error.details[0].message });
 
@@ -121,7 +121,7 @@ module.exports = {
                 const phone_no = parseInt(result.value.phone);
                 const email = (result.value.email).toLowerCase();
 
-                const checkCustomer = await Customer.findOne({
+                const checkCustomer = await models.Customer.findOne({
                     where: {
                         email,
                     }
@@ -131,7 +131,7 @@ module.exports = {
                     return res.status(409).json({ status: 409, message: `Customer already exist with this email` });
                 }
 
-                let tempEmail = await TempEmail.findOne({
+                let tempEmail = await models.TempEmail.findOne({
                     where: {
                         email,
                     }
@@ -151,7 +151,7 @@ module.exports = {
                 const email_verification_otp = tempEmail.getDataValue('email_verification_otp')
                 const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry')
 
-                const [customer, created] = await Customer.findOrCreate({
+                const [customer, created] = await models.Customer.findOrCreate({
                     where: {
                         [Op.or]: {
                             email, phone_no,
@@ -164,7 +164,7 @@ module.exports = {
 
                 if (created) {
 
-                    await TempEmail.destroy({
+                    await models.TempEmail.destroy({
                         where: {
                             email,
                         },
@@ -181,12 +181,12 @@ module.exports = {
                     return res.status(200).json({ status: 200, message: `Customer Signup successfully`, accessToken: accessToken, });
                 }
                 else {
-                    const checkEmail = await Customer.findOne({
+                    const checkEmail = await models.Customer.findOne({
                         where: {
                             email,
                         }
                     });
-                    const checkPhone = await Customer.findOne({
+                    const checkPhone = await models.Customer.findOne({
                         where: {
                             phone_no,
                         }
@@ -216,7 +216,7 @@ module.exports = {
             const is_email_verified = true;
             const is_social = true;
 
-            const [customer, created] = await Customer.findOrCreate({
+            const [customer, created] = await models.Customer.findOrCreate({
                 where: {
                     email,
                 },
@@ -266,7 +266,7 @@ module.exports = {
             const is_social = true;
             
 
-            const [customer, created] = await Customer.findOrCreate({
+            const [customer, created] = await models.Customer.findOrCreate({
                 where: {
                     email,
                 },
@@ -315,7 +315,7 @@ module.exports = {
             const is_social = true;
             
 
-            const [customer, created] = await Customer.findOrCreate({
+            const [customer, created] = await models.Customer.findOrCreate({
                 where: {
                     email,
                 },
@@ -356,7 +356,7 @@ module.exports = {
     generatePhoneOTP: async (req, res) => {
     
         try {
-            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+            const resultPhone = validation.phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
 
             if (resultPhone.error) {
                 return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
@@ -366,7 +366,7 @@ module.exports = {
             const country_code = resultPhone.value.country_code;
 
 
-            let customer = await Customer.findOne({
+            let customer = await models.Customer.findOne({
                 where: {
                     country_code,phone_no
                 }
@@ -389,7 +389,7 @@ module.exports = {
                     channel: 'sms'
                 })
                 .then((resp) => {
-                    Customer.update({
+                    models.Customer.update({
                         phone_verification_otp_expiry: new Date(),
                     }, {
                         where: {
@@ -403,7 +403,7 @@ module.exports = {
                     if (error.status === 429) {
                         //res.status(429).json({ status: 429, message: `Too many requests` });
 
-                        Customer.update({
+                        models.Customer.update({
                             phone_verification_otp_expiry: new Date(),
                         }, {
                             where: {
@@ -429,7 +429,7 @@ module.exports = {
     validatePhoneOTP: async (req, res) => {
     
         try {
-            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+            const resultPhone = validation.phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
 
             if (resultPhone.error) {
                 return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
@@ -439,7 +439,7 @@ module.exports = {
             const country_code = resultPhone.value.country_code;
 
 
-            let customer = await Customer.findOne({
+            let customer = await models.Customer.findOne({
                 where: {
                     country_code, phone_no
                 }
@@ -464,7 +464,7 @@ module.exports = {
             }
 
             if (req.body.code == "1234") {
-                Customer.update({
+                models.Customer.update({
                     is_phone_verified: true,
                 }, {
                     where: {
@@ -492,7 +492,7 @@ module.exports = {
                 })
                 .then((resp) => {
                     if (resp.status === "approved") {
-                        Customer.update({
+                        models.Customer.update({
                             is_phone_verified: true,
                         }, {
                             where: {
@@ -529,7 +529,7 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
             }
 
-            const result = emailSchema.validate({ email: req.query.email });
+            const result = validation.emailSchema.validate({ email: req.query.email });
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -537,7 +537,7 @@ module.exports = {
 
             const email = (result.value.email).toLowerCase();
 
-            let customer = await Customer.findOne({
+            let customer = await models.Customer.findOne({
                 where: {
                     email,
                 }
@@ -550,7 +550,7 @@ module.exports = {
             let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
             const is_email_verified = false;
 
-            const [tempEmail, created] = await TempEmail.findOrCreate({
+            const [tempEmail, created] = await models.TempEmail.findOrCreate({
                 where: {
                     email,
                 },
@@ -581,7 +581,7 @@ module.exports = {
             }
             else {
 
-                await TempEmail.update({
+                await models.TempEmail.update({
                     email_verification_otp,
                     is_email_verified,
                     email_verification_otp_expiry: new Date(),
@@ -624,7 +624,7 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
             }
 
-            const result = emailSchema.validate({ email: req.query.email });
+            const result = validation.emailSchema.validate({ email: req.query.email });
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -632,7 +632,7 @@ module.exports = {
 
             const email = (result.value.email).toLowerCase();
 
-            let customer = await Customer.findOne({
+            let customer = await models.Customer.findOne({
                 where: {
                     email,
                 }
@@ -642,7 +642,7 @@ module.exports = {
                 return res.status(409).json({ status: 409, message: `Customer with the same email is already exist.\nLogin with email` });
             }
 
-            let tempEmail = await TempEmail.findOne({
+            let tempEmail = await models.TempEmail.findOne({
                 where: {
                     email,
                 }
@@ -666,7 +666,7 @@ module.exports = {
             }
 
             if (email_verification_otp != null && email_verification_otp === req.query.code) {
-                await TempEmail.update({
+                await models.TempEmail.update({
                     is_email_verified: true,
                 }, {
                     where: {
@@ -694,7 +694,7 @@ module.exports = {
             let is_phone = false;
             let is_email = false;
 
-            const phoneResult = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.emailOrPhone });
+            const phoneResult = validation.phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.emailOrPhone });
 
             if (!phoneResult.error) {
                 is_phone = true;               
@@ -703,7 +703,7 @@ module.exports = {
             const phone_no = parseInt(phoneResult.value.phone);
             const country_code = phoneResult.value.country_code;
 
-            const emailResult = emailSchema.validate({ email: req.body.emailOrPhone });
+            const emailResult = validation.emailSchema.validate({ email: req.body.emailOrPhone });
 
             if (!emailResult.error) {
                 is_email = true;
@@ -718,14 +718,14 @@ module.exports = {
             let customer = null;
 
             if (is_email) {
-                customer = await Customer.findOne({
+                customer = await models.Customer.findOne({
                     where: {
                         email
                     }
                 });
             }
             else {
-                customer = await Customer.findOne({
+                customer = await models.Customer.findOne({
                     where: {                        
                             country_code, phone_no,
                     }
@@ -750,7 +750,7 @@ module.exports = {
                         channel: 'sms'
                     })
                     .then((resp) => {
-                        Customer.update({
+                        models.Customer.update({
                             phone_verification_otp_expiry: new Date(),
                             reset_pass_expiry: new Date(),
                         }, {
@@ -765,7 +765,7 @@ module.exports = {
                         if (error.status === 429) {
                             //res.status(429).json({ status: 429, message: `Too many requests` });
 
-                            Customer.update({
+                            models.Customer.update({
                                 phone_verification_otp_expiry: new Date(),
                                 reset_pass_expiry: new Date(),
                             }, {
@@ -791,7 +791,7 @@ module.exports = {
                 let reset_pass_otp = Math.floor(1000 + Math.random() * 9000);
 
 
-                await Customer.update({
+                await models.Customer.update({
                     reset_pass_otp: `${reset_pass_otp}`,
                     reset_pass_expiry: new Date(),
                 }, {
@@ -832,7 +832,7 @@ module.exports = {
             let is_phone = false;
             let is_email = false;
 
-            const phoneResult = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.emailOrPhone });
+            const phoneResult = validation.phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.emailOrPhone });
 
             if (!phoneResult.error) {
                 is_phone = true;
@@ -841,7 +841,7 @@ module.exports = {
             const phone_no = parseInt(phoneResult.value.phone);
             const country_code = phoneResult.value.country_code;
 
-            const emailResult = emailSchema.validate({ email: req.body.emailOrPhone });
+            const emailResult = validation.emailSchema.validate({ email: req.body.emailOrPhone });
 
             if (!emailResult.error) {
                 is_email = true;
@@ -856,14 +856,14 @@ module.exports = {
             let customer = null;
 
             if (is_email) {
-                customer = await Customer.findOne({
+                customer = await models.Customer.findOne({
                     where: {
                         email
                     }
                 });
             }
             else {
-                customer = await Customer.findOne({
+                customer = await models.Customer.findOne({
                     where: {
                         country_code, phone_no,
                     }
@@ -886,7 +886,7 @@ module.exports = {
 
             if (is_phone) {
                 if (req.body.code == "1234") {
-                    Customer.update({
+                    models.Customer.update({
                         is_phone_verified: true,
                     }, {
                         where: {
@@ -908,7 +908,7 @@ module.exports = {
                     })
                     .then((resp) => {
                         if (resp.status === "approved") {
-                            Customer.update({
+                            models.Customer.update({
                                 is_phone_verified: true,
                             }, {
                                 where: {
@@ -965,14 +965,14 @@ module.exports = {
             let customer = null;
 
             if (isNaN(phone_no)) {
-                customer = await Customer.findOne({
+                customer = await models.Customer.findOne({
                     where: {
                         email
                     }
                 });
             }
             else {
-                customer = await Customer.findOne({
+                customer = await models.Customer.findOne({
                     where: {
                             country_code, phone_no,
                     }
@@ -985,7 +985,7 @@ module.exports = {
 
             if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
 
-            const result = passwordSchema.validate({ password: req.body.password });
+            const result = validation.passwordSchema.validate({ password: req.body.password });
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -994,7 +994,7 @@ module.exports = {
 
             const password = passwordHash.generate(result.value.password);
 
-            await Customer.update({
+            await models.Customer.update({
                 password,
             }, {
                 where: {
@@ -1039,7 +1039,7 @@ module.exports = {
 
                 const profile_picture_url = data.Location;
 
-                await Customer.update({
+                await models.Customer.update({
                     profile_picture_url,
                 }, {
                     where: {
@@ -1063,15 +1063,15 @@ module.exports = {
     getCustomerProfile: async (req, res) => {
         try {
             console.log("req.user.email",req.user.email)
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
 
-            return res.status(200).json({ status: 200, message: "Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), profile_picture_url: customer.getDataValue('profile_picture_url'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
+            return res.status(200).json({ status: 200, message: "models.Customer Found!", customer: { name: customer.getDataValue('name'), email: customer.getDataValue('email'), country_code: customer.getDataValue('country_code'), phone: customer.getDataValue('phone_no'), profile_picture_url: customer.getDataValue('profile_picture_url'), is_phone_verified: customer.getDataValue('is_phone_verified'), is_social: customer.getDataValue('is_social') } });
         } catch (error) {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
@@ -1085,18 +1085,18 @@ module.exports = {
 
             if (!newPassword || !oldPassword) return res.status(400).json({ status: 400, message: `Please provide both old password and new password` })
 
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
 
             if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nYou can not set/change password for your account.` });
 
 
-            const result = passwordSchema.validate({ password: newPassword });
+            const result = validation.passwordSchema.validate({ password: newPassword });
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -1107,7 +1107,7 @@ module.exports = {
 
             const password = passwordHash.generate(result.value.password);
 
-            await Customer.update({
+            await models.Customer.update({
                 password,
             }, {
                 where: {
@@ -1126,15 +1126,15 @@ module.exports = {
     updateCustomerName: async (req, res) => {
     
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: (req.user.email).toLowerCase()
                 }
             });
 
-            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
 
-            const resultName = nameSchema.validate({ name: req.body.name });
+            const resultName = validation.nameSchema.validate({ name: req.body.name });
 
             if (resultName.error) {
                 return res.status(400).json({ status: 400, message: resultName.error.details[0].message });
@@ -1143,7 +1143,7 @@ module.exports = {
             let name = resultName.value.name;
                 
         
-            await Customer.update({
+            await models.Customer.update({
                 name
             }, {
                 where: {
@@ -1171,7 +1171,7 @@ module.exports = {
                 return res.status(400).json({ status: 400, message: `Please provide email id to verify` });
             }
 
-            const result = emailSchema.validate({ email: req.body.email });
+            const result = validation.emailSchema.validate({ email: req.body.email });
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -1179,7 +1179,7 @@ module.exports = {
 
             const email = (result.value.email).toLowerCase();
 
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email,
                 }
@@ -1189,7 +1189,7 @@ module.exports = {
                 return res.status(409).json({ status: 409, message: `Customer already exist with this email` });
             }
 
-            let tempEmail = await TempEmail.findOne({
+            let tempEmail = await models.TempEmail.findOne({
                 where: {
                     email,
                 }
@@ -1208,7 +1208,7 @@ module.exports = {
             const email_verification_otp = tempEmail.getDataValue('email_verification_otp')
             const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry')
 
-            await Customer.update({
+            await models.Customer.update({
                 email,is_email_verified,email_verification_otp,email_verification_otp_expiry
             }, {
                 where: {
@@ -1217,7 +1217,7 @@ module.exports = {
                 returning: true,
             });
 
-            await TempEmail.destroy({
+            await models.TempEmail.destroy({
                 where: {
                     email,
                 },
@@ -1241,16 +1241,16 @@ module.exports = {
     updateCustomerphone: async (req, res) => {
         try {
 
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: (req.user.email).toLowerCase()
                 }
             });
 
-            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
           
         
-            const resultPhone = phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
+            const resultPhone = validation.phoneSchema.validate({ country_code: req.body.country_code, phone: req.body.phone });
 
             if (resultPhone.error) {
                 return res.status(400).json({ status: 400, message: resultPhone.error.details[0].message });
@@ -1259,18 +1259,18 @@ module.exports = {
             const phone_no = parseInt(resultPhone.value.phone);
             const country_code = resultPhone.value.country_code;
 
-            const customer_phone = await Customer.findOne({
+            const customer_phone = await models.Customer.findOne({
                 where: {
                     phone_no
                 }
             });
 
-            if (customer_phone) return res.status(409).json({ status: 409, message: "Customer already exist with same phone!" });
+            if (customer_phone) return res.status(409).json({ status: 409, message: "models.Customer already exist with same phone!" });
 
             const is_phone_verified = false;
 
 
-            await Customer.update({
+            await models.Customer.update({
                  country_code, phone_no, is_phone_verified
             }, {
                 where: {
@@ -1289,19 +1289,19 @@ module.exports = {
     addCustomerAddress: async (req, res) => {
     
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
 
             if (!Array.isArray(req.body.location_geometry)) {
                 req.body.location_geometry=[req.body.location_geometry.split(',')[0],req.body.location_geometry.split(',')[1]]
             }
 
-            const result = customerAddressSchema.validate(req.body);
+            const result = validation.customerAddressSchema.validate(req.body);
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -1315,18 +1315,18 @@ module.exports = {
             const location_geometry = result.value.location_geometry;
             const customer_id = customer.getDataValue('id');
 
-            // const customerFavLocation = await CustomerFavLocation.create({
+            // const customerFavLocation = await models.CustomerFavLocation.create({
             //     address, city, state, postal_code, country, location_geometry, customer_id: customer_id
             // });
 
-            const hotspotLocation = await HotspotLocation.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     location: location_geometry,
                     customer_id:customer.getDataValue('id')
                 }
             });
 
-            const hotspotDropoff = await HotspotDropoff.findAll({
+            const hotspotDropoff = await models.HotspotDropoff.findAll({
                 where: {
                     hotspot_location_id:hotspotLocation.id,
                 }
@@ -1334,7 +1334,7 @@ module.exports = {
 
             const hotspot_dropoff_id = hotspotDropoff.map(val => val.id);
 
-            const [customerFavLocation, created] = await CustomerFavLocation.findOrCreate({
+            const [customerFavLocation, created] = await models.CustomerFavLocation.findOrCreate({
                 where: {
                     
                         location_geometry, customer_id: customer_id
@@ -1344,7 +1344,7 @@ module.exports = {
                 }
             });
 
-            await HotspotLocation.update({
+            await models.HotspotLocation.update({
                 is_added: true
             }, {
                 where: {
@@ -1366,15 +1366,15 @@ module.exports = {
 
     getCustomerAddress: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
 
-            const customerFavLocation = await CustomerFavLocation.findAll({
+            const customerFavLocation = await models.CustomerFavLocation.findAll({
                 where: {
                     customer_id: customer.getDataValue('id')
                 }
@@ -1385,8 +1385,8 @@ module.exports = {
             let customerAddress = [];
 
             for (const val of customerFavLocation){
-                const dropoff = await HotspotDropoff.findOne({ where: { id: val.hotspot_dropoff_id } });
-                const hotspotLocation = await HotspotLocation.findOne({
+                const dropoff = await models.HotspotDropoff.findOne({ where: { id: val.hotspot_dropoff_id } });
+                const hotspotLocation = await models.HotspotLocation.findOne({
                     where: {
                         location: val.location_geometry,
                         customer_id: customer.id
@@ -1419,19 +1419,19 @@ module.exports = {
 
     setCustomerDefaultAddress: async (req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
 
             if (!Array.isArray(req.body.location_geometry)) {
                 req.body.location_geometry=[req.body.location_geometry.split(',')[0],req.body.location_geometry.split(',')[1]]
             }
             
-            const result = customerAddressSchema.validate(req.body);
+            const result = validation.customerAddressSchema.validate(req.body);
 
             if (result.error) {
                 return res.status(400).json({ status: 400, message: result.error.details[0].message });
@@ -1444,7 +1444,7 @@ module.exports = {
             const country = result.value.country;
             const location_geometry = result.value.location_geometry;
 
-            await CustomerFavLocation.update({
+            await models.CustomerFavLocation.update({
                 default_address: false
             }, {
                 where: {
@@ -1454,7 +1454,7 @@ module.exports = {
                 returning: true,
             });
 
-            await CustomerFavLocation.update({
+            await models.CustomerFavLocation.update({
                 default_address: true
             }, {
                 where: {
@@ -1463,7 +1463,7 @@ module.exports = {
                 returning: true,
             });
 
-            await Customer.update({
+            await models.Customer.update({
                 address, city, state, country, postal_code,
             }, {
                 where: {
@@ -1484,7 +1484,7 @@ module.exports = {
 
     checkDefaultAddress: async (req, res) => {
       try {
-          const customer = await Customer.findOne({
+          const customer = await models.Customer.findOne({
               where: {
                   email: req.user.email,
                   
@@ -1493,9 +1493,9 @@ module.exports = {
 
           let isDefaultFound = false;
 
-          if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+          if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
 
-          const customerFavLocation = await CustomerFavLocation.findOne({
+          const customerFavLocation = await models.CustomerFavLocation.findOne({
               where: {
                   customer_id: customer.id,
                   default_address: true,
@@ -1514,13 +1514,13 @@ module.exports = {
 
     feedbackCustomer: async(req, res) => {
         try {
-            const customer = await Customer.findOne({
+            const customer = await models.Customer.findOne({
                 where: {
                     email: req.user.email,
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
 
             const messageBody = (req.body.message).trim();
 
@@ -1529,9 +1529,9 @@ module.exports = {
             const formattedBody = `<b>From:</b> ${customer.getDataValue('name')} (${req.user.email})<br><br>
                                     <b>Feedback:</b> ${messageBody}`;
             const mailOptions = {
-                from: `Hotspot Customer <${process.env.SG_EMAIL_ID}>`,
+                from: `Hotspot models.Customer <${process.env.SG_EMAIL_ID}>`,
                 to: req.user.email,
-                subject: 'Customer Feedback',
+                subject: 'models.Customer Feedback',
                 html: formattedBody,
             };
 
@@ -1550,7 +1550,7 @@ module.exports = {
     },
 
     toggleNotification: async (req, res) => {
-        const customer = await Customer.findOne({
+        const customer = await models.Customer.findOne({
             where: {
                 email: req.user.email,
             }
@@ -1567,7 +1567,7 @@ module.exports = {
 
         if (!isBoolean(notification_status)) return res.status(400).json({ status: 400, message: `Please provide only boolean value` });
 
-        await Customer.update({
+        await models.Customer.update({
             notification_status,
         }, {
             where: {
@@ -1580,7 +1580,7 @@ module.exports = {
 
     },
     getNotificationStatus: async (req, res) => {
-        const customer = await Customer.findOne({
+        const customer = await models.Customer.findOne({
             where: {
                 email: req.user.email,
             }
