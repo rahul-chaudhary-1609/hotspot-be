@@ -151,7 +151,7 @@ module.exports = {
                 const email_verification_otp = tempEmail.getDataValue('email_verification_otp')
                 const email_verification_otp_expiry = tempEmail.getDataValue('email_verification_otp_expiry')
 
-                const [customer, created] = await models.Customer.findOrCreate({
+                const newCustomer = await models.Customer.findOrCreate({
                     where: {
                         [Op.or]: {
                             email, phone_no,
@@ -162,7 +162,7 @@ module.exports = {
                     }
                 });
 
-                if (created) {
+                if (newCustomer[1]) {
 
                     await models.TempEmail.destroy({
                         where: {
@@ -550,7 +550,7 @@ module.exports = {
             let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
             const is_email_verified = false;
 
-            const [tempEmail, created] = await models.TempEmail.findOrCreate({
+            const newTempEmail = await models.TempEmail.findOrCreate({
                 where: {
                     email,
                 },
@@ -562,7 +562,7 @@ module.exports = {
                 }
             });
 
-            if (created) {
+            if (newTempEmail[1]) {
 
                 const mailOptions = {
                     from: `Hotspot <${process.env.SG_EMAIL_ID}>`,

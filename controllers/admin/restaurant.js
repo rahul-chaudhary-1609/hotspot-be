@@ -1,5 +1,5 @@
 const { Admin, Restaurant, RestaurantCategory,DishCategory,RestaurantDish } = require('../../models');
-const { ReE, ReS, pagination, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utils/utilityFunctions');
+const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
 const adminAWS = require('../../utils/aws');
 const validation = require("../../utils/admin/validation");
@@ -12,7 +12,7 @@ module.exports = {
 
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
-            let [offset, limit] = pagination(req.query.page, req.query.page_size);
+            let [offset, limit] = utilityFunction.pagination(req.query.page, req.query.page_size);
             if (offset)
                 offset = (parseInt(offset) - 1) * parseInt(limit);
 
@@ -40,11 +40,11 @@ module.exports = {
 
             let restaurantList = await Restaurant.findAndCountAll(query);
             if(restaurantList)
-            ReS(res, restaurantList, 200, "Restaurant data fetched successfully.");
+            utilityFunction.ReS(res, restaurantList, 200, "Restaurant data fetched successfully.");
 
         } catch (err) {
             console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            utilityFunction.ReE(res, "Internal server error", 500, err);
         }
     },
 
@@ -64,13 +64,13 @@ module.exports = {
                 req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
                 let restaurantCreated = await Restaurant.create(req.body);
                 if(restaurantCreated)
-                 ReS(res, {}, 200, "Restaurant added successfully.");
+                 utilityFunction.ReS(res, {}, 200, "Restaurant added successfully.");
             } else {
-                ReE(res, "Restaurant with this email id already exists", 401, {});
+                utilityFunction.ReE(res, "Restaurant with this email id already exists", 401, {});
             }
         } catch (err) {
             console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            utilityFunction.ReE(res, "Internal server error", 500, err);
         }
     },
 
@@ -120,30 +120,30 @@ module.exports = {
         //     if(restaurantExists) {
         //         if(params.actionType == "activate") {
         //             if(restaurantExists.status == 1)
-        //             ReE(res, "Already Activated", 401, {});
+        //             utilityFunction.ReE(res, "Already Activated", 401, {});
         //             else
         //             updates.status = 1;
         //         } else if(params.actionType == "deactivate") {
         //             if(restaurantExists.status == 2)
-        //             ReE(res, "Already Deactivated", 401, {});
+        //             utilityFunction.ReE(res, "Already Deactivated", 401, {});
         //             else
         //             updates.status = 2;
         //         } else if(params.actionType == "delete") {
         //             if(restaurantExists.is_deleted == true)
-        //             ReE(res, "Already Deleted", 401, {});
+        //             utilityFunction.ReE(res, "Already Deleted", 401, {});
         //             else
         //             updates.is_deleted = true;
         //         } else {
-        //             ReE(res, "Invalid action request", 401, {});
+        //             utilityFunction.ReE(res, "Invalid action request", 401, {});
         //         }
         //         await Restaurant.update(updates, query);
-        //         ReS(res, {}, 200, "Restaurant status updated successfully.");
+        //         utilityFunction.ReS(res, {}, 200, "Restaurant status updated successfully.");
         //     } else {
-        //         ReE(res, "Invalid restaurant id", 401, {});
+        //         utilityFunction.ReE(res, "Invalid restaurant id", 401, {});
         //     }
         // } catch (err) {
         //     console.log(err);
-        //     ReE(res, "Internal server error", 500, err);
+        //     utilityFunction.ReE(res, "Internal server error", 500, err);
         // }
     },
 
@@ -189,13 +189,13 @@ module.exports = {
                     req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
                 }
                 await Restaurant.update(updates, query);
-                ReS(res, {}, 200, "Restaurant data updated successfully.");
+                utilityFunction.ReS(res, {}, 200, "Restaurant data updated successfully.");
             } else {
-                ReE(res, "Invalid restaurant id", 401, {});
+                utilityFunction.ReE(res, "Invalid restaurant id", 401, {});
             }
         } catch (err) {
             console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            utilityFunction.ReE(res, "Internal server error", 500, err);
         }
     },
 
@@ -270,10 +270,10 @@ module.exports = {
 
             let restaurantCategoryList = await RestaurantCategory.findAndCountAll({where:{is_deleted: false},raw: true});
             if(restaurantCategoryList)
-             ReS(res, restaurantCategoryList, 200, "Restaurant category data fetched successfully.");
+             utilityFunction.ReS(res, restaurantCategoryList, 200, "Restaurant category data fetched successfully.");
         } catch (err) {
             console.log(err);
-            ReE(res, "Internal server error", 500, err);
+            utilityFunction.ReE(res, "Internal server error", 500, err);
         }
     },
 
@@ -345,7 +345,7 @@ module.exports = {
 
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
-            let [offset, limit] = pagination(req.query.page, req.query.page_size);
+            let [offset, limit] = utilityFunction.pagination(req.query.page, req.query.page_size);
             if (offset)
                 offset = (parseInt(offset) - 1) * parseInt(limit);
 

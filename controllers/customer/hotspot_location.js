@@ -85,7 +85,7 @@ module.exports = {
                         const dropoff_detail = location_detail.split(',').slice(0, 2).join(',');
                     
 
-                    for (let i = 0; i < 3; i++){
+                    for (let j = 0; j < 3; j++){
                          await models.HotspotDropoff.create({
                             hotspot_location_id,dropoff_detail
                         }); 
@@ -216,7 +216,7 @@ module.exports = {
           //     address, city, state, postal_code, country, location_geometry, customer_id: customer_id
           // });
 
-          const [customerFavLocation, created] = await models.CustomerFavLocation.findOrCreate({
+         await models.CustomerFavLocation.findOrCreate({
               where: {
 
                   location_geometry, customer_id: customer_id

@@ -244,7 +244,7 @@ module.exports = {
 
           const jsonResponse = await response.json();
 
-              const restaurants = jsonResponse.response.groups[0].items.map((item) => {
+              const newRestaurants = jsonResponse.response.groups[0].items.map((item) => {
                   const owner = dummyData.owners[Math.floor(Math.random() * dummyData.owners.length)];
                   const working_hour = dummyData.working_hours[Math.floor(Math.random() * dummyData.working_hours.length)];
                   return {
@@ -267,7 +267,7 @@ module.exports = {
                   }
               });
           
-              await models.Restaurant.bulkCreate(restaurants);
+              await models.Restaurant.bulkCreate(newRestaurants);
           }
 
           restaurant = await models.Restaurant.findAll({
