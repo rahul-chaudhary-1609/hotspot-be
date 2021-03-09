@@ -32,11 +32,15 @@
       },
       {
         "name": "Admin Dashboard",
-        "description": "admin customers management Api's"
+        "description": "admin dashboard Api's"
       },
       {
         "name": "Admin Customer Management",
         "description": "admin customers management Api's"
+      },
+      {
+        "name": "Admin Driver Management",
+        "description": "admin drivers management Api's"
       },
       {
         "name": "Admin Restaurant Management",
@@ -1187,6 +1191,7 @@
             "responses": {}
           }
         },
+
         "/admin/viewCustomerProfile/{customerId}": {
           "get": {
             "tags": [
@@ -1280,6 +1285,58 @@
                 "description": "reason of deletion",
                 "required": true,
                 "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+
+
+
+
+
+
+
+
+
+        "/admin/listDrivers": {
+          "get": {
+            "tags": [
+              "Admin Driver Management"
+            ],
+            "description": "Api to get drivers list",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "searchKey",
+                "in": "query",
+                "description": "search by name, category",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "curent page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
               }
             ],
             "responses": {}

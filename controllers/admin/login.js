@@ -57,8 +57,8 @@ module.exports = {
                 qry.raw = true;
                 let existingUser = await Admin.findOne(qry);
                 if (_.isEmpty(existingUser)) {
-                    let utilityFunction.comparePassword = params.password === params.confirmPassword;
-                    if (utilityFunction.comparePassword) {
+                    let comparePassword = params.password === params.confirmPassword;
+                    if (comparePassword) {
                         delete params.confirmPassword;
                         params.password = await utilityFunction.bcryptPassword(params.password);
                         let newAdmin = await Admin.create(params);

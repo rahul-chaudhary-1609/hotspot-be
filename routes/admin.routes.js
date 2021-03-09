@@ -6,6 +6,7 @@ const adminLoginController = require('../controllers/admin/login');
 const adminRestaurantController = require('../controllers/admin/restaurant');
 const adminCustomerController = require('../controllers/admin/customer');
 const adminDashboardController = require('../controllers/admin/dashboard');
+const adminDriverController = require('../controllers/admin/driver');
 const adminAuthentication = require('../middlewares/admin/jwt');
 const adminMulter = require('../middlewares/admin/multer');
 const adminOthersController = require('../controllers/admin/others');
@@ -85,6 +86,9 @@ router.route('/deleteDish/:dishId').delete([adminAuthentication.checkToken
 router.route('/uploadDishImage').put([adminAuthentication.checkToken, adminMulter.upload
 ], adminRestaurantController.uploadDishImage);
 
+
+
+
 //Customer Management
 
 router.route('/listCustomers').get([adminAuthentication.checkToken
@@ -102,6 +106,7 @@ router.route('/deleteCustomer/:customerId').delete([adminAuthentication.checkTok
 
 
 //Dashboard Management
+
 router.route('/getTotalCustomers').get([adminAuthentication.checkToken
 ], adminDashboardController.getTotalCustomers);
 
@@ -120,6 +125,11 @@ router.route('/getTotalRevenue').get([adminAuthentication.checkToken
 router.route('/getTotalRevenueByDate').get([adminAuthentication.checkToken
 ], adminDashboardController.getTotalRevenueByDate);
 
+
+//Driver Management
+
+router.route('/listDrivers').get([adminAuthentication.checkToken
+], adminDriverController.listDrivers);
 
 //others
 
