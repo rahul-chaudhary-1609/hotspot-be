@@ -5,7 +5,7 @@ const passwordHash = require('password-hash');
 // const sendMail = require('../../utilityServices/mail');
 const jwt = require('jsonwebtoken');
 // const client = require('twilio')(process.env.accountSID, process.env.authToken);
-const { ReE, ReS, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utilityServices/utilityFunctions');
+const { ReE, ReS, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utils/utilityFunctions');
 const adminMiddleware = require('../../middlewares/admin/adminMiddleware');
 const _ = require('lodash');
 

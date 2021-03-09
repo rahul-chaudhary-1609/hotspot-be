@@ -1,8 +1,8 @@
 const { Admin, Restaurant, RestaurantCategory,DishCategory,RestaurantDish } = require('../../models');
-const { ReE, ReS, pagination, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utilityServices/utilityFunctions');
+const { ReE, ReS, pagination, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
-const adminAWS = require('../../utilityServices/aws');
-const validation = require("../../middlewares/admin/validation");
+const adminAWS = require('../../utils/aws');
+const validation = require("../../utils/admin/validation");
 
 module.exports = {
     listRestaurant: async(req, res) => {

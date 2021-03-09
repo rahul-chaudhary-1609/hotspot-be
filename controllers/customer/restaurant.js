@@ -1,6 +1,6 @@
 require('dotenv/config');
 const { Customer, Restaurant, RestaurantCategory, RestaurantHotspot, HotspotLocation, FavRestaurant, DishCategory, RestaurantDish, HotspotOffer,FavFood,DishAddOn,Cart } = require('../../models');
-const { locationGeometrySchema, timeSchema } = require('../../middlewares/customer/validation');
+const { locationGeometrySchema, timeSchema } = require('../../utils/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');

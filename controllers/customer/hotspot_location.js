@@ -1,6 +1,6 @@
 require('dotenv/config');
 const { Customer, CustomerFavLocation, HotspotLocation, HotspotDropoff } = require('../../models');
-const { locationGeometrySchema } = require('../../middlewares/customer/validation');
+const { locationGeometrySchema } = require('../../utils/customer/validation');
 const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');

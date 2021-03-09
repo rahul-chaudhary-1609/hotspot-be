@@ -1,12 +1,12 @@
 require('dotenv/config');
 const { Customer, CustomerFavLocation, TempEmail, HotspotLocation,HotspotDropoff} = require('../../models');
-const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema,nameSchema ,phoneSchema, emailSchema } = require('../../middlewares/customer/validation');
+const { customerSchema, passwordSchema, onlyPhoneSchema, customerAddressSchema, customerUpdateProfileSchema,nameSchema ,phoneSchema, emailSchema } = require('../../utils/customer/validation');
 const { Op, where } = require("sequelize");
 const passwordHash = require('password-hash');
-const sendMail = require('../../utilityServices/mail');
+const sendMail = require('../../utils/mail');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
 const customerAuthentication = require('../../middlewares/customer/jwt-validation');
-const customerAWS = require('../../utilityServices/aws');
+const customerAWS = require('../../utils/aws');
 const { isBoolean } = require('lodash');
 
 

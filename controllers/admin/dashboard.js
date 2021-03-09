@@ -1,6 +1,6 @@
 const models = require('../../models');
 const { Op } = require("sequelize");
-const validation = require("../../middlewares/admin/validation");
+const validation = require("../../utils/admin/validation");
 
 module.exports = {
     getTotalCustomers: async (req, res) => {

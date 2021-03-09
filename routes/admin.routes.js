@@ -3,8 +3,8 @@ const router=express.Router();
 const { check, body, query, param, oneOf, validationResult } = require('express-validator');
 
 const adminLoginController = require('../controllers/admin/login');
-const adminRestaurantController = require('../controllers/admin/restaurantManagement');
-const adminCustomerController = require('../controllers/admin/customerManagement');
+const adminRestaurantController = require('../controllers/admin/restaurant');
+const adminCustomerController = require('../controllers/admin/customer');
 const adminDashboardController = require('../controllers/admin/dashboard');
 const adminMiddleware = require('../middlewares/admin/adminMiddleware');
 const adminOthersController = require('../controllers/admin/others');

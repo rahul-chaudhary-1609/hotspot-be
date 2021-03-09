@@ -3,7 +3,7 @@ const { Customer } = require('../models');
 const { Op } = require("sequelize");
 const express = require('express');
 const passport = require('passport');
-const { phoneSchema } = require('../middlewares/customer/validation');
+const { phoneSchema } = require('../utils/customer/validation');
 const customerAuthentication = require('../middlewares/customer/jwt-validation');
 const customerLoginController = require('../controllers/customer/login');
 const HotspotLocationController = require('../controllers/customer/hotspot_location');
@@ -311,10 +311,6 @@ router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.au
 
 router.post('/payment',customerAuthentication.authenticateCustomer, (req, res) => {
     return PaymentController.payment(req, res);
-})
-
-router.get('/payment', (req, res) => {
-    return res.render('checkout');
 })
 
 

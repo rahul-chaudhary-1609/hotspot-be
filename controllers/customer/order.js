@@ -1,6 +1,6 @@
 require('dotenv/config');
 const models = require('../../models');
-const validate = require('../../middlewares/customer/validation');
+const validate = require('../../utils/customer/validation');
 const { Op } = require("sequelize");
 
 // const getItems = async (args) => {
