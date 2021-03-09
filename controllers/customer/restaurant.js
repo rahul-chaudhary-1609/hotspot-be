@@ -1594,9 +1594,12 @@ module.exports = {
                     ownerEmail: restaurant.owner_email,
                     address: restaurant.address,
                     location: restaurant.location,
+                    deliveriesPerShift: null,
+                    cutOffTime: null,
                     workingHourFrom: restaurant.working_hours_from,
                     workingHourTo: restaurant.working_hours_to,
                     orderType: restaurant.order_type,
+                    nextDeliveryTime:null,
                 }
 
                 if (!restaurant) return res.status(404).json({ status: 404, message: `no restaurant found` });
