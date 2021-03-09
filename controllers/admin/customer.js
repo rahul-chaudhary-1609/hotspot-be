@@ -1,8 +1,6 @@
 const model = require('../../models');
 const utility = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
-const adminAWS = require('../../utils/aws');
-const validation = require("../../utils/admin/validation");
 
 
 module.exports = {

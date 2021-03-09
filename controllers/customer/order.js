@@ -3,14 +3,6 @@ const models = require('../../models');
 const validate = require('../../utils/customer/validation');
 const { Op } = require("sequelize");
 
-// const getItems = async (args) => {
-//     try {
-        
-//    } catch (error) {
-//         console.log(error);
-//         return args.res.status(500).json({ status: 500, message: `Internal Server Error` });
-//     }
-// }
 
 module.exports = {
     addToCart: async (req, res) => {

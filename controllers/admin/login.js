@@ -1,10 +1,5 @@
 require('dotenv/config');
 const { Admin } = require('../../models');
-const { Op } = require("sequelize");
-const passwordHash = require('password-hash');
-// const sendMail = require('../../utilityServices/mail');
-const jwt = require('jsonwebtoken');
-// const client = require('twilio')(process.env.accountSID, process.env.authToken);
 const utilityFunction = require('../../utils/utilityFunctions');
 const adminAuthentication = require('../../middlewares/admin/jwt');
 const _ = require('lodash');

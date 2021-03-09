@@ -1,7 +1,6 @@
 require('dotenv/config');
 const models = require('../../models');
 const validation = require('../../utils/customer/validation');
-const { Op } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
 
