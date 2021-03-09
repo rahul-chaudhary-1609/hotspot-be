@@ -6,7 +6,7 @@ const passwordHash = require('password-hash');
 const jwt = require('jsonwebtoken');
 // const client = require('twilio')(process.env.accountSID, process.env.authToken);
 const { ReE, ReS, TE, currentUnixTimeStamp, gererateOtp, calcluateOtpTime, bcryptPassword, comparePassword} = require('../../utils/utilityFunctions');
-const adminMiddleware = require('../../middlewares/admin/adminMiddleware');
+const adminAuthentication = require('../../middlewares/admin/jwt');
 const _ = require('lodash');
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
             let comparedPassword = await comparePassword(password, adminData.password);
             if (comparedPassword) {
                 let id = adminData.id;
-                const accessToken = await adminMiddleware.createJwtToken({
+                const accessToken = await adminAuthentication.createJwtToken({
                     admin: true,
                     id: id,
                     email
@@ -64,7 +64,7 @@ module.exports = {
                         let newAdmin = await Admin.create(params);
                         let adminData = newAdmin.get({plain:true});
                         delete adminData.password;
-                        let token = await adminMiddleware.createJwtToken({
+                        let token = await adminAuthentication.createJwtToken({
                             admin: true,
                             id: adminData.id,
                             email:params.email,

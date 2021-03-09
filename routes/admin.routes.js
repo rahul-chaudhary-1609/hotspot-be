@@ -6,7 +6,8 @@ const adminLoginController = require('../controllers/admin/login');
 const adminRestaurantController = require('../controllers/admin/restaurant');
 const adminCustomerController = require('../controllers/admin/customer');
 const adminDashboardController = require('../controllers/admin/dashboard');
-const adminMiddleware = require('../middlewares/admin/adminMiddleware');
+const adminAuthentication = require('../middlewares/admin/jwt');
+const adminMulter = require('../middlewares/admin/multer');
 const adminOthersController = require('../controllers/admin/others');
 
 router.route('/login').post([
@@ -30,93 +31,93 @@ router.route('/resetPassword').post([
     check('confirmPassword', 'Please enter password').not().isEmpty()
 ], adminLoginController.resetPassword);
 
-router.route('/logout').get([adminMiddleware.checkToken
+router.route('/logout').get([adminAuthentication.checkToken
 ], adminLoginController.logout);
 
 
 //Restaurant Management
 
-router.route('/restaurantCategoryList').get([adminMiddleware.checkToken
+router.route('/restaurantCategoryList').get([adminAuthentication.checkToken
 ], adminRestaurantController.restaurantCategoryList);
 
-router.route('/addRestaurant').post([adminMiddleware.checkToken
+router.route('/addRestaurant').post([adminAuthentication.checkToken
 ], adminRestaurantController.addRestaurant);
 
-router.route('/listRestaurant').get([adminMiddleware.checkToken
+router.route('/listRestaurant').get([adminAuthentication.checkToken
 ], adminRestaurantController.listRestaurant);
 
-router.route('/changeRestaurantStatus/:restaurantId').put([adminMiddleware.checkToken
+router.route('/changeRestaurantStatus/:restaurantId').put([adminAuthentication.checkToken
 ], adminRestaurantController.changeRestaurantStatus);
 
-router.route('/getRestaurant/:restaurantId').get([adminMiddleware.checkToken
+router.route('/getRestaurant/:restaurantId').get([adminAuthentication.checkToken
 ], adminRestaurantController.getRestaurant);
 
-router.route('/editRestaurant/:restaurantId').put([adminMiddleware.checkToken
+router.route('/editRestaurant/:restaurantId').put([adminAuthentication.checkToken
 ], adminRestaurantController.editRestaurant);
 
-router.route('/deleteRestaurant/:restaurantId').delete([adminMiddleware.checkToken
+router.route('/deleteRestaurant/:restaurantId').delete([adminAuthentication.checkToken
 ], adminRestaurantController.deleteRestaurant);
 
-router.route('/uploadRestaurantImage').put([adminMiddleware.checkToken,adminMiddleware.upload
+router.route('/uploadRestaurantImage').put([adminAuthentication.checkToken,adminMulter.upload
 ], adminRestaurantController.uploadRestaurantImage);
 
 
 //Menu Management
 
-router.route('/dishCategoryList').get([adminMiddleware.checkToken
+router.route('/dishCategoryList').get([adminAuthentication.checkToken
 ], adminRestaurantController.dishCategoryList);
 
-router.route('/addDish').post([adminMiddleware.checkToken
+router.route('/addDish').post([adminAuthentication.checkToken
 ], adminRestaurantController.addDish);
 
-router.route('/getDish/:dishId').get([adminMiddleware.checkToken
+router.route('/getDish/:dishId').get([adminAuthentication.checkToken
 ], adminRestaurantController.getDish);
 
-router.route('/listDishes').get([adminMiddleware.checkToken
+router.route('/listDishes').get([adminAuthentication.checkToken
 ], adminRestaurantController.listDishes);
 
-router.route('/editDish/:dishId').put([adminMiddleware.checkToken
+router.route('/editDish/:dishId').put([adminAuthentication.checkToken
 ], adminRestaurantController.editDish);
 
-router.route('/deleteDish/:dishId').delete([adminMiddleware.checkToken
+router.route('/deleteDish/:dishId').delete([adminAuthentication.checkToken
 ], adminRestaurantController.deleteDish);
 
-router.route('/uploadDishImage').put([adminMiddleware.checkToken, adminMiddleware.upload
+router.route('/uploadDishImage').put([adminAuthentication.checkToken, adminMulter.upload
 ], adminRestaurantController.uploadDishImage);
 
 //Customer Management
 
-router.route('/listCustomers').get([adminMiddleware.checkToken
+router.route('/listCustomers').get([adminAuthentication.checkToken
 ], adminCustomerController.listCustomers);
 
-router.route('/viewCustomerProfile/:customerId').get([adminMiddleware.checkToken
+router.route('/viewCustomerProfile/:customerId').get([adminAuthentication.checkToken
 ], adminCustomerController.viewCustomerProfile);
 
-router.route('/changeCustomerStatus/:customerId').put([adminMiddleware.checkToken
+router.route('/changeCustomerStatus/:customerId').put([adminAuthentication.checkToken
 ], adminCustomerController.changeCustomerStatus);
 
-router.route('/deleteCustomer/:customerId').delete([adminMiddleware.checkToken
+router.route('/deleteCustomer/:customerId').delete([adminAuthentication.checkToken
 ], adminCustomerController.deleteCustomer);
 
 
 
 //Dashboard Management
-router.route('/getTotalCustomers').get([adminMiddleware.checkToken
+router.route('/getTotalCustomers').get([adminAuthentication.checkToken
 ], adminDashboardController.getTotalCustomers);
 
-router.route('/getTotalRestaurants').get([adminMiddleware.checkToken
+router.route('/getTotalRestaurants').get([adminAuthentication.checkToken
 ], adminDashboardController.getTotalRestaurants);
 
-router.route('/getTotalDrivers').get([adminMiddleware.checkToken
+router.route('/getTotalDrivers').get([adminAuthentication.checkToken
 ], adminDashboardController.getTotalDrivers);
 
-router.route('/getTotalOrders').get([adminMiddleware.checkToken
+router.route('/getTotalOrders').get([adminAuthentication.checkToken
 ], adminDashboardController.getTotalOrders);
 
-router.route('/getTotalRevenue').get([adminMiddleware.checkToken
+router.route('/getTotalRevenue').get([adminAuthentication.checkToken
 ], adminDashboardController.getTotalRevenue);
 
-router.route('/getTotalRevenueByDate').get([adminMiddleware.checkToken
+router.route('/getTotalRevenueByDate').get([adminAuthentication.checkToken
 ], adminDashboardController.getTotalRevenueByDate);
 
 

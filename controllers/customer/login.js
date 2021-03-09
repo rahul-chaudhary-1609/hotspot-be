@@ -5,7 +5,7 @@ const { Op, where } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utils/mail');
 const client = require('twilio')(process.env.accountSID, process.env.authToken);
-const customerAuthentication = require('../../middlewares/customer/jwt-validation');
+const customerAuthentication = require('../../middlewares/customer/jwt');
 const customerAWS = require('../../utils/aws');
 const { isBoolean } = require('lodash');
 
