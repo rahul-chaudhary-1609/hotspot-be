@@ -1536,45 +1536,74 @@ module.exports = {
                 }
             });
 
-            const hotspotLocation = await models.HotspotLocation.findOne({
-                where: {
-                    id:restaurantHotspot.hotspot_location_id
-                }
-            });
+            if (restaurantHotspot) {
 
-            let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                return parseInt(((new Date()).toTimeString().slice(0,8)).replace(/:/g, '')) <= parseInt(time.replace(/:/g, ''));
-                //return args.delivery_shift === time;
-            });
+                const hotspotLocation = await models.HotspotLocation.findOne({
+                    where: {
+                        id: restaurantHotspot.hotspot_location_id
+                    }
+                });
 
-            if (!nextDeliveryTime) nextDeliveryTime = hotspotLocation.delivery_shifts[0];
+                let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                    return parseInt(((new Date()).toTimeString().slice(0, 8)).replace(/:/g, '')) <= parseInt(time.replace(/:/g, ''));
+                    //return args.delivery_shift === time;
+                });
+
+                if (!nextDeliveryTime) nextDeliveryTime = hotspotLocation.delivery_shifts[0];
 
             
-            const restaurant = await models.Restaurant.findOne({
-                where: {
-                    id: restaurant_id
+                const restaurant = await models.Restaurant.findOne({
+                    where: {
+                        id: restaurant_id
+                    }
+                });
+
+                const restaurantDetails = {
+                    id: restaurant.id,
+                    name: restaurant.restaurant_name,
+                    image: restaurant.restaurant_image_url,
+                    ownerName: restaurant.owner_name,
+                    ownerEmail: restaurant.owner_email,
+                    address: restaurant.address,
+                    location: restaurant.location,
+                    deliveriesPerShift: restaurant.deliveries_per_shift,
+                    cutOffTime: restaurant.cut_off_time,
+                    workingHourFrom: restaurant.working_hours_from,
+                    workingHourTo: restaurant.working_hours_to,
+                    orderType: restaurant.order_type,
+                    nextDeliveryTime,
                 }
-            });
 
-            const restaurantDetails = {
-                id: restaurant.id,
-                name:   restaurant.restaurant_name,
-                image:  restaurant.restaurant_image_url,
-                ownerName:  restaurant.owner_name,
-                ownerEmail: restaurant.owner_email,
-                address:    restaurant.address,
-                location:   restaurant.location,
-                deliveriesPerShift: restaurant.deliveries_per_shift,
-                cutOffTime: restaurant.cut_off_time,
-                workingHourFrom:    restaurant.working_hours_from,
-                workingHourTo:  restaurant.working_hours_to,
-                orderType:  restaurant.order_type,
-                nextDeliveryTime,
+                if (!restaurant) return res.status(404).json({ status: 404, message: `no restaurant found` });
+
+                return res.status(200).json({ status: 200, restaurantDetails});
+
             }
+            else {
+                const restaurant = await models.Restaurant.findOne({
+                    where: {
+                        id: restaurant_id
+                    }
+                });
 
-            if (!restaurant) return res.status(404).json({ status: 404, message: `no restaurant found` });
+                const restaurantDetails = {
+                    id: restaurant.id,
+                    name: restaurant.restaurant_name,
+                    image: restaurant.restaurant_image_url,
+                    ownerName: restaurant.owner_name,
+                    ownerEmail: restaurant.owner_email,
+                    address: restaurant.address,
+                    location: restaurant.location,
+                    workingHourFrom: restaurant.working_hours_from,
+                    workingHourTo: restaurant.working_hours_to,
+                    orderType: restaurant.order_type,
+                }
 
-            return res.status(200).json({ status: 200, restaurantDetails});
+                if (!restaurant) return res.status(404).json({ status: 404, message: `no restaurant found` });
+
+                return res.status(200).json({ status: 200, restaurantDetails});
+            }
+            
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
