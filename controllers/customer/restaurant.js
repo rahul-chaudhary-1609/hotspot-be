@@ -1554,7 +1554,8 @@ module.exports = {
             
                 const restaurant = await models.Restaurant.findOne({
                     where: {
-                        id: restaurant_id
+                        id: restaurant_id,
+                        order_type: [1, 3],
                     }
                 });
 
@@ -1582,7 +1583,8 @@ module.exports = {
             else {
                 const restaurant = await models.Restaurant.findOne({
                     where: {
-                        id: restaurant_id
+                        id: restaurant_id,
+                        order_type: [2],
                     }
                 });
 

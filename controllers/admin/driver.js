@@ -1,6 +1,7 @@
 const models = require('../../models');
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
+const dummyData = require('./dummyData');
 
 
 module.exports = {
@@ -56,4 +57,20 @@ module.exports = {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
+
+    addDrivers: async (req, res) => {
+        try {
+            let driverList = await models.Driver.findAndCountAll();
+            
+            if (driverList.count === 0) {
+                await models.Driver.bulkCreate(dummyData.drivers);
+            }
+
+            return res.status(200).json({ status: 200, message:"Drivers Successfully Created" });
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    }
 }
