@@ -30,6 +30,8 @@ module.exports = {
 
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid email Id or password` });
 
+            if (!customer.status) return res.status(401).json({ status: 401, message: `This account is deactivated by admin.\nPlease contact to Hotspot Support Team` });
+
             if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });           
         
 
@@ -77,6 +79,9 @@ module.exports = {
             });
 
             if (!customer) return res.status(401).json({ status: 401, message: `Invalid phone or password` });
+
+            if (!customer.status) return res.status(401).json({ status: 401, message: `This account is deactivated by admin.\nPlease contact to Hotspot Support Team` });
+
 
             if (customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have registered with social media account,\nplease try login with social media buttons` });
         
@@ -236,6 +241,8 @@ module.exports = {
             }
             else {
 
+                if (!customer.status) return res.status(401).json({ status: 401, message: `This account is deactivated by admin.\nPlease contact to Hotspot Support Team` });
+
                 if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\nplease try login with email/phone and password` });
                 if (customer.getDataValue('facebook_id')) return res.status(409).json({ status: 409, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
 
@@ -286,6 +293,8 @@ module.exports = {
             }
             else {
 
+                if (!customer.status) return res.status(401).json({ status: 401, message: `This account is deactivated by admin.\nPlease contact to Hotspot Support Team` });
+
                 if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\nplease try login with email/phone and password` });
                 if (customer.getDataValue('google_id')) return res.status(409).json({ status: 409, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
                 
@@ -334,6 +343,7 @@ module.exports = {
                 return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
             }
             else {
+                if (!customer.status) return res.status(401).json({ status: 401, message: `This account is deactivated by admin.\nPlease contact to Hotspot Support Team` });
 
                 if (!customer.getDataValue('is_social')) return res.status(404).json({ status: 404, message: `You have not registered with social media account,\nplease try login with email/phone and password` });
                 if (customer.getDataValue('apple_id')) return res.status(409).json({ status: 409, message: `Another social media account is already registered with same email,\nplease try login with other social media buttons` });
