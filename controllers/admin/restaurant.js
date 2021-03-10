@@ -234,12 +234,7 @@ module.exports = {
 
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
-            let now = new Date();
-            now = now.toString();
-            now = now.replace(/:/g, '');
-            now = now.replace(/ /g, '');
-            now = now.replace('+', '');
-            now = now.substr(0, 25);
+            let now = (new Date()).getTime();
 
             const pictureName = req.file.originalname.split('.');
             const pictureType = pictureName[pictureName.length - 1];
@@ -474,12 +469,7 @@ module.exports = {
 
     uploadDishImage: async (req, res) => {
         try {
-            let now = new Date();
-            now = now.toString();
-            now = now.replace(/:/g, '');
-            now = now.replace(/ /g, '');
-            now = now.replace('+', '');
-            now = now.substr(0, 25);
+            let now = (new Date()).getTime();
 
             const pictureName = req.file.originalname.split('.');
             const pictureType = pictureName[pictureName.length - 1];

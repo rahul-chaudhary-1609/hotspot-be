@@ -1026,20 +1026,11 @@ module.exports = {
             console.log("Profile Picture Req:", req);
             console.log("Profile Picture file:", req.file);
 
-            let now = new Date();
-            now = now.toString();
-            now = now.replace(/:/g, '');
-            now = now.replace(/ /g, '');
-            now = now.replace('+', '');
-            now = now.substr(0, 25);
-            let email = req.user.email;
-            email = email.split('.').join("");
-            email = email.replace('@', '');
-            //console.log("now",now );
+            let now = (new Date()).getTime();
 
             const pictureName = req.file.originalname.split('.');
             const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `${email}${now}.${pictureType}`;
+            const pictureKey = `customer_${now}.${pictureType}`;
             const pictureBuffer = req.file.buffer;
 
             const params = customerAWS.setParams(pictureKey, pictureBuffer);
