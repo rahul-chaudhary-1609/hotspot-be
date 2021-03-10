@@ -131,6 +131,9 @@ router.route('/getTotalRevenueByDate').get([adminAuthentication.checkToken
 router.route('/listDrivers').get([adminAuthentication.checkToken
 ], adminDriverController.listDrivers);
 
+router.route('/getDriverDetails/:driver_id').get([adminAuthentication.checkToken
+], adminDriverController.getDriverDetails);
+
 router.route('/addDrivers').get(adminDriverController.addDrivers);
 
 //others

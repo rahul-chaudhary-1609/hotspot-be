@@ -596,7 +596,7 @@
               {
                 "name": "page",
                 "in": "query",
-                "description": "curent page count to access",
+                "description": "current page count to access",
                 "required": false,
                 "type": "number"
               },
@@ -978,7 +978,7 @@
               {
                 "name": "page",
                 "in": "query",
-                "description": "curent page count to access",
+                "description": "current page count to access",
                 "required": false,
                 "type": "number"
               },
@@ -1176,7 +1176,7 @@
               {
                 "name": "page",
                 "in": "query",
-                "description": "curent page count to access",
+                "description": "current page count to access",
                 "required": false,
                 "type": "number"
               },
@@ -1327,7 +1327,7 @@
               {
                 "name": "page",
                 "in": "query",
-                "description": "curent page count to access",
+                "description": "current page count to access",
                 "required": false,
                 "type": "number"
               },
@@ -1337,6 +1337,35 @@
                 "description": "no of items per page",
                 "required": false,
                 "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getDriverDetails/{driver_id}": {
+          "get": {
+            "tags": [
+              "Admin Driver Management"
+            ],
+            "description": "Api to get driver details",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "driver_id",
+                "in": "path",
+                "description": "enter driver id",
+                "required": true,
+                "type": "string"
               }
             ],
             "responses": {}

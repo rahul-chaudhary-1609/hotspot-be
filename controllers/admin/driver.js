@@ -14,7 +14,7 @@ module.exports = {
             let [offset, limit] = utility.pagination(req.query.page, req.query.page_size);
             // if (offset)
             //     offset = (parseInt(offset) - 1) * parseInt(limit);
-            
+
             let query = {};
             query.where = { is_deleted: false };
             if (req.query.searchKey) {
@@ -68,6 +68,43 @@ module.exports = {
 
             return res.status(200).json({ status: 200, message:"Drivers Successfully Created" });
             
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
+    getDriverDetails: async(req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const driver_id = req.params.driver_id;
+            
+            const driver = await models.Driver.findByPk(driver_id);
+
+            if (!driver) return res.status(404).json({ status: 404, message: `no driver found with this id` });
+
+
+            if (!driver.status) return res.status(401).json({ status: 401, message: `this driver's account is deactivated by admin.\nPlease contact to Hotspot Support Team` });
+
+
+            const driverAddress = await models.DriverAddress.findOne({
+                where: {
+                    driver_id,
+                }
+            })
+
+            const driverVehicleDetail = await models.DriverVehicleDetail.findOne({
+                where: {
+                    driver_id,
+                }
+            })
+
+            return res.status(200).json({ status: 200, personalDetails: driver, driverAddress, driverVehicleDetail });
+
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
