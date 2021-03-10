@@ -42,7 +42,7 @@ module.exports = {
             driverList.rows = driverList.rows.map((val) => {
                 return {
                     id:val.id,
-                    name: val.name,
+                    name: val.first_name+" "+val.last_name,
                     email: val.email,
                     phone: val.phone_no ? `${val.country_code} ${val.phone_no}` : null,
                     status:val.status,
