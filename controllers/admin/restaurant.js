@@ -13,8 +13,8 @@ module.exports = {
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
             let [offset, limit] = utilityFunction.pagination(req.query.page, req.query.page_size);
-            if (offset)
-                offset = (parseInt(offset) - 1) * parseInt(limit);
+            // if (offset)
+            //     offset = (parseInt(offset) - 1) * parseInt(limit);
 
             let query = {};
             query.where = {is_deleted:false};
@@ -32,7 +32,7 @@ module.exports = {
                 };
             }
             query.order = [
-                ['created_at', 'DESC']
+                ['id', 'DESC']
             ];
             query.limit = limit;
             query.offset = offset;
@@ -346,8 +346,8 @@ module.exports = {
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
             let [offset, limit] = utilityFunction.pagination(req.query.page, req.query.page_size);
-            if (offset)
-                offset = (parseInt(offset) - 1) * parseInt(limit);
+            // if (offset)
+            //     offset = (parseInt(offset) - 1) * parseInt(limit);
 
             let query = {};
             query.where = { is_deleted: false };
@@ -374,7 +374,7 @@ module.exports = {
                 };
             }
             query.order = [
-                ['created_at', 'DESC']
+                ['id', 'DESC']
             ];
             query.limit = limit;
             query.offset = offset;
