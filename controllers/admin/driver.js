@@ -80,9 +80,9 @@ module.exports = {
 
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
-            const driver_id = req.params.driver_id;
+            const driverId = req.params.driverId;
             
-            const driver = await models.Driver.findByPk(driver_id);
+            const driver = await models.Driver.findByPk(driverId);
 
             if (!driver) return res.status(404).json({ status: 404, message: `no driver found with this id` });
 
@@ -92,13 +92,13 @@ module.exports = {
 
             const driverAddress = await models.DriverAddress.findOne({
                 where: {
-                    driver_id,
+                    driver_id:driverId,
                 }
             })
 
             const driverVehicleDetail = await models.DriverVehicleDetail.findOne({
                 where: {
-                    driver_id,
+                    driver_id:driverId,
                 }
             })
 
@@ -109,5 +109,7 @@ module.exports = {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
-    }
+    },
+
+    
 }

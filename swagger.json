@@ -1343,7 +1343,7 @@
           }
         },
 
-        "/admin/getDriverDetails/{driver_id}": {
+        "/admin/getDriverDetails/{driverId}": {
           "get": {
             "tags": [
               "Admin Driver Management"
@@ -1361,7 +1361,7 @@
                 "type": "string"
               },
               {
-                "name": "driver_id",
+                "name": "driverId",
                 "in": "path",
                 "description": "enter driver id",
                 "required": true,
