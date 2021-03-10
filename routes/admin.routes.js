@@ -137,6 +137,13 @@ router.route('/getDriverDetails/:driverId').get([adminAuthentication.checkToken
 router.route('/changeDriverStatus/:driverId').put([adminAuthentication.checkToken
 ], adminDriverController.changeDriverStatus);
 
+router.route('/uploadDriverProfileImage').put([adminAuthentication.checkToken, adminMulter.upload
+], adminDriverController.uploadDriverProfileImage);
+
+router.route('/uploadVehicleImage').put([adminAuthentication.checkToken, adminMulter.upload
+], adminDriverController.uploadVehicleImage);
+
+
 router.route('/addDrivers').get(adminDriverController.addDrivers);
 
 //others
