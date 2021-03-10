@@ -1372,6 +1372,42 @@
           }
         },
 
+        "/admin/changeDriverStatus/{driverId}": {
+          "put": {
+            "tags": [
+              "Admin Driver Management"
+            ],
+            "description": "Api to change driver status",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "driverId",
+                "in": "path",
+                "description": "enter driver id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "in": "formData",
+                "description": "1 for activate, 0 for deactivate",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

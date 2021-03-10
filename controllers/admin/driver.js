@@ -86,10 +86,6 @@ module.exports = {
 
             if (!driver) return res.status(404).json({ status: 404, message: `no driver found with this id` });
 
-
-            if (!driver.status) return res.status(401).json({ status: 401, message: `this driver's account is deactivated by admin.\nPlease contact to Hotspot Support Team` });
-
-
             const driverAddress = await models.DriverAddress.findOne({
                 where: {
                     driver_id:driverId,
@@ -111,5 +107,40 @@ module.exports = {
         }
     },
 
-    
+    changeDriverStatus: async (req, res) => {
+        try {
+
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const driverId = req.params.driverId;
+            const status = parseInt(req.body.status);
+
+            const driver = await models.Driver.findByPk(driverId);
+
+            if (!driver) return res.status(404).json({ status: 404, message: `no driver found with this id` });
+
+
+            if (!([0, 1].includes(status))) return res.status(400).json({ status: 400, message: "Please send a valid status" });
+
+            await models.Driver.update({
+                status,
+            },
+                {
+                    where: {
+                        id: driverId,
+                    },
+                    returning: true,
+                });
+
+            if (status) return res.status(200).json({ status: 200, message: "Driver Activated Successfully" });
+
+            return res.status(200).json({ status: 200, message: "Driver Deactivated Successfully" });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
 }

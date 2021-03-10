@@ -134,6 +134,9 @@ router.route('/listDrivers').get([adminAuthentication.checkToken
 router.route('/getDriverDetails/:driverId').get([adminAuthentication.checkToken
 ], adminDriverController.getDriverDetails);
 
+router.route('/changeDriverStatus/:driverId').put([adminAuthentication.checkToken
+], adminDriverController.changeDriverStatus);
+
 router.route('/addDrivers').get(adminDriverController.addDrivers);
 
 //others
