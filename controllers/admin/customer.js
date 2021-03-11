@@ -1,6 +1,7 @@
 const model = require('../../models');
 const utility = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
+const validation = require("../../utils/admin/validation");
 
 
 module.exports = {
@@ -76,7 +77,8 @@ module.exports = {
                 id: customer.id,
                 name: customer.name,
                 email: customer.email,
-                phone: customer.phone_no ? `${customer.country_code} ${customer.phone_no}` : null,
+                country_code:customer.country_code?`${customer.country_code}`:null,
+                phone: customer.phone_no ? `${customer.phone_no}` : null,
                 city: customer.city,
                 state: customer.state,
                 signupDate: customer.createdAt,
@@ -129,6 +131,72 @@ module.exports = {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
+
+    editCustomer: async (req, res) => {
+        try {
+
+            const admin = await model.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const customerId = req.params.customerId;
+
+            const customer = await model.Customer.findByPk(customerId);
+
+            if (!customer) return res.status(404).json({ status: 404, message: `No customer found with provided id` });
+
+            const customerResult = validation.customerSchema.validate(req.body);
+
+            if (customerResult.error) return res.status(400).json({ status: 400, message: customerResult.error.details[0].message });
+        
+            const name = req.body.name || customer.name;
+            const email = req.body.email || customer.email;
+            const country_code = req.body.country_code || customer.country_code;
+            const phone_no = req.body.phone_no? parseInt(req.body.phone_no) : customer.phone_no;
+            const city = req.body.city || customer.city;
+            const state = req.body.state || customer.state;
+
+            if (req.body.email) {
+                const customerByEmail = await model.Customer.findOne({
+                    where: {
+                        email
+                    }
+                });
+
+                if (customerByEmail) return res.status(409).json({ status: 409, message: `customer with same email already exist` });
+            }
+
+            if (req.body.phone_no) {
+                const customerByPhone = await model.Customer.findOne({
+                    where: {
+                        phone_no
+                    }
+                });
+
+                if (customerByPhone) return res.status(409).json({ status: 409, message: `customer with same phone already exist` });
+
+            }
+
+
+            await model.Customer.update({
+                name,email,country_code,phone_no,city,state,
+            },
+                {
+                    where: {
+                        id: customerId,
+                    },
+                    returning: true,
+                });
+
+            
+            return res.status(200).json({ status: 200, message: "Customer updated Successfully" });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
     deleteCustomer : async (req, res) => {
         try {
             const admin = await model.Admin.findByPk(req.adminInfo.id);

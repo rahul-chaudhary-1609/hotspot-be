@@ -70,6 +70,21 @@ module.exports = {
         }),
 
     }),
+
+    customerSchema : Joi.object({
+        name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).messages({
+            'string.pattern.base': `Please enter a valid customer name`,
+        }),
+        email: Joi.string().trim().max(45).email(),
+        country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).messages({
+            'string.pattern.base': `Please enter a valid country code`,
+        }),
+        phone_no: Joi.string().trim().regex(/^\(?\d{10}$/).min(10).max(10).messages({
+            'string.pattern.base': `Please enter a valid phone no`,
+        }),
+        city: Joi.string().max(45),
+        state: Joi.string().max(45),
+    }),
 }
 
 

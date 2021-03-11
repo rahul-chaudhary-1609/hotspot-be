@@ -100,6 +100,9 @@ router.route('/viewCustomerProfile/:customerId').get([adminAuthentication.checkT
 router.route('/changeCustomerStatus/:customerId').put([adminAuthentication.checkToken
 ], adminCustomerController.changeCustomerStatus);
 
+router.route('/editCustomer/:customerId').put([adminAuthentication.checkToken
+], adminCustomerController.editCustomer);
+
 router.route('/deleteCustomer/:customerId').delete([adminAuthentication.checkToken
 ], adminCustomerController.deleteCustomer);
 

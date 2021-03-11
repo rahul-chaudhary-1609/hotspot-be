@@ -359,7 +359,7 @@ module.exports = {
             const insurance_image_url = req.body.insurance_image_url || driverVehicleDetail.insurance_image_url;
 
             
-            console.log("phone_no",phone_no)
+            
             const driverResult = validation.driverSchema.validate({
                 first_name, last_name, email, country_code, phone_no:`${phone_no}`, dob, gender, nationality, passport_picture_url,
                 address_line1, street, city, state, postal_code,

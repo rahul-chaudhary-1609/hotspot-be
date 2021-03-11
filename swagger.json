@@ -1255,6 +1255,79 @@
             "responses": {}
           }
         },
+
+        "/admin/editCustomer/{customerId}": {
+          "put": {
+            "tags": [
+              "Admin Customer Management"
+            ],
+            "description": "Api to edit a customer profile",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "customerId",
+                "in": "path",
+                "description": "enter customer Id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "enter email",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "enter country code eg: +91",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "phone_no",
+                "in": "formData",
+                "description": "enter phone",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "city",
+                "in": "formData",
+                "description": "enter city",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "state",
+                "in": "formData",
+                "description": "enter state",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+
         "/admin/deleteCustomer/{customerId}": {
           "delete": {
             "tags": [
