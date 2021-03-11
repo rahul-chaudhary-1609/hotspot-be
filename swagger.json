@@ -1466,6 +1466,63 @@
           }
         },
 
+        "/admin/uploadLicenseImage": {
+          "put": {
+            "tags": [
+              "Admin Driver Management"
+            ],
+            "description": "Api to upload driver license image",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "image",
+                "in": "formData",
+                "description": "upload image file",
+                "required": true,
+                "type": "file"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/uploadInsuranceImage": {
+          "put": {
+            "tags": [
+              "Admin Driver Management"
+            ],
+            "description": "Api to upload driver insurance image",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "image",
+                "in": "formData",
+                "description": "upload image file",
+                "required": true,
+                "type": "file"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 

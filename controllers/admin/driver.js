@@ -226,6 +226,55 @@ module.exports = {
         }
     },
 
+    uploadLicenseImage: async (req, res) => {
+        try {
+            let now = (new Date()).getTime();
+
+            const pictureName = req.file.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `driver_license_${now}.${pictureType}`;
+            const pictureBuffer = req.file.buffer;
+
+            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+
+            adminAWS.s3.upload(params, async (error, data) => {
+                if (error) return res.status(500).json({ status: 500, message: `Internal Server Error` });
+
+                const image_url = data.Location;
+
+
+                return res.status(200).json({ status: 200, message: "Image uploaded successfully", image_url })
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
+    uploadInsuranceImage: async (req, res) => {
+        try {
+            let now = (new Date()).getTime();
+
+            const pictureName = req.file.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `driver_insurance_${now}.${pictureType}`;
+            const pictureBuffer = req.file.buffer;
+
+            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+
+            adminAWS.s3.upload(params, async (error, data) => {
+                if (error) return res.status(500).json({ status: 500, message: `Internal Server Error` });
+
+                const image_url = data.Location;
+
+
+                return res.status(200).json({ status: 200, message: "Image uploaded successfully", image_url })
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
     
 
 

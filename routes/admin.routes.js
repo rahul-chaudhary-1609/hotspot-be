@@ -143,6 +143,11 @@ router.route('/uploadDriverProfileImage').put([adminAuthentication.checkToken, a
 router.route('/uploadVehicleImage').put([adminAuthentication.checkToken, adminMulter.upload
 ], adminDriverController.uploadVehicleImage);
 
+router.route('/uploadLicenseImage').put([adminAuthentication.checkToken, adminMulter.upload
+], adminDriverController.uploadLicenseImage);
+
+router.route('/uploadInsuranceImage').put([adminAuthentication.checkToken, adminMulter.upload
+], adminDriverController.uploadInsuranceImage);
 
 router.route('/addDrivers').get(adminDriverController.addDrivers);
 
