@@ -45,6 +45,16 @@ module.exports = {
         type: Sequelize.INTEGER,
         defaultValue: 1,
       },
+      is_approved: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      },
+      is_rejected: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
       is_deleted: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

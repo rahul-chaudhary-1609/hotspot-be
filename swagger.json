@@ -1300,6 +1300,9 @@
 
 
 
+
+
+
         "/admin/listDrivers": {
           "get": {
             "tags": [
@@ -1372,6 +1375,35 @@
           }
         },
 
+        "/admin/approveDriver/{driverId}": {
+          "put": {
+            "tags": [
+              "Admin Driver Management"
+            ],
+            "description": "Api to approve a driver",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "driverId",
+                "in": "path",
+                "description": "enter driver id",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
         "/admin/changeDriverStatus/{driverId}": {
           "put": {
             "tags": [
@@ -1408,6 +1440,7 @@
           }
         },
 
+        
         "/admin/uploadDriverProfileImage": {
           "put": {
             "tags": [
@@ -1525,9 +1558,7 @@
         },
 
 
-
-
-
+        
 
 
 

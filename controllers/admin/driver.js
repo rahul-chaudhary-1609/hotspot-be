@@ -3,7 +3,7 @@ const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const dummyData = require('./dummyData');
 const adminAWS = require('../../utils/aws');
-const { compareSync } = require('bcrypt');
+const validation = require("../../utils/admin/validation");
 
 
 module.exports = {
@@ -18,7 +18,7 @@ module.exports = {
             //     offset = (parseInt(offset) - 1) * parseInt(limit);
 
             let query = {};
-            query.where = { is_deleted: false };
+            query.where = { is_deleted: false,is_rejected:false };
             if (req.query.searchKey) {
                 let searchKey = req.query.searchKey;
                 query.where = {
@@ -47,7 +47,8 @@ module.exports = {
                     name: val.first_name+" "+val.last_name,
                     email: val.email,
                     phone: val.phone_no ? `${val.country_code} ${val.phone_no}` : null,
-                    status:val.status,
+                    status: val.status,
+                    is_approved:val.is_approved,
                     signupDate: val.createdAt,                    
                 }
             })
@@ -176,6 +177,38 @@ module.exports = {
         }
     },
 
+    approveDriver: async (req, res) => {
+        try {
+
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const driverId = req.params.driverId;
+
+            const driver = await models.Driver.findByPk(driverId);
+
+            if (!driver) return res.status(404).json({ status: 404, message: `no driver found with this id` });
+
+
+            await models.Driver.update({
+                is_approved:true,
+            },
+                {
+                    where: {
+                        id: driverId,
+                    },
+                    returning: true,
+                });
+
+            return res.status(200).json({ status: 200, message: "Driver Approved Successfully" });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
     uploadDriverProfileImage: async (req, res) => {
         try {
             let now = (new Date()).getTime();
@@ -275,7 +308,7 @@ module.exports = {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
-    
 
+    
 
 }
