@@ -62,17 +62,17 @@ module.exports = {
 
     addDrivers: async (req, res) => {
         try {
-            let driverList = await models.Driver.findAndCountAll();
+            let drivers = await models.Driver.findAndCountAll();
             
-            if (driverList.count === 0) {
+            if (drivers.count === 0) {
                 await models.Driver.bulkCreate(dummyData.drivers);
             }
 
-            driverList = await models.Driver.findAll();
+            let driverList = await models.Driver.findAll();
 
             let driverAddress = await models.DriverAddress.findAndCountAll();    
             
-            if (driverAddress.count === 0) {
+            if (driverAddress.count === 0 || drivers.count === 0) {
                 var driverAddressList = driverList.map((val, key) => {
                     dummyData.driver_addresses[key].driver_id = val.id;
                     return dummyData.driver_addresses[key];
@@ -85,7 +85,7 @@ module.exports = {
 
             let driverVehicleDetail = await models.DriverVehicleDetail.findAndCountAll();    
             
-            if (driverVehicleDetail.count === 0) {
+            if (driverVehicleDetail.count === 0 || drivers.count === 0) {
                 var driverVehicleDetailList = driverList.map((val, key) => {
                     dummyData.driver_vehicle_details[key].driver_id = val.id;
                     return dummyData.driver_vehicle_details[key];
@@ -227,5 +227,6 @@ module.exports = {
     },
 
     
+
 
 }
