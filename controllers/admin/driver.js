@@ -309,6 +309,105 @@ module.exports = {
         }
     },
 
-    
+    editDriver: async (req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const driverId = req.params.driverId;
+            
+            const driver = await models.Driver.findByPk(driverId);
+
+            if (!driver) return res.status(404).json({ status: 404, message: `no driver found with this id` });
+
+            const driverAddress = await models.DriverAddress.findOne({
+                where: {
+                    driver_id: driverId,
+                }
+            });
+
+            const driverVehicleDetail = await models.DriverVehicleDetail.findOne({
+                where: {
+                    driver_id: driverId,
+                }
+            });
+
+            const first_name = req.body.first_name || driver.first_name;
+            const last_name = req.body.last_name || driver.last_name;
+            const email = req.body.email || driver.email;
+            const country_code = req.body.country_code || driver.country_code;
+            const phone_no = req.body.phone_no? parseInt(req.body.phone_no) : driver.phone_no;
+            const dob = req.body.dob || driver.dob;
+            const gender = req.body.gender || driver.gender;
+            const nationality = req.body.nationality || driver.nationality;
+            const passport_picture_url = req.body.passport_picture_url || driver.passport_picture_url;
+
+            const address_line1 = req.body.address_line1 || driverAddress.address_line1;
+            const street = req.body.street || driverAddress.street;
+            const city = req.body.city || driverAddress.city;
+            const state = req.body.state || driverAddress.state;
+            const postal_code = req.body.postal_code || driverAddress.postal_code;
+
+            const vehicle_type = req.body.vehicle_type || driverVehicleDetail.vehicle_type;
+            const image_url = req.body.vehicle_image_url || driverVehicleDetail.image_url;
+            const plate_number = req.body.plate_number || driverVehicleDetail.plate_number;
+            const vehicle_model = req.body.vehicle_model || driverVehicleDetail.vehicle_model;
+            const license_number = req.body.license_number || driverVehicleDetail.license_number;
+            const license_image_url = req.body.license_image_url || driverVehicleDetail.license_image_url;
+            const insurance_number = req.body.insurance_number || driverVehicleDetail.insurance_number;
+            const insurance_image_url = req.body.insurance_image_url || driverVehicleDetail.insurance_image_url;
+
+            
+            console.log("phone_no",phone_no)
+            const driverResult = validation.driverSchema.validate({
+                first_name, last_name, email, country_code, phone_no:`${phone_no}`, dob, gender, nationality, passport_picture_url,
+                address_line1, street, city, state, postal_code,
+                vehicle_type,image_url,plate_number,vehicle_model,license_number,license_image_url,insurance_number,insurance_image_url,
+            });
+
+            if (driverResult.error) return res.status(400).json({ status: 400, message: driverResult.error.details[0].message });
+
+
+            await models.Driver.update({
+                first_name, last_name, email, country_code, phone_no, dob, gender, nationality, passport_picture_url,
+            },
+                {
+                    where: {
+                        id:driverId,
+                    },
+                    returning:true,
+                }
+            )
+
+            await models.DriverAddress.update({
+                address_line1,street,city,state,postal_code,
+            },
+                {
+                    where: {
+                        driver_id:driverId,
+                    },
+                    returning:true,
+                }
+            )
+
+            await models.DriverVehicleDetail.update({
+                vehicle_type,image_url,plate_number,vehicle_model,license_number,license_image_url,insurance_number,insurance_image_url,
+            },
+                {
+                    where: {
+                        driver_id:driverId,
+                    },
+                    returning:true,
+                }
+            )
+
+            return res.status(200).json({ status: 200, message: "Driver updated successfully", })
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    }
 
 }

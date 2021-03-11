@@ -152,6 +152,9 @@ router.route('/uploadLicenseImage').put([adminAuthentication.checkToken, adminMu
 router.route('/uploadInsuranceImage').put([adminAuthentication.checkToken, adminMulter.upload
 ], adminDriverController.uploadInsuranceImage);
 
+router.route('/editDriver/:driverId').put([adminAuthentication.checkToken
+], adminDriverController.editDriver);
+
 router.route('/addDrivers').get(adminDriverController.addDrivers);
 
 //others
