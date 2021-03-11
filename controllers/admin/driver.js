@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const dummyData = require('./dummyData');
 const adminAWS = require('../../utils/aws');
+const { compareSync } = require('bcrypt');
 
 
 module.exports = {
@@ -66,6 +67,36 @@ module.exports = {
             if (driverList.count === 0) {
                 await models.Driver.bulkCreate(dummyData.drivers);
             }
+
+            driverList = await models.Driver.findAll();
+
+            let driverAddress = await models.DriverAddress.findAndCountAll();    
+            
+            if (driverAddress.count === 0) {
+                var driverAddressList = driverList.map((val, key) => {
+                    dummyData.driver_addresses[key].driver_id = val.id;
+                    return dummyData.driver_addresses[key];
+                });
+
+                console.log("driverAddressList", driverAddressList)
+                
+                await models.DriverAddress.bulkCreate(driverAddressList);
+            }
+
+            let driverVehicleDetail = await models.DriverVehicleDetail.findAndCountAll();    
+            
+            if (driverVehicleDetail.count === 0) {
+                var driverVehicleDetailList = driverList.map((val, key) => {
+                    dummyData.driver_vehicle_details[key].driver_id = val.id;
+                    return dummyData.driver_vehicle_details[key];
+                });
+
+                console.log("driverVehicleDetailList", driverVehicleDetailList)
+                
+                await models.DriverVehicleDetail.bulkCreate(driverVehicleDetailList);
+            }
+
+            
 
             return res.status(200).json({ status: 200, message:"Drivers Successfully Created" });
             
@@ -195,6 +226,6 @@ module.exports = {
         }
     },
 
-
+    
 
 }
