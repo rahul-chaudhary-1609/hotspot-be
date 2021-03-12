@@ -149,6 +149,30 @@ module.exports = {
                 image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomFriFeb262021192829GMT0530.png",
                 restaurant_dish_id: dish.id
             },
+            {
+                name: "Add Salads",
+                price: 1.5,
+                image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/customer_1615531885102.png",
+                restaurant_dish_id: dish.id
+            },
+            {
+                name: "Add Egg",
+                price: 3.0,
+                image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/customer_1615531913776.png",
+                restaurant_dish_id: dish.id
+            },
+            {
+                name: "Add Bacon",
+                price: 1.69,
+                image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/customer_1615531934221.png",
+                restaurant_dish_id: dish.id
+            },
+            {
+                name: "Add Avocado",
+                price: 1.25,
+                image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/customer_1615531986684.png",
+                restaurant_dish_id: dish.id
+            },
         ]
     },
 
