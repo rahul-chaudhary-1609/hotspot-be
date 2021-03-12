@@ -98,5 +98,50 @@ module.exports = {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
+    },
+
+    getScheduledOrders: async (req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            let [offset, limit] = utility.pagination(req.query.page, req.query.page_size);
+
+            let query = {};
+            let tomorrow = new Date((new Date()).setDate(((new Date()).getDate()) + 1));
+            query.where = {
+                is_deleted: false,
+                status:[2,3,4],
+                delivery_datetime: {
+                    [Op.gte]:tomorrow,
+                },
+            };
+            if (req.query.searchKey) {
+                let searchKey = req.query.searchKey;
+                query.where = {
+                    ...query.where,
+                    [Op.or]: [
+                        { order_id: { [Op.iLike]: `%${searchKey}%` } },
+                    ]
+                };
+            }
+            query.order = [
+                ['id', 'DESC']
+            ];
+            query.limit = limit;
+            query.offset = offset;
+            query.raw = true;
+
+            let orderList = await models.Order.findAndCountAll(query);
+            
+            if (orderList.count === 0) return res.status(404).json({ status: 404, message: `no order found` });
+
+            getOrderRow({orderList,res})
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
     }
 }

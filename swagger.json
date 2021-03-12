@@ -1854,6 +1854,49 @@
           }
         },
 
+        "/admin/getScheduledOrders": {
+          "get": {
+            "tags": [
+              "Admin Order Management"
+            ],
+            "description": "Api to get Scheduled orders",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "searchKey",
+                "in": "query",
+                "description": "search by name, category",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

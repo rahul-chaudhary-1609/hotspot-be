@@ -167,6 +167,9 @@ router.route('/addDrivers').get(adminDriverController.addDrivers);
 router.route('/getActiveOrders').get([adminAuthentication.checkToken
 ], adminOrderController.getActiveOrders);
 
+router.route('/getScheduledOrders').get([adminAuthentication.checkToken
+], adminOrderController.getScheduledOrders);
+
 
 
 //others
