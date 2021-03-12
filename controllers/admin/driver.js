@@ -402,7 +402,7 @@ module.exports = {
                 }
             )
 
-            return res.status(200).json({ status: 200, message: "Driver updated successfully", })
+            return res.status(200).json({ status: 200, message: "Driver updated successfully", dataReceived:req.body })
 
         } catch (error) {
             console.log(error);
