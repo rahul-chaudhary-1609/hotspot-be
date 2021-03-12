@@ -34,7 +34,8 @@ module.exports = {
               { name: 'Ray Kroc', country_code: '+91', phone: "9989898989", email: 'kroc.foods@hotspot.com' },
               { name: 'Steve Ells', country_code: '+91', phone: "9989898989",email:'steve.kichen@hotspot.com'},
     ],
-    working_hours : [
+    working_hours: [
+              { from: "07:00 AM", to: "07:00 PM" },
               { from: "07:00 AM", to: "09:00 PM" },
               { from: "07:30 AM", to: "09:00 PM" },
               { from: "08:00 AM", to: "09:30 PM" },
