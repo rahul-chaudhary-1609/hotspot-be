@@ -3599,7 +3599,7 @@
             "tags": [
               "Customer Food"
             ],
-            "description": "Api to delete a customer",
+            "description": "Api to get food cards",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -3690,6 +3690,33 @@
                 "name": "restaurant_dish_id",
                 "in": "path",
                 "description": "enter restaurant dish id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/get-recomended-slides": {
+          "get": {
+            "tags": [
+              "Customer Food"
+            ],
+            "description": "Api to get recomended slides",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "restaurantId",
+                "in": "query",
+                "description": "restaurant Id",
                 "required": true,
                 "type": "number"
               }

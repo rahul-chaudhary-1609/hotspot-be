@@ -1817,6 +1817,28 @@ module.exports = {
         }
     },
 
+    getRecomendedSlide: async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            })
 
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const restaurantDish = await models.RestaurantDish.findAll({
+                where: {
+                    restaurant_id: req.query.restaurantId
+                },
+                limit:4,
+            });
+
+            getFoodCard({ restaurantDish,customer_id:customer.id, res });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    }
 
 }

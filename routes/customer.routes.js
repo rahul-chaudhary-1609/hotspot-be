@@ -257,6 +257,10 @@ router.get('/get-food-details/:restaurant_dish_id', customerAuthentication.authe
     return RestaurantController.getFoodDetails(req, res);
 })
 
+router.get('/get-recomended-slides', customerAuthentication.authenticateCustomer, (req, res) => {
+    return RestaurantController.getRecomendedSlide(req, res);
+})
+
 
 //Orders routes
 router.post('/add-to-cart', customerAuthentication.authenticateCustomer, (req, res) => {
