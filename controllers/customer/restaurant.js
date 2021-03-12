@@ -1794,7 +1794,17 @@ module.exports = {
                 }
             })
 
+            const restaurant = await models.Restaurant.findOne({
+                attributes: [
+                  'id','restaurant_name'
+              ],
+                where: {
+                    id:restaurantDish.restaurant_id
+                }
+            })
+
             const dishdetails = {
+                restaurant,
                 dish: restaurantDish,
                 dishAddOn: dishAddOn ? dishAddOn.map(addOn=>addOn): "no add-ons available for this food",
             }
