@@ -7,6 +7,7 @@ const adminRestaurantController = require('../controllers/admin/restaurant');
 const adminCustomerController = require('../controllers/admin/customer');
 const adminDashboardController = require('../controllers/admin/dashboard');
 const adminDriverController = require('../controllers/admin/driver');
+const adminOrderController = require('../controllers/admin/order');
 const adminAuthentication = require('../middlewares/admin/jwt');
 const adminMulter = require('../middlewares/admin/multer');
 const adminOthersController = require('../controllers/admin/others');
@@ -159,6 +160,14 @@ router.route('/editDriver/:driverId').put([adminAuthentication.checkToken
 ], adminDriverController.editDriver);
 
 router.route('/addDrivers').get(adminDriverController.addDrivers);
+
+
+//order Management
+
+router.route('/getActiveOrders').get([adminAuthentication.checkToken
+], adminOrderController.getActiveOrders);
+
+
 
 //others
 
