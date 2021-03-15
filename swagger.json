@@ -1908,7 +1908,7 @@
 
 
 
-        "/verify-email": {
+        "/customer/verify-email": {
           "get": {
             "tags": [
               "Customer Signup"
@@ -1929,7 +1929,7 @@
             "responses": {}
           }
         },
-        "/validate-email": {
+        "/customer/validate-email": {
           "get": {
             "tags": [
               "Customer Signup"
@@ -1957,7 +1957,7 @@
             "responses": {}
           }
         },
-        "/customer-email-signup": {
+        "/customer/customer-email-signup": {
           "post": {
             "tags": [
               "Customer Signup"
@@ -2006,7 +2006,7 @@
             "responses": {}
           }
         },
-        "/verify-phone": {
+        "/customer/verify-phone": {
           "post": {
             "tags": [
               "Customer Signup"
@@ -2035,7 +2035,7 @@
             "responses": {}
           }
         },
-        "/validate-phone": {
+        "/customer/validate-phone": {
           "post": {
             "tags": [
               "Customer Signup"
@@ -2071,7 +2071,7 @@
             "responses": {}
           }
         },
-        "/customer-google-signup": {
+        "/customer/customer-google-signup": {
           "post": {
             "tags": [
               "Customer Signup"
@@ -2107,7 +2107,7 @@
             "responses": {}
           }
         },
-        "/customer-facebook-signup": {
+        "/customer/customer-facebook-signup": {
           "post": {
             "tags": [
               "Customer Signup"
@@ -2143,7 +2143,7 @@
             "responses": {}
           }
         },
-        "/customer-apple-signup": {
+        "/customer/customer-apple-signup": {
           "post": {
             "tags": [
               "Customer Signup"
@@ -2194,7 +2194,7 @@
 
 
 
-        "/customer-email-login": {
+        "/customer/customer-email-login": {
           "post": {
             "tags": [
               "Customer Login"
@@ -2223,7 +2223,7 @@
             "responses": {}
           }
         },
-        "/customer-phone-login": {
+        "/customer/customer-phone-login": {
           "post": {
             "tags": [
               "Customer Login"
@@ -2259,7 +2259,7 @@
             "responses": {}
           }
         },
-         "/customer-google-login": {
+         "/customer/customer-google-login": {
           "post": {
             "tags": [
               "Customer Login"
@@ -2295,7 +2295,7 @@
             "responses": {}
           }
         },
-        "/customer-facebook-login": {
+        "/customer/customer-facebook-login": {
           "post": {
             "tags": [
               "Customer Login"
@@ -2331,7 +2331,7 @@
             "responses": {}
           }
         },
-        "/customer-apple-login": {
+        "/customer/customer-apple-login": {
           "post": {
             "tags": [
               "Customer Login"
@@ -2378,7 +2378,7 @@
 
 
 
-        "/send-password-reset-code": {
+        "/customer/send-password-reset-code": {
           "post": {
             "tags": [
               "Customer Forget Password"
@@ -2407,7 +2407,7 @@
             "responses": {}
           }
         },
-        "/validate-password-reset-code": {
+        "/customer/validate-password-reset-code": {
           "post": {
             "tags": [
               "Customer Forget Password"
@@ -2444,7 +2444,7 @@
           }
         },
 
-        "/reset-password": {
+        "/customer/reset-password": {
           "put": {
             "tags": [
               "Customer Forget Password"
@@ -2490,7 +2490,7 @@
 
 
 
-        "/customer-profile": {
+        "/customer/customer-profile": {
           "get": {
             "tags": [
               "Customer Account"
@@ -2510,7 +2510,7 @@
           }
         },
 
-        "/customer-update-name": {
+        "/customer/customer-update-name": {
           "put": {
             "tags": [
               "Customer Account"
@@ -2538,7 +2538,7 @@
           }
         },
 
-        "/customer-change-password": {
+        "/customer/customer-change-password": {
           "put": {
             "tags": [
               "Customer Account"
@@ -2573,7 +2573,7 @@
           }
         },
 
-        "/customer-add-address": {
+        "/customer/customer-add-address": {
           "post": {
             "tags": [
               "Customer Account"
@@ -2636,7 +2636,7 @@
           }
         },
 
-        "/customer-get-address": {
+        "/customer/customer-get-address": {
           "get": {
             "tags": [
               "Customer Account"
@@ -2656,7 +2656,7 @@
           }
         },
 
-        "/customer-set-default-address": {
+        "/customer/customer-set-default-address": {
           "put": {
             "tags": [
               "Customer Account"
@@ -2719,7 +2719,7 @@
           }
         },
 
-        "/customer-feedback": {
+        "/customer/customer-feedback": {
           "post": {
             "tags": [
               "Customer Account"
@@ -2747,7 +2747,7 @@
           }
         },
 
-        "/customer-change-profile-picture": {
+        "/customer/customer-change-profile-picture": {
           "put": {
             "tags": [
               "Customer Account"
@@ -2775,7 +2775,7 @@
           }
         },
 
-        "/customer-toggle-notification": {
+        "/customer/customer-toggle-notification": {
           "put": {
             "tags": [
               "Customer Account"
@@ -2803,7 +2803,7 @@
           }
         },
 
-        "/get-notification-status": {
+        "/customer/get-notification-status": {
           "get": {
             "tags": [
               "Customer Account"
@@ -2823,7 +2823,7 @@
           }
         },
 
-        "/customer-update-email": {
+        "/customer/customer-update-email": {
           "put": {
             "tags": [
               "Customer Account"
@@ -2851,7 +2851,7 @@
           }
         },
 
-        "/customer-update-phone": {
+        "/customer/customer-update-phone": {
           "put": {
             "tags": [
               "Customer Account"
@@ -2888,7 +2888,7 @@
           }
         },
 
-        "/customer-logout": {
+        "/customer/customer-logout": {
           "delete": {
             "tags": [
               "Customer Account"
@@ -2914,7 +2914,7 @@
 
 
 
-        "/get-hotspot-location": {
+        "/customer/get-hotspot-location": {
           "get": {
             "tags": [
               "Customer Hotspot"
@@ -2948,7 +2948,7 @@
             "responses": {}
           }
         },
-        "/check-hotspot-location": {
+        "/customer/check-hotspot-location": {
           "get": {
             "tags": [
               "Customer Hotspot"
@@ -2967,7 +2967,7 @@
             "responses": {}
           }
         },
-        "/get-hotspot-dropoff": {
+        "/customer/get-hotspot-dropoff": {
           "get": {
             "tags": [
               "Customer Hotspot"
@@ -2995,7 +2995,7 @@
           }
         },
 
-        "/get-address-dropoff": {
+        "/customer/get-address-dropoff": {
           "get": {
             "tags": [
               "Customer Hotspot"
@@ -3024,7 +3024,7 @@
         },
 
         
-        "/get-default-hotspot": {
+        "/customer/get-default-hotspot": {
           "get": {
             "tags": [
               "Customer Hotspot"
@@ -3044,7 +3044,7 @@
           }
         },
 
-        "/set-default-dropoff": {
+        "/customer/set-default-dropoff": {
           "get": {
             "tags": [
               "Customer Hotspot"
@@ -3089,7 +3089,7 @@
 
 
 
-        "/get-restaurant": {
+        "/customer/get-restaurant": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3124,7 +3124,7 @@
           }
         },
         
-        "/get-hotspot-restaurant": {
+        "/customer/get-hotspot-restaurant": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3172,7 +3172,7 @@
             "responses": {}
           }
         },
-        "/set-favorite-restaurant": {
+        "/customer/set-favorite-restaurant": {
           "post": {
             "tags": [
               "Customer Restaurant"
@@ -3199,7 +3199,7 @@
             "responses": {}
           }
         },
-        "/get-food-category": {
+        "/customer/get-food-category": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3219,7 +3219,7 @@
           }
         },
         
-        "/get-hotspot-restaurant-with-filter": {
+        "/customer/get-hotspot-restaurant-with-filter": {
           "post": {
             "tags": [
               "Customer Restaurant"
@@ -3289,7 +3289,7 @@
             "responses": {}
           }
         },
-        "/get-favorite-restaurant": {
+        "/customer/get-favorite-restaurant": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3323,7 +3323,7 @@
             "responses": {}
           }
         },
-        "/get-search-suggestion": {
+        "/customer/get-search-suggestion": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3351,7 +3351,7 @@
           }
         },
 
-        "/get-search-result": {
+        "/customer/get-search-result": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3393,7 +3393,7 @@
           }
         },
 
-        "/get-offer-banner": {
+        "/customer/get-offer-banner": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3413,7 +3413,7 @@
           }
         },
         
-        "/get-hotspot-restaurant-pickup": {
+        "/customer/get-hotspot-restaurant-pickup": {
           "post": {
             "tags": [
               "Customer Restaurant"
@@ -3484,7 +3484,7 @@
           }
         },
         
-        "/get-hotspot-restaurant-delivery": {
+        "/customer/get-hotspot-restaurant-delivery": {
           "post": {
             "tags": [
               "Customer Restaurant"
@@ -3555,7 +3555,7 @@
           }
         },
 
-        "/check-default-address": {
+        "/customer/check-default-address": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3575,7 +3575,7 @@
           }
         },
 
-        "/get-hotspot-restaurant-with-quick-filter": {
+        "/customer/get-hotspot-restaurant-with-quick-filter": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3617,7 +3617,7 @@
           }
         },
 
-        "/get-restaurant-category": {
+        "/customer/get-restaurant-category": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3637,7 +3637,7 @@
           }
         },
 
-        "/get-restaurant-details": {
+        "/customer/get-restaurant-details": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3665,7 +3665,7 @@
           }
         },
 
-        "/get-restaurant-schedule": {
+        "/customer/get-restaurant-schedule": {
           "get": {
             "tags": [
               "Customer Restaurant"
@@ -3694,7 +3694,7 @@
         },
 
         
-        "/get-food-card-details": {
+        "/customer/get-food-card-details": {
           "get": {
             "tags": [
               "Customer Food"
@@ -3722,7 +3722,7 @@
           }
         },
 
-        "/set-favorite-food": {
+        "/customer/set-favorite-food": {
           "put": {
             "tags": [
               "Customer Food"
@@ -3750,7 +3750,7 @@
           }
         },
 
-        "/get-favorite-food": {
+        "/customer/get-favorite-food": {
           "get": {
             "tags": [
               "Customer Food"
@@ -3770,7 +3770,7 @@
           }
         },
 
-         "/get-food-details/{restaurant_dish_id}": {
+         "/customer/get-food-details/{restaurant_dish_id}": {
           "get": {
             "tags": [
               "Customer Food"
@@ -3798,7 +3798,7 @@
           }
         },
 
-        "/get-recomended-slides": {
+        "/customer/get-recomended-slides": {
           "get": {
             "tags": [
               "Customer Food"
@@ -3837,7 +3837,7 @@
 
 
 
-        "/add-to-cart": {
+        "/customer/add-to-cart": {
           "post": {
             "tags": [
               "Customer Cart and Order"
@@ -3885,7 +3885,7 @@
             "responses": {}
           }
         },
-        "/get-cart/{restaurant_id}/{order_type}": {
+        "/customer/get-cart/{restaurant_id}/{order_type}": {
           "get": {
             "tags": [
               "Customer Cart and Order"
@@ -3920,7 +3920,7 @@
           }
         },
 
-        "/create-order": {
+        "/customer/create-order": {
           "post": {
             "tags": [
               "Customer Cart and Order"
@@ -3998,7 +3998,7 @@
           }
         },
 
-        "/get-pre-order-info/{order_id}": {
+        "/customer/get-pre-order-info/{order_id}": {
           "get": {
             "tags": [
               "Customer Cart and Order"
@@ -4026,7 +4026,7 @@
           }
         },
 
-        "/confirm-order/{order_id}": {
+        "/customer/confirm-order/{order_id}": {
           "put": {
             "tags": [
               "Customer Cart and Order"
@@ -4054,7 +4054,7 @@
           }
         },
 
-        "/get-orders": {
+        "/customer/get-orders": {
           "get": {
             "tags": [
               "Customer Cart and Order"
@@ -4086,7 +4086,7 @@
 
 
 
-        "/add-payment-card": {
+        "/customer/add-payment-card": {
           "post": {
             "tags": [
               "Customer Payment"
@@ -4137,7 +4137,7 @@
 
         
 
-        "/get-payment-card/{payment_card_id}": {
+        "/customer/get-payment-card/{payment_card_id}": {
           "get": {
             "tags": [
               "Customer Payment"
@@ -4165,7 +4165,7 @@
           }
         },
 
-        "/get-payment-cards": {
+        "/customer/get-payment-cards": {
           "get": {
             "tags": [
               "Customer Payment"
@@ -4185,7 +4185,7 @@
           }
         },
 
-        "/update-payment-card/{payment_card_id}": {
+        "/customer/update-payment-card/{payment_card_id}": {
           "put": {
             "tags": [
               "Customer Payment"
@@ -4241,7 +4241,7 @@
           }
         },
 
-        "/set-default-payment-card/{payment_card_id}": {
+        "/customer/set-default-payment-card/{payment_card_id}": {
           "put": {
             "tags": [
               "Customer Payment"
@@ -4269,7 +4269,7 @@
           }
         },
 
-        "/delete-payment-card/{payment_card_id}": {
+        "/customer/delete-payment-card/{payment_card_id}": {
           "delete": {
             "tags": [
               "Customer Payment"
@@ -4297,7 +4297,7 @@
           }
         },
 
-        "/payment": {
+        "/customer/payment": {
           "post": {
             "tags": [
               "Customer Payment"
