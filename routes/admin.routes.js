@@ -104,7 +104,11 @@ router.route('/changeCustomerStatus/:customerId').put([adminAuthentication.check
 router.route('/editCustomer/:customerId').put([adminAuthentication.checkToken
 ], adminCustomerController.editCustomer);
 
+<<<<<<< HEAD
 router.route('/uploadCustomerImage').put([adminAuthentication.checkToken, adminMulter.upload
+=======
+router.route('/uploadInsuranceImage').put([adminAuthentication.checkToken, adminMulter.upload
+>>>>>>> 551e7c610553b40ae39ee62088045a08cdeb9121
 ], adminCustomerController.uploadCustomerImage);
 
 router.route('/deleteCustomer/:customerId').delete([adminAuthentication.checkToken
