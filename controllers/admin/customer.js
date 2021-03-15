@@ -2,7 +2,7 @@ const model = require('../../models');
 const utility = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
 const validation = require("../../utils/admin/validation");
-
+const adminAWS = require('../../utils/aws');
 
 module.exports = {
     listCustomers: async (req, res) => {
