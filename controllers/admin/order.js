@@ -349,7 +349,8 @@ module.exports = {
                 } : null,
                 orderItems,
                 amount: order.amount,
-                driver:driver.name,              
+                driver: driver.name,
+                delivery_image_urls:order.delivery_image_urls,
             }
             
             return res.status(200).json({ status: 200, orderDetails });

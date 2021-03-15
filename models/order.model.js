@@ -74,6 +74,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
         },
 
+        delivery_image_urls: {
+            type: DataTypes.ARRAY(DataTypes.STRING),
+        },
+
         driver_id: {
             type: DataTypes.INTEGER,
         },

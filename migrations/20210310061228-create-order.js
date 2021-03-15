@@ -83,6 +83,10 @@ module.exports = {
           type: Sequelize.DATE,
       },
 
+      delivery_image_urls: {
+            type: Sequelize.ARRAY(Sequelize.STRING),
+      },
+
       driver_id: {
           type: Sequelize.INTEGER,
       },
