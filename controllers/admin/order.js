@@ -248,5 +248,115 @@ module.exports = {
         }
     },
 
-    
+    getOrderDetails: async (req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const orderId = req.params.orderId;
+
+            const order = await models.Order.findOne({
+                where: {
+                    order_id:orderId,
+                }
+            });
+
+            if (!order) return res.status(404).json({ status: 404, message: `no order found` });
+
+            const orderedItems = await models.OrderedItems.findAll({
+                order_id:order.id,
+            });
+
+           const customer = await models.Customer.findByPk(order.customer_id);
+            
+            const restaurant = await models.Restaurant.findByPk(order.restaurant_id);
+
+            let hotspotLocation = null;
+
+            if (order.hotspot_location_id) {
+              hotspotLocation= await models.HotspotLocation.findByPk(order.hotspot_location_id);
+            }
+
+            let orderItems = [];
+
+            for (const item of orderedItems) {
+
+                const dish = await models.RestaurantDish.findOne({
+                    where: {
+                        id: item.restaurant_dish_id,
+                        is_deleted: false,
+                    }
+                })
+
+                const dishAddOn=await models.DishAddOn.findAll({
+                    where: {
+                        id: item.dish_add_on_ids,
+                        is_deleted:false,
+                    }
+                })
+
+                let addOnPrice = 0;
+                
+                const addOns = dishAddOn.map((addOn) => {
+                    addOnPrice = addOnPrice + addOn.price
+                    return addOn.name
+                })
+
+                orderItems.push({
+                    itemName: dish.name,
+                    itemCount: item.cart_count,
+                    itemAddOn: addOns,
+                    itemPrice:(dish.price*item.cart_count)+addOnPrice                    
+                })
+            }
+
+            let status = null;
+
+            if (order.type === "pickup") {
+                status="Pickup"
+            }
+            else if (order.status === 1) {
+                status="Pending"
+            }
+            else if (order.status === 2) {
+                status="Driver Allocated"
+            }
+            else if (order.status === 3) {
+                status="Food Preparing"
+            }
+            else if (order.status === 4) {
+                status="Ready"
+            }
+            else if (order.status === 5) {
+                status="Delivered"
+            }
+
+            let driver = null;
+            if (order.driver_id) {
+              driver= await models.Driver.findByPk(order.driver_id);
+            }
+            
+            const orderDetails = {
+                orderId: orderId,
+                createdAt: order.createdAt,
+                deliveryDateTime: order.delivery_datetime,
+                customer: customer.name,
+                restaurant: restaurant.restaurant_name,
+                hotspotLocation: hotspotLocation? {
+                    name: hotspotLocation.name,
+                    details: hotspotLocation.location_detail,
+                } : null,
+                orderItems,
+                amount: order.amount,
+                driver:driver.name,              
+            }
+            
+            return res.status(200).json({ status: 200, orderDetails });
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
 }

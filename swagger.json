@@ -1990,6 +1990,34 @@
           }
         },
 
+        "/admin/getOrderDetails/{orderId}": {
+          "get": {
+            "tags": [
+              "Admin Order Management"
+            ],
+            "description": "Api to get details of order",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "orderId",
+                "in": "path",
+                "description": "enter order id",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 
