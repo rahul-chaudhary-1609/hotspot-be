@@ -104,6 +104,9 @@ router.route('/changeCustomerStatus/:customerId').put([adminAuthentication.check
 router.route('/editCustomer/:customerId').put([adminAuthentication.checkToken
 ], adminCustomerController.editCustomer);
 
+router.route('/uploadInsuranceImage').put([adminAuthentication.checkToken, adminMulter.upload
+], adminCustomerController.uploadCustomerImage);
+
 router.route('/deleteCustomer/:customerId').delete([adminAuthentication.checkToken
 ], adminCustomerController.deleteCustomer);
 
