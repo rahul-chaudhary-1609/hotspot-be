@@ -1326,6 +1326,13 @@
                 "description": "enter state",
                 "required": false,
                 "type": "string"
+              },
+              {
+                "name": "profile_picture_url",
+                "in": "formData",
+                "description": "enter profile picture url",
+                "required": false,
+                "type": "string"
               }
             ],
             "responses": {}

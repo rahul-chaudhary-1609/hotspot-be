@@ -181,6 +181,7 @@ module.exports = {
             const phone_no = req.body.phone_no? parseInt(req.body.phone_no) : customer.phone_no;
             const city = req.body.city || customer.city;
             const state = req.body.state || customer.state;
+            const profile_picture_url= req.body.profile_picture_url || customer.profile_picture_url;
 
             if (req.body.email) {
                 const customerByEmail = await model.Customer.findOne({
@@ -205,7 +206,7 @@ module.exports = {
 
 
             await model.Customer.update({
-                name,email,country_code,phone_no,city,state,
+                name,profile_picture_url,email,country_code,phone_no,city,state,
             },
                 {
                     where: {

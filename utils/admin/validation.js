@@ -75,6 +75,7 @@ module.exports = {
         name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).messages({
             'string.pattern.base': `Please enter a valid customer name`,
         }),
+        profile_picture_url: Joi.string().uri(),
         email: Joi.string().trim().max(45).email(),
         country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).messages({
             'string.pattern.base': `Please enter a valid country code`,
