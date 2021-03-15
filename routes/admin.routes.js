@@ -173,6 +173,9 @@ router.route('/getActiveOrders').get([adminAuthentication.checkToken
 router.route('/getScheduledOrders').get([adminAuthentication.checkToken
 ], adminOrderController.getScheduledOrders);
 
+router.route('/getCompletededOrders').get([adminAuthentication.checkToken
+], adminOrderController.getCompletedOrders);
+
 
 
 //others

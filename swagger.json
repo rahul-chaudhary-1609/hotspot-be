@@ -1872,6 +1872,13 @@
                 "type": "string"
               },
               {
+                "name": "status_filter",
+                "in": "query",
+                "description": "0: pickup | 1: pending | 2: Driver Allocated | 3: Food Preparing | 4: Ready",
+                "required": false,
+                "type": "number"
+              },
+              {
                 "name": "page",
                 "in": "query",
                 "description": "current page count to access",
@@ -1915,6 +1922,13 @@
                 "type": "string"
               },
               {
+                "name": "status_filter",
+                "in": "query",
+                "description": "0: pickup | 1: pending | 2: Driver Allocated",
+                "required": false,
+                "type": "number"
+              },
+              {
                 "name": "page",
                 "in": "query",
                 "description": "current page count to access",
@@ -1933,6 +1947,48 @@
           }
         },
 
+        "/admin/getCompletedOrders": {
+          "get": {
+            "tags": [
+              "Admin Order Management"
+            ],
+            "description": "Api to get Completed orders",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "searchKey",
+                "in": "query",
+                "description": "search by name, category",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 
