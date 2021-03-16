@@ -287,6 +287,10 @@ router.get('/get-orders', customerAuthentication.authenticateCustomer, (req, res
     return OrderController.getOrders(req, res);
 })
 
+router.get('/get-order-details/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.getOrderDetails(req, res);
+})
+
 
 //payment routes
 router.post('/add-payment-card', customerAuthentication.authenticateCustomer, (req, res) => {

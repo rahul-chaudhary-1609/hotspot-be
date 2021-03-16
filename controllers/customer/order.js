@@ -489,4 +489,93 @@ module.exports = {
         }
     },
 
+    getOrderDetails: async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const orderId = req.params.orderId;
+
+            const order = await models.Order.findOne({
+                where: {
+                    order_id:orderId,
+                }
+            });
+
+            if (!order) return res.status(404).json({ status: 404, message: `no order found` });
+
+            const orderedItems = await models.OrderedItems.findAll({
+                order_id:order.id,
+            });
+
+            
+            const restaurant = await models.Restaurant.findByPk(order.restaurant_id);
+
+
+            let orderItems = [];
+
+            for (const item of orderedItems) {
+
+                const dish = await models.RestaurantDish.findOne({
+                    where: {
+                        id: item.restaurant_dish_id,
+                        is_deleted: false,
+                    }
+                })
+
+                const dishAddOn=await models.DishAddOn.findAll({
+                    where: {
+                        id: item.dish_add_on_ids,
+                        is_deleted:false,
+                    }
+                })
+
+                let addOnPrice = 0;
+                
+                const addOns = dishAddOn.map((addOn) => {
+                    addOnPrice = addOnPrice + addOn.price
+                    return addOn.name
+                })
+
+                orderItems.push({
+                    itemName: dish.name,
+                    itemCount: item.cart_count,
+                    itemAddOn: addOns,
+                    itemPrice:(dish.price*item.cart_count)+addOnPrice                    
+                })
+            }
+
+            let status = null;
+
+             if (order.type === "pickup") {
+                status="Pickup"
+            }
+            else if ([1,2, 3, 4].includes(order.status)) {
+                status="Confirmed"
+            }
+            else if (order.status === 5) {
+                status="Delivered"
+            }
+            
+            const orderDetails = {
+                orderId: orderId,
+                createdAt: order.createdAt,
+                restaurant: restaurant.restaurant_name,
+                restaurant_image_url:restaurant.restaurant_image_url,
+                orderItems,
+                amount: order.amount,
+            }
+            
+            return res.status(200).json({ status: 200, orderDetails });
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    }
+
 }
