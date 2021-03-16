@@ -56,6 +56,10 @@ module.exports = {
         onDelete: 'cascade',
       },
 
+      cart_ids: {
+            type: Sequelize.ARRAY(Sequelize.INTEGER),
+      },
+
       amount: {
           type: Sequelize.FLOAT,
           allowNull: false,

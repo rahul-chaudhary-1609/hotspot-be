@@ -349,7 +349,7 @@ module.exports = {
                 } : null,
                 orderItems,
                 amount: order.amount,
-                driver: driver.name,
+                driver: driver? `${driver.first_name} ${driver.last_name}`:null,
                 delivery_image_urls:order.delivery_image_urls,
             }
             
@@ -360,4 +360,45 @@ module.exports = {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
+
+    assignDriver: async (req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const orderId = req.params.orderId;
+            const driverId = req.body.driverId;
+
+            const order = await models.Order.findOne({
+                where: {
+                    order_id:orderId,
+                }
+            });
+
+            if (!order) return res.status(404).json({ status: 404, message: `no order found` });
+
+            const driver = await models.Driver.findByPk(driverId);
+
+            if (!driver) return res.status(404).json({ status: 404, message: `no driver found` });
+
+            await models.Order.update({
+                status: 2,
+                driver_id: driver.id,
+            },
+                {
+                    where: {
+                        order_id:orderId
+                    },
+                    returning: true,
+                }
+            );
+
+            return res.status(200).json({ status: 200, message:"Driver assigned successfully" });
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    }
 }

@@ -179,6 +179,9 @@ router.route('/getCompletededOrders').get([adminAuthentication.checkToken
 router.route('/getOrderDetails/:orderId').get([adminAuthentication.checkToken
 ], adminOrderController.getOrderDetails);
 
+router.route('/assignDriver/:orderId').put([adminAuthentication.checkToken
+], adminOrderController.assignDriver);
+
 
 
 //others

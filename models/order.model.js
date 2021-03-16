@@ -43,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
         },
 
+        cart_ids: {
+            type: DataTypes.ARRAY(DataTypes.INTEGER),
+        },
+
         hotspot_dropoff_id: {
             type: DataTypes.INTEGER,
         },

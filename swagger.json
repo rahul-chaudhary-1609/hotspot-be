@@ -2019,6 +2019,41 @@
           }
         },
 
+        "/admin/assignDriver/{orderId}": {
+          "put": {
+            "tags": [
+              "Admin Order Management"
+            ],
+            "description": "Api to assign driver",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "orderId",
+                "in": "path",
+                "description": "enter order id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "driverId",
+                "in": "formData",
+                "description": "enter driver id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 
@@ -4076,6 +4111,13 @@
                 "description": "enter hotspot dropoff id",
                 "required": false,
                 "type": "number"
+              },
+              {
+                "name": "cart_ids",
+                "in": "formData",
+                "description": "enter cart ids: 1,2,3,...",
+                "required": false,
+                "type": "string"
               },
               {
                 "name": "amount",
