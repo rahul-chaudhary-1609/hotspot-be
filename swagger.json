@@ -4188,7 +4188,7 @@
           }
         },
 
-        "/customer/confirm-order/{order_id}": {
+        "/customer/confirm-order-payment/{order_id}": {
           "put": {
             "tags": [
               "Customer Cart and Order"

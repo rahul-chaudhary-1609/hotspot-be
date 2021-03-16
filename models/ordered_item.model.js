@@ -11,9 +11,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            OrderedItems.belongsTo(models.Restaurant);
             OrderedItems.belongsTo(models.RestaurantDish);
-            OrderedItems.belongsTo(models.Customer);
             OrderedItems.belongsTo(models.Order);
         }
     }
@@ -28,7 +26,6 @@ module.exports = (sequelize, DataTypes) => {
         order_id: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique:true,
         },
 
         restaurant_dish_id: {

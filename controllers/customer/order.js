@@ -159,15 +159,18 @@ module.exports = {
                 })
 
                 cartItems.push({
+                    id:item.id,
                     itemName: dish.name,
                     itemCount: item.cart_count,
                     itemAddOn: addOns,
                     itemPrice:(dish.price*item.cart_count)+addOnPrice                    
                 })
             }
+
+            const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice,0);
  
 
-            return res.status(200).json({ status: 200, cart: { cartInfo,cartItems,cooking_instructions:order.cooking_instructions || null } });
+            return res.status(200).json({ status: 200, cart: { cartInfo,cartItems,cooking_instructions:order? order.cooking_instructions : null,totalAmount } });
 
          } catch (error) {
         console.log(error);
@@ -192,7 +195,7 @@ module.exports = {
                 where: {
                     customer_id,
                     restaurant_id,
-                    status:1,
+                    status:0,
                 }
              })
             
@@ -205,6 +208,8 @@ module.exports = {
                 const type = req.body.order_type || order.type;
                 const cooking_instructions = req.body.cooking_instructions || order.cooking_instructions;
                 const delivery_datetime = req.body.delivery_datetime ? new Date(req.body.delivery_datetime) : order.delivery_datetime;
+                const cart_ids = req.body.cart_ids?(Array.isArray(req.body.cart_ids)?req.body.cart_ids:req.body.cart_ids.split(",")):order.cart_ids;
+
 
                 await models.Order.update({
                     hotspot_location_id,
@@ -214,7 +219,8 @@ module.exports = {
                     status,
                     type,
                     cooking_instructions,
-                    delivery_datetime
+                    delivery_datetime,
+                    cart_ids,
                 },
                     {
                         where: {
@@ -232,11 +238,11 @@ module.exports = {
                 const hotspot_dropoff_id = req.body.hotspot_dropoff_id? parseInt(req.body.hotspot_dropoff_id):null;
                 const amount = parseFloat(req.body.amount);
                 const tip_amount = parseFloat(req.body.tip_amount);
-                const status = 1;
+                const status = 0;
                 const type = req.body.order_type;
                 const cooking_instructions = req.body.cooking_instructions ? req.body.cooking_instructions : null;
                 const delivery_datetime = req.body.delivery_datetime ? new Date(req.body.delivery_datetime) : null;
-                
+                const cart_ids = req.body.cart_ids?(Array.isArray(req.body.cart_ids)?req.body.cart_ids:req.body.cart_ids.split(",")):null;
 
                 const newOrder = await models.Order.create({
                     order_id,
@@ -244,6 +250,7 @@ module.exports = {
                     restaurant_id,
                     hotspot_location_id,
                     hotspot_dropoff_id,
+                    cart_ids,
                     amount,
                     tip_amount,
                     status,
@@ -251,6 +258,8 @@ module.exports = {
                     cooking_instructions,
                     delivery_datetime
                 });
+
+
 
                 return res.status(200).json({ status: 200, order_id:newOrder.order_id });
             }
@@ -262,47 +271,7 @@ module.exports = {
         }
     },
 
-    confirmOrder:async (req, res) => {
-        try {
-            const customer = await models.Customer.findOne({
-                where: {
-                    email: req.user.email,
-                }
-            });
-
-            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
-
-            const order_id = req.params.orderId;
-
-            const order = await models.Order.findOne({
-                where: {
-                    order_id
-                }
-            })
-
-            if (!order || order.is_deleted) return res.status(404).json({ status: 404, message: `order not found` });
-            
-
-            await models.Order.update({
-                status:2,
-            },
-                {
-                    where: {
-                        order_id
-                    },
-                    returning: true,
-                }
-            );
-            
- 
-
-            return res.status(200).json({ status: 200, message:"Order confirmed successfully" });
-
-         } catch (error) {
-        console.log(error);
-        return res.status(500).json({ status: 500, message: `Internal Server Error` });
-        }
-    },
+    
 
     getPreOrderInfo: async (req, res) => {
         try {
@@ -347,8 +316,7 @@ module.exports = {
                     name: hotspotLocations.name,
                     address: hotspotLocations.location_detail,
                     dropoff: hotspotDropoff.dropoff_detail,
-                    delivery_date: (order.delivery_datetime).toJSON().slice(0, 10),
-                    delivery_time:(order.delivery_datetime).toJSON().slice(11, 19),
+                    delivery_datetime: order.delivery_datetime,
                 }
             }
             else if (order.type === "pickup") {
@@ -376,7 +344,7 @@ module.exports = {
         }
     },
 
-    getConfirmedOrders: async (req, res) => {
+    confirmOrderPayment:async (req, res) => {
         try {
             const customer = await models.Customer.findOne({
                 where: {
@@ -386,21 +354,61 @@ module.exports = {
 
             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
 
+            const order_id = req.params.orderId;
 
-            const orders = await models.Order.findAll({
+            const order = await models.Order.findOne({
                 where: {
-                    customer_id: customer.id,
-                    status: [2, 3, 4],
-                    is_deleted:false,
+                    order_id
                 }
             })
 
-            if (!orders) return res.status(404).json({ status: 404, message: `order not found` });
+            if (!order || order.is_deleted) return res.status(404).json({ status: 404, message: `order not found` });
 
-            
-            
+            const orderPayment = await models.OrderPayment.findOne({
+                where: {
+                    order_id:order.order_id,
+                }
+            })
 
-            return res.status(200).json({ status: 200, orders });
+            if (!orderPayment) return res.status(402).json({ status: 402, message: `no payment information found` });
+
+            await models.Order.update({
+                status:1,
+            },
+                {
+                    where: {
+                        order_id
+                    },
+                    returning: true,
+                }
+            );
+
+            const cart = await models.Cart.findAll({
+                where: {
+                    id:order.cart_ids,
+                }
+            })
+
+            const orderedItems = cart.map((item) => {
+                return {
+                    order_id: order.id,
+                    restaurant_dish_id: item.restaurant_dish_id,
+                    cart_count: item.cart_count,
+                    dish_add_on_ids:item.dish_add_on_ids,
+                }
+            })
+            
+            await models.OrderedItems.bulkCreate(orderedItems);
+            
+            await models.Cart.destroy({
+                    where: {
+                        id:order.cart_ids,
+                    },
+                    force: true,
+            })
+ 
+
+            return res.status(200).json({ status: 200, message:"Order confirmed" });
 
          } catch (error) {
         console.log(error);

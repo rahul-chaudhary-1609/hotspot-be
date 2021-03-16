@@ -279,13 +279,13 @@ router.get('/get-pre-order-info/:orderId', customerAuthentication.authenticateCu
     return OrderController.getPreOrderInfo(req, res);
 })
 
-router.put('/confirm-order/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
+router.put('/confirm-order-payment/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
     return OrderController.confirmOrderPayment(req, res);
 })
 
-router.get('/get-orders', customerAuthentication.authenticateCustomer, (req, res) => {
-    return OrderController.getConfirmedOrders(req, res);
-})
+// router.get('/get-orders', customerAuthentication.authenticateCustomer, (req, res) => {
+//     return OrderController.getConfirmedOrders(req, res);
+// })
 
 
 //payment routes
