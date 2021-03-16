@@ -569,6 +569,7 @@ module.exports = {
                 restaurant_image_url:restaurant.restaurant_image_url,
                 orderItems,
                 amount: order.amount,
+                status,
             }
             
             return res.status(200).json({ status: 200, orderDetails });
