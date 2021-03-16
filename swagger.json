@@ -4547,7 +4547,7 @@
             "responses": {}
           }
         },
-        "/customer/savePaymentInfo": {
+        "/customer/save-payment-info": {
           "put": {
             "tags": [
               "Customer Payment"
