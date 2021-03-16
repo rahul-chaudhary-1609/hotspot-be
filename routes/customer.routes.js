@@ -280,10 +280,10 @@ router.get('/get-pre-order-info/:orderId', customerAuthentication.authenticateCu
 })
 
 router.put('/confirm-order/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
-    return OrderController.confirmOrder(req, res);
+    return OrderController.confirmOrderPayment(req, res);
 })
 
-router.put('/get-orders', customerAuthentication.authenticateCustomer, (req, res) => {
+router.get('/get-orders', customerAuthentication.authenticateCustomer, (req, res) => {
     return OrderController.getConfirmedOrders(req, res);
 })
 
@@ -315,6 +315,10 @@ router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.au
 
 router.post('/payment',customerAuthentication.authenticateCustomer, (req, res) => {
     return PaymentController.payment(req, res);
+})
+
+router.put('/save-payment-info',customerAuthentication.authenticateCustomer, (req, res) => {
+    return PaymentController.savePaymentInfo(req, res);
 })
 
 

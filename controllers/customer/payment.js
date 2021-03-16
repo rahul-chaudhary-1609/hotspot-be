@@ -416,5 +416,52 @@ module.exports = {
         console.log(error);
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
-   },
+    },
+   
+    savePaymentInfo: async (req, res) => {
+       try {
+           const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+           const { order_id, transaction_id } = req.body;
+           
+           const orderPayment = await models.OrderPayment.findOrCreate({
+                where: {
+                    order_id,
+                },
+                defaults: {
+                    order_id,transaction_id,payment_status:1,
+                }
+           });
+           
+           if (orderPayment[1]) {
+                return res.status(200).json({ status: 200, message:`Saved!`});
+            }
+            
+            if (orderPayment[0]) {
+                await models.OrderPayment.update({
+                    order_id,transaction_id,payment_status:1,
+                    },
+                    {
+                        where: {
+                            order_id,
+                        },
+                        returning: true,
+                    }
+                );
+                
+                return res.status(200).json({ status: 200, message:`saved!`});
+            }    
+           
+
+       } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+    }
+   } 
 }
