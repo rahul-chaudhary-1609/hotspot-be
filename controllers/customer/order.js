@@ -3,6 +3,46 @@ const models = require('../../models');
 const validate = require('../../utils/customer/validation');
 const { Op } = require("sequelize");
 
+const getOrderCard =  async (args) => {
+    try {
+        
+        const orderCards = [];
+        for (const val of args.orders) {
+            
+            const restaurant = await models.Restaurant.findByPk(val.restaurant_id);
+
+            let status = null;
+
+            if (val.type === "pickup") {
+                status="Pickup"
+            }
+            else if ([1,2, 3, 4].includes(val.status)) {
+                status="Confirmed"
+            }
+            else if (val.status === 5) {
+                status="Delivered"
+            }
+
+            orderCards.push({
+                id: val.id,
+                orderId: val.order_id,
+                restaurant: restaurant.restaurant_name,
+                restaurant_image_url:restaurant.restaurant_image_url,
+                status,
+                createdAt:val.createdAt,
+            })
+        }
+        
+        return args.res.status(200).json({ status: 200, orderCards});
+
+
+    } catch (error) {
+        console.log(error);
+        return args.res.status(500).json({ status: 500, message: `Internal Server Error` });
+    } 
+
+
+};
 
 module.exports = {
     addToCart: async (req, res) => {
@@ -416,6 +456,37 @@ module.exports = {
         }
     },
 
-    
+    getOrders: async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+
+            const orders = await models.Order.findAll({
+                where: {
+                    customer_id: customer.id,
+                    status: [1,2,3,4,5],
+                    is_deleted:false,
+                },
+                order: [
+                    ['id', 'DESC']
+                ]
+            })
+
+            if (orders.length===0) return res.status(404).json({ status: 404, message: `no order found` });            
+            
+
+            getOrderCard({ orders, res });
+
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
 
 }

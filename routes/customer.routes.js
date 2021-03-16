@@ -283,9 +283,9 @@ router.put('/confirm-order-payment/:orderId', customerAuthentication.authenticat
     return OrderController.confirmOrderPayment(req, res);
 })
 
-// router.get('/get-orders', customerAuthentication.authenticateCustomer, (req, res) => {
-//     return OrderController.getConfirmedOrders(req, res);
-// })
+router.get('/get-orders', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.getOrders(req, res);
+})
 
 
 //payment routes
