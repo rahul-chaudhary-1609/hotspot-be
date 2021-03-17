@@ -8,6 +8,7 @@ const adminCustomerController = require('../controllers/admin/customer');
 const adminDashboardController = require('../controllers/admin/dashboard');
 const adminDriverController = require('../controllers/admin/driver');
 const adminOrderController = require('../controllers/admin/order');
+const adminFeeController = require('../controllers/admin/fee');
 const adminAuthentication = require('../middlewares/admin/jwt');
 const adminMulter = require('../middlewares/admin/multer');
 const adminOthersController = require('../controllers/admin/others');
@@ -182,6 +183,11 @@ router.route('/getOrderDetails/:orderId').get([adminAuthentication.checkToken
 router.route('/assignDriver/:orderId').put([adminAuthentication.checkToken
 ], adminOrderController.assignDriver);
 
+
+//Fee Settings
+
+router.route('/addFee').post([adminAuthentication.checkToken
+], adminFeeController.addFee);
 
 
 //others

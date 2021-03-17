@@ -55,6 +55,11 @@
         "name": "Admin Order Management",
         "description": "admin order management Api's"
       },
+
+      {
+        "name": "Admin Fee Settings",
+        "description": "admin fee settings Api's"
+      },
       
       {
         "name": "Customer Signup",
@@ -2054,6 +2059,78 @@
             "responses": {}
           }
         },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        "/admin/addFee": {
+          "post": {
+            "tags": [
+              "Admin Fee Settings"
+            ],
+            "description": "Api to add fee",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "order_range_from",
+                "in": "formData",
+                "description": "enter order range from",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "order_range_to",
+                "in": "formData",
+                "description": "enter order range to",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "fee_type",
+                "in": "formData",
+                "description": "Driver | Restaurant | Hotspot",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "fee",
+                "in": "formData",
+                "description": "enter fee",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+
+
+
+
+
+
 
 
 

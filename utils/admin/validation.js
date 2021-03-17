@@ -86,6 +86,15 @@ module.exports = {
         city: Joi.string().max(45),
         state: Joi.string().max(45),
     }),
+
+    feeSchema : Joi.object({
+        order_range_from: Joi.number().required(),
+        order_range_to: Joi.number().required(),        
+        fee_type: Joi.string().trim().valid('Driver','Restaurant','Hotspot').messages({
+            'string.pattern.base': `Invalid fee type. Valid fee types are: 'Driver'|'Restaurant'|'Hotspot'`,
+        }),
+        fee: Joi.number().required(),        
+    }),
 }
 
 
