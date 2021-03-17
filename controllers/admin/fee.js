@@ -1,5 +1,4 @@
 const models = require('../../models');
-const { Op } = require("sequelize");
 const validation = require("../../utils/admin/validation");
 
 module.exports = {
@@ -72,22 +71,28 @@ module.exports = {
       } 
     },
 
-    getDriverFee: async (req, res) => {
+    getFeeList: async (req, res) => {
         try {
             const admin = await models.Admin.findByPk(req.adminInfo.id);
 
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
-            const driverFees = await models.Fee.findAndCountAll({
+            const fee_type = req.params.feeType;
+
+            console.log("fee_type",fee_type)
+
+            if (!['Driver','Restaurant','Hotspot'].includes(fee_type)) return res.status(400).json({ status: 400, message: `Invalid fee type. Valid fee types are: 'Driver'|'Restaurant'|'Hotspot'` });
+
+            const feeList = await models.Fee.findAndCountAll({
                 where: {
-                    fee_type:'Driver'
+                    fee_type
                 },
                 order:[['order_range_from']]
             })
 
-            if(driverFees.count===0) return res.status(404).json({ status: 404, message: `no fee found` });
+            if(feeList.count===0) return res.status(404).json({ status: 404, message: `no fee found` });
 
-            return res.status(200).json({ status: 200, driverFees });
+            return res.status(200).json({ status: 200, feeList });
             
 
        } catch (error) {
