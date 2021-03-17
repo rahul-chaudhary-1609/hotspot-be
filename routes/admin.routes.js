@@ -189,6 +189,9 @@ router.route('/assignDriver/:orderId').put([adminAuthentication.checkToken
 router.route('/addFee').post([adminAuthentication.checkToken
 ], adminFeeController.addFee);
 
+router.route('/editFee/:feeId').put([adminAuthentication.checkToken
+], adminFeeController.editFee);
+
 
 //others
 

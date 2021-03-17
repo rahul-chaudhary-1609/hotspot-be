@@ -2125,6 +2125,62 @@
           }
         },
 
+        "/admin/editFee/{feeId}": {
+          "put": {
+            "tags": [
+              "Admin Fee Settings"
+            ],
+            "description": "Api to edit fee",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "feeId",
+                "in": "path",
+                "description": "enter fee id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "order_range_from",
+                "in": "formData",
+                "description": "enter order range from",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "order_range_to",
+                "in": "formData",
+                "description": "enter order range to",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "fee_type",
+                "in": "formData",
+                "description": "Driver | Restaurant | Hotspot",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "fee",
+                "in": "formData",
+                "description": "enter fee",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 
