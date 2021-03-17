@@ -279,6 +279,10 @@ router.get('/get-pre-order-info/:orderId', customerAuthentication.authenticateCu
     return OrderController.getPreOrderInfo(req, res);
 })
 
+router.put('/set-pickup-time/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.setPickupTime(req, res);
+})
+
 router.put('/confirm-order-payment/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
     return OrderController.confirmOrderPayment(req, res);
 })
@@ -291,8 +295,8 @@ router.get('/get-order-details/:orderId', customerAuthentication.authenticateCus
     return OrderController.getOrderDetails(req, res);
 })
 
-router.put('/set-pickup-time/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
-    return OrderController.setPickupTime(req, res);
+router.get('/get-track-status/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.getTrackStatusOfOrder(req, res);
 })
 
 

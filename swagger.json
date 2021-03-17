@@ -4296,6 +4296,33 @@
           }
         },
 
+        "/customer/get-track-status/{orderId}": {
+          "get": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to track status of an order",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "orderId",
+                "in": "path",
+                "description": "enter order id",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

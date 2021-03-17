@@ -13,14 +13,15 @@ const getOrderCard =  async (args) => {
 
             let status = null;
 
-            if (val.type === "pickup") {
+            if (val.status === 1 && val.type === "pickup") {
                 status="Pickup"
             }
-            else if ([1,2, 3, 4].includes(val.status)) {
+            else if ([1,2, 3].includes(val.status)) {
                 status="Confirmed"
             }
-            else if (val.status === 5) {
-                status="Delivered"
+            else if (val.status === 4) {
+                if(val.type==='pickup') status="Completed"
+                else status="Delivered"
             }
 
             orderCards.push({
@@ -511,7 +512,7 @@ module.exports = {
             const orders = await models.Order.findAll({
                 where: {
                     customer_id: customer.id,
-                    status: [1,2,3,4,5],
+                    status: [1,2,3,4],
                     is_deleted:false,
                 },
                 order: [
@@ -593,14 +594,15 @@ module.exports = {
 
             let status = null;
 
-             if (order.type === "pickup") {
+             if (order.status === 1 && order.type === "pickup") {
                 status="Pickup"
             }
-            else if ([1,2, 3, 4].includes(order.status)) {
+            else if ([1,2, 3].includes(order.status)) {
                 status="Confirmed"
             }
-            else if (order.status === 5) {
-                status="Delivered"
+            else if (order.status === 4) {
+                if(order.type==='pickup') status="Completed"
+                else status="Delivered"
             }
             
             const orderDetails = {
@@ -620,4 +622,92 @@ module.exports = {
         }
     },
 
+    getTrackStatusOfOrder: async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const orderId = req.params.orderId;
+
+            const order = await models.Order.findOne({
+                where: {
+                    order_id:orderId,
+                }
+            });
+
+            if (!order) return res.status(404).json({ status: 404, message: `no order found` });
+
+            let trackInfo = null;
+
+            if (order.type === "delivery") {
+
+                const hotspotLocations = await models.HotspotLocation.findOne({
+                    where: {
+                        id:order.hotspot_location_id,
+                    }
+                });
+
+                const hotspotDropoff = await models.HotspotDropoff.findOne({
+                    where: {
+                        id: order.hotspot_dropoff_id
+                    }
+                });
+
+
+                trackInfo = {
+                    orderId,
+                    name: hotspotLocations.name,
+                    address: hotspotLocations.location_detail,
+                    delivery_datetime: order.delivery_datetime,
+                    dropoff: hotspotDropoff.dropoff_detail,
+                }
+            }
+            else if (order.type === "pickup") {
+                const restaurant = await models.Restaurant.findOne({
+                    where: {
+                        id:order.restaurant_id,
+                    }
+                })
+
+                trackInfo = {
+                    orderId,
+                    name: restaurant.restaurant_name,
+                    address:restaurant.address,
+                    pickup_datetime: order.delivery_datetime,
+                }
+            }
+
+            let trackStatus = null;
+
+            if (order.status===1) {
+                trackStatus="Confirming order with restaurant"
+            }
+            else if (order.status === 2) {
+                trackStatus="Food is being Prepared"
+            }
+            else if (order.status === 3) {
+                trackStatus="Food is on the way"
+            }
+            else if (order.status === 4) {
+                if(order.type==='pickup') trackStatus="Completed"
+                else trackStatus="Delivered"
+            }
+
+            trackStatus = {
+                status: order.status,
+                message:trackStatus,
+            }
+            
+            return res.status(200).json({ status: 200, trackInfo,trackStatus });
+
+        } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    }
 }

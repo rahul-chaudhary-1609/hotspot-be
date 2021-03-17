@@ -19,23 +19,16 @@ const getOrderRow =  async (args) => {
 
             let status = null;
 
-            if (val.type === "pickup") {
-                status="Pickup"
+            if (val.status === 1) {
+                if(val.type==='pickup') status="Pickup"
+                else status = "Pending"
             }
-            else if (val.status === 1) {
-                status="Pending"
-            }
-            else if ([2, 3, 4].includes(val.status)) {
+            else if ([2, 3].includes(val.status)) {
                 status="Driver Allocated"
             }
-            // else if (val.status === 3) {
-            //     status="Food Preparing"
-            // }
-            // else if (val.status === 4) {
-            //     status="Ready"
-            // }
-            else if (val.status === 5) {
-                status="Delivered"
+            else if (val.status === 4) {
+                if(val.type==='pickup') status="Completed"
+                else status="Delivered"
             }
 
             orderRows.push({
@@ -80,11 +73,11 @@ module.exports = {
             let query = {};
             let status = null;
             if (req.query.status) {
-                if (!([0, 1, 2, 3, 4].includes(req.query.status))) return res.status(400).json({ status: 400, message: "Please provide a valid status" });
+                if (!([0, 1, 2, 3].includes(req.query.status))) return res.status(400).json({ status: 400, message: "Please provide a valid status" });
                 status = req.query.status;
             }
             else {
-                status = [1, 2, 3, 4];
+                status = [1, 2, 3];
             }
 
             let tomorrow = new Date(`${(new Date()).getFullYear()}-${(new Date()).getMonth() + 1}-${(new Date()).getDate() + 1}`);
@@ -149,11 +142,11 @@ module.exports = {
             
             let status = null;
             if (req.query.status) {
-                if (!([0, 1, 2, 3, 4].includes(req.query.status))) return res.status(400).json({ status: 400, message: "Please provide a valid status" });
+                if (!([0, 1, 2, 3].includes(req.query.status))) return res.status(400).json({ status: 400, message: "Please provide a valid status" });
                 status = req.query.status;
             }
             else {
-                status = [1, 2, 3, 4];
+                status = [1, 2, 3];
             }
 
             let tomorrow = new Date(`${(new Date()).getFullYear()}-${(new Date()).getMonth() + 1}-${(new Date()).getDate() + 1}`);
@@ -217,7 +210,7 @@ module.exports = {
 
             query.where = {
                 is_deleted: false,
-                status:5,
+                status:4,
                 
             };
             if (req.query.searchKey) {
@@ -313,23 +306,19 @@ module.exports = {
 
             let status = null;
 
-            if (order.type === "pickup") {
-                status="Pickup"
-            }
-            else if (order.status === 1) {
-                status="Pending"
+            if (order.status === 1) {
+                if(order.type==='pickup') status="Pickup"
+                else status = "Pending"
             }
             else if (order.status === 2) {
-                status="Driver Allocated"
+                status="Food is being prepared"
             }
             else if (order.status === 3) {
-                status="Food Preparing"
+                status="Food is on the way"
             }
             else if (order.status === 4) {
-                status="Ready"
-            }
-            else if (order.status === 5) {
-                status="Delivered"
+                if(order.type==='pickup') status="Completed"
+                else status="Delivered"
             }
 
             let driver = null;
@@ -349,6 +338,7 @@ module.exports = {
                 } : null,
                 orderItems,
                 amount: order.amount,
+                status,
                 driver: driver? `${driver.first_name} ${driver.last_name}`:null,
                 delivery_image_urls:order.delivery_image_urls,
             }
