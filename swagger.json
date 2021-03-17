@@ -4188,6 +4188,40 @@
           }
         },
 
+        "/customer/set-pickup-time/{orderId}": {
+          "put": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to set order pickup time",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "orderId",
+                "in": "path",
+                "description": "enter order id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "pickup_datetime",
+                "in": "formData",
+                "description": "YYYY-MM-DD HH:MM:SS",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
         "/customer/confirm-order-payment/{order_id}": {
           "put": {
             "tags": [

@@ -291,6 +291,12 @@ router.get('/get-order-details/:orderId', customerAuthentication.authenticateCus
     return OrderController.getOrderDetails(req, res);
 })
 
+router.put('/set-pickup-time/:orderId', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.setPickupTime(req, res);
+})
+
+
+
 
 //payment routes
 router.post('/add-payment-card', customerAuthentication.authenticateCustomer, (req, res) => {

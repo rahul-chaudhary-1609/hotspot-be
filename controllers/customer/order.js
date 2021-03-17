@@ -370,13 +370,54 @@ module.exports = {
                     name: restaurant.restaurant_name,
                     address:restaurant.address,
                     working_hours_from: restaurant.working_hours_from,
-                    working_hours_to:restaurant.working_hours_to
+                    working_hours_to: restaurant.working_hours_to,
+                    pickup_datetime: order.delivery_datetime,
                 }
             }
 
             
 
             return res.status(200).json({ status: 200, cartInfo });
+
+         } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
+
+    setPickupTime: async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
+
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const order_id = req.params.orderId;
+            const delivery_datetime = req.body.pickup_datetime ? new Date(req.body.pickup_datetime) : null;
+
+            const order = await models.Order.findOne({
+                where: {
+                    order_id
+                }
+            })
+
+            if (!order || order.is_deleted) return res.status(404).json({ status: 404, message: `order not found` });
+
+            await models.Order.update({
+                delivery_datetime,
+            },
+                {
+                    where: {
+                        order_id
+                    },
+                    returning: true,
+                }
+            );
+
+            return res.status(200).json({ status: 200, message:"successfull" });
 
          } catch (error) {
         console.log(error);
@@ -410,7 +451,7 @@ module.exports = {
                 }
             })
 
-            if (!orderPayment) return res.status(402).json({ status: 402, message: `no payment information found` });
+            if (!orderPayment || !orderPayment.payment_status) return res.status(402).json({ status: 402, message: `no payment details found` });
 
             await models.Order.update({
                 status:1,
@@ -573,10 +614,10 @@ module.exports = {
             }
             
             return res.status(200).json({ status: 200, orderDetails });
-         } catch (error) {
+        } catch (error) {
         console.log(error);
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
-    }
+    },
 
 }
