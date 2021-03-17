@@ -192,6 +192,9 @@ router.route('/addFee').post([adminAuthentication.checkToken
 router.route('/editFee/:feeId').put([adminAuthentication.checkToken
 ], adminFeeController.editFee);
 
+router.route('/getDriverFee').get([adminAuthentication.checkToken
+], adminFeeController.getDriverFee);
+
 
 //others
 

@@ -70,5 +70,29 @@ module.exports = {
         console.log(error);
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
       } 
+    },
+
+    getDriverFee: async (req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const driverFees = await models.Fee.findAndCountAll({
+                where: {
+                    fee_type:'Driver'
+                },
+                order:[['order_range_from']]
+            })
+
+            if(driverFees.count===0) return res.status(404).json({ status: 404, message: `no fee found` });
+
+            return res.status(200).json({ status: 200, driverFees });
+            
+
+       } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+      } 
     }
 }
