@@ -23,11 +23,11 @@ module.exports = {
             }
 
             if (req.body.restaurants_ids && !Array.isArray(req.body.restaurants_ids)) {
-                req.body.restaurants_ids = req.body.restaurants_ids.split(',').map(restaurant_id => restaurant_id);
+                req.body.restaurants_ids = req.body.restaurants_ids.split(',').map(restaurant_id => parseInt(restaurant_id));
             }
 
             if (req.body.driver_ids && !Array.isArray(req.body.driver_ids)) {
-                req.body.driver_ids = req.body.driver_ids.split(',').map(driver_id => driver_id);
+                req.body.driver_ids = req.body.driver_ids.split(',').map(driver_id => parseInt(driver_id));
             }
 
             const resultHotspot = validation.hotspotSchema.validate(req.body);
@@ -62,7 +62,7 @@ module.exports = {
                     }
                 })
 
-                await models.HotspotDropoff.bulkcreate(hotspotDropoffRows);
+                await models.HotspotDropoff.bulkCreate(hotspotDropoffRows);
             }
 
             if (restaurantIds) {
@@ -93,7 +93,7 @@ module.exports = {
                     }
                 })
 
-                await models.HotspotDriver.bulkcreate(hotspotDriverRows);
+                await models.HotspotDriver.bulkCreate(hotspotDriverRows);
             }            
             
 
@@ -130,11 +130,11 @@ module.exports = {
             }
 
             if (req.body.restaurants_ids && !Array.isArray(req.body.restaurants_ids)) {
-                req.body.restaurants_ids = req.body.restaurants_ids.split(',').map(restaurant_id => restaurant_id);
+                req.body.restaurants_ids = req.body.restaurants_ids.split(',').map(restaurant_id => parseInt(restaurant_id));
             }
 
             if (req.body.driver_ids && !Array.isArray(req.body.driver_ids)) {
-                req.body.driver_ids = req.body.driver_ids.split(',').map(driver_id => driver_id);
+                req.body.driver_ids = req.body.driver_ids.split(',').map(driver_id => parseInt(driver_id));
             }
                 
             const name = req.body.hotspot_name || hotspot.name;
@@ -191,12 +191,12 @@ module.exports = {
 
                 const hotspotDropoffRows = dropoffs.map((dropoff) => {
                     return {
-                        hotspot_location_id: hotspotLocation.id,
+                        hotspot_location_id: hotspotLocationId,
                         dropoff_detail:dropoff,
                     }
                 })
 
-                await models.HotspotDropoff.bulkcreate(hotspotDropoffRows);
+                await models.HotspotDropoff.bulkCreate(hotspotDropoffRows);
 
             }
 
@@ -211,12 +211,12 @@ module.exports = {
 
                 const restaurantHotspotRows = restaurantIds.map((id) => {
                     return {
-                        hotspot_location_id: hotspotLocation.id,
+                        hotspot_location_id: hotspotLocationId,
                         restaurant_id:id,
                     }
                 })
 
-                await models.RestaurantHotspot.bulkcreate(restaurantHotspotRows);
+                await models.RestaurantHotspot.bulkCreate(restaurantHotspotRows);
 
             }
 
@@ -231,12 +231,12 @@ module.exports = {
 
                 const hotspotDriverRows = driverIds.map((id) => {
                     return {
-                        hotspot_location_id: hotspotLocation.id,
+                        hotspot_location_id: hotspotLocationId,
                         driver_id:id,
                     }
                 })
 
-                await models.HotspotDriver.bulkcreate(hotspotDriverRows);
+                await models.HotspotDriver.bulkCreate(hotspotDriverRows);
             }            
             
 
@@ -326,12 +326,12 @@ module.exports = {
                 }
             })
 
-            if (!hotspotDropoff.count === 0) {
-                dropoffs = restaurantHotspot.rows.map(row => row.dropoff_detail);
+            if (hotspotDropoff.count !== 0) {
+                dropoffs = hotspotDropoff.rows.map(row => row.dropoff_detail);
             }
             
 
-            let restaurantIds = null;
+            let restaurantIds = [];
 
             
             const restaurantHotspot = await models.RestaurantHotspot.findAndCountAll({
@@ -340,13 +340,16 @@ module.exports = {
                 }
             })
 
-            if (!restaurantHotspot.count === 0) {
-                restaurantIds = restaurantHotspot.rows.map(row => row.restaurant_id);
+            if (restaurantHotspot.count !== 0) {
+                for (let row of restaurantHotspot.rows) {
+                    const restaurant = await models.Restaurant.findByPk(row.restaurant_id);
+                    restaurantIds.push(restaurant.restaurant_name)
+                }
             }
             
             
             
-            let driverIds = null;
+            let driverIds = [];
 
             const hotspotDriver = await models.HotspotDriver.findAndCountAll({
                 where: {
@@ -354,8 +357,12 @@ module.exports = {
                 }
             })
 
-            if (!hotspotDriver.count === 0) {
-                driverIds = hotspotDriver.rows.map(row => row.driver_id);
+            if (hotspotDriver.count !== 0) {
+                for (let row of hotspotDriver.rows) {
+
+                    const driver = await models.Driver.findByPk(row.driver_id);
+                    driverIds.push(`${driver.first_name} ${driver.last_name}`)
+                }
             }
             
             const hotspotDetails = {

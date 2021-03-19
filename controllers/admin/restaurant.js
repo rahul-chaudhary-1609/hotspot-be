@@ -1,4 +1,4 @@
-const { Admin, Restaurant, RestaurantCategory,RestaurantHotspot,DishCategory,RestaurantDish } = require('../../models');
+const { Admin, Restaurant, RestaurantCategory,RestaurantHotspot,DishCategory,RestaurantDish,HotspotLocation } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
 const adminAWS = require('../../utils/aws');
@@ -63,7 +63,7 @@ module.exports = {
                 //req.body.location = point;
                 
                 if (req.body.hotspot_location_ids && !Array.isArray(req.body.hotspot_location_ids)) {
-                    req.body.hotspot_location_ids = req.body.hotspot_location_ids.split(',').map(hotspot_location_id => hotspot_location_id);
+                    req.body.hotspot_location_ids = req.body.hotspot_location_ids.split(',').map(hotspot_location_id => parseInt(hotspot_location_id));
                 }
 
                 const hotspotLocationIds = req.body.hotspot_location_ids;
@@ -183,13 +183,13 @@ module.exports = {
 
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
-            let restaurantId = req.params.restaurantId;
+            let restaurantId = parseInt(req.params.restaurantId);
 
             const restaurant = await Restaurant.findByPk(restaurantId);
 
             if (!restaurant) return res.status(404).json({ status: 404, message: `No restaurant found with provided id` });
 
-            let coveringHotspots = null;
+            let coveringHotspots = [];
 
             
             const restaurantHotspot = await RestaurantHotspot.findAndCountAll({
@@ -198,10 +198,11 @@ module.exports = {
                 }
             })
 
-            if (!restaurantHotspot.count === 0) {
+            if (restaurantHotspot.count !== 0) {
                 for (let row of restaurantHotspot.rows) {
-                    const rest = await Restaurant.findByPk(row.restaurant_id);
-                    coveringHotspots.push(rest.restaurant_name)
+
+                    const hotspotLocation = await HotspotLocation.findByPk(row.hotspot_location_id);
+                    coveringHotspots.push(hotspotLocation.name)
                 }
             }
 
@@ -226,7 +227,7 @@ module.exports = {
             let query = {where:{id: req.params.restaurantId}};
             query.raw = true;
             if (req.body.hotspot_location_ids && !Array.isArray(req.body.hotspot_location_ids)) {
-                    req.body.hotspot_location_ids = req.body.hotspot_location_ids.split(',').map(hotspot_location_id => hotspot_location_id);
+                    req.body.hotspot_location_ids = req.body.hotspot_location_ids.split(',').map(hotspot_location_id => parseInt(hotspot_location_id));
             }
 
             const hotspotLocationIds = req.body.hotspot_location_ids;
@@ -260,7 +261,7 @@ module.exports = {
                             restaurant_id:parseInt(req.params.restaurantId),
                         }
                     })
-                        
+    
                     await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
                 }
                 
