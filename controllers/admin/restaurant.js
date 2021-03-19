@@ -1,4 +1,4 @@
-const { Admin, Restaurant, RestaurantCategory,DishCategory,RestaurantDish } = require('../../models');
+const { Admin, Restaurant, RestaurantCategory,RestaurantHotspot,DishCategory,RestaurantDish } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
 const adminAWS = require('../../utils/aws');
@@ -205,9 +205,9 @@ module.exports = {
                 }
             }
 
-            restaurant.coveringHotspots = coveringHotspots;
+            //restaurant.coveringHotspots = coveringHotspots;
 
-            return res.status(200).json({ status: 200, restaurant });
+            return res.status(200).json({ status: 200, restaurant, coveringHotspots });
 
         } catch (error) {
             console.log(error);

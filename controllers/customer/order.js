@@ -125,13 +125,13 @@ module.exports = {
                 const customerFavLocation = await models.CustomerFavLocation.findOne({
                     where: {
                         customer_id: customer.id,
-                        default_address: true,
+                        is_default: true,
                     }
                 });
 
                 const hotspotLocations = await models.HotspotLocation.findOne({
                     where: {
-                        location: customerFavLocation.location_geometry
+                        id: customerFavLocation.hotspot_location_id
                     }
                 });
 
