@@ -257,7 +257,7 @@ module.exports = {
             let [offset, limit] = utility.pagination(req.query.page, req.query.page_size);
 
             let query = {};
-            query.where = { is_deleted: false,is_rejected:false };
+            //query.where = {};
             // if (req.query.searchKey) {
             //     let searchKey = req.query.searchKey;
             //     query.where = {

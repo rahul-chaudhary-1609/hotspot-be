@@ -2489,7 +2489,7 @@
               },
               {
                 "name": "hotspotLocationId",
-                "in": "formData",
+                "in": "path",
                 "description": "enter hotspot location id",
                 "required": true,
                 "type": "number"
