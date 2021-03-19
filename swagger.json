@@ -2475,7 +2475,36 @@
             "tags": [
               "Admin Schedule Settings"
             ],
-            "description": "Api to list all hotspots",
+            "description": "Api to get details of a hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "hotspotLocationId",
+                "in": "path",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/deleteHotspot/{hotspotLocationId}": {
+          "delete": {
+            "tags": [
+              "Admin Schedule Settings"
+            ],
+            "description": "Api to delete a hotspot",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],

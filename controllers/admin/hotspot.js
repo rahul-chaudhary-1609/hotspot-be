@@ -387,4 +387,57 @@ module.exports = {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
+
+    deleteHotspot: async (req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const hotspotLocationId = req.params.hotspotLocationId;
+
+            const hotspot = await models.HotspotLocation.findByPk(hotspotLocationId);
+
+            if (!hotspot) return res.status(404).json({ status: 404, message: `no hotspot found with this id` });
+
+
+            
+            await models.HotspotDropoff.destroy({
+                where: {
+                    hotspot_location_id:hotspotLocationId,
+                },
+                force:true,
+            })
+            
+
+            
+            await models.RestaurantHotspot.destroy({
+                where: {
+                    hotspot_location_id:hotspotLocationId,
+                },
+                force:true,
+            })
+            
+            await models.HotspotDriver.destroy({
+                where: {
+                    hotspot_location_id:hotspotLocationId,
+                },
+                force:true,
+            })
+
+            await models.HotspotLocation.destroy({
+                where: {
+                    id:hotspotLocationId,
+                },
+                force:true,
+            })
+
+
+            return res.status(200).json({ status: 200,message: "Hotspot deleted" });
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
 }

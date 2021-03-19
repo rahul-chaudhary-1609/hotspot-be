@@ -1405,7 +1405,8 @@ module.exports = {
                 customerAddress.push(
                     {
                         address: {
-                            id:hotspotLocation.id,
+                            id: hotspotLocation.id,
+                            name:hotspotLocation.name,
                             address: hotspotLocation.location_detail,
                             city: hotspotLocation.city,
                             state: hotspotLocation.state,

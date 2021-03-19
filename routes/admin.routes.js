@@ -212,6 +212,9 @@ router.route('/editHotspot/:hotspotLocationId').put([adminAuthentication.checkTo
 router.route('/getHotspotDetails/:hotspotLocationId').get([adminAuthentication.checkToken
 ], adminHotspotController.getHotspotDetails);
 
+router.route('/deleteHotspot/:hotspotLocationId').delete([adminAuthentication.checkToken
+], adminHotspotController.deleteHotspot);
+
 //others
 
 router.route('/drop').get([], adminOthersController.drop);
