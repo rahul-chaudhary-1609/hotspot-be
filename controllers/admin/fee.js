@@ -1,4 +1,5 @@
 const models = require('../../models');
+const { Op } = require("sequelize");
 const validation = require("../../utils/admin/validation");
 
 module.exports = {
@@ -81,18 +82,33 @@ module.exports = {
 
             console.log("fee_type",fee_type)
 
-            if (!['Driver','Restaurant','Hotspot'].includes(fee_type)) return res.status(400).json({ status: 400, message: `Invalid fee type. Valid fee types are: 'Driver'|'Restaurant'|'Hotspot'` });
+            if (!['driver','restaurant','hotspot'].includes(fee_type)) return res.status(400).json({ status: 400, message: `Invalid fee type. Valid fee types are: 'Driver'|'Restaurant'|'Hotspot'` });
 
             const feeList = await models.Fee.findAndCountAll({
                 where: {
-                    fee_type
+                    fee_type: {
+                        [Op.iLike]:fee_type
+                    }
                 },
                 order:[['order_range_from']]
             })
 
             if(feeList.count===0) return res.status(404).json({ status: 404, message: `no fee found` });
 
-            return res.status(200).json({ status: 200, feeList });
+            if (fee_type === 'driver') {
+                const driverFeeList = feeList.rows.map(val => val)
+                return res.status(200).json({ status: 200, driverFeeList });
+            }
+            else if (fee_type === 'restaurant') {
+                const restaurantCommissionList = feeList.rows.map(val => val)
+                return res.status(200).json({ status: 200, restaurantCommissionList });
+            }
+            else if (fee_type === 'hotspot') {
+                const hotspotCommissionList = feeList.rows.map(val => val)
+                return res.status(200).json({ status: 200,hotspotCommissionList });
+            }
+
+            
             
 
        } catch (error) {

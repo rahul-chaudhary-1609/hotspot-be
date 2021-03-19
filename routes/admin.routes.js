@@ -9,6 +9,7 @@ const adminDashboardController = require('../controllers/admin/dashboard');
 const adminDriverController = require('../controllers/admin/driver');
 const adminOrderController = require('../controllers/admin/order');
 const adminFeeController = require('../controllers/admin/fee');
+const adminHotspotController = require('../controllers/admin/hotspot');
 const adminAuthentication = require('../middlewares/admin/jwt');
 const adminMulter = require('../middlewares/admin/multer');
 const adminOthersController = require('../controllers/admin/others');
@@ -195,6 +196,21 @@ router.route('/editFee/:feeId').put([adminAuthentication.checkToken
 router.route('/getFeeList/:feeType').get([adminAuthentication.checkToken
 ], adminFeeController.getFeeList);
 
+
+
+//schedule Settings
+
+router.route('/listHotspots').get([adminAuthentication.checkToken
+], adminHotspotController.listHotspots);
+
+router.route('/addHotspot').post([adminAuthentication.checkToken
+], adminHotspotController.addHotspot);
+
+router.route('/editHotspot/:hotspotLocationId').put([adminAuthentication.checkToken
+], adminHotspotController.editHotspot);
+
+router.route('/getHotspotDetails/:hotspotLocationId').get([adminAuthentication.checkToken
+], adminHotspotController.getHotspotDetails);
 
 //others
 

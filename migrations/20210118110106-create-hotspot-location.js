@@ -21,6 +21,22 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: false,
       },
+      city: {
+          type: Sequelize.STRING(45),
+          allowNull: false,
+      },
+      state: {
+          type: Sequelize.STRING(45),
+          allowNull: false,
+      },
+      postal_code: {
+          type: Sequelize.STRING(45),
+          allowNull: false,
+      },
+      country: {
+          type: Sequelize.STRING(45),
+          allowNull: false,
+      },
       delivery_shifts: {
           type: Sequelize.ARRAY(Sequelize.TIME),
       },
@@ -33,10 +49,6 @@ module.exports = {
           onUpdate: 'cascade',
           onDelete: 'cascade',
   
-      },
-      full_address: {
-          type: Sequelize.JSON,
-          allowNull: false,
       },
       is_added: {
           type: Sequelize.BOOLEAN,

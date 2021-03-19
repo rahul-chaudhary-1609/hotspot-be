@@ -61,9 +61,39 @@ module.exports = {
                 // point.coordinates.push(req.body.long);
                 // point.coordinates.push(req.body.lat);
                 //req.body.location = point;
-                req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
+                
+                if (req.body.hotspot_location_ids && !Array.isArray(req.body.hotspot_location_ids)) {
+                    req.body.hotspot_location_ids = req.body.hotspot_location_ids.split(',').map(hotspot_location_id => hotspot_location_id);
+                }
+
+                const hotspotLocationIds = req.body.hotspot_location_ids;
+
+                delete req.body.hotspot_location_ids;
+
+                //req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
+                req.body.location = [parseFloat(req.body.lat), parseFloat(req.body.long)];
+                
                 let restaurantCreated = await Restaurant.create(req.body);
-                if(restaurantCreated)
+                if (restaurantCreated)
+                    if (hotspotLocationIds) {
+                        const restaurantHotspotRows = hotspotLocationIds.map((id) => {
+                            return {
+                                hotspot_location_id:id,
+                                restaurant_id:restaurantCreated.id,
+                            }
+                        })
+                        
+                        for (let row of restaurantHotspotRows) {
+                            await RestaurantHotspot.findOrCreate({
+                                where: {
+                                    row
+                                },
+                                defaults: {
+                                    row
+                                }
+                            })       
+                        }
+                    }
                  utilityFunction.ReS(res, {}, 200, "Restaurant added successfully.");
             } else {
                 utilityFunction.ReE(res, "Restaurant with this email id already exists", 401, {});
@@ -159,7 +189,24 @@ module.exports = {
 
             if (!restaurant) return res.status(404).json({ status: 404, message: `No restaurant found with provided id` });
 
+            let coveringHotspots = null;
+
             
+            const restaurantHotspot = await RestaurantHotspot.findAndCountAll({
+                where: {
+                    restaurant_id:restaurantId,
+                }
+            })
+
+            if (!restaurantHotspot.count === 0) {
+                for (let row of restaurantHotspot.rows) {
+                    const rest = await Restaurant.findByPk(row.restaurant_id);
+                    coveringHotspots.push(rest.restaurant_name)
+                }
+            }
+
+            restaurant.coveringHotspots = coveringHotspots;
+
             return res.status(200).json({ status: 200, restaurant });
 
         } catch (error) {
@@ -178,6 +225,14 @@ module.exports = {
 
             let query = {where:{id: req.params.restaurantId}};
             query.raw = true;
+            if (req.body.hotspot_location_ids && !Array.isArray(req.body.hotspot_location_ids)) {
+                    req.body.hotspot_location_ids = req.body.hotspot_location_ids.split(',').map(hotspot_location_id => hotspot_location_id);
+            }
+
+            const hotspotLocationIds = req.body.hotspot_location_ids;
+
+            delete req.body.hotspot_location_ids;
+            
             let updates = req.body;
             let restaurantExists = await Restaurant.findOne(query);
             if(restaurantExists) {
@@ -186,9 +241,29 @@ module.exports = {
                     // point.coordinates.push(req.body.long);
                     // point.coordinates.push(req.body.lat);
                     // req.body.location = point;
-                    req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
+                    //req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
+                    updates.location = [parseFloat(req.body.lat), parseFloat(req.body.long)];
                 }
                 await Restaurant.update(updates, query);
+
+                if (hotspotLocationIds) {
+                    await RestaurantHotspot.destroy({
+                        where: {
+                            restaurant_id:parseInt(req.params.restaurantId),
+                        },
+                        force: true,
+                    })
+                
+                    const restaurantHotspotRows = hotspotLocationIds.map((id) => {
+                        return {
+                            hotspot_location_id:id,
+                            restaurant_id:parseInt(req.params.restaurantId),
+                        }
+                    })
+                        
+                    await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
+                }
+                
                 utilityFunction.ReS(res, {}, 200, "Restaurant data updated successfully.");
             } else {
                 utilityFunction.ReE(res, "Invalid restaurant id", 401, {});

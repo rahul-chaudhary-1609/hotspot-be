@@ -1298,23 +1298,29 @@ module.exports = {
 
             if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
 
-            if (!Array.isArray(req.body.location_geometry)) {
-                req.body.location_geometry=[req.body.location_geometry.split(',')[0],req.body.location_geometry.split(',')[1]]
-            }
+            const customer_id = customer.id;
+            const hotspot_location_id = req.body.hotspot_location_id;
 
-            const result = validation.customerAddressSchema.validate(req.body);
+            if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-            if (result.error) {
-                return res.status(400).json({ status: 400, message: result.error.details[0].message });
-            }
+            // if (!Array.isArray(req.body.location_geometry)) {
+            //     req.body.location_geometry=[req.body.location_geometry.split(',')[0],req.body.location_geometry.split(',')[1]]
+            // }
 
-            const address = result.value.address;
-            const city = result.value.city;
-            const state = result.value.state;
-            const postal_code = result.value.postal_code;
-            const country = result.value.country;
-            const location_geometry = result.value.location_geometry;
-            const customer_id = customer.getDataValue('id');
+            // const result = validation.customerAddressSchema.validate(req.body);
+
+            // if (result.error) {
+            //     return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            // }
+
+            // const address = result.value.address;
+            // const city = result.value.city;
+            // const state = result.value.state;
+            // const postal_code = result.value.postal_code;
+            // const country = result.value.country;
+            // const location_geometry = result.value.location_geometry;
+
+            
 
             // const customerFavLocation = await models.CustomerFavLocation.create({
             //     address, city, state, postal_code, country, location_geometry, customer_id: customer_id
@@ -1322,8 +1328,8 @@ module.exports = {
 
             const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
-                    location: location_geometry,
-                    customer_id:customer.getDataValue('id')
+                    id:hotspot_location_id,
+                    customer_id
                 }
             });
 
@@ -1338,10 +1344,10 @@ module.exports = {
             const [customerFavLocation, created] = await models.CustomerFavLocation.findOrCreate({
                 where: {
                     
-                        location_geometry, customer_id: customer_id
+                        hotspot_location_id:hotspotLocation.id, customer_id: customer_id
                 },
                 defaults: {
-                    address, city, state, postal_code, country, location_geometry,hotspot_dropoff_id:hotspot_dropoff_id[0] ,customer_id: customer_id
+                    hotspot_location_id:hotspotLocation.id,hotspot_dropoff_id:hotspot_dropoff_id[0] ,customer_id: customer_id
                 }
             });
 
@@ -1349,8 +1355,8 @@ module.exports = {
                 is_added: true
             }, {
                 where: {
-                    location: location_geometry,
-                    customer_id:customer.getDataValue('id')
+                    id:hotspot_location_id,
+                    customer_id
                 },
                 returning: true,
             });
@@ -1373,11 +1379,11 @@ module.exports = {
                 }
             })
 
-            if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
+            if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
             const customerFavLocation = await models.CustomerFavLocation.findAll({
                 where: {
-                    customer_id: customer.getDataValue('id')
+                    customer_id: customer.id
                 }
             })
 
@@ -1385,27 +1391,30 @@ module.exports = {
 
             let customerAddress = [];
 
+
             for (const val of customerFavLocation){
                 const dropoff = await models.HotspotDropoff.findOne({ where: { id: val.hotspot_dropoff_id } });
+                
                 const hotspotLocation = await models.HotspotLocation.findOne({
                     where: {
-                        location: val.location_geometry,
+                        id: val.hotspot_location_id,
                         customer_id: customer.id
                     }
                 });
+                
                 customerAddress.push(
                     {
                         address: {
                             id:hotspotLocation.id,
-                            address: val.address,
-                            city: val.city,
-                            state: val.state,
-                            postal_code: val.postal_code,
-                            country: val.country,
-                            location_geometry: val.location_geometry
+                            address: hotspotLocation.location_detail,
+                            city: hotspotLocation.city,
+                            state: hotspotLocation.state,
+                            postal_code: hotspotLocation.postal_code,
+                            country: hotspotLocation.country,
+                            location_geometry: hotspotLocation.location
                         },
                         default_dropoff: dropoff.dropoff_detail,
-                        isDefault: val.default_address
+                        isDefault: val.is_default
                     }
                 )
             }
@@ -1427,48 +1436,63 @@ module.exports = {
             })
 
             if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
-
-            if (!Array.isArray(req.body.location_geometry)) {
-                req.body.location_geometry=[req.body.location_geometry.split(',')[0],req.body.location_geometry.split(',')[1]]
-            }
             
-            const result = validation.customerAddressSchema.validate(req.body);
+            const customer_id = customer.id;
+            const hotspot_location_id = req.body.hotspot_location_id;
 
-            if (result.error) {
-                return res.status(400).json({ status: 400, message: result.error.details[0].message });
-            }
+            if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-            const address = result.value.address;
-            const city = result.value.city;
-            const state = result.value.state;
-            const postal_code = result.value.postal_code;
-            const country = result.value.country;
-            const location_geometry = result.value.location_geometry;
+            // if (!Array.isArray(req.body.location_geometry)) {
+            //     req.body.location_geometry=[req.body.location_geometry.split(',')[0],req.body.location_geometry.split(',')[1]]
+            // }
+            
+            // const result = validation.customerAddressSchema.validate(req.body);
+
+            // if (result.error) {
+            //     return res.status(400).json({ status: 400, message: result.error.details[0].message });
+            // }
+
+            // const address = result.value.address;
+            // const city = result.value.city;
+            // const state = result.value.state;
+            // const postal_code = result.value.postal_code;
+            // const country = result.value.country;
+            // const location_geometry = result.value.location_geometry;
+            const hotspotLocation = await models.HotspotLocation.findOne({
+                where: {
+                    id:hotspot_location_id,
+                    customer_id
+                }
+            });
 
             await models.CustomerFavLocation.update({
-                default_address: false
+                is_default: false
             }, {
                 where: {
-                    default_address: true,
-                    customer_id: customer.getDataValue('id')
+                    is_default: true,
+                    customer_id
                 },
                 returning: true,
             });
 
             await models.CustomerFavLocation.update({
-                default_address: true
+                is_default: true
             }, {
                 where: {
-                    address, city, state, country, postal_code, location_geometry, customer_id: customer.getDataValue('id')
+                    hotspot_location_id, customer_id
                 },
                 returning: true,
             });
 
             await models.Customer.update({
-                address, city, state, country, postal_code,
+                address: hotspotLocation.location_detail,
+                city: hotspotLocation.city,
+                state: hotspotLocation.state,
+                country: hotspotLocation.country,
+                postal_code:hotspotLocation.postal_code,
             }, {
                 where: {
-                    id:customer.getDataValue('id')
+                    id:customer_id
                 },
                 returning: true,
             });
@@ -1494,12 +1518,12 @@ module.exports = {
 
           let isDefaultFound = false;
 
-          if (!customer) return res.status(404).json({ status: 404, message: "models.Customer does not exist!" });
+          if (!customer) return res.status(404).json({ status: 404, message: "Customer does not exist!" });
 
           const customerFavLocation = await models.CustomerFavLocation.findOne({
               where: {
                   customer_id: customer.id,
-                  default_address: true,
+                  is_default: true,
               }
           })
 

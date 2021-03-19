@@ -8,34 +8,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      address: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      },
-      city: {
-        type: Sequelize.STRING(45),
-        allowNull: false,
-      },
-      state: {
-        type: Sequelize.STRING(45),
-        allowNull: false,
-      },
-      postal_code: {
-        type: Sequelize.STRING(45),
-        allowNull: false,
-      },
-      country: {
-        type: Sequelize.STRING(45),
-        allowNull: false,
-      },
-      location_geometry: {
-        type: Sequelize.ARRAY(Sequelize.FLOAT),
-        allowNull: false,
-      },
-      default_address: {
+      is_default: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false
+      },
+      hotspot_location_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'hotspot_locations',
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade',
       },
       hotspot_dropoff_id: {
         type: Sequelize.INTEGER,

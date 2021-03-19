@@ -48,53 +48,54 @@ module.exports = {
 
             if (hotspotLocation.count < 3) {
 
-            for (let i = 0; i < 4; i++) {
-                let nP = randomLocation.randomCirclePoint(P, R);
-                nP = {
-                    latitude: parseFloat((nP.latitude).toFixed(7)),
-                    longitude: parseFloat((nP.longitude).toFixed(7))
-                }
+                for (let i = 0; i < 4; i++) {
+                    let nP = randomLocation.randomCirclePoint(P, R);
+                    nP = {
+                        latitude: parseFloat((nP.latitude).toFixed(7)),
+                        longitude: parseFloat((nP.longitude).toFixed(7))
+                    }
 
+                    const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${nP.latitude},${nP.longitude}&key=AIzaSyA7NF6WwqPWNK2kDDVN6ayffGd10-0aqJs`);
 
-                const URL = `https://us1.locationiq.com/v1/reverse.php?key=pk.7877e7074e3d5ad05dfbd4bfdde25737&format=json&lat=${nP.latitude}&lon=${nP.longitude}`
+                    const jsonResponse = await response.json();
+                
+                    console.log("jsonResponse", jsonResponse.results[0].address_components)
 
-                //request(URL, { json: true }, async (err, resp, body) => {
-                    // (err) { return console.log("LocationIQ API Error", err); }
-                const response = await fetch(`${URL}`);
+                    const findAddressType = (key) => {
+                        return jsonResponse.results[0].address_components.find((val) => val.types[0] === key)
+                    }
 
-                const body = await response.json();
-                console.log("body: ", body);
-                const name = body.display_name.split(',')[0];
-                const location_detail = body.display_name;
-                const location = [nP.latitude, nP.longitude];
-                const delivery_shifts = available_delivery_shifts[Math.floor(Math.random() * available_delivery_shifts.length)];
-                const full_address = {
-                    city: body.address.county,
-                    state: body.address.state,
-                    postal_code: body.address.postcode,
-                    country: body.address.country
-                }
-                if (location_detail) {
+                    const location_detail = jsonResponse.results[0].formatted_address;
+                    const name = location_detail.split(',')[1];
+                    const location = [nP.latitude, nP.longitude];
+                    const delivery_shifts = available_delivery_shifts[Math.floor(Math.random() * available_delivery_shifts.length)];
+            
+                    const cityComponent = findAddressType("administrative_area_level_2") || findAddressType("postal_town") || findAddressType("locality");
+                    const city = cityComponent?cityComponent.long_name:null;
+                    const state = findAddressType("administrative_area_level_1")?findAddressType("administrative_area_level_1").long_name:null;
+                    const country = findAddressType("country")?findAddressType("country").long_name:null;
+                    const postal_code = findAddressType("postal_code")?findAddressType("postal_code").long_name:null;
+        
+                    if (location_detail && city && state && country && postal_code) {
 
                     
                         const hotspotLocationID = await models.HotspotLocation.create({
-                            name,location, location_detail, full_address, delivery_shifts, customer_id
+                            name, location, location_detail, city, state, postal_code, country, delivery_shifts, customer_id
                         });
                         const hotspot_location_id = hotspotLocationID.getDataValue('id');
                         const dropoff_detail = location_detail.split(',').slice(0, 2).join(',');
                     
 
-                    for (let j = 0; j < 3; j++){
-                         await models.HotspotDropoff.create({
-                            hotspot_location_id,dropoff_detail
-                        }); 
-                    }                        
+                        for (let j = 0; j < 3; j++) {
+                            await models.HotspotDropoff.create({
+                                hotspot_location_id, dropoff_detail
+                            });
+                        }
                                                   
                     }
                 }
-                //});
-
             }
+                
 
             const hotspotLocations = await models.HotspotLocation.findAll({
                 where: {
@@ -104,9 +105,15 @@ module.exports = {
 
             const locations = hotspotLocations.map((val) => {
                 return {
+                    id: val.id,
                     name: val.name,
                     formatted_address: val.location_detail,
-                    full_address: val.full_address,
+                    full_address: {
+                        city: val.city,
+                        state: val.state,
+                        country: val.country,
+                        postal_code: val.postal_code
+                    },
                     location_geometry: { latitude: val.location[0], longitude: val.location[1] },
                     is_added: val.is_added,
                 }
@@ -115,7 +122,7 @@ module.exports = {
             if (locations.length === 0) return res.status(404).json({ status: 404, message: `No Hotspot Found` });
 
             return res.status(200).json({ status: 200, hotspot_loctions: locations });
-            
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
@@ -168,6 +175,7 @@ module.exports = {
             return res.status(500).json({ status: 500, message: `Internal Server Error` });
         }
     },
+
     getHotspotDropoff: async (req, res) => {
       try {
           const customer = await models.Customer.findOne({
@@ -182,7 +190,7 @@ module.exports = {
 
           if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
 
-          const hotspotLocations = await models.HotspotLocation.findOne({
+          const hotspotLocation = await models.HotspotLocation.findOne({
               where: {
                   id:hotspot_location_id
               }
@@ -202,26 +210,16 @@ module.exports = {
                   dropoff:val.dropoff_detail,
               }
           });
-
-          const address = hotspotLocations.location_detail;
-          const city = hotspotLocations.full_address.city;
-          const state = hotspotLocations.full_address.state;
-          const postal_code = hotspotLocations.full_address.postal_code;
-          const country = hotspotLocations.full_address.country;
-          const location_geometry = hotspotLocations.location;
           const customer_id = customer.id;
 
-          // const customerFavLocation = await models.CustomerFavLocation.create({
-          //     address, city, state, postal_code, country, location_geometry, customer_id: customer_id
-          // });
 
          await models.CustomerFavLocation.findOrCreate({
               where: {
 
-                  location_geometry, customer_id: customer_id
+                  hotspot_location_id, customer_id
               },
               defaults: {
-                  address, city, state, postal_code, country, location_geometry,hotspot_dropoff_id:dropoffs[0].id, customer_id: customer_id
+                  hotspot_location_id,hotspot_dropoff_id:dropoffs[0].id, customer_id: customer_id
               }
           });
 
@@ -229,46 +227,50 @@ module.exports = {
               is_added: true
           }, {
               where: {
-                  location: location_geometry,
-                  customer_id: customer.getDataValue('id')
+                  id:hotspot_location_id,
+                  customer_id
               },
               returning: true,
           });
 
           await models.CustomerFavLocation.update({
-              default_address: false
+              is_default: false
           }, {
               where: {
-                  default_address: true,
-                  customer_id: customer.getDataValue('id')
+                  is_default: true,
+                  customer_id
               },
               returning: true,
           });
 
           await models.CustomerFavLocation.update({
-              default_address: true
+              is_default: true
           }, {
               where: {
-                  address, city, state, country, postal_code, location_geometry, customer_id: customer.getDataValue('id')
+                  hotspot_location_id, customer_id
               },
               returning: true,
           });
 
           await models.Customer.update({
-              address, city, state, country, postal_code,
+              address: hotspotLocation.location_detail,
+                city: hotspotLocation.city,
+                state: hotspotLocation.state,
+                country: hotspotLocation.country,
+                postal_code:hotspotLocation.postal_code,
           }, {
               where: {
-                  id: customer.getDataValue('id')
+                  id: customer_id
               },
               returning: true,
           });
 
           const hotspotLocationDetails = {
               hotspot_location_id,
-              name: hotspotLocations.name,
-              formatted_address: hotspotLocations.location_detail,
+              name: hotspotLocation.name,
+              formatted_address: hotspotLocation.location_detail,
               dropoffs,
-              delivery_shifts: hotspotLocations.delivery_shifts
+              delivery_shifts: hotspotLocation.delivery_shifts
           }
 
 
@@ -339,13 +341,6 @@ module.exports = {
           if (!hotspot_dropoff_id || isNaN(hotspot_dropoff_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot dropoff id` });
 
 
-          const hotspotLocations = await models.HotspotLocation.findOne({
-              where: {
-                  id:hotspot_location_id
-              }
-          });
-
-          const location_geometry = hotspotLocations.location;
           const customer_id = customer.id;
 
 
@@ -354,8 +349,8 @@ module.exports = {
               hotspot_dropoff_id
           }, {
               where: {
-                  location_geometry,
-                  customer_id: customer_id
+                  hotspot_location_id,
+                  customer_id
               },
               returning: true,
           });
@@ -384,13 +379,13 @@ module.exports = {
             const customerFavLocation = await models.CustomerFavLocation.findOne({
                 where: {
                     customer_id: customer.id,
-                    default_address: true,
+                    is_default: true,
                 }
             });
 
             const hotspotLocations = await models.HotspotLocation.findOne({
                 where: {
-                    location: customerFavLocation.location_geometry
+                    id:customerFavLocation.hotspot_location_id
                 }
             });
 

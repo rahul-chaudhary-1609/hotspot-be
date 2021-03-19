@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       CustomerFavLocation.belongsTo(models.Customer);
+      CustomerFavLocation.belongsTo(models.HotspotLocation);
       CustomerFavLocation.belongsTo(models.HotspotDropoff);
     }
   };
@@ -22,34 +23,13 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true
     },
-    address: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    city: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    state: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    postal_code: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    country: {
-      type: DataTypes.STRING(45),
-      allowNull: false,
-    },
-    location_geometry: {
-      type: DataTypes.ARRAY(DataTypes.FLOAT),
-      allowNull: false,
-    },
-    default_address: {
+    is_default: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false
+    },
+    hotspot_location_id: {
+      type: DataTypes.INTEGER,
     },
     hotspot_dropoff_id: {
       type: DataTypes.INTEGER,

@@ -60,6 +60,11 @@
         "name": "Admin Fee Settings",
         "description": "admin fee settings Api's"
       },
+
+      {
+        "name": "Admin Schedule Settings",
+        "description": "admin schedule settings Api's"
+      },
       
       {
         "name": "Customer Signup",
@@ -534,6 +539,13 @@
                   "type": "string"
               },
               {
+                "name": "hotspot_location_ids",
+                "in": "formData",
+                "description": "eg: 1,2,3,....",
+                "required": false,
+                "type": "string"
+              },
+              {
                   "name": "deliveries_per_shift",
                   "in": "formData",
                   "description": "deliveries per shift in number",
@@ -735,6 +747,13 @@
                   "description": "address",
                   "required": true,
                   "type": "string"
+              },
+              {
+                "name": "hotspot_location_ids",
+                "in": "formData",
+                "description": "eg: 1,2,3,....",
+                "required": false,
+                "type": "string"
               },
               {
                   "name": "deliveries_per_shift",
@@ -2109,7 +2128,7 @@
               {
                 "name": "fee_type",
                 "in": "formData",
-                "description": "Driver | Restaurant | Hotspot",
+                "description": "driver | restaurant | hotspot",
                 "required": true,
                 "type": "string"
               },
@@ -2166,7 +2185,7 @@
               {
                 "name": "fee_type",
                 "in": "formData",
-                "description": "Driver | Restaurant | Hotspot",
+                "description": "driver | restaurant | hotspot",
                 "required": false,
                 "type": "string"
               },
@@ -2202,7 +2221,7 @@
               {
                 "name": "feeType",
                 "in": "path",
-                "description": "Driver | Restaurant | Hotspot",
+                "description": "driver | restaurant | hotspot",
                 "required": true,
                 "type": "string"
               }
@@ -2214,6 +2233,271 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+        "/admin/listHotspots": {
+          "get": {
+            "tags": [
+              "Admin Schedule Settings"
+            ],
+            "description": "Api to list all hotspots",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/addHotspot": {
+          "post": {
+            "tags": [
+              "Admin Schedule Settings"
+            ],
+            "description": "Api to add hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "location",
+                "in": "formData",
+                "description": "latitude,longitude || [latitude,longitude]",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "location_detail",
+                "in": "formData",
+                "description": "enter location detail",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "city",
+                "in": "formData",
+                "description": "enter city",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "state",
+                "in": "formData",
+                "description": "enter state",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "country",
+                "in": "formData",
+                "description": "enter country",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "postal_code",
+                "in": "formData",
+                "description": "enter postal code",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dropoffs",
+                "in": "formData",
+                "description": "dropoffs1,dropoffs2,dropoffs3,... || [dropoffs1,dropoffs2,dropoffs3,...]",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "delivery_shifts",
+                "in": "formData",
+                "description": "HH:MM:SS,HH:MM:SS,HH:MM:SS || [HH:MM:SS,HH:MM:SS,HH:MM:SS]",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_ids",
+                "in": "formData",
+                "description": "1,2,3,... || [1,2,3,...]",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "driver_ids",
+                "in": "formData",
+                "description": "1,2,3,... || [1,2,3,...]",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/editHotspot/{hotspotLocationId}": {
+          "put": {
+            "tags": [
+              "Admin Schedule Settings"
+            ],
+            "description": "Api to edit hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "hotspotLocationId",
+                "in": "path",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "location",
+                "in": "formData",
+                "description": "latitude,longitude || [latitude,longitude]",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "location_detail",
+                "in": "formData",
+                "description": "enter location detail",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "city",
+                "in": "formData",
+                "description": "enter city",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "state",
+                "in": "formData",
+                "description": "enter state",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "country",
+                "in": "formData",
+                "description": "enter country",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "postal_code",
+                "in": "formData",
+                "description": "enter postal code",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "dropoffs",
+                "in": "formData",
+                "description": "dropoffs1,dropoffs2,dropoffs3,... || [dropoffs1,dropoffs2,dropoffs3,...]",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "delivery_shifts",
+                "in": "formData",
+                "description": "HH:MM:SS,HH:MM:SS,HH:MM:SS || [HH:MM:SS,HH:MM:SS,HH:MM:SS]",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_ids",
+                "in": "formData",
+                "description": "1,2,3,... || [1,2,3,...]",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "driver_ids",
+                "in": "formData",
+                "description": "1,2,3,... || [1,2,3,...]",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },        
+
+        "/admin/getHotspotDetails/{hotspotLocationId}": {
+          "get": {
+            "tags": [
+              "Admin Schedule Settings"
+            ],
+            "description": "Api to list all hotspots",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "hotspotLocationId",
+                "in": "formData",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 
@@ -2906,46 +3190,11 @@
             
             "parameters": [
               {
-                "name": "address",
+                "name": "hotspot_location_id",
                 "in": "formData",
-                "description": "enter address",
+                "description": "enter hotspot location id",
                 "required": true,
-                "type": "string"
-              },
-              {
-                "name": "city",
-                "in": "formData",
-                "description": "enter city",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "state",
-                "in": "formData",
-                "description": "enter state",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "postal_code",
-                "in": "formData",
-                "description": "enter postal code",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "country",
-                "in": "formData",
-                "description": "enter country",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "location_geometry",
-                "in": "formData",
-                "description": "latitude,longitude",
-                "required": true,
-                "type": "string"
+                "type": "number"
               }
             ],
             "responses": {}
@@ -2989,46 +3238,11 @@
             
             "parameters": [
               {
-                "name": "address",
+                "name": "hotspot_location_id",
                 "in": "formData",
-                "description": "enter address",
+                "description": "enter hotspot location id",
                 "required": true,
-                "type": "string"
-              },
-              {
-                "name": "city",
-                "in": "formData",
-                "description": "enter city",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "state",
-                "in": "formData",
-                "description": "enter state",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "postal_code",
-                "in": "formData",
-                "description": "enter postal code",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "country",
-                "in": "formData",
-                "description": "enter country",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "location_geometry",
-                "in": "formData",
-                "description": "latitude,longitude",
-                "required": true,
-                "type": "string"
+                "type": "number"
               }
             ],
             "responses": {}

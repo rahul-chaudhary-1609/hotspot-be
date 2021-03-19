@@ -33,15 +33,27 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        city: {
+            type: DataTypes.STRING(45),
+            allowNull: false,
+        },
+        state: {
+            type: DataTypes.STRING(45),
+            allowNull: false,
+        },
+        postal_code: {
+            type: DataTypes.STRING(45),
+            allowNull: false,
+        },
+        country: {
+            type: DataTypes.STRING(45),
+            allowNull: false,
+        },
         delivery_shifts: {
             type: DataTypes.ARRAY(DataTypes.TIME),
         },
         customer_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        full_address: {
-            type: DataTypes.JSON,
             allowNull: false,
         },
         is_added: {

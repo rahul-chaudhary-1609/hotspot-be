@@ -90,9 +90,38 @@ module.exports = {
     feeSchema : Joi.object({
         order_range_from: Joi.number().required(),
         order_range_to: Joi.number().required(),        
-        fee_type: Joi.string().trim().valid('Driver','Restaurant','Hotspot').required(),
+        fee_type: Joi.string().trim().valid('driver','restaurant','hotspot').required(),
         fee: Joi.number().required(),        
     }),
+
+    hotspotSchema: Joi.object({
+        name:Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).messages({
+            'string.pattern.base': `Please enter a valid first name`,
+        }),
+        location: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
+        location_detail: Joi.string().required(),
+        city: Joi.string().max(45).required(),
+        state: Joi.string().max(45).required(),
+        postal_code: Joi.string().max(45).required(),
+        country: Joi.string().max(45).required(),
+        dropoffs: Joi.array(),
+        delivery_shifts: Joi.array()
+            .items(
+                Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
+                    'string.pattern.base': `Please enter a valid time for delivery shift eg: [HH:MM:SS,HH:MM:SS,HH:MM:SS]`,
+                }),
+                Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
+                    'string.pattern.base': `Please enter a valid time for delivery shift eg: [HH:MM:SS,HH:MM:SS,HH:MM:SS]`,
+                }),
+                Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
+                    'string.pattern.base': `Please enter a valid time for delivery shift  eg: [HH:MM:SS,HH:MM:SS,HH:MM:SS]`,
+                }),
+            ).length(3)
+            .required(),
+        
+        restaurant_ids: Joi.array(),
+        driver_ids: Joi.array(),
+    })
 }
 
 
