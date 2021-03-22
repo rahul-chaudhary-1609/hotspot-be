@@ -44,7 +44,7 @@ router.route('/logout').get([adminAuthentication.checkToken
 router.route('/restaurantCategoryList').get([adminAuthentication.checkToken
 ], adminRestaurantController.restaurantCategoryList);
 
-router.route('/addRestaurant').post([adminAuthentication.checkToken
+router.route('/addNewRestaurant').post([adminAuthentication.checkToken
 ], adminRestaurantController.addRestaurant);
 
 router.route('/listRestaurant').get([adminAuthentication.checkToken

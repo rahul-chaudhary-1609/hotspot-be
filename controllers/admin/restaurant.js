@@ -93,7 +93,7 @@ module.exports = {
                             })       
                         }
                     }
-                 utilityFunction.ReS(res, {}, 200, "Restaurant added successfully.");
+                 utilityFunction.ReS(res, {restaurant_id:restaurantCreated.id}, 200, "Restaurant added successfully.");
             } else {
                 utilityFunction.ReE(res, "Restaurant with this email id already exists", 401, {});
             }
