@@ -458,7 +458,7 @@
             "responses": {}
           }
         },
-        "/admin/addNewRestaurant": {
+        "/admin/addRestaurant": {
           "post": {
           "tags": [
               "Admin Restaurant Management"

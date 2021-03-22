@@ -68,7 +68,10 @@ module.exports = {
 
                 const hotspotLocationIds = req.body.hotspot_location_ids;
 
+                
                 delete req.body.hotspot_location_ids;
+
+                
 
                 //req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
                 req.body.location = [parseFloat(req.body.lat), parseFloat(req.body.long)];
@@ -85,12 +88,8 @@ module.exports = {
                         
                         for (let row of restaurantHotspotRows) {
                             await RestaurantHotspot.findOrCreate({
-                                where: {
-                                    row
-                                },
-                                defaults: {
-                                    row
-                                }
+                                where: row,
+                                defaults:row
                             })       
                         }
                     }

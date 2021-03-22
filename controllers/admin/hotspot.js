@@ -75,12 +75,8 @@ module.exports = {
 
                 for (let row of restaurantHotspotRows) {
                     await models.RestaurantHotspot.findOrCreate({
-                        where: {
-                            row
-                        },
-                        defaults: {
-                            row
-                        }
+                        where: row,
+                        defaults: row
                     })       
                 }
             }
