@@ -4,7 +4,7 @@ const validation = require('../../utils/customer/validation');
 const { Op, where } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utils/mail');
-const client = require('twilio')(process.env.accountSID, process.env.authToken);
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const customerAuthentication = require('../../middlewares/customer/jwt');
 const customerAWS = require('../../utils/aws');
 const { isBoolean } = require('lodash');
@@ -392,7 +392,7 @@ module.exports = {
 
             client
                 .verify
-                .services(process.env.serviceID)
+                .services(process.env.TWILIO_SERVICE_ID)
                 .verifications
                 .create({
                     to: `${customer.getDataValue('country_code')}${phone_no}`,
@@ -494,7 +494,7 @@ module.exports = {
 
             client
                 .verify
-                .services(process.env.serviceID)
+                .services(process.env.TWILIO_SERVICE_ID)
                 .verificationChecks
                 .create({
                     to: `${customer.getDataValue('country_code')}${phone_no}`,
@@ -753,7 +753,7 @@ module.exports = {
             if (is_phone) {
                 return client
                     .verify
-                    .services(process.env.serviceID)
+                    .services(process.env.TWILIO_SERVICE_ID)
                     .verifications
                     .create({
                         to: `${customer.getDataValue('country_code')}${phone_no}`,
@@ -910,7 +910,7 @@ module.exports = {
 
                 return client
                     .verify
-                    .services(process.env.serviceID)
+                    .services(process.env.TWILIO_SERVICE_ID)
                     .verificationChecks
                     .create({
                         to: `${customer.getDataValue('country_code')}${phone_no}`,

@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "migrate": "sequelize db:migrate",
+    "migrate_undo": " sequelize db:migrate:undo",
+    "sequelize_init": "sequelize init",
+    "create_model": "sequelize model:create",
+    "create_migration": "sequelize-cli migration:create"
   },
   "repository": {
     "type": "git",

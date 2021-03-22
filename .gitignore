@@ -51,6 +51,4 @@ Thumbs.db
 *.mov
 *.wmv
 
-# Database Config files
-config/config.json
 

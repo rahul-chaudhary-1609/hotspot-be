@@ -9,11 +9,11 @@ const basename = path.basename(__filename);
 const db = {};
 
 const config = {
-  username: process.env.db_username,
-  password: process.env.db_password,
-  database: process.env.db_database,
-  host: process.env.db_host,
-  dialect: process.env.db_dialect
+  username: process.env.DB_USER_NAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  host: process.env.DB_HOST,
+  dialect: process.env.DB_DIALECT
 }
 
 //console.log(config);
