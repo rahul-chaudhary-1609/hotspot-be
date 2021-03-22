@@ -21,6 +21,9 @@ module.exports = {
           type: Sequelize.STRING(45),
           allowNull: false,
       },
+      role: {
+          type: Sequelize.STRING(45),
+      },
       owner_email: {
           type: Sequelize.STRING(45),
           allowNull: false,
@@ -38,7 +41,7 @@ module.exports = {
           allowNull: false,
       },
       address: {
-          type: Sequelize.JSON,
+          type: Sequelize.STRING,
       },
       deliveries_per_shift: {
           type: Sequelize.INTEGER,

@@ -34,6 +34,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING(45),
             allowNull: false,
         },
+        role: {
+            type: DataTypes.STRING(45),
+        },
         owner_email: {
             type: DataTypes.STRING(45),
             allowNull: false,
@@ -51,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         address: {
-            type: DataTypes.JSON,
+            type: DataTypes.STRING,
         },
         deliveries_per_shift: {
             type: DataTypes.INTEGER,
