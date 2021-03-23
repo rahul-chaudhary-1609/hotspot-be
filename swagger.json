@@ -4479,6 +4479,33 @@
           }
         },
 
+        "/customer/delete-from-cart/{restaurantDishId}": {
+          "delete": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to delete item from cart",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "restaurantDishId",
+                "in": "path",
+                "description": "enter restaurant dish id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
         "/customer/create-order": {
           "post": {
             "tags": [

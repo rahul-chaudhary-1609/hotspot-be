@@ -271,6 +271,10 @@ router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.authen
     return OrderController.getCart(req, res);
 })
 
+router.delete('/delete-from-cart/:restaurantDishId', customerAuthentication.authenticateCustomer, (req, res) => {
+    return OrderController.deleteFromCart(req, res);
+})
+
 router.post('/create-order', customerAuthentication.authenticateCustomer, (req, res) => {
     return OrderController.createOrder(req, res);
 })

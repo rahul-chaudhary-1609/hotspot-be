@@ -110,7 +110,41 @@ module.exports = {
         }
     },
 
+    deleteFromCart: async (req, res) => {
+        try {
+            const customer = await models.Customer.findOne({
+                where: {
+                    email: req.user.email,
+                }
+            });
 
+            if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+
+            const customer_id = customer.id;
+            const restaurant_dish_id = parseInt(req.params.restaurantDishId);
+
+            const currentCart = await models.Cart.findOne({
+                restaurant_dish_id, customer_id
+            })
+
+            if (!currentCart) {
+                await models.Cart.destroy({
+                    where: {
+                        restaurant_dish_id,
+                        customer_id
+                    },
+                    force: true,
+                })
+            }
+
+            return res.status(200).json({ status: 200, message:`Item Deleted`});
+
+
+       } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+        }
+    },
     
     getCart: async (req, res) => {
         try {
