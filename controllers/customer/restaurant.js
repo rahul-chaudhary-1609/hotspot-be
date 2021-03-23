@@ -1803,9 +1803,20 @@ module.exports = {
                 }
             })
 
+            let isFavorite = false;
+
+            const favFood = await models.FavFood.findOne({
+                where: {
+                    restaurant_dish_id,
+                    customer_id:customer.id,
+                }
+            });
+            if (favFood) isFavorite = true;
+
             const dishdetails = {
                 restaurant,
                 dish: restaurantDish,
+                isFavorite,
                 dishAddOn: dishAddOn ? dishAddOn.map(addOn=>addOn): "no add-ons available for this food",
             }
 
