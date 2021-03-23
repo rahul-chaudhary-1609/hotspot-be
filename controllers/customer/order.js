@@ -62,6 +62,19 @@ module.exports = {
             const cart_count = parseInt(req.body.cart_count);
             const dish_add_on_ids = req.body.dish_add_on_ids?(Array.isArray(req.body.dish_add_on_ids)?req.body.dish_add_on_ids:req.body.dish_add_on_ids.split(",")):null;
 
+            const currentCart = await models.Cart.findOne({
+                restaurant_id, customer_id
+            })
+
+            if (!currentCart) {
+                await models.Cart.destroy({
+                    where: {
+                        customer_id
+                    },
+                    force: true,
+                })
+            }
+
             const [cart, created] = await models.Cart.findOrCreate({
                 where: {
                     restaurant_id,restaurant_dish_id, customer_id,
