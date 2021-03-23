@@ -117,7 +117,20 @@ module.exports = {
                     restaurant_id,
                     status:1,
                 }
-             })
+            })
+            
+            let isPickupOnly = false;
+            let isDeliveryOnly = false;
+
+            const restaurant = await models.Restaurant.findOne({
+                where: {
+                    id: restaurant_id,
+                }
+            });
+
+            if (restaurant.order_type === 1) isDeliveryOnly = true;
+            else if(restaurant.order_type===2) isPickupOnly = true;
+
 
             let cartInfo = {};
 
@@ -150,12 +163,7 @@ module.exports = {
                 }
             }
             else if (req.params.order_type === "pickup") {
-                const restaurant = await models.Restaurant.findOne({
-                    where: {
-                        id:restaurant_id,
-                    }
-                })
-
+                
                 cartInfo = {
                     restaurant_id:restaurant.id,
                     name: restaurant.restaurant_name,
@@ -211,7 +219,7 @@ module.exports = {
             const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice,0);
  
 
-            return res.status(200).json({ status: 200, cart: { cartInfo,cartItems,cooking_instructions:order? order.cooking_instructions : null,totalAmount } });
+            return res.status(200).json({ status: 200, cart: { cartInfo,cartItems,cooking_instructions:order? order.cooking_instructions : null,totalAmount }, isDeliveryOnly,isPickupOnly });
 
          } catch (error) {
         console.log(error);
