@@ -272,6 +272,7 @@ module.exports = {
 
           restaurant = await models.Restaurant.findAll({
               where: {
+                  order_type:[2,3],
                   customer_id
               }
           });
