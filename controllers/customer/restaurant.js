@@ -232,6 +232,7 @@ module.exports = {
 
           let restaurant = await models.Restaurant.findAndCountAll({
               where: {
+                  order_type:2,
                   customer_id
               }
           });
@@ -272,6 +273,7 @@ module.exports = {
 
           restaurant = await models.Restaurant.findAll({
               where: {
+                  order_type:[2,3],
                   customer_id
               }
           });
