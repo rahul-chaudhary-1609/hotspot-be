@@ -172,6 +172,7 @@ module.exports = {
             
             let isPickupOnly = false;
             let isDeliveryOnly = false;
+            let isBothAvailable = false;
 
             const restaurant = await models.Restaurant.findOne({
                 where: {
@@ -180,7 +181,8 @@ module.exports = {
             });
 
             if (restaurant.order_type === 1) isDeliveryOnly = true;
-            else if(restaurant.order_type===2) isPickupOnly = true;
+            else if (restaurant.order_type === 2) isPickupOnly = true;
+            else if(restaurant.order_type===3) isBothAvailable = true;
 
 
             let cartInfo = {};
@@ -270,7 +272,7 @@ module.exports = {
             const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice,0);
  
 
-            return res.status(200).json({ status: 200, cart: { cartInfo,cartItems,cooking_instructions:order? order.cooking_instructions : null,totalAmount }, isDeliveryOnly,isPickupOnly });
+            return res.status(200).json({ status: 200, cart: { cartInfo,cartItems,cooking_instructions:order? order.cooking_instructions : null,totalAmount }, isDeliveryOnly,isPickupOnly,isBothAvailable });
 
          } catch (error) {
         console.log(error);
