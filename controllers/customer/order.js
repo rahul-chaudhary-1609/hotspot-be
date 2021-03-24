@@ -63,7 +63,9 @@ module.exports = {
             const dish_add_on_ids = req.body.dish_add_on_ids?(Array.isArray(req.body.dish_add_on_ids)?req.body.dish_add_on_ids:req.body.dish_add_on_ids.split(",")):null;
 
             const currentCart = await models.Cart.findOne({
-                restaurant_id, customer_id
+                where: {
+                    restaurant_id, customer_id
+                }
             })
 
             if (!currentCart) {
@@ -124,10 +126,12 @@ module.exports = {
             const restaurant_dish_id = parseInt(req.params.restaurantDishId);
 
             const currentCart = await models.Cart.findOne({
-                restaurant_dish_id, customer_id
+                where: {
+                    restaurant_dish_id, customer_id
+                }
             })
 
-            if (!currentCart) {
+            if (currentCart) {
                 await models.Cart.destroy({
                     where: {
                         restaurant_dish_id,
