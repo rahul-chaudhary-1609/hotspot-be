@@ -261,7 +261,8 @@ module.exports = {
                 })
 
                 cartItems.push({
-                    id:item.id,
+                    id: item.id,
+                    dishId:item.restaurant_dish_id,
                     itemName: dish.name,
                     itemCount: item.cart_count,
                     itemAddOn: addOns,

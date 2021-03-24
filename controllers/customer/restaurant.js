@@ -1838,11 +1838,18 @@ module.exports = {
 
             if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
 
+            const limitOptions = [3,4,5];
+
+            const limit = limitOptions[Math.floor(Math.random() * limitOptions.length)];
+
+            const offset = limit - 2;
+
             const restaurantDish = await models.RestaurantDish.findAll({
                 where: {
                     restaurant_id: req.query.restaurantId
                 },
-                limit:4,
+                limit,
+                offset,
             });
 
             getFoodCard({ restaurantDish,customer_id:customer.id, res });
