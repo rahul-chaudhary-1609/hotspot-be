@@ -185,9 +185,9 @@ module.exports = {
             else if(restaurant.order_type===3) isBothAvailable = true;
 
 
-            let cartInfo = {};
+            let cartInfo =null;
 
-            if (req.params.order_type === "delivery") {
+            if (req.params.order_type === "delivery" && ((restaurant.order_type===3)||(restaurant.order_type === 1)) ) {
                 const customerFavLocation = await models.CustomerFavLocation.findOne({
                     where: {
                         customer_id: customer.id,
@@ -215,7 +215,7 @@ module.exports = {
                     dropoff:hotspotDropoff.dropoff_detail,
                 }
             }
-            else if (req.params.order_type === "pickup") {
+            else if (req.params.order_type === "pickup"  && ((restaurant.order_type===3)||(restaurant.order_type === 2))) {
                 
                 cartInfo = {
                     restaurant_id:restaurant.id,
@@ -270,7 +270,11 @@ module.exports = {
                 })
             }
 
-            const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice,0);
+            const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice, 0);
+            
+            if (!cartInfo) {
+                return res.status(200).json({ status: 200, cart: null, isDeliveryOnly,isPickupOnly,isBothAvailable });
+            }
  
 
             return res.status(200).json({ status: 200, cart: { cartInfo,cartItems,cooking_instructions:order? order.cooking_instructions : null,totalAmount }, isDeliveryOnly,isPickupOnly,isBothAvailable });
