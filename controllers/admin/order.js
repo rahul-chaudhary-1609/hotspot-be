@@ -69,7 +69,7 @@ module.exports = {
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
             let [offset, limit] = utility.pagination(req.query.page, req.query.page_size);
-
+            req.query.status = parseInt(req.query.status_filter);
             let query = {};
             let status = null;
             if (req.query.status) {
@@ -137,6 +137,8 @@ module.exports = {
             if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
 
             let [offset, limit] = utility.pagination(req.query.page, req.query.page_size);
+
+            req.query.status = parseInt(req.query.status_filter);
 
             let query = {};
             
