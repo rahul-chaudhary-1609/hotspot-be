@@ -284,7 +284,9 @@ module.exports = {
             if (!order) return res.status(404).json({ status: 404, message: `no order found` });
 
             const orderedItems = await models.OrderedItems.findAll({
-                order_id:order.id,
+                where: {
+                    order_id:order.id,
+                }
             });
 
            const customer = await models.Customer.findByPk(order.customer_id);
