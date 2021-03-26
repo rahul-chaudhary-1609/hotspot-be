@@ -73,7 +73,7 @@ module.exports = {
             const orders = await models.Order.findAndCountAll({
                 where: {
                     is_deleted: false,
-                    status:[2,3,4]
+                    status:[1,2,3,4]
                 }
             });
 
@@ -95,7 +95,7 @@ module.exports = {
             const totalAmount = await models.Order.sum('amount',{
                 where:  {
                     is_deleted: false,
-                    status: [2, 3, 4],
+                    status: [1,2, 3, 4],
                 }
             });
            
@@ -122,7 +122,7 @@ module.exports = {
             const totalAmount = await models.Order.sum('amount',{
                 where:  {
                     is_deleted: false,
-                        status: [2, 3, 4],
+                        status: [1,2, 3, 4],
                     created_at:{
                         [Op.between]: [req.query.start_date, req.query.end_date]
                     }
