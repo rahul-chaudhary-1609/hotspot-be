@@ -73,7 +73,7 @@ module.exports = {
             let query = {};
             let status = null;
             if (req.query.status || req.query.status==0) {
-                if (!([0, 1, 2, 3].includes(req.query.status))) return res.status(400).json({ status: 400, message: "Please provide a valid status" });
+                if (!([0, 1, 2].includes(req.query.status))) return res.status(400).json({ status: 400, message: "Please provide a valid status" });
                 status = req.query.status;
             }
             else {

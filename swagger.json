@@ -1898,7 +1898,7 @@
               {
                 "name": "status_filter",
                 "in": "query",
-                "description": "0: pickup | 1: pending | 2: Driver Allocated | 3: Food Preparing | 4: Ready",
+                "description": "0: pickup | 1: pending | 2: Driver Allocated",
                 "required": false,
                 "type": "number"
               },
