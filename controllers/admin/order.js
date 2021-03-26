@@ -106,7 +106,8 @@ module.exports = {
             else {
                 query.where = {
                     ...query.where,
-                    type:"pickup",
+                    type: "pickup",
+                    status:1,
                 };
             }
 
@@ -177,7 +178,8 @@ module.exports = {
             else {
                 query.where = {
                     ...query.where,
-                    type:"pickup",
+                    type: "pickup",
+                    status:1,
                 };
             }
 
