@@ -2230,7 +2230,7 @@
           }
         },
         "/admin/getFee/{feeId}": {
-          "put": {
+          "get": {
             "tags": [
               "Admin Fee Settings"
             ],
