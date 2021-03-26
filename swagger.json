@@ -2229,6 +2229,34 @@
             "responses": {}
           }
         },
+        "/admin/getFee/{feeId}": {
+          "put": {
+            "tags": [
+              "Admin Fee Settings"
+            ],
+            "description": "Api to get fee ",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "feeId",
+                "in": "path",
+                "description": "enter fee id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 

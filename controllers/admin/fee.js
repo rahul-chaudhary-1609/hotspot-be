@@ -115,5 +115,26 @@ module.exports = {
         console.log(error);
         return res.status(500).json({ status: 500, message: `Internal Server Error` });
       } 
-    }
+    },
+
+    getFee: async (req, res) => {
+        try {
+            const admin = await models.Admin.findByPk(req.adminInfo.id);
+
+            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
+
+            const fee_id = parseInt(req.params.feeId);
+
+            const fee = await models.Fee.findByPk(fee_id);
+
+            if (!fee) return res.status(404).json({ status: 404, message: `no fee record found with this id` });
+
+            return res.status(200).json({ status: 200, fee });
+            
+
+       } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, message: `Internal Server Error` });
+      } 
+    },
 }

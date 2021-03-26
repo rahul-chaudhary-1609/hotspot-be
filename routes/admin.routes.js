@@ -196,6 +196,8 @@ router.route('/editFee/:feeId').put([adminAuthentication.checkToken
 router.route('/getFeeList/:feeType').get([adminAuthentication.checkToken
 ], adminFeeController.getFeeList);
 
+router.route('/getFee/:feeType').get([adminAuthentication.checkToken
+], adminFeeController.getFee);
 
 
 //schedule Settings
