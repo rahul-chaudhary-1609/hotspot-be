@@ -98,10 +98,21 @@ module.exports = {
             }
 
             if (status) {
-                 query.where = {
-                    ...query.where,
-                    status,
-                };
+                if (status == 1) {
+                    query.where = {
+                        ...query.where,
+                        status,
+                        type: { [Op.not]: "pickup" },
+                    };
+                        
+                }
+                else {
+                    query.where = {
+                        ...query.where,
+                        status,
+                    };
+                }
+                 
             }
             else {
                 query.where = {
@@ -170,10 +181,21 @@ module.exports = {
             }
 
             if (status) {
-                 query.where = {
-                    ...query.where,
-                    status,
-                };
+                if (status == 1) {
+                    query.where = {
+                        ...query.where,
+                        status,
+                        type: { [Op.not]: "pickup" },
+                    };
+                        
+                }
+                else {
+                    query.where = {
+                        ...query.where,
+                        status,
+                    };
+                }
+                 
             }
             else {
                 query.where = {
