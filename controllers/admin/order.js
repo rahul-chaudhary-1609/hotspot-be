@@ -17,6 +17,11 @@ const getOrderRow =  async (args) => {
               hotspotLocation= await models.HotspotLocation.findByPk(val.hotspot_location_id);
             }
 
+            let driver = null;
+            if (val.driver_id) {
+              driver= await models.Driver.findByPk(val.driver_id);
+            }
+
             let status = null;
 
             if (val.status === 1) {
@@ -43,6 +48,7 @@ const getOrderRow =  async (args) => {
                 restaurant:restaurant.restaurant_name,
                 status,
                 delivery_datetime: val.delivery_datetime,
+                driver: driver? `${driver.first_name} ${driver.last_name}`:null,
                 createdAt:val.createdAt,
             })
         }
