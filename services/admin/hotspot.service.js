@@ -211,7 +211,7 @@ module.exports = {
     listHotspots: async (params) => {
         
 
-            let [offset, limit] = utility.pagination(params.page, params.page_size);
+            let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
             let query = {};
             //query.where = {};

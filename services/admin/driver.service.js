@@ -9,7 +9,7 @@ const constants = require("../../constants");
 module.exports = {
     listDrivers: async (params) => {
 
-            let [offset, limit] = utility.pagination(params.page, params.page_size);
+            let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
             let query = {};
             query.where = { is_deleted: false,is_rejected:false };

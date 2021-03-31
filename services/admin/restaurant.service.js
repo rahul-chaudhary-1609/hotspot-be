@@ -8,7 +8,7 @@ module.exports = {
     listRestaurant: async(params) => {
         
 
-            let [offset, limit] = utilityFunction.pagination(params.page, params.page_size);
+            let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
             
 
             let query = {};
@@ -278,7 +278,7 @@ module.exports = {
     
     listDishes: async (params) => {
 
-            let [offset, limit] = utilityFunction.pagination(params.page, params.page_size);
+            let [offset, limit] =await utilityFunction.pagination(params.page, params.page_size);
 
             let query = {};
             query.where = { is_deleted: false };

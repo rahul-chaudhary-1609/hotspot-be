@@ -69,7 +69,7 @@ module.exports = {
     getActiveOrders: async (params) => {
     
 
-            let [offset, limit] = utility.pagination(params.page, params.page_size);
+            let [offset, limit] = await utility.pagination(params.page, params.page_size);
             params.status = parseInt(params.status_filter);
             let query = {};
             let status = null;
@@ -143,7 +143,7 @@ module.exports = {
     getScheduledOrders: async (params) => {
        
 
-            let [offset, limit] = utility.pagination(params.page, params.page_size);
+            let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
             params.status = parseInt(params.status_filter);
 
@@ -219,7 +219,7 @@ module.exports = {
     getCompletedOrders: async (params) => {
        
 
-            let [offset, limit] = utility.pagination(params.page, params.page_size);
+            let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
             let query = {};
 
