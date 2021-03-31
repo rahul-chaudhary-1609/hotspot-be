@@ -2,6 +2,9 @@ const express = require('express');
 const router=express.Router();
 const { check, body, query, param, oneOf, validationResult } = require('express-validator');
 
+const joiValidation = require("../middlewares/joi");
+const apiSchema = require("../apiSchema/adminSchema");
+
 const adminLoginController = require('../controllers/admin/login');
 const adminRestaurantController = require('../controllers/admin/restaurant');
 const adminCustomerController = require('../controllers/admin/customer');
@@ -10,215 +13,149 @@ const adminDriverController = require('../controllers/admin/driver');
 const adminOrderController = require('../controllers/admin/order');
 const adminFeeController = require('../controllers/admin/fee');
 const adminHotspotController = require('../controllers/admin/hotspot');
-const adminAuthentication = require('../middlewares/admin/jwt');
-const adminMulter = require('../middlewares/admin/multer');
-const adminOthersController = require('../controllers/admin/others');
 
-router.route('/login').post([
-    check('email', 'Please enter valid email id').not().isEmpty().isEmail().normalizeEmail(),
-    check('password', 'Please enter password').not().isEmpty()
-], adminLoginController.login);
+const adminAuthentication = require('../middlewares/jwt');
+const adminMulter = require('../middlewares/multer');
 
-router.route('/addNewAdmin').post([
-    check('email', 'Please enter valid email id').not().isEmpty().isEmail().normalizeEmail(),
-    check('password', 'Please enter password').not().isEmpty(),
-    check('confirmPassword', 'Please enter password').not().isEmpty()
-], adminLoginController.addNewAdmin);
 
-router.route('/forgotPassword').post([
-    check('email', 'Please enter valid email id').not().isEmpty().isEmail().normalizeEmail(),
-], adminLoginController.forgotPassword);
+router.post('/login',joiValidation.validateBody(apiSchema.login), adminLoginController.login);
 
-router.route('/resetPassword').post([
-    check('email', 'Please enter valid email id').not().isEmpty().isEmail().normalizeEmail(),
-    check('password', 'Please enter password').not().isEmpty(),
-    check('confirmPassword', 'Please enter password').not().isEmpty()
-], adminLoginController.resetPassword);
+router.post('/addNewAdmin',joiValidation.validateBody(apiSchema.addNewAdmin), adminLoginController.addNewAdmin);
 
-router.route('/logout').get([adminAuthentication.checkToken
-], adminLoginController.logout);
+router.post('/forgotPassword',joiValidation.validateBody(apiSchema.forgetPassword), adminLoginController.forgotPassword);
+
+router.post('/resetPassword',joiValidation.validateBody(apiSchema.resetPassword), adminLoginController.resetPassword);
+
+router.get('/logout',adminAuthentication.validateAdminToken, adminLoginController.logout);
 
 
 //Restaurant Management
 
-router.route('/restaurantCategoryList').get([adminAuthentication.checkToken
-], adminRestaurantController.restaurantCategoryList);
+router.get('/restaurantCategoryList',adminAuthentication.validateAdminToken, adminRestaurantController.restaurantCategoryList);
 
-router.route('/addRestaurant').post([adminAuthentication.checkToken
-], adminRestaurantController.addRestaurant);
+router.post('/addRestaurant',adminAuthentication.validateAdminToken, adminRestaurantController.addRestaurant);
 
-router.route('/listRestaurant').get([adminAuthentication.checkToken
-], adminRestaurantController.listRestaurant);
+router.get('/listRestaurant',adminAuthentication.validateAdminToken, adminRestaurantController.listRestaurant);
 
-router.route('/changeRestaurantStatus/:restaurantId').put([adminAuthentication.checkToken
-], adminRestaurantController.changeRestaurantStatus);
+router.put('/changeRestaurantStatus/:restaurantId',adminAuthentication.validateAdminToken, adminRestaurantController.changeRestaurantStatus);
 
-router.route('/getRestaurant/:restaurantId').get([adminAuthentication.checkToken
-], adminRestaurantController.getRestaurant);
+router.get('/getRestaurant/:restaurantId',adminAuthentication.validateAdminToken, adminRestaurantController.getRestaurant);
 
-router.route('/editRestaurant/:restaurantId').put([adminAuthentication.checkToken
-], adminRestaurantController.editRestaurant);
+router.put('/editRestaurant/:restaurantId',adminAuthentication.validateAdminToken, adminRestaurantController.editRestaurant);
 
-router.route('/deleteRestaurant/:restaurantId').delete([adminAuthentication.checkToken
-], adminRestaurantController.deleteRestaurant);
+router.delete('/deleteRestaurant/:restaurantId',adminAuthentication.validateAdminToken, adminRestaurantController.deleteRestaurant);
 
-router.route('/uploadRestaurantImage').put([adminAuthentication.checkToken,adminMulter.upload
-], adminRestaurantController.uploadRestaurantImage);
+router.put('/uploadRestaurantImage',adminAuthentication.validateAdminToken,adminMulter.upload, adminRestaurantController.uploadRestaurantImage);
 
 
 //Menu Management
 
-router.route('/dishCategoryList').get([adminAuthentication.checkToken
-], adminRestaurantController.dishCategoryList);
+router.get('/dishCategoryList',adminAuthentication.validateAdminToken, adminRestaurantController.dishCategoryList);
 
-router.route('/addDish').post([adminAuthentication.checkToken
-], adminRestaurantController.addDish);
+router.post('/addDish',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.dishSchema), adminRestaurantController.addDish);
 
-router.route('/getDish/:dishId').get([adminAuthentication.checkToken
-], adminRestaurantController.getDish);
+router.get('/getDish/:dishId',adminAuthentication.validateAdminToken, adminRestaurantController.getDish);
 
-router.route('/listDishes').get([adminAuthentication.checkToken
-], adminRestaurantController.listDishes);
+router.get('/listDishes',adminAuthentication.validateAdminToken, adminRestaurantController.listDishes);
 
-router.route('/editDish/:dishId').put([adminAuthentication.checkToken
-], adminRestaurantController.editDish);
+router.put('/editDish/:dishId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.dishSchema), adminRestaurantController.editDish);
 
-router.route('/deleteDish/:dishId').delete([adminAuthentication.checkToken
-], adminRestaurantController.deleteDish);
+router.delete('/deleteDish/:dishId',adminAuthentication.validateAdminToken, adminRestaurantController.deleteDish);
 
-router.route('/uploadDishImage').put([adminAuthentication.checkToken, adminMulter.upload
-], adminRestaurantController.uploadDishImage);
+router.put('/uploadDishImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminRestaurantController.uploadDishImage);
 
 
 
 
 //Customer Management
 
-router.route('/listCustomers').get([adminAuthentication.checkToken
-], adminCustomerController.listCustomers);
+router.get('/listCustomers',adminAuthentication.validateAdminToken, adminCustomerController.listCustomers);
 
-router.route('/viewCustomerProfile/:customerId').get([adminAuthentication.checkToken
-], adminCustomerController.viewCustomerProfile);
+router.get('/viewCustomerProfile/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.viewCustomerProfile);
 
-router.route('/changeCustomerStatus/:customerId').put([adminAuthentication.checkToken
-], adminCustomerController.changeCustomerStatus);
+router.put('/changeCustomerStatus/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.changeCustomerStatus);
 
-router.route('/editCustomer/:customerId').put([adminAuthentication.checkToken
-], adminCustomerController.editCustomer);
+router.put('/editCustomer/:customerId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.customerSchema), adminCustomerController.editCustomer);
 
-router.route('/uploadCustomerImage').put([adminAuthentication.checkToken, adminMulter.upload
-], adminCustomerController.uploadCustomerImage);
+router.put('/uploadCustomerImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminCustomerController.uploadCustomerImage);
 
-router.route('/deleteCustomer/:customerId').delete([adminAuthentication.checkToken
-], adminCustomerController.deleteCustomer);
+router.delete('/deleteCustomer/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.deleteCustomer);
 
 
 
 //Dashboard Management
 
-router.route('/getTotalCustomers').get([adminAuthentication.checkToken
-], adminDashboardController.getTotalCustomers);
+router.get('/getTotalCustomers',adminAuthentication.validateAdminToken, adminDashboardController.getTotalCustomers);
 
-router.route('/getTotalRestaurants').get([adminAuthentication.checkToken
-], adminDashboardController.getTotalRestaurants);
+router.get('/getTotalRestaurants',adminAuthentication.validateAdminToken, adminDashboardController.getTotalRestaurants);
 
-router.route('/getTotalDrivers').get([adminAuthentication.checkToken
-], adminDashboardController.getTotalDrivers);
+router.get('/getTotalDrivers',adminAuthentication.validateAdminToken, adminDashboardController.getTotalDrivers);
 
-router.route('/getTotalOrders').get([adminAuthentication.checkToken
-], adminDashboardController.getTotalOrders);
+router.get('/getTotalOrders',adminAuthentication.validateAdminToken, adminDashboardController.getTotalOrders);
 
-router.route('/getTotalRevenue').get([adminAuthentication.checkToken
-], adminDashboardController.getTotalRevenue);
+router.get('/getTotalRevenue',adminAuthentication.validateAdminToken, adminDashboardController.getTotalRevenue);
 
-router.route('/getTotalRevenueByDate').get([adminAuthentication.checkToken
-], adminDashboardController.getTotalRevenueByDate);
+router.get('/getTotalRevenueByDate',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.dateSchema), adminDashboardController.getTotalRevenueByDate);
 
 
 //Driver Management
 
-router.route('/listDrivers').get([adminAuthentication.checkToken
-], adminDriverController.listDrivers);
+router.get('/listDrivers',adminAuthentication.validateAdminToken, adminDriverController.listDrivers);
 
-router.route('/getDriverDetails/:driverId').get([adminAuthentication.checkToken
-], adminDriverController.getDriverDetails);
+router.get('/getDriverDetails/:driverId',adminAuthentication.validateAdminToken, adminDriverController.getDriverDetails);
 
-router.route('/approveDriver/:driverId').put([adminAuthentication.checkToken
-], adminDriverController.approveDriver);
+router.put('/approveDriver/:driverId',adminAuthentication.validateAdminToken, adminDriverController.approveDriver);
 
-router.route('/changeDriverStatus/:driverId').put([adminAuthentication.checkToken
-], adminDriverController.changeDriverStatus);
+router.put('/changeDriverStatus/:driverId',adminAuthentication.validateAdminToken, adminDriverController.changeDriverStatus);
 
-router.route('/uploadDriverProfileImage').put([adminAuthentication.checkToken, adminMulter.upload
-], adminDriverController.uploadDriverProfileImage);
+router.put('/uploadDriverProfileImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadDriverProfileImage);
 
-router.route('/uploadVehicleImage').put([adminAuthentication.checkToken, adminMulter.upload
-], adminDriverController.uploadVehicleImage);
+router.put('/uploadVehicleImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadVehicleImage);
 
-router.route('/uploadLicenseImage').put([adminAuthentication.checkToken, adminMulter.upload
-], adminDriverController.uploadLicenseImage);
+router.put('/uploadLicenseImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadLicenseImage);
 
-router.route('/uploadInsuranceImage').put([adminAuthentication.checkToken, adminMulter.upload
-], adminDriverController.uploadInsuranceImage);
+router.put('/uploadInsuranceImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadInsuranceImage);
 
-router.route('/editDriver/:driverId').put([adminAuthentication.checkToken
-], adminDriverController.editDriver);
+router.put('/editDriver/:driverId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.driverSchema), adminDriverController.editDriver);
 
-router.route('/addDrivers').get(adminDriverController.addDrivers);
+router.get('/addDrivers',adminDriverController.addDrivers);
 
 
 //order Management
 
-router.route('/getActiveOrders').get([adminAuthentication.checkToken
-], adminOrderController.getActiveOrders);
+router.get('/getActiveOrders',adminAuthentication.validateAdminToken, adminOrderController.getActiveOrders);
 
-router.route('/getScheduledOrders').get([adminAuthentication.checkToken
-], adminOrderController.getScheduledOrders);
+router.get('/getScheduledOrders',adminAuthentication.validateAdminToken, adminOrderController.getScheduledOrders);
 
-router.route('/getCompletedOrders').get([adminAuthentication.checkToken
-], adminOrderController.getCompletedOrders);
+router.get('/getCompletedOrders',adminAuthentication.validateAdminToken, adminOrderController.getCompletedOrders);
 
-router.route('/getOrderDetails/:orderId').get([adminAuthentication.checkToken
-], adminOrderController.getOrderDetails);
+router.get('/getOrderDetails/:orderId',adminAuthentication.validateAdminToken, adminOrderController.getOrderDetails);
 
-router.route('/assignDriver/:orderId').put([adminAuthentication.checkToken
-], adminOrderController.assignDriver);
+router.put('/assignDriver/:orderId',adminAuthentication.validateAdminToken, adminOrderController.assignDriver);
 
 
 //Fee Settings
 
-router.route('/addFee').post([adminAuthentication.checkToken
-], adminFeeController.addFee);
+router.post('/addFee',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.feeSchema) ,adminFeeController.addFee);
 
-router.route('/editFee/:feeId').put([adminAuthentication.checkToken
-], adminFeeController.editFee);
+router.put('/editFee/:feeId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.feeSchema) , adminFeeController.editFee);
 
-router.route('/getFeeList/:feeType').get([adminAuthentication.checkToken
-], adminFeeController.getFeeList);
+router.get('/getFeeList/:feeType',adminAuthentication.validateAdminToken, adminFeeController.getFeeList);
 
-router.route('/getFee/:feeId').get([adminAuthentication.checkToken
-], adminFeeController.getFee);
+router.get('/getFee/:feeId',adminAuthentication.validateAdminToken, adminFeeController.getFee);
 
 
 //schedule Settings
 
-router.route('/listHotspots').get([adminAuthentication.checkToken
-], adminHotspotController.listHotspots);
+router.get('/listHotspots',adminAuthentication.validateAdminToken, adminHotspotController.listHotspots);
 
-router.route('/addHotspot').post([adminAuthentication.checkToken
-], adminHotspotController.addHotspot);
+router.post('/addHotspot',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.addHotspot);
 
-router.route('/editHotspot/:hotspotLocationId').put([adminAuthentication.checkToken
-], adminHotspotController.editHotspot);
+router.put('/editHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.editHotspot);
 
-router.route('/getHotspotDetails/:hotspotLocationId').get([adminAuthentication.checkToken
-], adminHotspotController.getHotspotDetails);
+router.get('/getHotspotDetails/:hotspotLocationId',adminAuthentication.validateAdminToken, adminHotspotController.getHotspotDetails);
 
-router.route('/deleteHotspot/:hotspotLocationId').delete([adminAuthentication.checkToken
-], adminHotspotController.deleteHotspot);
+router.delete('/deleteHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken, adminHotspotController.deleteHotspot);
 
-//others
-
-router.route('/drop').get([], adminOthersController.drop);
 
 module.exports = router;

@@ -1,31 +1,35 @@
 const randomstring = require('randomstring');
 const bcrypt = require('bcrypt');
+const constants = require('../constants')
+const _ = require('lodash');
 
-module.exports.ReE =  (res, errMsg, code, errObj={}) => { // Error Web Response
-    // if (typeof err == 'object' && typeof err.message != 'undefined') {
-    //     err = err.message;
-    // }
-    if (typeof code !== 'undefined') res.statusCode = code;
-    errObj = {
-        ...errObj,
-        message: errMsg
+
+/* function for sending the error response */
+module.exports.errorResponse = (res, error, errorCode, message = constants.MESSAGES.bad_request) => {
+    let response = { ...constants.defaultServerResponse };
+    if (!_.isEmpty(error.message)) {
+        if (error.message == 'SequelizeUniqueConstraintError: Validation error') {
+            response.message = constants.MESSAGES.duplicate_value;
+        } else {
+            response.message = error.message;
+        }
+    } else {
+        response.message = message;
     }
-
-    return res.json({ data: {}, success: false, message: errMsg, err: errObj, status_code: code });
+    response.success = false;
+    response.status = errorCode;
+    return res.status(response.status).json(response);
 };
 
-module.exports.ReS =  (res, data, code, msg='Successfully completed') => { // Success Web Response
-    let send_data = {};//{ success: true };
-
-    if (typeof data == 'object') {
-        send_data = Object.assign(data, send_data);//merge the objects
-    }
-
-    //if (typeof code !== 'undefined') res.statusCode = code;
-
-    return res.json({ data: send_data, success: true, message: msg, status_code: code, err:{} })
-};
-
+/* function for sending the success response */
+module.exports.successResponse = (res, params, message) => {
+    let response = { ...constants.defaultServerResponse };
+    response.success = true;
+    response.message = message;
+    response.status = 200;
+    return res.status(response.status).json({ ...response ,...params});
+}
+    
 module.exports.TE =  (err_message, log) => { // TE stands for Throw Error
     if (log === true) {
         console.error(err_message);
@@ -82,7 +86,7 @@ module.exports.comparePassword = async (myPlaintextPassword, hash) => {
     return bcrypt.compare(myPlaintextPassword, hash);
 }
 
-module.exports.pagination = (page, page_size) => {
+module.exports.pagination = async (page, page_size) => {
     if (page_size) {
         page_size = Number(page_size)
     } else {

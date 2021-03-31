@@ -1,569 +1,142 @@
-const { Admin, Restaurant, RestaurantCategory,RestaurantHotspot,DishCategory,RestaurantDish,HotspotLocation } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
-const { Op } = require("sequelize");
-const adminAWS = require('../../utils/aws');
-const validation = require("../../utils/admin/validation");
+const restaurantService = require("../../services/admin/restaurant.service")
+const constants = require("../../constants");
 
 module.exports = {
     listRestaurant: async(req, res) => {
         try {
-
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let [offset, limit] = utilityFunction.pagination(req.query.page, req.query.page_size);
-            // if (offset)
-            //     offset = (parseInt(offset) - 1) * parseInt(limit);
-
-            let query = {};
-            query.where = {is_deleted:false};
-            if(req.query.searchKey) {
-                let searchKey = req.query.searchKey;
-                console.log("searchKey", searchKey,"\n\n")
-                query.where = {
-                    ...query.where,
-                    [Op.or]: [
-                        {restaurant_name: { [Op.iLike]: `%${searchKey}%` }},
-                        {owner_name: { [Op.iLike]: `%${searchKey}%` }},
-                        {owner_email: { [Op.iLike]: `%${searchKey}%` }},
-                        {owner_phone: { [Op.iLike]: `%${searchKey}%` }}
-                    ]
-                };
-            }
-            query.order = [
-                ['id', 'DESC']
-            ];
-            query.limit = limit;
-            query.offset = offset;
-            query.raw = true;
-
-            let restaurantList = await Restaurant.findAndCountAll(query);
-            if(restaurantList)
-            utilityFunction.ReS(res, restaurantList, 200, "Restaurant data fetched successfully.");
-
-        } catch (err) {
-            console.log(err);
-            utilityFunction.ReE(res, "Internal server error", 500, err);
+            const responseFromService = await restaurantService.listRestaurant(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     addRestaurant: async(req, res) => {
         try {
-
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let restaurantExists = await Restaurant.findOne({where: {owner_email: req.body.owner_email}});
-            if(!restaurantExists) {
-                // const point = { type: 'Point', coordinates: [] };
-                // point.coordinates.push(req.body.long);
-                // point.coordinates.push(req.body.lat);
-                //req.body.location = point;
-                
-                if (req.body.hotspot_location_ids && !Array.isArray(req.body.hotspot_location_ids)) {
-                    req.body.hotspot_location_ids = req.body.hotspot_location_ids.split(',').map(hotspot_location_id => parseInt(hotspot_location_id));
-                }
-
-                const hotspotLocationIds = req.body.hotspot_location_ids;
-
-                
-                delete req.body.hotspot_location_ids;
-
-                
-
-                //req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
-                req.body.location = [parseFloat(req.body.lat), parseFloat(req.body.long)];
-                
-                let restaurantCreated = await Restaurant.create(req.body);
-                if (restaurantCreated)
-                    if (hotspotLocationIds) {
-                        const restaurantHotspotRows = hotspotLocationIds.map((id) => {
-                            return {
-                                hotspot_location_id:id,
-                                restaurant_id:restaurantCreated.id,
-                            }
-                        })
-                        
-                        for (let row of restaurantHotspotRows) {
-                            await RestaurantHotspot.findOrCreate({
-                                where: row,
-                                defaults:row
-                            })       
-                        }
-                    }
-                 utilityFunction.ReS(res, {restaurant_id:restaurantCreated.id}, 200, "Restaurant added successfully.");
-            } else {
-                utilityFunction.ReE(res, "Restaurant with this email id already exists", 401, {});
-            }
-        } catch (err) {
-            console.log(err);
-            utilityFunction.ReE(res, "Internal server error", 500, err);
+            const responseFromService = await restaurantService.addRestaurant(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     changeRestaurantStatus: async (req, res) => {
         try {
-
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            const restaurantId = req.params.restaurantId;
-            const status = parseInt(req.body.status);
-
-            const restaurant = await Restaurant.findByPk(restaurantId);
-
-            if (!restaurant) return res.status(404).json({ status: 404, message: `No restaurant found with provided id` });
-
-
-            console.log("status", status);
-
-            if (!([0, 1].includes(status))) return res.status(400).json({ status: 400, message: "Please send a valid status" });
-
-            await Restaurant.update({
-                status,
-            },
-                {
-                    where: {
-                        id: restaurantId,
-                    },
-                    returning: true,
-                });
-            
-            if (status) return res.status(200).json({ status: 200, message: "Restaurant Activated Successfully" });
-            
-            return res.status(200).json({ status: 200, message: "Restaurant Deactivated Successfully" });
-
+            const responseFromService = await restaurantService.changeRestaurantStatus({ ...req.params,...req.body });
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.action_success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
-        // try {
-        //     let params = req.body;
-        //     let query = {where:{id: params.restaurantId}};
-        //     query.raw = true;
-        //     let updates = {};
-        //     let restaurantExists = await Restaurant.findOne(query);
-        //     if(restaurantExists) {
-        //         if(params.actionType == "activate") {
-        //             if(restaurantExists.status == 1)
-        //             utilityFunction.ReE(res, "Already Activated", 401, {});
-        //             else
-        //             updates.status = 1;
-        //         } else if(params.actionType == "deactivate") {
-        //             if(restaurantExists.status == 2)
-        //             utilityFunction.ReE(res, "Already Deactivated", 401, {});
-        //             else
-        //             updates.status = 2;
-        //         } else if(params.actionType == "delete") {
-        //             if(restaurantExists.is_deleted == true)
-        //             utilityFunction.ReE(res, "Already Deleted", 401, {});
-        //             else
-        //             updates.is_deleted = true;
-        //         } else {
-        //             utilityFunction.ReE(res, "Invalid action request", 401, {});
-        //         }
-        //         await Restaurant.update(updates, query);
-        //         utilityFunction.ReS(res, {}, 200, "Restaurant status updated successfully.");
-        //     } else {
-        //         utilityFunction.ReE(res, "Invalid restaurant id", 401, {});
-        //     }
-        // } catch (err) {
-        //     console.log(err);
-        //     utilityFunction.ReE(res, "Internal server error", 500, err);
-        // }
     },
 
     getRestaurant: async (req, res) => {
-        try {
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let restaurantId = parseInt(req.params.restaurantId);
-
-            const restaurant = await Restaurant.findByPk(restaurantId);
-
-            if (!restaurant) return res.status(404).json({ status: 404, message: `No restaurant found with provided id` });
-
-            let coveringHotspots = [];
-
-            
-            const restaurantHotspot = await RestaurantHotspot.findAndCountAll({
-                where: {
-                    restaurant_id:restaurantId,
-                }
-            })
-
-            if (restaurantHotspot.count !== 0) {
-                for (let row of restaurantHotspot.rows) {
-
-                    const hotspotLocation = await HotspotLocation.findByPk(row.hotspot_location_id);
-                    coveringHotspots.push(hotspotLocation.name)
-                }
-            }
-
-            //restaurant.coveringHotspots = coveringHotspots;
-
-            return res.status(200).json({ status: 200, restaurant, coveringHotspots });
-
+       try {
+            const responseFromService = await restaurantService.getRestaurant(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }       
 
     },
 
     editRestaurant: async (req, res) => {
         try {
-
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let query = {where:{id: req.params.restaurantId}};
-            query.raw = true;
-            if (req.body.hotspot_location_ids && !Array.isArray(req.body.hotspot_location_ids)) {
-                    req.body.hotspot_location_ids = req.body.hotspot_location_ids.split(',').map(hotspot_location_id => parseInt(hotspot_location_id));
-            }
-
-            const hotspotLocationIds = req.body.hotspot_location_ids;
-
-            delete req.body.hotspot_location_ids;
-            
-            let updates = req.body;
-            let restaurantExists = await Restaurant.findOne(query);
-            if(restaurantExists) {
-                if(req.body.lat && req.body.long) {
-                    // const point = { type: 'Point', coordinates: [] };
-                    // point.coordinates.push(req.body.long);
-                    // point.coordinates.push(req.body.lat);
-                    // req.body.location = point;
-                    //req.body.location = [parseFloat((req.body.lat).toFixed(7)), parseFloat((req.body.long).toFixed(7))];
-                    updates.location = [parseFloat(req.body.lat), parseFloat(req.body.long)];
-                }
-                await Restaurant.update(updates, query);
-
-                if (hotspotLocationIds) {
-                    await RestaurantHotspot.destroy({
-                        where: {
-                            restaurant_id:parseInt(req.params.restaurantId),
-                        },
-                        force: true,
-                    })
-                
-                    const restaurantHotspotRows = hotspotLocationIds.map((id) => {
-                        return {
-                            hotspot_location_id:id,
-                            restaurant_id:parseInt(req.params.restaurantId),
-                        }
-                    })
-    
-                    await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
-                }
-                
-                utilityFunction.ReS(res, {}, 200, "Restaurant data updated successfully.");
-            } else {
-                utilityFunction.ReE(res, "Invalid restaurant id", 401, {});
-            }
-        } catch (err) {
-            console.log(err);
-            utilityFunction.ReE(res, "Internal server error", 500, err);
+            const responseFromService = await restaurantService.editRestaurant({ ...req.params,...req.body });
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.update_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     deleteRestaurant: async (req, res) => { 
         try {
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            const restaurantId = req.params.restaurantId;
-
-            const restaurant = await Restaurant.findByPk(restaurantId);
-
-            if (!restaurant || restaurant.is_deleted) return res.status(404).json({ status: 404, message: `No restaurant found with provided id` });
-
-            await Restaurant.update({
-                is_deleted: true,
-                },
-                {
-                    where: {
-                        id: restaurantId,
-                    },
-                    returning: true,
-                })
-            res.status(200).json({ status: 200, message: "Restaurant Deleted Successfully" });
+            const responseFromService = await restaurantService.deleteRestaurant(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     uploadRestaurantImage: async (req, res) => {
         try {
-
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let now = (new Date()).getTime();
-
-            const pictureName = req.file.originalname.split('.');
-            const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `restaurant_${now}.${pictureType}`;
-            const pictureBuffer = req.file.buffer;
-
-            const params = adminAWS.setParams(pictureKey, pictureBuffer);
-
-            adminAWS.s3.upload(params, async (error, data) => {
-                if (error) return res.status(500).json({ status: 500, message: `Internal Server Error`});
-
-                const image_url = data.Location;
-                
-
-                return res.status(200).json({ status: 200, message: "Image uploaded successfully", image_url })
-            })
+            const responseFromService = await restaurantService.uploadRestaurantImage(req.file);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
         } catch (error) {
-            console.log(error );
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     restaurantCategoryList: async (req, res) => {
         try {
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let restaurantCategoryList = await RestaurantCategory.findAndCountAll({where:{is_deleted: false},raw: true});
-            if(restaurantCategoryList)
-             utilityFunction.ReS(res, restaurantCategoryList, 200, "Restaurant category data fetched successfully.");
-        } catch (err) {
-            console.log(err);
-            utilityFunction.ReE(res, "Internal server error", 500, err);
+            const responseFromService = await restaurantService.restaurantCategoryLis();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     dishCategoryList: async (req, res) => {
         try {
-
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let dishCategory = await DishCategory.findAndCountAll();
-
-            if (dishCategory.count === 0) {
-                await DishCategory.bulkCreate(
-                    [
-                        { name: "Sushi", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },
-                        { name: "Pizza", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
-                        { name: "Burger", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png" },
-                        { name: "Fries", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png" },
-                        { name: "Meat", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png" },
-                        { name: "Chinese", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
-                        { name: "Breakfast", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
-
-                    ],
-                    { returning: ['id'] },
-                );
-            }
-
-            dishCategory = await DishCategory.findAll();
-
-            const dishCategories = await dishCategory.map((val) => {
-                return {
-                    id: val.id,
-                    name: val.name,
-                }
-            });
-
-            return res.status(200).json({ status: 200, dishCategories });
+            const responseFromService = await restaurantService.dishCategoryList();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     addDish: async (req, res) => {
         try {
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            const dish = validation.dishSchema.validate(req.body);
-
-            if (dish.error) return res.status(400).json({ status: 400, message: dish.error.details[0].message });
-
-            
-
-            const restaurantDish=await RestaurantDish.create(dish.value);
-
-            return res.status(200).json({ status: 200, dish:restaurantDish });
+            const responseFromService = await restaurantService.addDish(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
     
     listDishes: async (req, res) => {
         try {
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let [offset, limit] = utilityFunction.pagination(req.query.page, req.query.page_size);
-            // if (offset)
-            //     offset = (parseInt(offset) - 1) * parseInt(limit);
-
-            let query = {};
-            query.where = { is_deleted: false };
-            if (req.query.searchKey) {
-                let searchKey = req.query.searchKey;
-
-                const dishCategory = await DishCategory.findAll({
-                    where: {
-                        name: { [Op.iLike]: `%${searchKey}%` }
-                    }
-                });
-
-                const dishCategoryIds = dishCategory.map(val => val.id);
-
-                console.log("dishCategoryIds", dishCategoryIds)
-
-                query.where = {
-                    ...query.where,
-                    [Op.or]: [
-                        { name: { [Op.iLike]: `%${searchKey}%` } },
-                        { dish_category_id: dishCategoryIds}
-                        
-                    ]
-                };
-            }
-            query.order = [
-                ['id', 'DESC']
-            ];
-            query.limit = limit;
-            query.offset = offset;
-            query.raw = true;
-
-            let dishes = await RestaurantDish.findAndCountAll(query);
-
-            if (dishes.count === 0) return res.status(404).json({ status: 404, message:`No Dish Found` });
-
-            return res.status(200).json({ status: 200, dishes });
+            const responseFromService = await restaurantService.listDishes(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
     getDish: async (req, res) => {
         try {
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let dishId = req.params.dishId;
-
-            const dish = await RestaurantDish.findByPk(dishId);
-
-            if (!dish) return res.status(404).json({ status: 404, message: `No dish found with provided id` });
-
-
-            return res.status(200).json({ status: 200, dish });
-
+            const responseFromService = await restaurantService.getDish(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
 
     },
 
     editDish: async (req, res) => {
         try {
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let dishId = req.params.dishId;
-
-            const dish = await RestaurantDish.findByPk(dishId);
-
-            if (!dish) return res.status(404).json({ status: 404, message: `No dish found with provided id` });
-
-            const dishResult = validation.dishSchema.validate(req.body);
-
-            if (dishResult.error) return res.status(400).json({ status: 400, message: dishResult.error.details[0].message });
-
-            await RestaurantDish.update(
-                dishResult.value
-            ,
-                {
-                    where: {
-                        id: dishId,
-                    },
-                    returning: true,
-                });
-            
-            return res.status(200).json({ status: 200, message:`Dish updated successfully` });
-
+            const responseFromService = await restaurantService.editDish({ ...req.params,...req.body });
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.update_success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
 
     },
 
     deleteDish: async (req, res) => {
-        try {
-
-            const admin = await Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let dishId = req.params.dishId;
-
-            await RestaurantDish.update({
-                is_deleted: true,
-            },
-                {
-                    where: {
-                        id: dishId,
-                    },
-                    returning: true,
-                })
-            res.status(200).json({ status: 200, message: "Dish Deleted Successfully" });
+       try {
+            const responseFromService = await restaurantService.deleteDish(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     uploadDishImage: async (req, res) => {
         try {
-            let now = (new Date()).getTime();
-
-            const pictureName = req.file.originalname.split('.');
-            const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `dish_${now}.${pictureType}`;
-            const pictureBuffer = req.file.buffer;
-
-            const params = adminAWS.setParams(pictureKey, pictureBuffer);
-
-            adminAWS.s3.upload(params, async (error, data) => {
-                if (error) return res.status(500).json({ status: 500, message: `Internal Server Error` });
-
-                const image_url = data.Location;
-
-
-                return res.status(200).json({ status: 200, message: "Image uploaded successfully", image_url })
-            })
+            const responseFromService = await restaurantService.uploadDishImage(req.file);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 

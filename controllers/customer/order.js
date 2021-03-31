@@ -1,6 +1,6 @@
 require('dotenv/config');
 const models = require('../../models');
-const validate = require('../../utils/customer/validation');
+const validate = require('../../apiSchema/customerSchema');
 const { Op } = require("sequelize");
 
 const getOrderCard =  async (args) => {

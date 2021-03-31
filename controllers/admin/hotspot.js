@@ -1,439 +1,50 @@
-const models = require('../../models');
-const { Op } = require("sequelize");
-const utility = require('../../utils/utilityFunctions');
-const validation = require("../../utils/admin/validation");
+const utilityFunction = require('../../utils/utilityFunctions');
+const hotspotService = require("../../services/admin/hotspot.service")
+const constants = require("../../constants");
 
 module.exports = {
     addHotspot: async (req, res) => {
         try {
-            const admin = await models.Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            if (req.body.location && !Array.isArray(req.body.location)) {
-                req.body.location=[req.body.location.split(',')[0],req.body.location.split(',')[1]]
-            }
-
-            if (req.body.dropoffs && !Array.isArray(req.body.dropoffs)) {
-                req.body.dropoffs = req.body.dropoffs.split(',').map(dropoff => dropoff);
-            }
-
-            if (req.body.delivery_shifts && !Array.isArray(req.body.delivery_shifts)) {
-                req.body.delivery_shifts = req.body.delivery_shifts.split(',').map(delivery_shift => delivery_shift);
-            }
-
-            if (req.body.restaurants_ids && !Array.isArray(req.body.restaurants_ids)) {
-                req.body.restaurants_ids = req.body.restaurants_ids.split(',').map(restaurant_id => parseInt(restaurant_id));
-            }
-
-            if (req.body.driver_ids && !Array.isArray(req.body.driver_ids)) {
-                req.body.driver_ids = req.body.driver_ids.split(',').map(driver_id => parseInt(driver_id));
-            }
-
-            const resultHotspot = validation.hotspotSchema.validate(req.body);
-
-            if (resultHotspot.error) {
-                return res.status(400).json({ status: 400, message: resultHotspot.error.details[0].message });
-            }
-                
-            const name = req.body.hotspot_name;
-            const location = req.body.location;
-            const location_detail = req.body.location_detail;
-            const city = req.body.city;
-            const state = req.body.state;
-            const country = req.body.country;
-            const postal_code = req.body.postal_code;
-            const dropoffs = req.body.dropoffs;
-            const delivery_shifts = req.body.delivery_shifts;
-
-            const restaurantIds = req.body.restaurant_ids;
-            const driverIds = req.body.driver_ids;
-
-
-            const hotspotLocation = await models.HotspotLocation.create({
-                name,location,location_detail,city,state,country,postal_code,delivery_shifts
-            })
-
-            if (dropoffs) {
-                const hotspotDropoffRows = dropoffs.map((dropoff) => {
-                    return {
-                        hotspot_location_id: hotspotLocation.id,
-                        dropoff_detail:dropoff,
-                    }
-                })
-
-                await models.HotspotDropoff.bulkCreate(hotspotDropoffRows);
-            }
-
-            if (restaurantIds) {
-                const restaurantHotspotRows = restaurantIds.map((id) => {
-                    return {
-                        hotspot_location_id: hotspotLocation.id,
-                        restaurant_id:id,
-                    }
-                })
-
-                for (let row of restaurantHotspotRows) {
-                    await models.RestaurantHotspot.findOrCreate({
-                        where: row,
-                        defaults: row
-                    })       
-                }
-            }
-
-            if (driverIds) {
-                const hotspotDriverRows = driverIds.map((id) => {
-                    return {
-                        hotspot_location_id: hotspotLocation.id,
-                        driver_id:id,
-                    }
-                })
-
-                await models.HotspotDriver.bulkCreate(hotspotDriverRows);
-            }            
-            
-
-            return res.status(200).json({ status: 200, message: `Hotspot Added` });
-
+            const responseFromService = await hotspotService.addHotspot(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     editHotspot: async (req, res) => {
         try {
-            const admin = await models.Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            const hotspotLocationId = req.params.hotspotLocationId;
-
-            const hotspot = await models.HotspotLocation.findByPk(hotspotLocationId);
-
-            if (!hotspot) return res.status(404).json({ status: 404, message: `no hotspot found with this id` });
-
-            if (req.body.location && !Array.isArray(req.body.location)) {
-                req.body.location = [req.body.location.split(',')[0], req.body.location.split(',')[1]]
-            }
-            
-            if (req.body.dropoffs && !Array.isArray(req.body.dropoffs)) {
-                req.body.dropoffs = req.body.dropoffs.split(',').map(dropoff => dropoff);
-            }
-
-            if (req.body.delivery_shifts && !Array.isArray(req.body.delivery_shifts)) {
-                req.body.delivery_shifts = req.body.delivery_shifts.split(',').map(delivery_shift => delivery_shift);
-            }
-
-            if (req.body.restaurants_ids && !Array.isArray(req.body.restaurants_ids)) {
-                req.body.restaurants_ids = req.body.restaurants_ids.split(',').map(restaurant_id => parseInt(restaurant_id));
-            }
-
-            if (req.body.driver_ids && !Array.isArray(req.body.driver_ids)) {
-                req.body.driver_ids = req.body.driver_ids.split(',').map(driver_id => parseInt(driver_id));
-            }
-                
-            const name = req.body.hotspot_name || hotspot.name;
-            const location = req.body.location || hotspot.location;
-            const location_detail = req.body.location_detail || hotspot.location_detail;
-            const city = req.body.city || hotspot.city;
-            const state = req.body.state || hotspot.state;
-            const country = req.body.country || hotspot.country;
-            const postal_code = req.body.postal_code || hotspot.postal_code;
-            const dropoffs = req.body.dropoffs;
-            const delivery_shifts = req.body.delivery_shifts || hotspot.delivery_shifts;
-
-            const restaurantIds = req.body.restaurant_ids;
-            
-            const driverIds = req.body.driver_ids;
-
-            const resultHotspot = validation.hotspotSchema.validate({
-                name,
-                location,
-                location_detail,
-                city,
-                state,
-                country,
-                postal_code,
-                dropoffs,
-                delivery_shifts,
-                restaurant_ids: restaurantIds,
-                driver_ids:driverIds,
-            });
-
-            if (resultHotspot.error) {
-                return res.status(400).json({ status: 400, message: resultHotspot.error.details[0].message });
-            }
-
-            await models.HotspotLocation.update({
-                name,location,location_detail,city,state,country,postal_code,delivery_shifts
-                },
-                {
-                    where: {
-                        id:hotspotLocationId
-                    },
-                    returning: true,
-                }
-            )
-
-            if (dropoffs) {
-
-                await models.HotspotDropoff.destroy({
-                    where: {
-                        hotspot_location_id:hotspotLocationId,
-                    },
-                    force: true,
-                })
-
-                const hotspotDropoffRows = dropoffs.map((dropoff) => {
-                    return {
-                        hotspot_location_id: hotspotLocationId,
-                        dropoff_detail:dropoff,
-                    }
-                })
-
-                await models.HotspotDropoff.bulkCreate(hotspotDropoffRows);
-
-            }
-
-            if (restaurantIds) {
-
-                await models.RestaurantHotspot.destroy({
-                    where: {
-                        hotspot_location_id:hotspotLocationId,
-                    },
-                    force: true,
-                })
-
-                const restaurantHotspotRows = restaurantIds.map((id) => {
-                    return {
-                        hotspot_location_id: hotspotLocationId,
-                        restaurant_id:id,
-                    }
-                })
-
-                await models.RestaurantHotspot.bulkCreate(restaurantHotspotRows);
-
-            }
-
-            if (driverIds) {
-
-                await models.HotspotDriver.destroy({
-                    where: {
-                        hotspot_location_id:hotspotLocationId,
-                    },
-                    force: true,
-                })
-
-                const hotspotDriverRows = driverIds.map((id) => {
-                    return {
-                        hotspot_location_id: hotspotLocationId,
-                        driver_id:id,
-                    }
-                })
-
-                await models.HotspotDriver.bulkCreate(hotspotDriverRows);
-            }            
-            
-
-            return res.status(200).json({ status: 200, message: `Hotspot updated` });
-
+            const responseFromService = await hotspotService.editHotspot({...req.params,...req.body});
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.update_success);
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     listHotspots: async (req, res) => {
-        try {
-            const admin = await models.Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            let [offset, limit] = utility.pagination(req.query.page, req.query.page_size);
-
-            let query = {};
-            //query.where = {};
-            // if (req.query.searchKey) {
-            //     let searchKey = req.query.searchKey;
-            //     query.where = {
-            //         ...query.where,
-            //         [Op.or]: [
-            //             { name: { [Op.iLike]: `%${searchKey}%` } }
-            //         ]
-            //     };
-            // }
-            query.order = [
-                ['id', 'DESC']
-            ];
-            query.limit = limit;
-            query.offset = offset;
-            query.raw = true;
-
-            let hotspotList = await models.HotspotLocation.findAndCountAll(query);
-            
-            if (hotspotList.count === 0) return res.status(404).json({ status: 404, message: `no driver found` });
-
-            hotspotList.rows = hotspotList.rows.map((val) => {
-                return {
-                    id:val.id,
-                    name: val.name,
-                    locationDetail: val.location_detail,                   
-                }
-            })
-            
-            return res.status(200).json({ status: 200, hotspotList });
-            
+       try {
+            const responseFromService = await hotspotService.listHotspots();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     getHotspotDetails: async (req, res) => {
         try {
-            const admin = await models.Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            const hotspotLocationId = req.params.hotspotLocationId;
-
-            const hotspot = await models.HotspotLocation.findByPk(hotspotLocationId);
-
-            if (!hotspot) return res.status(404).json({ status: 404, message: `no hotspot found with this id` });
-
-                
-            const name = hotspot.name;
-            const location = hotspot.location;
-            const location_detail = hotspot.location_detail;
-            const city = hotspot.city;
-            const state = hotspot.state;
-            const country = hotspot.country;
-            const postal_code = hotspot.postal_code;
-            const delivery_shifts = hotspot.delivery_shifts;
-
-            
-            let dropoffs = null;
-
-            
-            const hotspotDropoff = await models.HotspotDropoff.findAndCountAll({
-                where: {
-                    hotspot_location_id:hotspotLocationId,
-                }
-            })
-
-            if (hotspotDropoff.count !== 0) {
-                dropoffs = hotspotDropoff.rows.map(row => row.dropoff_detail);
-            }
-            
-
-            let restaurantIds = [];
-
-            
-            const restaurantHotspot = await models.RestaurantHotspot.findAndCountAll({
-                where: {
-                    hotspot_location_id:hotspotLocationId,
-                }
-            })
-
-            if (restaurantHotspot.count !== 0) {
-                for (let row of restaurantHotspot.rows) {
-                    const restaurant = await models.Restaurant.findByPk(row.restaurant_id);
-                    restaurantIds.push(restaurant.restaurant_name)
-                }
-            }
-            
-            
-            
-            let driverIds = [];
-
-            const hotspotDriver = await models.HotspotDriver.findAndCountAll({
-                where: {
-                    hotspot_location_id:hotspotLocationId,
-                }
-            })
-
-            if (hotspotDriver.count !== 0) {
-                for (let row of hotspotDriver.rows) {
-
-                    const driver = await models.Driver.findByPk(row.driver_id);
-                    driverIds.push(`${driver.first_name} ${driver.last_name}`)
-                }
-            }
-            
-            const hotspotDetails = {
-                name,
-                location,
-                location_detail,
-                city,
-                state,
-                country,
-                postal_code,
-                dropoffs,
-                delivery_shifts,
-                restaurantIds,
-                driverIds
-            }
-
-
-            return res.status(200).json({ status: 200, hotspotDetails });
-
+            const responseFromService = await hotspotService.getHotspotDetails(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     deleteHotspot: async (req, res) => {
-        try {
-            const admin = await models.Admin.findByPk(req.adminInfo.id);
-
-            if (!admin) return res.status(404).json({ status: 404, message: `Admin not found` });
-
-            const hotspotLocationId = req.params.hotspotLocationId;
-
-            const hotspot = await models.HotspotLocation.findByPk(hotspotLocationId);
-
-            if (!hotspot) return res.status(404).json({ status: 404, message: `no hotspot found with this id` });
-
-
-            
-            await models.HotspotDropoff.destroy({
-                where: {
-                    hotspot_location_id:hotspotLocationId,
-                },
-                force:true,
-            })
-            
-
-            
-            await models.RestaurantHotspot.destroy({
-                where: {
-                    hotspot_location_id:hotspotLocationId,
-                },
-                force:true,
-            })
-            
-            await models.HotspotDriver.destroy({
-                where: {
-                    hotspot_location_id:hotspotLocationId,
-                },
-                force:true,
-            })
-
-            await models.HotspotLocation.destroy({
-                where: {
-                    id:hotspotLocationId,
-                },
-                force:true,
-            })
-
-
-            return res.status(200).json({ status: 200,message: "Hotspot deleted" });
-
+       try {
+            const responseFromService = await hotspotService.deleteHotspot(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
         } catch (error) {
-            console.log(error)
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 }

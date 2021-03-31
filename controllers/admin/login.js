@@ -1,189 +1,52 @@
 require('dotenv/config');
-const { Admin } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
-const adminAuthentication = require('../../middlewares/admin/jwt');
+const loginService = require("../../services/admin/login.service")
+const constants = require("../../constants");
 const _ = require('lodash');
 
 module.exports = {
     login: async (req, res) => {
         try {
-            const email = (req.body.email).toLowerCase()
-            const password = req.body.password;
-
-            const adminData = await Admin.findOne({
-                where: {
-                    email
-                },
-                raw: true
-            });
-
-            if (!adminData) return utilityFunction.ReE(res, "Invalid email Id or password", 400, {});
-            let comparedPassword = await utilityFunction.comparePassword(password, adminData.password);
-            if (comparedPassword) {
-                let id = adminData.id;
-                const accessToken = await adminAuthentication.createJwtToken({
-                    admin: true,
-                    id: id,
-                    email
-                });
-                let update = {
-                    'token': accessToken,
-                };
-                await Admin.update(update,{ where: {id: id} });
-                utilityFunction.ReS(res, { 'email': adminData.email, 'id': adminData.id, 'token': accessToken }, 200, "Log in successfully.");
-            } else {
-                utilityFunction.ReE(res, "Invalid email Id or password", 401, {});
-            }   
-        } catch (err) {
-            console.log(err);
-            utilityFunction.ReE(res, "Internal server error", 500, err);
+            const responseFromService = await loginService.login(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.login_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     addNewAdmin: async (req, res) => {
         try {
-            let params = req.body;
-            if(params.passkey === process.env.ADMIN_PASSKEY) {
-                const qry = { where: {} };
-                qry.where = { 
-                    email: params.email,
-                    // status: {[Op.in]: [0,1]}
-                };
-                qry.raw = true;
-                let existingUser = await Admin.findOne(qry);
-                if (_.isEmpty(existingUser)) {
-                    let comparePassword = params.password === params.confirmPassword;
-                    if (comparePassword) {
-                        delete params.confirmPassword;
-                        params.password = await utilityFunction.bcryptPassword(params.password);
-                        let newAdmin = await Admin.create(params);
-                        let adminData = newAdmin.get({plain:true});
-                        delete adminData.password;
-                        let token = await adminAuthentication.createJwtToken({
-                            admin: true,
-                            id: adminData.id,
-                            email:params.email,
-                        });
-                        adminData.token = token;
-                        let update = {
-                            'token': token,
-                        };
-                        let condition = {
-                            where: { id: adminData.id }
-                        }
-                        await Admin.update(update, condition);
-                        delete adminData.reset_pass_otp;
-                        delete adminData.reset_pass_expiry;
-                        utilityFunction.ReS(res, adminData, 200, "Account created successfully.");
-                    } else {
-                        utilityFunction.ReE(res, "Password mismatch", 401, {});
-                    }
-                } else {
-                    utilityFunction.ReE(res, "Account already exists with this email id", 401, {});
-                }
-            } else {
-                utilityFunction.ReE(res, "Invalid passkey", 400, {});
-            }    
-        } catch (err) {
-            console.log(err);
-            utilityFunction.ReE(res, "Internal server error", 500, err);
+            const responseFromService = await loginService.addNewAdmin(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.new_admin_added);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     forgotPassword: async (req, res) => {
         try {
-            let params = req.body;
-            let userData, reset_pass_otp = {}, reset_pass_expiry;
-            const qry = { where: {} };
-            if (!_.isEmpty(params)) {
-                qry.where.email = params.email;
-                // qry.where.status = {[Op.ne]: 2};
-                qry.raw = true;
-                let existingUser = await Admin.findOne(qry);
-                if (!_.isEmpty(existingUser)) {
-                    let otp = await utilityFunction.gererateOtp();
-                    // const mailParams = {};
-                    // mailParams.to = params.email;
-                    // mailParams.toName = existingUser.name;
-                    // mailParams.templateName = "reset_password_request";
-                    // mailParams.subject = "Reset Password Request";
-                    // mailParams.templateData = {
-                    //     subject: "Reset Password Request",
-                    //     name: existingUser.name,
-                    //     resetLink: `${process.env.WEB_HOST_URL+'admin-panel/auth/reset-password'}?email=${params.email}&otp=${otp}`
-                    // };
-                    if (!_.isEmpty(otp)) {
-                        reset_pass_otp = otp;
-                        reset_pass_expiry = Math.floor(Date.now());
-                        userData = await Admin.update({reset_pass_otp, reset_pass_expiry}, { where: { id: existingUser.id } });
-                        utilityFunction.ReS(res, {otp}, 200, "Reset mail sent successfully.");
-                    }
-                } else {
-                    utilityFunction.ReE(res, "No user found", 400, { "message": "No user found" });
-                }
-            }
-        } catch (err) {
-            console.log(err);
-            utilityFunction.ReE(res, "Internal server error", 500, err);
+            const responseFromService = await loginService.forgotPassword(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.forget_pass_otp);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     resetPassword: async (req, res) => {
         try {
-            let params = req.body;
-            const otp_expiry_time = 30*60*1000;
-            const query = { where: {} };
-            if (!_.isEmpty(params)) {
-                query.where.email = params.email;
-                // query.where.status = {[Op.ne]: 2};
-            }
-            query.raw = true;
-            let user = await Admin.findOne(query);
-            let userdata = JSON.parse(JSON.stringify(user))
-            if (_.isEmpty(userdata)) {
-                utilityFunction.ReE(res, "No user found", 400, { "message": "No user found" });
-            } else {
-                if (userdata && userdata.reset_pass_otp) {
-                    let time = utilityFunction.calcluateOtpTime(userdata.reset_pass_expiry);
-                    if (userdata.reset_pass_otp != params.otp) {
-                        utilityFunction.ReE(res, "Invalid otp", 401, { "message": "Invalid otp" });
-                    } else if (utilityFunction.currentUnixTimeStamp() - time > otp_expiry_time) {
-                        utilityFunction.ReE(res, "OTP expired", 401, { "message": "OTP expired" });
-                    } else if (params.password !== params.confirmPassword) {
-                        utilityFunction.ReE(res, "Passward and confirm password mismatch", 401, { "message": "Passward and confirm password mismatch" });
-                    } else {
-                        params.password = await utilityFunction.bcryptPassword(params.password);
-                        let update = {
-                            'password': params.password,
-                            'reset_pass_otp': null,
-                            'reset_pass_expiry': null,
-                        };
-                        await Admin.update(update, { where: { id: userdata.id } });
-                        utilityFunction.ReS(res, {}, 200, "Password reset successfully.");
-                    }
-                } else {
-                    utilityFunction.ReE(res, "Invalid request", 400, { "message": "Invalid request" });
-                }
-            }
-        } catch (err) {
-            console.log(err);
-            utilityFunction.ReE(res, "Internal server error", 500, err);
+            const responseFromService = await loginService.resetPassword(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.reset_password_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
     logout: async (req, res) => {
         try {
-            let update = {
-                'token': null,
-            };
-            let condition = {
-                id: req.adminInfo.id
-            }
-            await Admin.update(update,{ where: condition });
-            utilityFunction.ReS(res, {}, 200, "Logout successfully.");
-        } catch (err) {
-            console.log(err);
-            utilityFunction.ReE(res, "Internal server error", 500, err);
+            const responseFromService = await loginService.logout(req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.logout_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     }
 }

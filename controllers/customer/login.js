@@ -1,11 +1,11 @@
 require('dotenv/config');
 const models = require('../../models');
-const validation = require('../../utils/customer/validation');
+const validation = require('../../apiSchema/customerSchema');
 const { Op, where } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utils/mail');
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-const customerAuthentication = require('../../middlewares/customer/jwt');
+const responseToken = require('../../utils/responseToken');
 const customerAWS = require('../../utils/aws');
 const { isBoolean } = require('lodash');
 
@@ -42,7 +42,7 @@ module.exports = {
                     email: customer.getDataValue('email'),
                 };
 
-                const accessToken = customerAuthentication.generateAccessToken(user);
+                const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Logged in successfully`, accessToken: accessToken });
             }
@@ -95,7 +95,7 @@ module.exports = {
                     email: customer.getDataValue('email'),
                 };
 
-                const accessToken = customerAuthentication.generateAccessToken(user);
+                const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Logged in successfully`, accessToken: accessToken });
             }
@@ -180,7 +180,7 @@ module.exports = {
                         email: email,
                     };
 
-                    const accessToken = customerAuthentication.generateAccessToken(user);
+                    const accessToken = responseToken.generateCustomerAccessToken(user);
 
 
                     return res.status(200).json({ status: 200, message: `Customer Signup successfully`, accessToken: accessToken, });
@@ -235,7 +235,7 @@ module.exports = {
                     email: body.email,
                 };
 
-                const accessToken = customerAuthentication.generateAccessToken(user);
+                const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
             }
@@ -250,7 +250,7 @@ module.exports = {
                     email: customer.getDataValue('email'),
                 }
 
-                const accessToken = customerAuthentication.generateAccessToken(user);
+                const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
             }
@@ -287,7 +287,7 @@ module.exports = {
                     email: body.email,
                 }
 
-                const accessToken = customerAuthentication.generateAccessToken(user);
+                const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
             }
@@ -302,7 +302,7 @@ module.exports = {
                     email: customer.getDataValue('email'),
                 }
 
-                const accessToken = customerAuthentication.generateAccessToken(user);
+                const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
             }
@@ -338,7 +338,7 @@ module.exports = {
                     email: body.email,
                 }
 
-                const accessToken = customerAuthentication.generateAccessToken(user);
+                const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer signup successfully`, accessToken: accessToken });
             }
@@ -352,7 +352,7 @@ module.exports = {
                     email: customer.getDataValue('email'),
                 }
 
-                const accessToken = customerAuthentication.generateAccessToken(user);
+                const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 return res.status(200).json({ status: 200, message: `Customer with the same email is already exist.`, accessToken: accessToken });
             }
@@ -487,7 +487,7 @@ module.exports = {
                     email: customer.getDataValue('email'),
                 };
 
-                const accessToken = customerAuthentication.generateAccessToken(user);
+                const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 res.status(200).json({ status: 200, message: `Phone verified`, accessToken: accessToken });
             }
@@ -515,7 +515,7 @@ module.exports = {
                             email: customer.getDataValue('email'),
                         };
 
-                        const accessToken = customerAuthentication.generateAccessToken(user);
+                        const accessToken = responseToken.generateCustomerAccessToken(user);
 
                         res.status(200).json({ status: 200, message: `Phone verified`, accessToken: accessToken });
                     }
@@ -1229,7 +1229,7 @@ module.exports = {
                 email: email
             };
 
-            const accessToken = customerAuthentication.generateAccessToken(user);
+            const accessToken = responseToken.generateCustomerAccessToken(user);
 
             return res.status(200).json({ status: 200, message: `Email Updated Successfully.`, accessToken: accessToken });
 
