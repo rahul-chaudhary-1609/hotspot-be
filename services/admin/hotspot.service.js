@@ -282,7 +282,7 @@ module.exports = {
             }
             
 
-            let restaurantIds = [];
+            let restaurants = [];
 
             
             const restaurantHotspot = await models.RestaurantHotspot.findAndCountAll({
@@ -293,14 +293,19 @@ module.exports = {
 
             if (restaurantHotspot.count !== 0) {
                 for (let row of restaurantHotspot.rows) {
-                    const restaurant = await models.Restaurant.findByPk(row.restaurant_id);
-                    restaurantIds.push(restaurant.restaurant_name)
+                    const restaurant = await models.Restaurant.findOne({
+                        attributes:['id','restaurant_name'],
+                        where: {
+                            id:row.restaurant_id
+                        }
+                    });
+                    restaurants.push(restaurant)
                 }
             }
             
             
             
-            let driverIds = [];
+            let drivers = [];
 
             const hotspotDriver = await models.HotspotDriver.findAndCountAll({
                 where: {
@@ -311,8 +316,13 @@ module.exports = {
             if (hotspotDriver.count !== 0) {
                 for (let row of hotspotDriver.rows) {
 
-                    const driver = await models.Driver.findByPk(row.driver_id);
-                    driverIds.push(`${driver.first_name} ${driver.last_name}`)
+                    const driver = await models.Driver.findOne({
+                        attributes: ['id', 'first_name', 'last_name'],
+                        where: {
+                            id:row.driver_id,
+                        }
+                    });
+                    drivers.push(driver)
                 }
             }
             
@@ -326,8 +336,8 @@ module.exports = {
                 postal_code,
                 dropoffs,
                 delivery_shifts,
-                restaurantIds,
-                driverIds
+                restaurants,
+                drivers
             }
 
 
