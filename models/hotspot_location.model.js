@@ -54,7 +54,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         customer_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
         },
         is_added: {
             type: DataTypes.BOOLEAN,

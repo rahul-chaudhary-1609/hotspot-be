@@ -27,7 +27,7 @@ module.exports = {
                 params.driver_ids = params.driver_ids.split(',').map(driver_id => parseInt(driver_id));
             }
                 
-            const name = params.hotspot_name;
+            const name = params.name;
             const location = params.location;
             const location_detail = params.location_detail;
             const city = params.city;
@@ -118,7 +118,7 @@ module.exports = {
                 params.driver_ids = params.driver_ids.split(',').map(driver_id => parseInt(driver_id));
             }
                 
-            const name = params.hotspot_name || hotspot.name;
+            const name = params.name || hotspot.name;
             const location = params.location || hotspot.location;
             const location_detail = params.location_detail || hotspot.location_detail;
             const city = params.city || hotspot.city;

@@ -6,7 +6,14 @@ const _ = require('lodash');
 
 /* function for sending the error response */
 module.exports.errorResponse = (res, error, errorCode, message = constants.MESSAGES.bad_request) => {
-    let response = { ...constants.defaultServerResponse };
+    //let response = { ...constants.defaultServerResponse };
+
+    let response = {
+        success : false,
+        message : message,
+        status : errorCode,
+    }
+
     if (!_.isEmpty(error.message)) {
         if (error.message == 'SequelizeUniqueConstraintError: Validation error') {
             response.message = constants.MESSAGES.duplicate_value;
@@ -16,17 +23,19 @@ module.exports.errorResponse = (res, error, errorCode, message = constants.MESSA
     } else {
         response.message = message;
     }
-    response.success = false;
-    response.status = errorCode;
+
     return res.status(response.status).json(response);
 };
 
 /* function for sending the success response */
 module.exports.successResponse = (res, params, message) => {
-    let response = { ...constants.defaultServerResponse };
-    response.success = true;
-    response.message = message;
-    response.status = 200;
+    //let response = { ...constants.defaultServerResponse };
+    let response = {
+        success: true,
+        message : message,
+        status : 200,
+    };
+    
     return res.status(response.status).json({ ...response ,...params});
 }
     
