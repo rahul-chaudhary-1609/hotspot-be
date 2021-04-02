@@ -31,6 +31,15 @@ module.exports = {
         }
     },
 
+    getDriverEarningDetails: async(req, res) => {
+        try {
+            const responseFromService = await driverService.getDriverEarningDetails(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     changeDriverStatus: async (req, res) => {
         try {
             const responseFromService = await driverService.changeDriverStatus({...req.params,...req.body});

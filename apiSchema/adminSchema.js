@@ -208,7 +208,13 @@ module.exports = {
         
         restaurant_ids: Joi.array(),
         driver_ids: Joi.array(),
-    })
+    }),
+
+    getDriverEarningDetails : Joi.object({
+        driver_id: Joi.number().required(),
+        page: Joi.number().required(),        
+        page_size: Joi.number().required()      
+    }),
 }
 
 

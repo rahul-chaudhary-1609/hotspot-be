@@ -8,48 +8,59 @@ const constants = require("../../constants");
 
 module.exports = {
     listDrivers: async (params) => {
-
-            let [offset, limit] = await utility.pagination(params.page, params.page_size);
-
-            let query = {};
-            query.where = { is_deleted: false,is_rejected:false };
-            if (params.searchKey) {
-                let searchKey = params.searchKey;
-                query.where = {
-                    ...query.where,
-                    [Op.or]: [
-                        { first_name: { [Op.iLike]: `%${searchKey}%` } },
-                        { last_name: { [Op.iLike]: `%${searchKey}%` } },
-                        { email: { [Op.iLike]: `%${searchKey}%` } },
-                    ]
-                };
+    
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+    
+        let query = {};
+        query.where = { is_deleted: false,is_rejected:false };
+        if (params.searchKey) {
+            let searchKey = params.searchKey;
+            query.where = {
+                ...query.where,
+                [Op.or]: [
+                    { first_name: { [Op.iLike]: `%${searchKey}%` } },
+                    { last_name: { [Op.iLike]: `%${searchKey}%` } },
+                    { email: { [Op.iLike]: `%${searchKey}%` } },
+                ]
+            };
+        }
+        query.include = [
+            {
+                model: models.Order
             }
-            query.order = [
-                ['id', 'DESC']
-            ];
-            query.limit = limit;
-            query.offset = offset;
-            query.raw = true;
-
-            let driverList = await models.Driver.findAndCountAll(query);
-            
-            if (driverList.count === 0) throw new Error(constants.MESSAGES.no_driver);
-
-            driverList.rows = driverList.rows.map((val) => {
-                return {
-                    id:val.id,
-                    name: val.first_name+" "+val.last_name,
-                    email: val.email,
-                    phone: val.phone_no ? `${val.country_code} ${val.phone_no}` : null,
-                    status: val.status,
-                    is_approved:val.is_approved,
-                    signupDate: val.createdAt,                    
-                }
-            })
-            
-            return { driverList };
-            
-       
+        ]
+        query.order = [
+            ['id', 'DESC']
+        ];
+        query.group = ['Driver.id']
+        query.limit = limit;
+        query.offset = offset;
+    
+        let driverList = await models.Driver.findAndCountAll(query);
+        
+        if (driverList.count === 0) throw new Error(constants.MESSAGES.no_driver);
+        driverList.count = driverList.count.length;
+        driverList.rows = driverList.rows.map((val) => {
+            return {
+                id:val.id,
+                name: val.first_name+" "+val.last_name,
+                email: val.email,
+                phone: val.phone_no ? `${val.country_code} ${val.phone_no}` : null,
+                status: val.status,
+                is_approved:val.is_approved,
+                signupDate: val.createdAt,
+                total_deliveries: val.Orders.length,
+                total_earnings: val.Orders.reduce(
+                    function(sum, current) {
+                        return sum + current.amount;
+                    }, 
+                0)                         
+            }
+        })
+        
+        return { driverList };
+        
+    
     },
 
     addDrivers: async () => {
@@ -115,6 +126,35 @@ module.exports = {
 
 
        
+    },
+
+    getDriverEarningDetails: async(params) => { 
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+
+        console.log(params);
+        return await models.Order.findAndCountAll({
+            where : { driver_id: params.driver_id},
+            include: [
+                {
+                    model: models.Customer,
+                    required: false,
+                    attributes: ['name','profile_picture_url']
+                },
+                {
+                    model: models.Restaurant,
+                    required: false,
+                    attributes: ['restaurant_name','restaurant_image_url']
+                },
+                {
+                    model: models.HotspotLocation,
+                    required: false,
+                    attributes: ['name']
+                }
+            ],
+            limit: limit,
+            offset: offset,
+            order: [['id', 'DESC']]
+        });    
     },
 
     changeDriverStatus: async (params) => {
