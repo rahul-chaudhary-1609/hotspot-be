@@ -104,6 +104,8 @@ router.get('/listDrivers',adminAuthentication.validateAdminToken, adminDriverCon
 
 router.get('/getDriverDetails/:driverId',adminAuthentication.validateAdminToken, adminDriverController.getDriverDetails);
 
+router.get('/getDriverEarningDetails',adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getDriverEarningDetails), adminDriverController.getDriverEarningDetails);
+
 router.put('/approveDriver/:driverId',adminAuthentication.validateAdminToken, adminDriverController.approveDriver);
 
 router.put('/changeDriverStatus/:driverId',adminAuthentication.validateAdminToken, adminDriverController.changeDriverStatus);
