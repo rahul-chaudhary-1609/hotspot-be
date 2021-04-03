@@ -36,6 +36,16 @@ module.exports = {
         onDelete: 'cascade',
       },
 
+      hotspot_location_id: {
+       type: Sequelize.INTEGER,
+        references: {
+          model: 'hotspot_locations',
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade',
+      },
+
 
       amount: {
           type: Sequelize.FLOAT,

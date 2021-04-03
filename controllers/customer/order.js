@@ -422,6 +422,7 @@ module.exports = {
                 }
 
                 await models.Order.update({
+                    hotspot_location_id: hotspot ? hotspot.id : null,
                     amount,
                     tip_amount,
                     status,
@@ -552,6 +553,7 @@ module.exports = {
                     order_id,
                     customer_id,
                     restaurant_id,
+                    hotspot_location_id: hotspot ? hotspot.id : null,
                     order_details,
                     amount,
                     tip_amount,
