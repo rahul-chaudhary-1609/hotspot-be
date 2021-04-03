@@ -8,20 +8,6 @@ const getOrderRow =  async (args) => {
         
         const orderRows = [];
         for (const val of args.orderList.rows) {
-            const customer = await models.Customer.findByPk(val.customer_id);
-            
-            const restaurant = await models.Restaurant.findByPk(val.restaurant_id);
-
-            let hotspotLocation = null;
-
-            if (val.hotspot_location_id) {
-              hotspotLocation= await models.HotspotLocation.findByPk(val.hotspot_location_id);
-            }
-
-            let driver = null;
-            if (val.driver_id) {
-              driver= await models.Driver.findByPk(val.driver_id);
-            }
 
             let status = null;
 
@@ -40,16 +26,16 @@ const getOrderRow =  async (args) => {
             orderRows.push({
                 id: val.id,
                 orderId: val.order_id,
-                customerName: customer.name,
-                hotspotLocation: hotspotLocation? {
-                    name: hotspotLocation.name,
-                    details: hotspotLocation.location_detail,
+                customerName: val.order_details.customer.name,
+                hotspotLocation: val.order_details.hotspot? {
+                    name: val.order_details.hotspot.name,
+                    details: val.order_details.hotspot.location_detail,
                 }:null,
                 amount: val.amount,
-                restaurant:restaurant.restaurant_name,
+                restaurant:val.order_details.restaurant.restaurant_name,
                 status,
                 delivery_datetime: val.delivery_datetime,
-                driver: driver? `${driver.first_name} ${driver.last_name}`:null,
+                driver: val.order_details.driver? `${val.order_details.driver.first_name} ${val.order_details.driver.last_name}`:null,
                 createdAt:val.createdAt,
             })
         }
@@ -266,55 +252,6 @@ module.exports = {
 
             if (!order) throw new Error(constants.MESSAGES.no_order);
 
-            const orderedItems = await models.OrderedItems.findAll({
-                where: {
-                    order_id:order.id,
-                }
-            });
-
-           const customer = await models.Customer.findByPk(order.customer_id);
-            
-            const restaurant = await models.Restaurant.findByPk(order.restaurant_id);
-
-            let hotspotLocation = null;
-
-            if (order.hotspot_location_id) {
-              hotspotLocation= await models.HotspotLocation.findByPk(order.hotspot_location_id);
-            }
-
-            let orderItems = [];
-
-            for (const item of orderedItems) {
-
-                const dish = await models.RestaurantDish.findOne({
-                    where: {
-                        id: item.restaurant_dish_id,
-                        is_deleted: false,
-                    }
-                })
-
-                const dishAddOn=await models.DishAddOn.findAll({
-                    where: {
-                        id: item.dish_add_on_ids,
-                        is_deleted:false,
-                    }
-                })
-
-                let addOnPrice = 0;
-                
-                const addOns = dishAddOn.map((addOn) => {
-                    addOnPrice = addOnPrice + addOn.price
-                    return addOn.name
-                })
-
-                orderItems.push({
-                    itemName: dish.name,
-                    itemCount: item.cart_count,
-                    itemAddOn: addOns,
-                    itemPrice:(dish.price*item.cart_count)+addOnPrice                    
-                })
-            }
-
             let status = null;
 
             if (order.status === 1) {
@@ -341,16 +278,16 @@ module.exports = {
                 orderId: orderId,
                 createdAt: order.createdAt,
                 deliveryDateTime: order.delivery_datetime,
-                customer: customer.name,
-                restaurant: restaurant.restaurant_name,
-                hotspotLocation: hotspotLocation? {
-                    name: hotspotLocation.name,
-                    details: hotspotLocation.location_detail,
+                customer: order.order_details.customer.name,
+                restaurant: order.order_details.restaurant.restaurant_name,
+                hotspotLocation: order.order_details.hotspot? {
+                    name: order.order_details.hotspot.name,
+                    details: order.order_details.hotspot.location_detail,
                 } : null,
-                orderItems,
+                orderItems:order.order_details.ordered_items,
                 amount: order.amount,
                 status,
-                driver: driver? `${driver.first_name} ${driver.last_name}`:null,
+                driver: order.order_details.driver? `${order.order_details.driver.first_name} ${order.order_details.driver.last_name}`:null,
                 delivery_image_urls:order.delivery_image_urls,
             }
             
@@ -365,20 +302,29 @@ module.exports = {
             const orderId = params.orderId;
             const driverId = params.driverId;
 
-            const order = await models.Order.findOne({
-                where: {
-                    order_id:orderId,
-                }
-            });
+            const order = await utility.convertPromiseToObject(await models.Order.findOne({
+                    where: {
+                        order_id:orderId,
+                    }
+                })
+            );
 
             if (!order) throw new Error(constants.MESSAGES.no_order);
 
-            const driver = await models.Driver.findByPk(driverId);
+            const driver = await utility.convertPromiseToObject(await models.Driver.findOne({
+                    attributes: ['id','first_name','last_name'],
+                    where: {
+                        id:driverId
+                    }
+                })
+            );
 
             if (!driver) throw new Error(constants.MESSAGES.no_driver);
 
+
             await models.Order.update({
                 status: 2,
+                order_details:{ ...order.order_details,driver },
                 driver_id: driver.id,
             },
                 {

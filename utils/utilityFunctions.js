@@ -47,6 +47,10 @@ module.exports.TE =  (err_message, log) => { // TE stands for Throw Error
     throw new Error(err_message);
 };
 
+module.exports.convertPromiseToObject = async (promise) => {
+    return JSON.parse(JSON.stringify(promise));
+}
+
 module.exports.gererateOtp = () => {
     // Generate Random Number
     const otp = randomstring.generate({

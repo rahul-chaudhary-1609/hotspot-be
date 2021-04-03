@@ -36,29 +36,6 @@ module.exports = {
         onDelete: 'cascade',
       },
 
-      hotspot_location_id: {
-          type: Sequelize.INTEGER,
-        references: {
-          model: 'hotspot_locations',
-          key: 'id'
-        },
-        onUpdate: 'cascade',
-        onDelete: 'cascade',
-      },
-
-      hotspot_dropoff_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'hotspot_dropoffs',
-          key: 'id'
-        },
-        onUpdate: 'cascade',
-        onDelete: 'cascade',
-      },
-
-      cart_ids: {
-            type: Sequelize.ARRAY(Sequelize.INTEGER),
-      },
 
       amount: {
           type: Sequelize.FLOAT,
@@ -91,8 +68,18 @@ module.exports = {
             type: Sequelize.ARRAY(Sequelize.STRING),
       },
 
+      order_details: {
+            type: Sequelize.JSON,
+      },
+
       driver_id: {
-          type: Sequelize.INTEGER,
+       type: Sequelize.INTEGER,
+        references: {
+          model: 'drivers',
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade',
       },
 
       push_order_id: {

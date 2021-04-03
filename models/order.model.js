@@ -13,8 +13,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             Order.belongsTo(models.Customer);
             Order.belongsTo(models.Restaurant);
-            Order.belongsTo(models.HotspotLocation);
-            Order.belongsTo(models.HotspotDropoff);
+            Order.belongsTo(models.Driver);
         }
     }
     Order.init({
@@ -37,18 +36,6 @@ module.exports = (sequelize, DataTypes) => {
         restaurant_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-        },
-
-        hotspot_location_id: {
-            type: DataTypes.INTEGER,
-        },
-
-        cart_ids: {
-            type: DataTypes.ARRAY(DataTypes.INTEGER),
-        },
-
-        hotspot_dropoff_id: {
-            type: DataTypes.INTEGER,
         },
 
         amount: {
@@ -80,6 +67,10 @@ module.exports = (sequelize, DataTypes) => {
 
         delivery_image_urls: {
             type: DataTypes.ARRAY(DataTypes.STRING),
+        },
+
+        order_details: {
+            type: DataTypes.JSON,
         },
 
         driver_id: {

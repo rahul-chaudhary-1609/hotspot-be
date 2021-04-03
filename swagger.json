@@ -4557,7 +4557,8 @@
                 "in": "path",
                 "description": "delivery | pickup",
                 "required": true,
-                "type": "string"
+                "type": "string",
+                "enum":["delivery","pickup"]
               }
             ],
             "responses": {}
@@ -4615,24 +4616,10 @@
                 "type": "number"
               },
               {
-                "name": "hotspot_location_id",
-                "in": "formData",
-                "description": "enter hotspot location id",
-                "required": false,
-                "type": "number"
-              },
-              {
-                "name": "hotspot_dropoff_id",
-                "in": "formData",
-                "description": "enter hotspot dropoff id",
-                "required": false,
-                "type": "number"
-              },
-              {
                 "name": "cart_ids",
                 "in": "formData",
-                "description": "enter cart ids: 1,2,3,...",
-                "required": false,
+                "description": "enter cart ids: 1,2,3,... || [1,2,3]",
+                "required": true,
                 "type": "string"
               },
               {
@@ -4654,7 +4641,8 @@
                 "in": "formData",
                 "description": "delivery | pickup",
                 "required": true,
-                "type": "string"
+                "type": "string",
+                "enum":["delivery","pickup"]
               },
               {
                 "name": "cooking_instructions",
