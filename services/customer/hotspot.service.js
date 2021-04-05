@@ -1,33 +1,20 @@
 require('dotenv/config');
 const models = require('../../models');
-const validation = require('../../apiSchema/customerSchema');
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
+const constants = require('../../constants');
 
 
 module.exports = {
-    getHotspotLocation: async (req, res) => {
+    getHotspotLocation: async (params, res,user) => {
+        
+        const customer_id = user.id;
 
-        try {
-            const customer = await models.Customer.findOne({
-                where: {
-                    email: req.user.email,
-                }
-            })
-
-            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
-
-            const customer_id = customer.getDataValue('id');
-
-            const result = validation.locationGeometrySchema.validate({ location_geometry: [req.query.latitude, req.query.longitude] });
-
-            if (result.error) {
-                return res.status(400).json({ status: 400, message: result.error.details[0].message });
-            }
+            //temporary for dummy data only
 
             const P = {
-                latitude: req.query.latitude,
-                longitude: req.query.longitude
+                latitude: params.latitude,
+                longitude: params.longitude
             }
 
             const R = 5000 // meters
@@ -119,36 +106,25 @@ module.exports = {
                 }
             });
 
-            if (locations.length === 0) return res.status(404).json({ status: 404, message: `No Hotspot Found` });
+            if (locations.length === 0) throw new Error(constants.MESSAGES.no_hotspot);
 
-            return res.status(200).json({ status: 200, hotspot_loctions: locations });
+            return { hotspot_loctions: locations };
 
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
-        }
+        
         
         
 
     },
 
-    checkHotspotLocation: async (req, res) => {
-        try {
-            const customer = await models.Customer.findOne({
-                where: {
-                    email: req.user.email,
-                }
-            })
+    checkHotspotLocation: async (user) => {
 
-            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
-            
-            const customer_id = customer.getDataValue('id');
+            const customer_id = user.id;
 
             const options = ['hotspot', 'pickup'];
 
             const choiceType = options[Math.floor(Math.random() * options.length)];
 
-            if (choiceType === 'pickup') return res.status(404).json({ status: 404, message: "No hotspot found" });
+            if (choiceType === 'pickup') throw new Error(constants.MESSAGES.no_hotspot);
 
             const hotspotLocations = await models.HotspotLocation.findAll({
                 where: {
@@ -165,30 +141,19 @@ module.exports = {
                 }
             });
 
-            if (locations.length === 0) return res.status(404).json({ status: 404, message: `No Hotspot Found` });
+            if (locations.length === 0) throw new Error(constants.MESSAGES.no_hotspot);
 
-            return res.status(200).json({ status: 200, hotspot_loctions: locations });
+            return { hotspot_loctions: locations };
 
 
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
-        }
+        
     },
 
-    getHotspotDropoff: async (req, res) => {
-      try {
-          const customer = await models.Customer.findOne({
-              where: {
-                  email: req.user.email,
-              }
-          })
+    getHotspotDropoff: async (params,user) => {
 
-          if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+          const hotspot_location_id = params.hotspot_location_id;
 
-          const hotspot_location_id = req.query.hotspot_location_id;
-
-          if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+          if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
 
           const hotspotLocation = await models.HotspotLocation.findOne({
               where: {
@@ -202,7 +167,7 @@ module.exports = {
               }
           });
 
-          if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
+          if (!hotspotDropoff) throw new Error(constants.MESSAGES.no_dropoff);
 
           const dropoffs = hotspotDropoff.map((val) => {
               return {
@@ -210,7 +175,7 @@ module.exports = {
                   dropoff:val.dropoff_detail,
               }
           });
-          const customer_id = customer.id;
+          const customer_id = user.id;
 
 
          await models.CustomerFavLocation.findOrCreate({
@@ -274,28 +239,17 @@ module.exports = {
           }
 
 
-          return res.status(200).json({ status: 200, hotspotLocationDetails });
+          return { hotspotLocationDetails };
 
 
-      } catch (error) {
-          console.log(error);
-          return res.status(500).json({ status: 500, message: `Internal Server Error` });
-      } 
+      
     },
 
-    getAddressDropoff: async (req, res) => {
-      try {
-          const customer = await models.Customer.findOne({
-              where: {
-                  email: req.user.email,
-              }
-          })
+    getAddressDropoff: async (params) => {
 
-          if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+          const hotspot_location_id = params.hotspot_location_id;
 
-          const hotspot_location_id = req.query.hotspot_location_id;
-
-          if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
+          if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
 
           const hotspotDropoff = await models.HotspotDropoff.findAll({
               where: {
@@ -303,7 +257,7 @@ module.exports = {
               }
           });
 
-          if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });
+          if (!hotspotDropoff) throw new Error(constants.MESSAGES.no_dropoff);
 
           const dropoffs = hotspotDropoff.map((val) => {
               return {
@@ -313,35 +267,24 @@ module.exports = {
           });
 
 
-          return res.status(200).json({ status: 200, dropoffs });
+          return { dropoffs };
 
 
-      } catch (error) {
-          console.log(error);
-          return res.status(500).json({ status: 500, message: `Internal Server Error` });
-      } 
+      
     },
 
-    setDefaultDropoff: async (req, res) => {
-      try {
-          const customer = await models.Customer.findOne({
-              where: {
-                  email: req.user.email,
-              }
-          })
+    setDefaultDropoff: async (params,user) => {
+         
+          const hotspot_location_id = params.hotspot_location_id;
 
-          if (!customer || customer.is_deleted) return res.status(404).json({ status: 404, message: `User does not exist` });
+          if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
 
-          const hotspot_location_id = req.query.hotspot_location_id;
+          const hotspot_dropoff_id = params.hotspot_dropoff_id;
 
-          if (!hotspot_location_id || isNaN(hotspot_location_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot location id` });
-
-          const hotspot_dropoff_id = req.query.hotspot_dropoff_id;
-
-          if (!hotspot_dropoff_id || isNaN(hotspot_dropoff_id)) return res.status(400).json({ status: 400, message: `provide a valid hotspot dropoff id` });
+          if (!hotspot_dropoff_id || isNaN(hotspot_dropoff_id)) throw new Error(constants.MESSAGES.bad_request);
 
 
-          const customer_id = customer.id;
+          const customer_id =user.id;
 
 
 
@@ -357,28 +300,15 @@ module.exports = {
 
 
 
-          return res.status(200).json({ status: 200, message:`Dropoff selected as default` });
-
-
-      } catch (error) {
-          console.log(error);
-          return res.status(500).json({ status: 500, message: `Internal Server Error` });
-      } 
+          return true
+      
     },
 
-    getDefaultHotspot: async (req, res) => {
-        try {
-            const customer = await models.Customer.findOne({
-                where: {
-                    email: req.user.email,
-                }
-            })
-
-            if (!customer) return res.status(404).json({ status: 404, message: `User does not exist` });
+    getDefaultHotspot: async (user) => {
 
             const customerFavLocation = await models.CustomerFavLocation.findOne({
                 where: {
-                    customer_id: customer.id,
+                    customer_id: user.id,
                     is_default: true,
                 }
             });
@@ -395,7 +325,7 @@ module.exports = {
                 }
             });
 
-            if (!hotspotDropoff) return res.status(404).json({ status: 404, message: `no dropoff found` });            
+            if (!hotspotDropoff) throw new Error(constants.MESSAGES.no_dropoff);           
 
             const hotspotLocationDetails = {
                 hotspot_location_id: `${hotspotLocations.id}`,
@@ -406,11 +336,8 @@ module.exports = {
             }
 
 
-            return res.status(200).json({ status: 200, hotspotLocationDetails });
+            return { hotspotLocationDetails };
 
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({ status: 500, message: `Internal Server Error` });
-        } 
+         
     }
 }
