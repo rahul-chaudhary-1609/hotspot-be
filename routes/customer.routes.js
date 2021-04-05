@@ -159,81 +159,45 @@ router.get('/get-recomended-slides', customerAuthentication.validateCustomerToke
 
 
 //Orders routes
-router.post('/add-to-cart', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.addToCart(req, res);
-})
+router.post('/add-to-cart', customerAuthentication.validateCustomerToken, OrderController.addToCart);
 
-router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.getCart(req, res);
-})
+router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.validateCustomerToken,  OrderController.getCart)
 
-router.delete('/delete-from-cart/:restaurantDishId', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.deleteFromCart(req, res);
-})
+router.delete('/delete-from-cart/:restaurantDishId', customerAuthentication.validateCustomerToken,OrderController.deleteFromCart)
 
-router.post('/create-order', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.createOrder(req, res);
-})
+router.post('/create-order', customerAuthentication.validateCustomerToken, OrderController.createOrder)
 
-router.get('/get-pre-order-info/:orderId', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.getPreOrderInfo(req, res);
-})
+router.get('/get-pre-order-info/:orderId', customerAuthentication.validateCustomerToken, OrderController.getPreOrderInfo)
 
-router.put('/set-pickup-time/:orderId', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.setPickupTime(req, res);
-})
+router.put('/set-pickup-time/:orderId', customerAuthentication.validateCustomerToken, OrderController.setPickupTime)
 
-router.put('/confirm-order-payment/:orderId', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.confirmOrderPayment(req, res);
-})
+router.put('/confirm-order-payment/:orderId', customerAuthentication.validateCustomerToken, OrderController.confirmOrderPayment)
 
-router.get('/get-orders', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.getOrders(req, res);
-})
+router.get('/get-orders', customerAuthentication.validateCustomerToken,  OrderController.getOrders)
 
-router.get('/get-order-details/:orderId', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.getOrderDetails(req, res);
-})
+router.get('/get-order-details/:orderId', customerAuthentication.validateCustomerToken, OrderController.getOrderDetails)
 
-router.get('/get-track-status/:orderId', customerAuthentication.validateCustomerToken, (req, res) => {
-    return OrderController.getTrackStatusOfOrder(req, res);
-})
+router.get('/get-track-status/:orderId', customerAuthentication.validateCustomerToken, OrderController.getTrackStatusOfOrder)
 
 
 
 
 //payment routes
-router.post('/add-payment-card', customerAuthentication.validateCustomerToken, (req, res) => {
-    return PaymentController.addPaymentCard(req, res);
-})
+router.post('/add-payment-card', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentCardSchema), PaymentController.addPaymentCard); 
 
-router.put('/update-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, (req, res) => {
-    return PaymentController.updatePaymentCard(req, res);
-})
+router.put('/update-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentCardSchema),PaymentController.updatePaymentCard)
 
-router.get('/get-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, (req, res) => {
-    return PaymentController.getPaymentCard(req, res);
-})
+router.get('/get-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, PaymentController.getPaymentCard)
 
-router.get('/get-payment-cards', customerAuthentication.validateCustomerToken, (req, res) => {
-    return PaymentController.getPaymentCards(req, res);
-})
+router.get('/get-payment-cards', customerAuthentication.validateCustomerToken, PaymentController.getPaymentCards)
 
-router.put('/set-default-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, (req, res) => {
-    return PaymentController.setDefaultPaymentCard(req, res);
-})
+router.put('/set-default-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, PaymentController.setDefaultPaymentCard)
 
-router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, (req, res) => {
-    return PaymentController.deletePaymentCard(req, res);
-})
+router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, PaymentController.deletePaymentCard)
 
-router.post('/payment',customerAuthentication.validateCustomerToken, (req, res) => {
-    return PaymentController.payment(req, res);
-})
+router.post('/payment',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentCardSchema), PaymentController.payment)
 
-router.put('/save-payment-info',customerAuthentication.validateCustomerToken, (req, res) => {
-    return PaymentController.savePaymentInfo(req, res);
-})
+router.put('/save-payment-info',customerAuthentication.validateCustomerToken, PaymentController.savePaymentInfo)
 
 
 module.exports=router;

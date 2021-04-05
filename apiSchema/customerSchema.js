@@ -267,18 +267,19 @@ module.exports = {
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg,
         }),
 
-        card_number: Joi.string().trim().min(12).max(19).regex(/^\d{12,19}$/).messages({
+        card_number: Joi.string().trim().min(12).max(19).regex(/^\d{12,19}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_no_msg,
         }),
-        card_exp_month: Joi.string().trim().min(2).max(2).regex(/^\d{2}$/).messages({
+        card_exp_month: Joi.string().trim().min(2).max(2).regex(/^\d{2}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_month_msg,
         }),
-        card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).messages({
+        card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg,
         }),
         card_cvc: Joi.string().trim().min(3).max(4).regex(/^\d{3}|\d{4}$/).messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_cvc_msg,
         }),
+        amount: Joi.number(),
 
     }),
 
