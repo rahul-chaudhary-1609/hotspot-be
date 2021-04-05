@@ -3408,7 +3408,7 @@
             
             "parameters": [
               {
-                "name": "customer_profile_picture",
+                "name": "image",
                 "in": "formData",
                 "description": "upload profile picture",
                 "required": true,
