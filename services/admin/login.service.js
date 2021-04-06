@@ -3,6 +3,7 @@ const { Admin } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const responseToken = require('../../utils/responseToken');
 const constants = require("../../constants");
+const sendMail = require('../../utils/mail');
 const adminAWS=require('../../utils/aws')
 const _ = require('lodash');
 const { toUpper } = require('lodash');
@@ -95,6 +96,7 @@ module.exports = {
             let existingUser = await Admin.findOne(qry);
             if (!_.isEmpty(existingUser)) {
                 let otp = await utilityFunction.gererateOtp();
+                               
                 // const mailParams = {};
                 // mailParams.to = params.email;
                 // mailParams.toName = existingUser.name;
@@ -108,7 +110,24 @@ module.exports = {
                 if (!_.isEmpty(otp)) {
                     reset_pass_otp = otp;
                     reset_pass_expiry = Math.floor(Date.now());
-                    await Admin.update({reset_pass_otp, reset_pass_expiry}, { where: { id: existingUser.id } });
+                    await Admin.update({ reset_pass_otp, reset_pass_expiry }, { where: { id: existingUser.id } });
+                    
+                    const mailOptions = {
+                    from: `Hotspot Admin <${process.env.SG_EMAIL_ID}>`,
+                    to: params.email,
+                    subject: 'Password Reset',
+                    text: 'Here is your code',
+                    html: `OTP for password reset is: <b>${reset_pass_otp}</b>`,
+                    };
+
+                    sendMail.send(mailOptions)
+                    .then((resp) => {
+                        //.status(200).json({ status: 200, message: `Password reset code Sent to email` });
+                    }).catch((error) => {
+                        throw new Error(constants.MESSAGES.error_occurred);
+                    });
+                
+
                     return true;
                 }
             } else {
@@ -135,8 +154,8 @@ module.exports = {
                 let time = utilityFunction.calcluateOtpTime(userdata.reset_pass_expiry);
                 if (userdata.reset_pass_otp != params.otp) {
                     throw new Error(constants.MESSAGES.invalid_otp);
-                } else if (utilityFunction.currentUnixTimeStamp() - time > otp_expiry_time) {
-                    throw new Error(constants.MESSAGES.expire_otp);
+                } else if (utilityFunction.currentUnixTimeStamp() - time > otp_expiry_time*1000) {
+                     throw new Error(constants.MESSAGES.expire_otp);
                 } else if (params.password !== params.confirmPassword) {
                     throw new Error(constants.MESSAGES.password_miss_match);
                 } else {
