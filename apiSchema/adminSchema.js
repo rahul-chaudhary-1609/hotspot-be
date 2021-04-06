@@ -215,6 +215,13 @@ module.exports = {
         page: Joi.number().required(),        
         page_size: Joi.number().required()      
     }),
+
+    addNotification: Joi.object({
+        title: Joi.string().required(),
+        description: Joi.string().required(),
+        reciever_id: Joi.number().optional(),    
+        type:  Joi.number().min(1).max(1).required(),   
+    }),
 }
 
 
