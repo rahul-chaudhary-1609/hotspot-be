@@ -103,26 +103,26 @@ module.exports = {
     
     },
 
-    uploadCustomerImage: async (fileParams) => {
-        let now = (new Date()).getTime();
+    // uploadCustomerImage: async (fileParams) => {
+    //     let now = (new Date()).getTime();
 
-        const pictureName = fileParams.originalname.split('.');
-        const pictureType = pictureName[pictureName.length - 1];
-        const pictureKey = `customer/${now}.${pictureType}`;
-        const pictureBuffer = fileParams.buffer;
+    //     const pictureName = fileParams.originalname.split('.');
+    //     const pictureType = pictureName[pictureName.length - 1];
+    //     const pictureKey = `customer/${now}.${pictureType}`;
+    //     const pictureBuffer = fileParams.buffer;
 
-        const params = adminAWS.setParams(pictureKey, pictureBuffer);
+    //     const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-        adminAWS.s3.upload(params, async (error, data) => {
-            if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+    //     adminAWS.s3.upload(params, async (error, data) => {
+    //         if (error) throw new Error(constants.MESSAGES.picture_upload_error);
 
-            const image_url = data.Location;
+    //         const image_url = data.Location;
 
 
-            return { image_url };
-        })
+    //         return { image_url };
+    //     })
         
-    },
+    // },
         
         
     editCustomer: async (params) => {

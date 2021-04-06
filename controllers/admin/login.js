@@ -48,5 +48,15 @@ module.exports = {
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
-    }
+    },
+
+    uploadImage: async (req, res) => {
+        try {
+            const responseFromService = await loginService.uploadImage({...req.file,...req.body});
+            console.log("responseFromService", responseFromService)
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 }

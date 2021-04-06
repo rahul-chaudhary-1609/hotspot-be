@@ -27,7 +27,10 @@ router.post('/forgotPassword',joiValidation.validateBody(apiSchema.forgetPasswor
 
 router.post('/resetPassword',joiValidation.validateBody(apiSchema.resetPassword), adminLoginController.resetPassword);
 
-router.get('/logout',adminAuthentication.validateAdminToken, adminLoginController.logout);
+router.get('/logout', adminAuthentication.validateAdminToken, adminLoginController.logout);
+
+//for image upload
+router.put('/uploadImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminLoginController.uploadImage);
 
 
 //Restaurant Management
@@ -46,7 +49,7 @@ router.put('/editRestaurant/:restaurantId',adminAuthentication.validateAdminToke
 
 router.delete('/deleteRestaurant/:restaurantId',adminAuthentication.validateAdminToken, adminRestaurantController.deleteRestaurant);
 
-router.put('/uploadRestaurantImage',adminAuthentication.validateAdminToken,adminMulter.upload, adminRestaurantController.uploadRestaurantImage);
+//router.put('/uploadRestaurantImage',adminAuthentication.validateAdminToken,adminMulter.upload, adminRestaurantController.uploadRestaurantImage);
 
 
 //Menu Management
@@ -63,7 +66,7 @@ router.put('/editDish/:dishId',adminAuthentication.validateAdminToken,joiValidat
 
 router.delete('/deleteDish/:dishId',adminAuthentication.validateAdminToken, adminRestaurantController.deleteDish);
 
-router.put('/uploadDishImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminRestaurantController.uploadDishImage);
+//router.put('/uploadDishImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminRestaurantController.uploadDishImage);
 
 
 
@@ -78,7 +81,7 @@ router.put('/changeCustomerStatus/:customerId',adminAuthentication.validateAdmin
 
 router.put('/editCustomer/:customerId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.customerSchema), adminCustomerController.editCustomer);
 
-router.put('/uploadCustomerImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminCustomerController.uploadCustomerImage);
+//router.put('/uploadCustomerImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminCustomerController.uploadCustomerImage);
 
 router.delete('/deleteCustomer/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.deleteCustomer);
 
@@ -111,13 +114,13 @@ router.put('/approveDriver/:driverId',adminAuthentication.validateAdminToken, ad
 
 router.put('/changeDriverStatus/:driverId',adminAuthentication.validateAdminToken, adminDriverController.changeDriverStatus);
 
-router.put('/uploadDriverProfileImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadDriverProfileImage);
+// router.put('/uploadDriverProfileImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadDriverProfileImage);
 
-router.put('/uploadVehicleImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadVehicleImage);
+// router.put('/uploadVehicleImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadVehicleImage);
 
-router.put('/uploadLicenseImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadLicenseImage);
+// router.put('/uploadLicenseImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadLicenseImage);
 
-router.put('/uploadInsuranceImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadInsuranceImage);
+// router.put('/uploadInsuranceImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadInsuranceImage);
 
 router.put('/editDriver/:driverId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.driverSchema), adminDriverController.editDriver);
 

@@ -58,14 +58,14 @@ module.exports = {
         }
     },
 
-    uploadRestaurantImage: async (req, res) => {
-        try {
-            const responseFromService = await restaurantService.uploadRestaurantImage(req.file);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
+    // uploadRestaurantImage: async (req, res) => {
+    //     try {
+    //         const responseFromService = await restaurantService.uploadRestaurantImage(req.file);
+    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
+    //     } catch (error) {
+    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
+    //     }
+    // },
 
     restaurantCategoryList: async (req, res) => {
         try {
@@ -131,13 +131,13 @@ module.exports = {
         }
     },
 
-    uploadDishImage: async (req, res) => {
-        try {
-            const responseFromService = await restaurantService.uploadDishImage(req.file);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
+    // uploadDishImage: async (req, res) => {
+    //     try {
+    //         const responseFromService = await restaurantService.uploadDishImage(req.file);
+    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
+    //     } catch (error) {
+    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
+    //     }
+    // },
 
 }

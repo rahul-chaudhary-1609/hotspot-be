@@ -8,16 +8,22 @@ module.exports = {
     email_phone_already_registered: "An account with given email or phone already exists",
     invalid_password: "Incorrect Password",
     invalid_email: "Incorrect Email",
-    invalid_email_password:"Invalid email or password",
+    invalid_email_password: "Invalid email or password",
+    invalid_email_phone: "Invalid email or phone",
+    invalid_old_password:"Invalid old password",
     deactivate_account: 'Your account has been de-activated by Admin. Please contact to admin',
     delete_account: 'Your account has been deleted by Admin. Please contact to admin',
     current_password_not_match: "Current Password Not matches with the existing one",
+    social_media_account: "You have registered with social media account,\nplease try login with social media buttons",
+    social_media_account_already_registered:"Another social media account is already registered with same email,\nplease try login with other social media buttons",
+    social_media_account_already_not_registered:"You have not registered with social media account,\nplease try login with email/phone and password",
     request_validation_message: 'Invalid fields',
     verify_success: 'User verified successfully',
     token_missing: 'Token missing from header',
     user_not_found: 'An account with given info does not exist',
     invalid_otp: "Invalid OTP",
     expire_otp: "OTP expired, please resend the OTP",
+    error_occurred:"Some Error Occurred",
     resend_otp_success: "OTP resend successfully",
     otp_updated_success: "OTP send successfully",
     otp_verified_success: "OTP verified successfully",
@@ -29,8 +35,11 @@ module.exports = {
     invalid_credentials: "Please enter Valid Email ID",
     bad_request: "Getting error, due to bad request",
     phone_not_verified: "Your phone number is not verified yet",
+    phone_already_verified: "Phone number is already verified",
+    email_not_verified: "Your email is not verified yet",
+    verification_code_sent: "Verification code is sent",
+    verification_code_sent_error:"Error in code is sending",
     logout_success: "You have successfully logged out",
-    unauthorized_role: "Your role is unauthorized to perform this action",
     fetch_success: "List has been fetched successfully",
     data_success: "Data has been fetched successfully",
     acc_already_exists: "An account already exists with these credentials",
@@ -40,8 +49,6 @@ module.exports = {
     file_upload_error: "Error in uploding file/files",
     file_upload_success: "File has been uploaded successfully",
     action_success: "Status is updated successfully",
-    industry_list: "Employers industry type list fetched successfully",
-    employers_list: 'Employers lists',
     forget_pass_otp: "Password reset link has been sent to your registered email id",
     reset_pass_success: "Password reset successfully",
     invalid_email_token: "",
@@ -53,12 +60,20 @@ module.exports = {
     no_driver: "No driver found",
     no_order: "No order found",
     no_fee: "No fee found",
-    no_hotspot:"No hotspot found",
+    no_hotspot: "No hotspot found",
+    no_dropoff: "No dropoff found",
+    no_address: "No address found",
+    no_item: "No item found",
+    no_payment: "no payment details found",
+    confirm_payment: "Payment confirmed",
+    no_payment_card: "no payment card found",
+    payment_card_already_exist: "Payment card wth same card number already exist",
     invalid_status: "Plese send a valid status",
     picture_upload_success: "Picture uploaded successfully",
     picture_upload_error: "Picture uploaded successfully",
     update_success: "Updated successfully",
-    delete_success:"Deleted successfully",
+    delete_success: "Deleted successfully",
+    only_pickup_available: "Sorry! Only pickups available in your area.",
   },
 
   code: {
@@ -70,7 +85,7 @@ defaultServerResponse : {
   success: false,
   message: ''
 },
-otp_expiry_time : 30*60*1000,
+otp_expiry_time : 60,
 OFFSET_LIMIT : 10,
 CUSTOM_JOI_MESSAGE : {
     password_msg : {
@@ -78,7 +93,8 @@ CUSTOM_JOI_MESSAGE : {
       max: "Password can not have more than 15 characters",
       base: "Password must be string",
       required: "Password is required",
-      pattern: "Password must have 8-15 characters comprising one caps, one small, one number and one special character"
+      pattern: "Password must have 8-15 characters comprising one caps, one small, one number and one special character",
+      customer_pattern: "Password must contain at least 1 lowercase, 1 uppercase, 1 numeric and 1 special (!@#$%^&*) character"
     },
     name_msg : {
       pattern: "Please enter a valid customer name"
@@ -103,7 +119,20 @@ CUSTOM_JOI_MESSAGE : {
     },
     delivery_shifts_msg : {
       pattern: "Please enter a valid time for delivery shift eg: [HH:MM:SS,HH:MM:SS,HH:MM:SS]"
+    },
+    card_no_msg : {
+      pattern: "Please enter a valid card number"
+    },
+    card_exp_month_msg : {
+      pattern: "Please enter a valid card expiry month"
+    },
+    card_exp_year_msg : {
+      pattern: "Please enter a valid card expiry year"
+    },
+    card_cvc_msg : {
+      pattern: "Please enter a valid card cvc"
     }
+    
   },
 
 }

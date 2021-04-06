@@ -58,41 +58,41 @@ module.exports = {
         }
     },
 
-    uploadDriverProfileImage: async (req, res) => {
-        try {
-            const responseFromService = await driverService.uploadDriverProfileImage(req.file);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
+    // uploadDriverProfileImage: async (req, res) => {
+    //     try {
+    //         const responseFromService = await driverService.uploadDriverProfileImage(req.file);
+    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
+    //     } catch (error) {
+    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
+    //     }
+    // },
 
-    uploadVehicleImage: async (req, res) => {
-        try {
-            const responseFromService = await driverService.uploadVehicleImage(req.file);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
+    // uploadVehicleImage: async (req, res) => {
+    //     try {
+    //         const responseFromService = await driverService.uploadVehicleImage(req.file);
+    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
+    //     } catch (error) {
+    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
+    //     }
+    // },
 
-    uploadLicenseImage: async (req, res) => {
-        try {
-            const responseFromService = await driverService.uploadLicenseImage(req.file);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
+    // uploadLicenseImage: async (req, res) => {
+    //     try {
+    //         const responseFromService = await driverService.uploadLicenseImage(req.file);
+    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
+    //     } catch (error) {
+    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
+    //     }
+    // },
 
-    uploadInsuranceImage: async (req, res) => {
-        try {
-            const responseFromService = await driverService.uploadInsuranceImage(req.file);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
+    // uploadInsuranceImage: async (req, res) => {
+    //     try {
+    //         const responseFromService = await driverService.uploadInsuranceImage(req.file);
+    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
+    //     } catch (error) {
+    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
+    //     }
+    // },
 
     editDriver: async (req, res) => {
         try {
