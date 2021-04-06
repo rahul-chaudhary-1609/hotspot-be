@@ -13,6 +13,7 @@ const adminDriverController = require('../controllers/admin/driver');
 const adminOrderController = require('../controllers/admin/order');
 const adminFeeController = require('../controllers/admin/fee');
 const adminHotspotController = require('../controllers/admin/hotspot');
+const notificationController = require('../controllers/admin/notification');
 
 const adminAuthentication = require('../middlewares/jwt');
 const adminMulter = require('../middlewares/multer');
@@ -162,5 +163,8 @@ router.get('/getHotspotDetails/:hotspotLocationId',adminAuthentication.validateA
 
 router.delete('/deleteHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken, adminHotspotController.deleteHotspot);
 
+
+// notification management
+router.post('/addNotification',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addNotification), notificationController.addNotification);
 
 module.exports = router;

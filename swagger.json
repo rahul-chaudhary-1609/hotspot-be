@@ -57,6 +57,11 @@
       },
 
       {
+        "name": "Admin notification Management",
+        "description": "admin notification management Api's"
+      },
+
+      {
         "name": "Admin Fee Settings",
         "description": "admin fee settings Api's"
       },
@@ -2448,8 +2453,62 @@
           }
         },
 
+       
 
 
+
+
+
+        "/admin/addNotification": {
+          "post": {
+            "tags": [
+              "Admin notification Management"
+            ],
+            "description": "Api to add notification",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "title",
+                "in": "formData",
+                "description": "enter title",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "description",
+                "in": "formData",
+                "description": "enter description",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "reciever_id",
+                "in": "formData",
+                "description": "enter reciever_id",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "type",
+                "in": "formData",
+                "description": "enter type, 1=> all users, 2=>drivers only, 3=> customers only, 4=> restaurant only",
+                "required": true,
+                "type": "number",
+                "enum":[1,2,3,4]
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 

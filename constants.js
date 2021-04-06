@@ -87,6 +87,18 @@ defaultServerResponse : {
 },
 otp_expiry_time : 60,
 OFFSET_LIMIT : 10,
+ORDER_DELIVERY_STATUS: {
+  not_payed: 0,
+  pending: 1,
+  food_being_prepared: 2,
+  food_ready_or_on_the_way: 3,
+  delivered: 4
+},
+ORDER_TYPE: {
+ delivery: 1,
+ pickup: 2,
+ both: 3
+},
 CUSTOM_JOI_MESSAGE : {
     password_msg : {
       min: "Password must have minimum 8 characters",
