@@ -46,6 +46,16 @@ module.exports = {
         onDelete: 'cascade',
       },
 
+      hotspot_dropoff_id: {
+       type: Sequelize.INTEGER,
+        references: {
+          model: 'hotspot_dropoffs',
+          key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade',
+      },
+
 
       amount: {
           type: Sequelize.FLOAT,
@@ -90,6 +100,10 @@ module.exports = {
         },
         onUpdate: 'cascade',
         onDelete: 'cascade',
+      },
+
+      driver_fee: {
+          type: Sequelize.FLOAT,
       },
 
       push_order_id: {

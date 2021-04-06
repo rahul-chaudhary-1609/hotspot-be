@@ -318,14 +318,28 @@ module.exports = {
                     }
                 })
             );
-
+    
+        
             if (!driver) throw new Error(constants.MESSAGES.no_driver);
 
+            const fee = await models.Fee.findOne({
+                where: {
+                    order_range_from: {
+                        [Op.lte]:order.amount,
+                    },
+                    order_range_to: {
+                        [Op.gte]:order.amount,
+                    },
+                    file_type: 'driver',             
+                    
+                }
+            })
 
             await models.Order.update({
                 status: 2,
                 order_details:{ ...order.order_details,driver },
                 driver_id: driver.id,
+                driver_fee:fee?fee.fee:null,
             },
                 {
                     where: {
@@ -335,7 +349,7 @@ module.exports = {
                 }
             );
 
-        return true;
+            return true;
 
         
     }

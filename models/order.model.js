@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
             Order.belongsTo(models.Customer);
             Order.belongsTo(models.Restaurant);
             Order.belongsTo(models.HotspotLocation)
+            Order.belongsTo(models.HotspotDropoff)
             Order.belongsTo(models.Driver);
         }
     }
@@ -35,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         hotspot_location_id: {
+            type: DataTypes.INTEGER,
+        },
+
+        hotspot_dropoff_id: {
             type: DataTypes.INTEGER,
         },
 
@@ -80,6 +85,10 @@ module.exports = (sequelize, DataTypes) => {
 
         driver_id: {
             type: DataTypes.INTEGER,
+        },
+
+        driver_fee: {
+            type: DataTypes.FLOAT,
         },
 
         push_order_id: {
