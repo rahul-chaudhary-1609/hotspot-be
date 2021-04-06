@@ -99,6 +99,11 @@ module.exports.comparePassword = async (myPlaintextPassword, hash) => {
     return bcrypt.compare(myPlaintextPassword, hash);
 }
 
+/* function for convert promise to object */
+module.exports.convertPromiseToObject = async (promise) => {
+    return JSON.parse(JSON.stringify(promise));
+}
+
 module.exports.pagination = async (page, page_size) => {
     if (page_size) {
         page_size = Number(page_size)

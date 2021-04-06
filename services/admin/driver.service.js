@@ -4,6 +4,7 @@ const utility = require('../../utils/utilityFunctions');
 const dummyData = require('./dummyData');
 const adminAWS = require('../../utils/aws');
 const constants = require("../../constants");
+const { constant } = require('lodash');
 
 
 module.exports = {
@@ -26,7 +27,9 @@ module.exports = {
         }
         query.include = [
             {
-                model: models.Order
+                model: models.Order,
+                required: false,
+                where: {status: constants.ORDER_DELIVERY_STATUS.delivered}
             }
         ]
         query.order = [
@@ -52,7 +55,7 @@ module.exports = {
                 total_deliveries: val.Orders.length,
                 total_earnings: val.Orders.reduce(
                     function(sum, current) {
-                        return sum + current.amount;
+                        return sum + (current.driver_fee+current.tip_amount);
                     }, 
                 0)                         
             }
@@ -106,7 +109,24 @@ module.exports = {
 
             const driverId = params.driverId;
             
-            const driver = await models.Driver.findByPk(driverId);
+            const driver = await utility.convertPromiseToObject( await models.Driver.findOne({
+                    where: { id: driverId},
+                    include: [
+                        {
+                            model: models.Order,
+                            required: false,
+                            where: {status: constants.ORDER_DELIVERY_STATUS.delivered}
+                        }
+                    ]
+                })
+            );
+
+            driver.total_deliveries = driver.Orders.length;
+            driver.total_earnings = driver.Orders.reduce(
+                    function(sum, current) {
+                        return sum + (current.driver_fee+current.tip_amount);
+                    }, 
+                0);       
 
             if (!driver) throw new Error(constants.MESSAGES.no_driver);
 
@@ -149,6 +169,11 @@ module.exports = {
                     model: models.HotspotLocation,
                     required: false,
                     attributes: ['name']
+                },
+                {
+                    model: models.HotspotDropoff,
+                    required: false,
+                    attributes: ['dropoff_detail']
                 }
             ],
             limit: limit,
@@ -209,92 +234,92 @@ module.exports = {
        
     },
 
-    // uploadDriverProfileImage: async (fileParams) => {
+    uploadDriverProfileImage: async (fileParams) => {
         
-    //         let now = (new Date()).getTime();
+            let now = (new Date()).getTime();
 
-    //         const pictureName = fileParams.originalname.split('.');
-    //         const pictureType = pictureName[pictureName.length - 1];
-    //         const pictureKey = `driver_${now}.${pictureType}`;
-    //         const pictureBuffer = fileParams.buffer;
+            const pictureName = fileParams.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `driver_${now}.${pictureType}`;
+            const pictureBuffer = fileParams.buffer;
 
-    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
+            const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-    //         adminAWS.s3.upload(params, async (error, data) => {
-    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+            adminAWS.s3.upload(params, async (error, data) => {
+                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
 
-    //             const image_url = data.Location;
+                const image_url = data.Location;
 
 
-    //             return { image_url };
-    //         })
+                return { image_url };
+            })
        
-    // },
+    },
 
-    // uploadVehicleImage: async (fileParams) => {
+    uploadVehicleImage: async (fileParams) => {
         
-    //         let now = (new Date()).getTime();
+            let now = (new Date()).getTime();
 
-    //         const pictureName = fileParams.originalname.split('.');
-    //         const pictureType = pictureName[pictureName.length - 1];
-    //         const pictureKey = `driver_vehicle_${now}.${pictureType}`;
-    //         const pictureBuffer = fileParams.buffer;
+            const pictureName = fileParams.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `driver_vehicle_${now}.${pictureType}`;
+            const pictureBuffer = fileParams.buffer;
 
-    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
+            const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-    //         adminAWS.s3.upload(params, async (error, data) => {
-    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
-    //             const image_url = data.Location;
+            adminAWS.s3.upload(params, async (error, data) => {
+                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+                const image_url = data.Location;
 
 
-    //             return { image_url };
-    //         })
+                return { image_url };
+            })
        
-    // },
+    },
 
-    // uploadLicenseImage: async (fileParams) => {
+    uploadLicenseImage: async (fileParams) => {
         
-    //         let now = (new Date()).getTime();
+            let now = (new Date()).getTime();
 
-    //         const pictureName = fileParams.originalname.split('.');
-    //         const pictureType = pictureName[pictureName.length - 1];
-    //         const pictureKey = `driver_license_${now}.${pictureType}`;
-    //         const pictureBuffer = fileParams.buffer;
+            const pictureName = fileParams.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `driver_license_${now}.${pictureType}`;
+            const pictureBuffer = fileParams.buffer;
 
-    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
+            const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-    //         adminAWS.s3.upload(params, async (error, data) => {
-    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+            adminAWS.s3.upload(params, async (error, data) => {
+                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
 
-    //             const image_url = data.Location;
+                const image_url = data.Location;
 
 
-    //             return { image_url };
-    //         })
+                return { image_url };
+            })
        
-    // },
+    },
 
-    // uploadInsuranceImage: async (fileParams) => {
+    uploadInsuranceImage: async (fileParams) => {
         
-    //         let now = (new Date()).getTime();
+            let now = (new Date()).getTime();
 
-    //         const pictureName = fileParams.originalname.split('.');
-    //         const pictureType = pictureName[pictureName.length - 1];
-    //         const pictureKey = `driver_insurance_${now}.${pictureType}`;
-    //         const pictureBuffer = fileParams.buffer;
+            const pictureName = fileParams.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `driver_insurance_${now}.${pictureType}`;
+            const pictureBuffer = fileParams.buffer;
 
-    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
+            const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-    //         adminAWS.s3.upload(params, async (error, data) => {
-    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+            adminAWS.s3.upload(params, async (error, data) => {
+                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
 
-    //             const image_url = data.Location;
+                const image_url = data.Location;
 
 
-    //             return { image_url };
-    //         })
+                return { image_url };
+            })
        
-    // },
+    },
 
     editDriver: async (params) => {
     
