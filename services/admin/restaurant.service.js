@@ -221,28 +221,28 @@ module.exports = {
         
     },
 
-    uploadRestaurantImage: async (fileParams) => {
+    // uploadRestaurantImage: async (fileParams) => {
         
 
-            let now = (new Date()).getTime();
+    //         let now = (new Date()).getTime();
 
-            const pictureName = fileParams.originalname.split('.');
-            const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `restaurant/${now}.${pictureType}`;
-            const pictureBuffer = fileParams.buffer;
+    //         const pictureName = fileParams.originalname.split('.');
+    //         const pictureType = pictureName[pictureName.length - 1];
+    //         const pictureKey = `restaurant/${now}.${pictureType}`;
+    //         const pictureBuffer = fileParams.buffer;
 
-            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-            adminAWS.s3.upload(params, async (error, data) => {
-                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+    //         adminAWS.s3.upload(params, async (error, data) => {
+    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
 
-                const image_url = data.Location;
+    //             const image_url = data.Location;
                 
 
-                return { image_url };
-            })
+    //             return { image_url };
+    //         })
        
-    },
+    // },
 
     restaurantCategoryList: async () => {
 
@@ -375,25 +375,25 @@ module.exports = {
         
     },
 
-    uploadDishImage: async (fileParams) => {
-                    let now = (new Date()).getTime();
+    // uploadDishImage: async (fileParams) => {
+    //                 let now = (new Date()).getTime();
 
-            const pictureName = fileParams.originalname.split('.');
-            const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `dish/${now}.${pictureType}`;
-            const pictureBuffer = fileParams.buffer;
+    //         const pictureName = fileParams.originalname.split('.');
+    //         const pictureType = pictureName[pictureName.length - 1];
+    //         const pictureKey = `dish/${now}.${pictureType}`;
+    //         const pictureBuffer = fileParams.buffer;
 
-            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-            adminAWS.s3.upload(params, async (error, data) => {
-                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+    //         adminAWS.s3.upload(params, async (error, data) => {
+    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
 
-                const image_url = data.Location;
+    //             const image_url = data.Location;
 
 
-                return { image_url };
-            })
+    //             return { image_url };
+    //         })
         
-    },
+    // },
 
 }

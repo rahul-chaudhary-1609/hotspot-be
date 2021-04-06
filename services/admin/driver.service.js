@@ -209,92 +209,92 @@ module.exports = {
        
     },
 
-    uploadDriverProfileImage: async (fileParams) => {
+    // uploadDriverProfileImage: async (fileParams) => {
         
-            let now = (new Date()).getTime();
+    //         let now = (new Date()).getTime();
 
-            const pictureName = fileParams.originalname.split('.');
-            const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `driver_${now}.${pictureType}`;
-            const pictureBuffer = fileParams.buffer;
+    //         const pictureName = fileParams.originalname.split('.');
+    //         const pictureType = pictureName[pictureName.length - 1];
+    //         const pictureKey = `driver_${now}.${pictureType}`;
+    //         const pictureBuffer = fileParams.buffer;
 
-            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-            adminAWS.s3.upload(params, async (error, data) => {
-                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+    //         adminAWS.s3.upload(params, async (error, data) => {
+    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
 
-                const image_url = data.Location;
+    //             const image_url = data.Location;
 
 
-                return { image_url };
-            })
+    //             return { image_url };
+    //         })
        
-    },
+    // },
 
-    uploadVehicleImage: async (fileParams) => {
+    // uploadVehicleImage: async (fileParams) => {
         
-            let now = (new Date()).getTime();
+    //         let now = (new Date()).getTime();
 
-            const pictureName = fileParams.originalname.split('.');
-            const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `driver_vehicle_${now}.${pictureType}`;
-            const pictureBuffer = fileParams.buffer;
+    //         const pictureName = fileParams.originalname.split('.');
+    //         const pictureType = pictureName[pictureName.length - 1];
+    //         const pictureKey = `driver_vehicle_${now}.${pictureType}`;
+    //         const pictureBuffer = fileParams.buffer;
 
-            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-            adminAWS.s3.upload(params, async (error, data) => {
-                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
-                const image_url = data.Location;
+    //         adminAWS.s3.upload(params, async (error, data) => {
+    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+    //             const image_url = data.Location;
 
 
-                return { image_url };
-            })
+    //             return { image_url };
+    //         })
        
-    },
+    // },
 
-    uploadLicenseImage: async (fileParams) => {
+    // uploadLicenseImage: async (fileParams) => {
         
-            let now = (new Date()).getTime();
+    //         let now = (new Date()).getTime();
 
-            const pictureName = fileParams.originalname.split('.');
-            const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `driver_license_${now}.${pictureType}`;
-            const pictureBuffer = fileParams.buffer;
+    //         const pictureName = fileParams.originalname.split('.');
+    //         const pictureType = pictureName[pictureName.length - 1];
+    //         const pictureKey = `driver_license_${now}.${pictureType}`;
+    //         const pictureBuffer = fileParams.buffer;
 
-            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-            adminAWS.s3.upload(params, async (error, data) => {
-                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+    //         adminAWS.s3.upload(params, async (error, data) => {
+    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
 
-                const image_url = data.Location;
+    //             const image_url = data.Location;
 
 
-                return { image_url };
-            })
+    //             return { image_url };
+    //         })
        
-    },
+    // },
 
-    uploadInsuranceImage: async (fileParams) => {
+    // uploadInsuranceImage: async (fileParams) => {
         
-            let now = (new Date()).getTime();
+    //         let now = (new Date()).getTime();
 
-            const pictureName = fileParams.originalname.split('.');
-            const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `driver_insurance_${now}.${pictureType}`;
-            const pictureBuffer = fileParams.buffer;
+    //         const pictureName = fileParams.originalname.split('.');
+    //         const pictureType = pictureName[pictureName.length - 1];
+    //         const pictureKey = `driver_insurance_${now}.${pictureType}`;
+    //         const pictureBuffer = fileParams.buffer;
 
-            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
 
-            adminAWS.s3.upload(params, async (error, data) => {
-                if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+    //         adminAWS.s3.upload(params, async (error, data) => {
+    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
 
-                const image_url = data.Location;
+    //             const image_url = data.Location;
 
 
-                return { image_url };
-            })
+    //             return { image_url };
+    //         })
        
-    },
+    // },
 
     editDriver: async (params) => {
     

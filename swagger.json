@@ -269,6 +269,42 @@
             "responses": {}
           }
         },
+        "/admin/uploadImage": {
+          "put": {
+            "tags": [
+              "Admin Onboarding"
+            ],
+            "description": "Api to upload image",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "image",
+                "in": "formData",
+                "description": "upload image",
+                "required": true,
+                "type": "file"
+              },
+              {
+                "name": "folderName",
+                "in": "formData",
+                "description": "enter folder name",
+                "required": true,
+                "type": "string",
+                "enum":["customer","restaurant","dish","driver","driver_vehicle","driver_license","driver_insurance","other"]
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 
@@ -425,6 +461,7 @@
             "responses": {}
           }
         },
+        
 
 
 
@@ -865,35 +902,6 @@
           }
         },
 
-        "/admin/uploadRestaurantImage": {
-          "put": {
-            "tags": [
-              "Admin Restaurant Management"
-            ],
-            "description": "Api to upload restaurant image",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "image",
-                "in": "formData",
-                "description": "upload image file",
-                "required": true,
-                "type": "file"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
         "/admin/dishCategoryList": {
           "get": {
             "tags": [
@@ -1149,34 +1157,7 @@
             "responses": {}
           }
         },
-        "/admin/uploadDishImage": {
-          "put": {
-            "tags": [
-              "Admin Menu Management"
-            ],
-            "description": "Api to upload dish image",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "image",
-                "in": "formData",
-                "description": "upload image file",
-                "required": true,
-                "type": "file"
-              }
-            ],
-            "responses": {}
-          }
-        },
+       
 
         "/admin/listCustomers": {
           "get": {
@@ -1363,35 +1344,7 @@
           }
         },
 
-        "/admin/uploadCustomerImage": {
-          "put": {
-            "tags": [
-              "Admin Customer Management"
-            ],
-            "description": "Api to upload customer profile image",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "image",
-                "in": "formData",
-                "description": "upload image file",
-                "required": true,
-                "type": "file"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
+        
 
         "/admin/deleteCustomer/{customerId}": {
           "delete": {
@@ -1620,124 +1573,6 @@
             "responses": {}
           }
         },
-
-        
-        "/admin/uploadDriverProfileImage": {
-          "put": {
-            "tags": [
-              "Admin Driver Management"
-            ],
-            "description": "Api to upload driver profile image",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "image",
-                "in": "formData",
-                "description": "upload image file",
-                "required": true,
-                "type": "file"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/uploadVehicleImage": {
-          "put": {
-            "tags": [
-              "Admin Driver Management"
-            ],
-            "description": "Api to upload driver vehicle image",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "image",
-                "in": "formData",
-                "description": "upload image file",
-                "required": true,
-                "type": "file"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/uploadLicenseImage": {
-          "put": {
-            "tags": [
-              "Admin Driver Management"
-            ],
-            "description": "Api to upload driver license image",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "image",
-                "in": "formData",
-                "description": "upload image file",
-                "required": true,
-                "type": "file"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/uploadInsuranceImage": {
-          "put": {
-            "tags": [
-              "Admin Driver Management"
-            ],
-            "description": "Api to upload driver insurance image",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "image",
-                "in": "formData",
-                "description": "upload image file",
-                "required": true,
-                "type": "file"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
 
         "/admin/editDriver/{driverId}": {
           "put": {

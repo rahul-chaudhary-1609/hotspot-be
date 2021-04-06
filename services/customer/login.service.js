@@ -997,23 +997,45 @@ module.exports = {
         
     },
 
-    changeCustomerPicture: (fileParams,user) => {
+    changeCustomerPicture: async (fileParams,user) => {
 
             let now = (new Date()).getTime();
 
             const pictureName = fileParams.originalname.split('.');
             const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `customer/${now}.${pictureType}`;
+            const pictureKey = `customer/profile/${now}.${pictureType}`;
             const pictureBuffer = fileParams.buffer;
 
             const params = customerAWS.setParams(pictureKey, pictureBuffer);
 
-            customerAWS.s3.upload(params, async (error, data) => {
-                if (error) throw new Error(constants.MESSAGES.file_upload_error);
+            // customerAWS.s3.upload(params, async (error, data) => {
+            //     if (error) throw new Error(constants.MESSAGES.file_upload_error);
 
-                const profile_picture_url = data.Location;
+            //     const profile_picture_url = data.Location;
 
-                await models.Customer.update({
+            //     await models.Customer.update({
+            //         profile_picture_url,
+            //     }, {
+            //         where: {
+            //             email: user.email,
+            //         },
+            //         returning: true,
+            //     },
+            //     )
+
+            //     return { profile_picture_url: profile_picture_url };
+            // })  
+
+            const s3upload = customerAWS.s3.upload(params).promise();
+            const profile_picture_url=await s3upload.then(function (data) {
+
+                return  data.Location ;
+            })
+            .catch(function (err) {
+                throw new Error(constants.MESSAGES.file_upload_error);
+            });
+        
+            await models.Customer.update({
                     profile_picture_url,
                 }, {
                     where: {
@@ -1022,10 +1044,8 @@ module.exports = {
                     returning: true,
                 },
                 )
-
-                return { profile_picture_url: profile_picture_url };
-            })  
-
+        
+            return { profile_picture_url };
         
     },
 

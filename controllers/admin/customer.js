@@ -31,14 +31,14 @@ module.exports = {
         }
     },
 
-    uploadCustomerImage: async (req, res) => {
-        try {
-            const responseFromService = await customerService.uploadCustomerImage(req.file);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
+    // uploadCustomerImage: async (req, res) => {
+    //     try {
+    //         const responseFromService = await customerService.uploadCustomerImage(req.file);
+    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.picture_upload_success);
+    //     } catch (error) {
+    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
+    //     }
+    // },
         
         
     editCustomer: async (req, res) => {

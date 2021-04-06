@@ -3,6 +3,7 @@ const { Admin } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const responseToken = require('../../utils/responseToken');
 const constants = require("../../constants");
+const adminAWS=require('../../utils/aws')
 const _ = require('lodash');
 const { toUpper } = require('lodash');
 
@@ -166,5 +167,37 @@ module.exports = {
         await Admin.update(update,{ where: condition });
         return true;
         
-    }
+    },
+    uploadImage: async (fileParams) => {
+        
+            let now = (new Date()).getTime();
+
+            const pictureName = fileParams.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `admin/${fileParams.folderName}/${now}.${pictureType}`;
+            const pictureBuffer = fileParams.buffer;
+
+            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+
+            // adminAWS.s3.upload(params, async (error, data) => {
+            //     if (error) throw new Error(constants.MESSAGES.picture_upload_error);
+
+            //     const image_url = data.Location;
+
+                
+            //     return { image_url };
+            // })
+        
+            const s3upload = adminAWS.s3.upload(params).promise();
+            const image_url=await s3upload.then(function (data) {
+                console.log(data.Location)
+                return  data.Location ;
+            })
+            .catch(function (err) {
+                throw new Error(constants.MESSAGES.picture_upload_error);
+            });
+        
+            return { image_url };
+       
+    },
 }
