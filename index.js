@@ -31,7 +31,7 @@ app.listen(port, async (err)=>{
         console.log(`Server is started successfully at port: ${port}`);        
     }
     try {
-        await sequelize.sync({force:true});
+        //await sequelize.sync({alter:true});
         console.log("Database synced")
     } catch (error) {
         console.log("Error in database sync",error);
