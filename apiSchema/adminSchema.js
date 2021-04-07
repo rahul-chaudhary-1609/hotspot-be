@@ -220,7 +220,15 @@ module.exports = {
         title: Joi.string().required(),
         description: Joi.string().required(),
         reciever_id: Joi.number().optional(),    
-        type:  Joi.number().min(1).max(1).required(),   
+        type:  Joi.number().min(1).max(4).required(),   
+    }),
+
+    getNotificationDetails: Joi.object({
+        notification_id: Joi.string().required() 
+    }),
+
+    deleteNotification: Joi.object({
+        notification_id: Joi.string().required() 
     }),
 }
 

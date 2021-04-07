@@ -2510,6 +2510,100 @@
           }
         },
 
+        "/admin/getNotifications": {
+          "get": {
+            "tags": [
+              "Admin notification Management"
+            ],
+            "description": "Api to get notification",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getNotificationDetails": {
+          "get": {
+            "tags": [
+              "Admin notification Management"
+            ],
+            "description": "Api to get notification",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "notification_id",
+                "in": "query",
+                "description": "enter notification id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/deleteNotification": {
+          "delete": {
+            "tags": [
+              "Admin notification Management"
+            ],
+            "description": "Api to get notification",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "notification_id",
+                "in": "query",
+                "description": "enter notification id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

@@ -166,5 +166,8 @@ router.delete('/deleteHotspot/:hotspotLocationId',adminAuthentication.validateAd
 
 // notification management
 router.post('/addNotification',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addNotification), notificationController.addNotification);
+router.get('/getNotifications',adminAuthentication.validateAdminToken, notificationController.getNotifications);
+router.get('/getNotificationDetails',adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getNotificationDetails), notificationController.getNotificationDetails);
+router.delete('/deleteNotification',adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.deleteNotification), notificationController.deleteNotification);
 
 module.exports = router;
