@@ -44,6 +44,8 @@ module.exports = {
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
 
+                console.log({ email_accessToken: accessToken })
+
                 return {  accessToken: accessToken };
             }
             else {
@@ -88,6 +90,7 @@ module.exports = {
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
 
+                console.log({ phone_accessToken: accessToken })
                 return { accessToken: accessToken };
             }
             else {
@@ -173,7 +176,7 @@ module.exports = {
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
 
-
+                console.log({ signup_accessToken: accessToken })
                 return { accessToken: accessToken };
             }
             else {
@@ -233,7 +236,7 @@ module.exports = {
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
-
+                console.log({ google_accessToken: accessToken })
                 return { accessToken: accessToken };
             }
             else {
@@ -301,7 +304,7 @@ module.exports = {
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
-
+                console.log({ facebook_accessToken: accessToken })
                 return { accessToken: accessToken };
             }
             else {
@@ -368,6 +371,8 @@ module.exports = {
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
+                
+                console.log({ apple_accessToken: accessToken })
 
                 return { accessToken: accessToken };
             }
