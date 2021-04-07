@@ -51,7 +51,7 @@ module.exports = {
                 "string.pattern.base": constants.MESSAGES.invalid_email
             }
         ),
-        google_id: Joi.string().trim().max(45),
+        id: Joi.string().trim().max(45),
     }),
 
     facebookLogin: Joi.object({
@@ -66,7 +66,7 @@ module.exports = {
                 "string.pattern.base": constants.MESSAGES.invalid_email
             }
         ),
-        facebook_id: Joi.string().trim().max(45)
+        id: Joi.string().trim().max(45)
     }),
 
     appleLogin: Joi.object({
@@ -81,7 +81,7 @@ module.exports = {
                 "string.pattern.base": constants.MESSAGES.invalid_email
             }
         ),
-        apple_id: Joi.string().trim().max(45),
+        id: Joi.string().trim().max(45),
     }),
 
     forgetPassword : Joi.object({
