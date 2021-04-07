@@ -6,7 +6,9 @@ const constants = require('../../constants');
 
 
 module.exports = {
-    getHotspotLocation: async (params, res,user) => {
+    getHotspotLocation: async (params, user) => {
+        
+        console.log(params,user);
         
         const customer_id = user.id;
 
