@@ -119,7 +119,7 @@ module.exports = {
     },
 
     checkHotspotLocation: async (user) => {
-            console.log(params,user);
+            console.log(user);
             const customer_id = user.id;
 
             const options = ['hotspot', 'pickup'];
