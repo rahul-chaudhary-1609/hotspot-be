@@ -59,8 +59,9 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         type: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
+            comment: '1=> delivery, 2=> pickup'
         },
 
         tip_amount: {

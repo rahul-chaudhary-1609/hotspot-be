@@ -68,7 +68,7 @@ module.exports = {
       },
 
       type: {
-          type: Sequelize.STRING,
+          type: Sequelize.INTEGER,
           allowNull: false,
       },
 

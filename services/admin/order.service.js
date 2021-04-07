@@ -12,14 +12,14 @@ const getOrderRow =  async (args) => {
             let status = null;
 
             if (val.status === 1) {
-                if(val.type==='pickup') status="Pickup"
+                if(val.type===constants.ORDER_TYPE.pickup) status="Pickup"
                 else status = "Pending"
             }
             else if ([2, 3].includes(val.status)) {
                 status="Driver Allocated"
             }
             else if (val.status === 4) {
-                if(val.type==='pickup') status="Completed"
+                if(val.type===constants.ORDER_TYPE.pickup) status="Completed"
                 else status="Delivered"
             }
 
@@ -89,7 +89,7 @@ module.exports = {
                     query.where = {
                         ...query.where,
                         status,
-                        type: { [Op.not]: "pickup" },
+                        type: { [Op.not]: constants.ORDER_TYPE.pickup },
                     };
                         
                 }
@@ -104,7 +104,7 @@ module.exports = {
             else {
                 query.where = {
                     ...query.where,
-                    type: "pickup",
+                    type: constants.ORDER_TYPE.pickup,
                     status:1,
                 };
             }
@@ -166,7 +166,7 @@ module.exports = {
                     query.where = {
                         ...query.where,
                         status,
-                        type: { [Op.not]: "pickup" },
+                        type: { [Op.not]: constants.ORDER_TYPE.pickup },
                     };
                         
                 }
@@ -181,7 +181,7 @@ module.exports = {
             else {
                 query.where = {
                     ...query.where,
-                    type: "pickup",
+                    type: constants.ORDER_TYPE.pickup,
                     status:1,
                 };
             }
@@ -255,7 +255,7 @@ module.exports = {
             let status = null;
 
             if (order.status === 1) {
-                if(order.type==='pickup') status="Pickup"
+                if(order.type===constants.ORDER_TYPE.pickup) status="Pickup"
                 else status = "Pending"
             }
             else if (order.status === 2) {
@@ -265,7 +265,7 @@ module.exports = {
                 status="Food is on the way"
             }
             else if (order.status === 4) {
-                if(order.type==='pickup') status="Completed"
+                if(order.type===constants.ORDER_TYPE.pickup) status="Completed"
                 else status="Delivered"
             }
 

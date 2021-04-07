@@ -4449,10 +4449,10 @@
               {
                 "name": "order_type",
                 "in": "path",
-                "description": "delivery | pickup",
+                "description": "1=> delivery | 2=> pickup",
                 "required": true,
                 "type": "string",
-                "enum":["delivery","pickup"]
+                "enum":[1,2]
               }
             ],
             "responses": {}
@@ -4533,10 +4533,10 @@
               {
                 "name": "order_type",
                 "in": "formData",
-                "description": "delivery | pickup",
+                "description": "1=> delivery | 2=> pickup",
                 "required": true,
                 "type": "string",
-                "enum":["delivery","pickup"]
+                "enum":[1,2]
               },
               {
                 "name": "cooking_instructions",

@@ -73,6 +73,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         order_type: {
             type: DataTypes.INTEGER,
+            comment: '1=> delivery only, 2=>pickup only, 3=> both'
         },
         restaurant_category_id: {
             type: DataTypes.INTEGER,
