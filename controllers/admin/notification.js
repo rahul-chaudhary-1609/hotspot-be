@@ -15,7 +15,7 @@ module.exports = {
 
     getNotifications: async (req, res) => {
         try {
-            const notifications = await notificationService.getNotifications(req.body);
+            const notifications = await notificationService.getNotifications(req.query);
             utilityFunction.successResponse(res, {notifications}, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
