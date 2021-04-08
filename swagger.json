@@ -311,6 +311,107 @@
           }
         },
 
+        "/admin/changePassword": {
+          "post": {
+            "tags": [
+              "Admin Onboarding"
+            ],
+            "description": "Admin change password",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "old_password",
+                "in": "formData",
+                "description": "old_password",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "new_password",
+                "in": "formData",
+                "description": "new_password",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/updateProfile": {
+          "post": {
+            "tags": [
+              "Admin Onboarding"
+            ],
+            "description": "Admin change password",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "email",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "phone",
+                "in": "formData",
+                "description": "phone",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getAdminProfile": {
+          "get": {
+            "tags": [
+              "Admin Onboarding"
+            ],
+            "description": "Api to get admin profile",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

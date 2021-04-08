@@ -19,6 +19,7 @@ const adminAuthentication = require('../middlewares/jwt');
 const adminMulter = require('../middlewares/multer');
 
 
+// on boarding API's
 router.post('/login',joiValidation.validateBody(apiSchema.login), adminLoginController.login);
 
 router.post('/addNewAdmin',joiValidation.validateBody(apiSchema.addNewAdmin), adminLoginController.addNewAdmin);
@@ -28,6 +29,12 @@ router.post('/forgotPassword',joiValidation.validateBody(apiSchema.forgetPasswor
 router.post('/resetPassword',joiValidation.validateBody(apiSchema.resetPassword), adminLoginController.resetPassword);
 
 router.get('/logout', adminAuthentication.validateAdminToken, adminLoginController.logout);
+
+router.post('/changePassword', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.changePassword), adminLoginController.changePassword);
+
+router.post('/updateProfile', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.updateProfile), adminLoginController.updateProfile);
+
+router.get('/getAdminProfile', adminAuthentication.validateAdminToken, adminLoginController.getAdminProfile);
 
 //for image upload
 router.put('/uploadImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminLoginController.uploadImage);

@@ -6,7 +6,7 @@ const constants = require("../../constants");
 const sendMail = require('../../utils/mail');
 const adminAWS=require('../../utils/aws')
 const _ = require('lodash');
-const { toUpper } = require('lodash');
+const { Op } = require("sequelize");
 
 module.exports = {
     login: async (params) => {
@@ -218,5 +218,56 @@ module.exports = {
         
             return { image_url };
        
+    },
+
+    changePassword: async (params, user) => {
+        const adminData = await utilityFunction.convertPromiseToObject( 
+            await Admin.findOne({
+                where: {
+                    id: user.id
+                }
+            })
+        );
+
+        let comparedPassword = await utilityFunction.comparePassword(params.old_password, adminData.password);
+        if (comparedPassword) {
+            let update = {
+                password: await utilityFunction.bcryptPassword(params.new_password)
+            }
+            
+            return await Admin.update(update,{ where: {id: user.id} });
+        } else {
+            throw new Error(constants.MESSAGES.invalid_old_password);
+        } 
+    },
+
+    updateProfile: async (params, user) => {
+        let checkEmailOrPhone = await Admin.findOne(
+            {
+                where: {
+                    id: {[Op.ne]: user.id},
+                    [Op.or]: [
+                        {email: params.email},
+                        {phone: params.phone}
+                    ]
+
+                }
+            }
+        );
+        if(checkEmailOrPhone ) {
+            throw new Error(constants.MESSAGES.email_phone_already_registered);
+        } else {
+            return await Admin.update( params, {
+                where: {id: user.id}
+            })
+        }
+    },
+
+    getAdminProfile: async (user) => {
+        return await Admin.findOne(
+            {
+                where: { id: user.id}
+            }
+        )
     },
 }
