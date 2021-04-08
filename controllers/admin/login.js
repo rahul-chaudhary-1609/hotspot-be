@@ -59,4 +59,31 @@ module.exports = {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
+
+    changePassword: async (req, res) => {
+        try {
+            const responseFromService = await loginService.changePassword(req.body, req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.password_change_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    updateProfile: async (req, res) => {
+        try {
+            const responseFromService = await loginService.updateProfile(req.body, req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.update_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getAdminProfile: async (req, res) => {
+        try {
+            const responseFromService = await loginService.getAdminProfile(req.user);
+            utilityFunction.successResponse(res, responseFromService.dataValues, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 }
