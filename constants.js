@@ -74,10 +74,12 @@ module.exports = {
     update_success: "Updated successfully",
     delete_success: "Deleted successfully",
     only_pickup_available: "Sorry! Only pickups available in your area.",
+    invalid_id:'Invalid id.'
   },
 
   code: {
-    error_code: 400
+    error_code: 400,
+    bad_request: 404
   },
 
 defaultServerResponse : {

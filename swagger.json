@@ -311,6 +311,107 @@
           }
         },
 
+        "/admin/changePassword": {
+          "post": {
+            "tags": [
+              "Admin Onboarding"
+            ],
+            "description": "Admin change password",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "old_password",
+                "in": "formData",
+                "description": "old_password",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "new_password",
+                "in": "formData",
+                "description": "new_password",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/updateProfile": {
+          "post": {
+            "tags": [
+              "Admin Onboarding"
+            ],
+            "description": "Admin change password",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "email",
+                "in": "formData",
+                "description": "email",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "phone",
+                "in": "formData",
+                "description": "phone",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getAdminProfile": {
+          "get": {
+            "tags": [
+              "Admin Onboarding"
+            ],
+            "description": "Api to get admin profile",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 
@@ -2504,6 +2605,100 @@
                 "required": true,
                 "type": "number",
                 "enum":[1,2,3,4]
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getNotifications": {
+          "get": {
+            "tags": [
+              "Admin notification Management"
+            ],
+            "description": "Api to get notification",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getNotificationDetails": {
+          "get": {
+            "tags": [
+              "Admin notification Management"
+            ],
+            "description": "Api to get notification",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "notification_id",
+                "in": "query",
+                "description": "enter notification id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/deleteNotification": {
+          "delete": {
+            "tags": [
+              "Admin notification Management"
+            ],
+            "description": "Api to get notification",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "notification_id",
+                "in": "query",
+                "description": "enter notification id",
+                "required": true,
+                "type": "number"
               }
             ],
             "responses": {}

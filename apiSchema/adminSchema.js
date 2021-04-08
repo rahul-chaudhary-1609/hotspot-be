@@ -89,6 +89,39 @@ module.exports = {
         otp: Joi.string().required(),
     }),
 
+    changePassword : Joi.object({
+        old_password: Joi.string().min(8)
+        .max(15)
+        .regex(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})"))
+        .required()
+        .messages({
+            "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
+            "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
+            "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
+            "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+            "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.pattern
+        }),
+        new_password: Joi.string().min(8)
+        .max(15)
+        .regex(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})"))
+        .required()
+        .messages({
+            "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
+            "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
+            "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
+            "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+            "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.pattern
+        })
+    }),
+
+    updateProfile : Joi.object({
+        name: Joi.string().trim().required(),
+        email: Joi.string().trim().required(),
+        phone: Joi.string().trim().required()
+    }),
+
     dishSchema : Joi.object({
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
@@ -220,7 +253,15 @@ module.exports = {
         title: Joi.string().required(),
         description: Joi.string().required(),
         reciever_id: Joi.number().optional(),    
-        type:  Joi.number().min(1).max(1).required(),   
+        type:  Joi.number().min(1).max(4).required(),   
+    }),
+
+    getNotificationDetails: Joi.object({
+        notification_id: Joi.string().required() 
+    }),
+
+    deleteNotification: Joi.object({
+        notification_id: Joi.string().required() 
     }),
 }
 
