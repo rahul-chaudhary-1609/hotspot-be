@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require("joi");
 const constants = require("../constants");
 
 
@@ -100,25 +100,25 @@ module.exports = {
 
     driverSchema : Joi.object({
         first_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).messages({
-        'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg,
+        "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
 
         last_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).messages({
-        'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg,
+        "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
 
         email: Joi.string().trim().max(45).email(),
         
         country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.country_code_msg,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.country_code_msg.pattern,
         }),
 
         phone_no: Joi.string().trim().regex(/^\(?\d{10}$/).min(10).max(10).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.phone_no_msg,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
         }),
 
         dob: Joi.string().regex(/^\d{2}-\d{2}-\d{4}$/).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.dob_msg,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.dob_msg.pattern,
         }),
 
         gender: Joi.string().max(45),
@@ -133,7 +133,7 @@ module.exports = {
         city: Joi.string().max(45),
         state: Joi.string().max(45),
         postal_code:Joi.string().regex(/^\d{5}|\d{6}$/).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.postal_code_msg,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.postal_code_msg.pattern,
         }),
 
 
@@ -150,25 +150,25 @@ module.exports = {
 
     dateSchema : Joi.object({
         start_date: Joi.string().regex(/^\d{4}-\d{2}-\d{2}$/).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.start_date_msg,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.start_date_msg.pattern,
         }),
         end_date: Joi.string().regex(/^\d{4}-\d{2}-\d{2}$/).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.end_date_msg,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.end_date_msg.pattern,
         }),
 
     }),
 
     customerSchema : Joi.object({
-        name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg,
+        name: Joi.string().trim().regex(new RegExp("^[a-zA-Z\s]+$")).messages({
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
         profile_picture_url: Joi.string().uri(),
         email: Joi.string().trim().max(45).email(),
         country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.country_code_msg,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.country_code_msg.pattern,
         }),
         phone_no: Joi.string().trim().regex(/^\(?\d{10}$/).min(10).max(10).messages({
-            'string.pattern.base':constants.CUSTOM_JOI_MESSAGE.phone_no_msg,
+            "string.pattern.base":constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
         }),
         city: Joi.string().max(45),
         state: Joi.string().max(45),
@@ -177,13 +177,13 @@ module.exports = {
     feeSchema : Joi.object({
         order_range_from: Joi.number().required(),
         order_range_to: Joi.number().required(),        
-        fee_type: Joi.string().trim().valid('driver','restaurant','hotspot').required(),
+        fee_type: Joi.string().trim().valid("driver","restaurant","hotspot").required(),
         fee: Joi.number().required(),        
     }),
 
     hotspotSchema: Joi.object({
         name:Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
         location: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
         location_detail: Joi.string().required(),
@@ -195,13 +195,13 @@ module.exports = {
         delivery_shifts: Joi.array()
             .items(
                 Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
-                    'string.pattern.base':constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg,
+                    "string.pattern.base":constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
                 }),
                 Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
-                    'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg,
+                    "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
                 }),
                 Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
-                    'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg,
+                    "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
                 }),
             ).length(3)
             .required(),

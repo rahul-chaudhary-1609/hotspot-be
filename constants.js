@@ -109,7 +109,7 @@ CUSTOM_JOI_MESSAGE : {
       customer_pattern: "Password must contain at least 1 lowercase, 1 uppercase, 1 numeric and 1 special (!@#$%^&*) character"
     },
     name_msg : {
-      pattern: "Please enter a valid customer name"
+      pattern: "Please enter a valid name"
     },
     country_code_msg : {
       pattern: "Please enter a valid country code"

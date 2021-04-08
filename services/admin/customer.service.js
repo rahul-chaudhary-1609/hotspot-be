@@ -128,6 +128,8 @@ module.exports = {
     editCustomer: async (params) => {
        const customerId = params.customerId;
 
+        console.log("customerId",customerId,params)
+
         const customer = await model.Customer.findByPk(customerId);
 
         if (!customer) throw new Error(constants.MESSAGES.no_customer);
