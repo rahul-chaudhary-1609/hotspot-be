@@ -192,7 +192,7 @@ module.exports = {
     }),
 
     customerSchema : Joi.object({
-        name: Joi.string().trim().regex(new RegExp("^[a-zA-Z\s]+$")).messages({
+        name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).messages({
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
         profile_picture_url: Joi.string().uri(),
