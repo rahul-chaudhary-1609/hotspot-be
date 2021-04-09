@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const { Customer, Admin } = require('../models');
+const constants = require("../constants");
 
 
 module.exports =
@@ -32,7 +34,7 @@ module.exports =
       })
 
   },
-    validateCustomerToken: (req, res, next) => {
+    validateCustomerToken: async (req, res, next) => {
       const authHeader = req.headers['authorization'];
       let token = authHeader && authHeader.split(' ')[1];
 
@@ -41,9 +43,30 @@ module.exports =
           if (!token) return res.sendStatus(401);
       }
 
-      jwt.verify(token, process.env.ACCESS_TOKEN_SECRETS, (err, user) => {
-          console.log(err);
-          if (err) return res.sendStatus(403);
+      let response = {};
+
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRETS, async (err, user) => {
+        if (err) {
+              response.status = 403;
+              response.message = err.message
+              return res.status(response.status).send(response);
+          }
+
+        const customer = await Customer.findByPk(user.id);
+        
+        console.log("customer.status",customer.status)
+        
+          if (customer.status == 0) {
+              response.status = 401;
+              response.message = constants.MESSAGES.deactivate_account
+              return res.status(response.status).send(response);
+          }
+            else if (customer.is_deleted == true) {
+              response.status = 401;
+              response.message = constants.MESSAGES.delete_account
+              return res.status(response.status).send(response);
+          }
+        
 
           req.user = user;
           next();
