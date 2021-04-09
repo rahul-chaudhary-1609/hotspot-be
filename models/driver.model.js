@@ -72,6 +72,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue:false
     },
+    device_token: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
   }, {
       sequelize,
     underscored:true,

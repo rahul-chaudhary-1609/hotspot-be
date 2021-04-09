@@ -283,5 +283,9 @@ module.exports = {
 
     }),
 
+    update_device_token : Joi.object({
+        device_token: Joi.string().trim().required().messages(),
+    }),
+
 }
 

@@ -149,5 +149,12 @@ CUSTOM_JOI_MESSAGE : {
     
   },
 
+  NOTIFICATION_TYPE: {
+    all_user: 1,
+    driver_only: 2,
+    customer_only: 3,
+    restaurant_only: 4
+  }
+
 }
 

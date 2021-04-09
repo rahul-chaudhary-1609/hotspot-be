@@ -3292,6 +3292,33 @@
 
 
 
+        "/customer/update-device-token": {
+          "post": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to update customer name",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device_token",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
         "/customer/customer-profile": {
           "get": {
