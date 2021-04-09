@@ -278,5 +278,15 @@ module.exports = {
     
     },
 
+    update_device_token: async (req, res) => {
+    
+        try {
+            const responseFromService = await loginService.update_device_token(req.body,req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.update_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
 }
 

@@ -2,6 +2,8 @@ const randomstring = require('randomstring');
 const bcrypt = require('bcrypt');
 const constants = require('../constants')
 const _ = require('lodash');
+const FCM = require('fcm-node');
+const fcm = new FCM(process.env.FCM_SERVER_KEY); //put your server key here
 
 
 /* function for sending the error response */
@@ -116,4 +118,35 @@ module.exports.pagination = async (page, page_size) => {
         page = 0
     }
     return [page, page_size];
+}
+
+/**
+ * 
+ * @param tokens - fcm-device token for user's device
+ * @param notification - object with body and title
+ * @param payload 
+ */
+module.exports.sendFcmNotification = async (tokens, notification) => {
+
+
+    var message = {
+        registration_ids: tokens,
+        notification: {
+            title: notification.title,
+            body: notification.body
+        },
+        data: notification.data
+    };
+    if (tokens.length) {
+        fcm.send(message, function (err, response) {
+            if (err) {
+                console.log("Something has gone wrong!", notification, JSON.stringify(err));
+            } else {
+                console.log("Successfully sent with response: ", response);
+                return response;
+            }
+        });
+    } else {
+        console.log("No FCM Device token registered yet.");
+    }
 }

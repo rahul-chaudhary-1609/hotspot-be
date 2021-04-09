@@ -1439,5 +1439,13 @@ module.exports = {
             return true 
     },
 
+    update_device_token: async (params, user) => {      
+        return  await models.Customer.update( params, 
+            {
+                where: { id: user.id }
+            }
+        )
+    },
+
 }
 
