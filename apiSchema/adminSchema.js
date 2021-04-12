@@ -119,7 +119,9 @@ module.exports = {
     updateProfile : Joi.object({
         name: Joi.string().trim().required(),
         email: Joi.string().trim().required(),
-        phone: Joi.string().trim().required()
+        phone: Joi.string().trim().required(),
+        country_code: Joi.string().trim().optional(),
+        profile_picture_url: Joi.string().trim().optional(),
     }),
 
     dishSchema : Joi.object({

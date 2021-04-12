@@ -28,8 +28,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(45),
       allowNull:false,
     },
+    country_code: {
+      type: DataTypes.STRING(45),
+    },
     phone: {
       type: DataTypes.STRING(45),
+      allowNull:true,
+    },
+    profile_picture_url: {
+      type: DataTypes.STRING(),
       allowNull:true,
     },
     password: {
