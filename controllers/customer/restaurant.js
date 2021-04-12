@@ -180,7 +180,7 @@ module.exports = {
 
     getFoodDetails: async (req, res) => {
          try {
-            const responseFromService = await restaurantService.getFoodDetails(req.query,req.user);
+            const responseFromService = await restaurantService.getFoodDetails(req.params,req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
