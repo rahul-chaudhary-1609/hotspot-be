@@ -372,6 +372,20 @@
                 "type": "string"
               },
               {
+                "name": "country_code",
+                "in": "formData",
+                "description": "country_code",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "profile_picture_url",
+                "in": "formData",
+                "description": "profile_picture_url",
+                "required": false,
+                "type": "string"
+              },
+              {
                 "name": "email",
                 "in": "formData",
                 "description": "email",
