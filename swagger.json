@@ -70,6 +70,11 @@
         "name": "Admin Schedule Settings",
         "description": "admin schedule settings Api's"
       },
+
+      {
+        "name": "Admin Static Content",
+        "description": "admin Static Content Api's"
+      },
       
       {
         "name": "Customer Signup",
@@ -425,6 +430,107 @@
             "responses": {}
           }
         },
+
+
+
+
+
+
+
+
+      "/admin/getStaticContents": {
+          "get": {
+            "tags": [
+              "Admin Static Content"
+            ],
+            "description": "Api to get static content",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+      },
+
+    "/admin/getStaticContentDetails": {
+        "get": {
+          "tags": [
+            "Admin Static Content"
+          ],
+          "description": "Api to get static content details",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "id",
+              "in": "query",
+              "description": "id",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+    },
+
+    "/admin/updateStaticContent": {
+      "post": {
+        "tags": [
+          "Admin Static Content"
+        ],
+        "description": "Api to add static content",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "formData",
+            "description": "id, If you will provide id then it will update else add",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page_url",
+            "in": "formData",
+            "description": "page_url",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "video_url",
+            "in": "formData",
+            "description": "video_url",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
 
 
 
