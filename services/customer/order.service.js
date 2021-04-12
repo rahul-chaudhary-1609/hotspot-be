@@ -13,14 +13,14 @@ const getOrderCard =  async (args) => {
 
             let status = null;
 
-            if (val.status === 1 && val.type === constants.ORDER_TYPE.pickup) {
+            if (val.status == 1 && val.type == constants.ORDER_TYPE.pickup) {
                 status="Pickup"
             }
             else if ([1,2, 3].includes(val.status)) {
                 status="Confirmed"
             }
-            else if (val.status === 4) {
-                if(val.type===constants.ORDER_TYPE.pickup) status="Completed"
+            else if (val.status == 4) {
+                if(val.type==constants.ORDER_TYPE.pickup) status="Completed"
                 else status="Delivered"
             }
 
@@ -119,7 +119,9 @@ module.exports = {
        
     },
     
-    getCart: async (params,user) => {
+    getCart: async (params, user) => {
+        
+        params.order_type = parseInt(params.order_type)
            
             const restaurant_id = parseInt(params.restaurant_id);
 
@@ -141,14 +143,14 @@ module.exports = {
                 }
             });
 
-            if (restaurant.order_type === 1) isDeliveryOnly = true;
-            else if (restaurant.order_type === 2) isPickupOnly = true;
-            else if(restaurant.order_type===3) isBothAvailable = true;
+            if (restaurant.order_type == 1) isDeliveryOnly = true;
+            else if (restaurant.order_type == 2) isPickupOnly = true;
+            else if(restaurant.order_type==3) isBothAvailable = true;
 
 
             let cartInfo =null;
 
-            if (params.order_type === constants.ORDER_TYPE.delivery && ((restaurant.order_type===3)||(restaurant.order_type === 1)) ) {
+            if (params.order_type == constants.ORDER_TYPE.delivery && ((restaurant.order_type==3)||(restaurant.order_type == 1)) ) {
                 const customerFavLocation = await models.CustomerFavLocation.findOne({
                     where: {
                         customer_id: user.id,
@@ -176,7 +178,7 @@ module.exports = {
                     dropoff:hotspotDropoff.dropoff_detail,
                 }
             }
-            else if (params.order_type === constants.ORDER_TYPE.pickup  && ((restaurant.order_type===3)||(restaurant.order_type === 2))) {
+            else if (params.order_type == constants.ORDER_TYPE.pickup  && ((restaurant.order_type==3)||(restaurant.order_type == 2))) {
                 
                 cartInfo = {
                     restaurant_id:restaurant.id,
@@ -194,7 +196,7 @@ module.exports = {
                 }
             });
 
-            if (cart.count === 0) throw new Error(constants.MESSAGES.no_item);
+            if (cart.count == 0) throw new Error(constants.MESSAGES.no_item);
             
             let cartItems = [];
 
@@ -540,14 +542,14 @@ module.exports = {
 
             let orderInfo = null;
 
-            if (order.type === constants.ORDER_TYPE.delivery) {
+            if (order.type == constants.ORDER_TYPE.delivery) {
                 orderInfo = {
                     customer_name:order.order_details.customer.name,
                     delivery_address: order.order_details.hotspot.location_detail,
                     delivery_datetime: order.delivery_datetime,
                 }
             }
-            else if (order.type === constants.ORDER_TYPE.pickup) {
+            else if (order.type == constants.ORDER_TYPE.pickup) {
                 orderInfo = {
                     restaurant_name:order.order_details.restaurant.restaurant_name,
                     pickup_address:order.order_details.restaurant.address,
@@ -651,7 +653,7 @@ module.exports = {
                 ]
             })
 
-            if (orders.length===0) throw new Error(constants.MESSAGES.no_order);           
+            if (orders.length==0) throw new Error(constants.MESSAGES.no_order);           
             
 
             return getOrderCard({ orders });
@@ -674,14 +676,14 @@ module.exports = {
             
             let status = null;
 
-             if (order.status === 1 && order.type === constants.ORDER_TYPE.pickup) {
+             if (order.status == 1 && order.type == constants.ORDER_TYPE.pickup) {
                 status="Pickup"
             }
             else if ([1,2, 3].includes(order.status)) {
                 status="Confirmed"
             }
-            else if (order.status === 4) {
-                if(order.type===constants.ORDER_TYPE.pickup) status="Completed"
+            else if (order.status == 4) {
+                if(order.type==constants.ORDER_TYPE.pickup) status="Completed"
                 else status="Delivered"
             }
             
@@ -713,7 +715,7 @@ module.exports = {
 
             let trackInfo = null;
 
-            if (order.type === constants.ORDER_TYPE.delivery) {
+            if (order.type == constants.ORDER_TYPE.delivery) {
                 trackInfo = {
                     orderId,
                     name: order.order_details.hotspot.name,
@@ -722,7 +724,7 @@ module.exports = {
                     dropoff: order.order_details.hotspot.dropoff.dropoff_detail,
                 }
             }
-            else if (order.type === constants.ORDER_TYPE.pickup) {
+            else if (order.type == constants.ORDER_TYPE.pickup) {
                 trackInfo = {
                     orderId,
                     name: order.order_details.restaurant.restaurant_name,
@@ -733,17 +735,17 @@ module.exports = {
 
             let trackStatus = null;
 
-            if (order.status===1) {
+            if (order.status==1) {
                 trackStatus="Confirming order with restaurant"
             }
-            else if (order.status === 2) {
+            else if (order.status == 2) {
                 trackStatus="Food is being Prepared"
             }
-            else if (order.status === 3) {
+            else if (order.status == 3) {
                 trackStatus="Food is on the way"
             }
-            else if (order.status === 4) {
-                if(order.type===constants.ORDER_TYPE.pickup) trackStatus="Completed"
+            else if (order.status == 4) {
+                if(order.type==constants.ORDER_TYPE.pickup) trackStatus="Completed"
                 else trackStatus="Delivered"
             }
 
