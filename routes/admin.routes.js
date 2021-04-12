@@ -14,6 +14,7 @@ const adminOrderController = require('../controllers/admin/order');
 const adminFeeController = require('../controllers/admin/fee');
 const adminHotspotController = require('../controllers/admin/hotspot');
 const notificationController = require('../controllers/admin/notification');
+const staticContentController = require('../controllers/admin/static_content');
 
 const adminAuthentication = require('../middlewares/jwt');
 const adminMulter = require('../middlewares/multer');
@@ -176,5 +177,10 @@ router.post('/addNotification',adminAuthentication.validateAdminToken,joiValidat
 router.get('/getNotifications',adminAuthentication.validateAdminToken, notificationController.getNotifications);
 router.get('/getNotificationDetails',adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getNotificationDetails), notificationController.getNotificationDetails);
 router.delete('/deleteNotification',adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.deleteNotification), notificationController.deleteNotification);
+
+// static content management
+router.get('/getStaticContents',adminAuthentication.validateAdminToken, staticContentController.getStaticContents);
+router.get('/getStaticContentDetails',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getStaticContentDetails), staticContentController.getStaticContentDetails);
+router.post('/updateStaticContent',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.updateStaticContent), staticContentController.updateStaticContent);
 
 module.exports = router;

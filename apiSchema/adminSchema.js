@@ -265,6 +265,16 @@ module.exports = {
     deleteNotification: Joi.object({
         notification_id: Joi.string().required() 
     }),
+
+    getStaticContentDetails: Joi.object({
+        id: Joi.string().required() 
+    }),
+
+    updateStaticContent: Joi.object({
+        id: Joi.string().required(),
+        page_url: Joi.string().optional(),
+        video_url: Joi.number().optional()
+    }),
 }
 
 
