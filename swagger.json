@@ -532,6 +532,121 @@
       }
     },
 
+    "/admin/getFaqs": {
+      "get": {
+        "tags": [
+          "Admin Static Content"
+        ],
+        "description": "Api to get faq",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/admin/getFaqQuestions": {
+      "get": {
+        "tags": [
+          "Admin Static Content"
+        ],
+        "description": "Api to get faq",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "enter faq id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "current page count to access",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "no of items per page",
+            "required": false,
+            "type": "number"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/admin/addFaq": {
+      "post": {
+        "tags": [
+          "Admin Static Content"
+        ],
+        "description": "Api to add faq",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "topic_id",
+            "in": "formData",
+            "description": "topic_id",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "topic_name",
+            "in": "formData",
+            "description": "topic_name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "question",
+            "in": "formData",
+            "description": "question",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "answer",
+            "in": "formData",
+            "description": "answer",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
 
 
 
