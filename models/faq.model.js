@@ -3,7 +3,7 @@ const {
     Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class StaticContent extends Model {
+    class Faq extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
         }
     }
-    StaticContent.init({
+    Faq.init({
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -21,30 +21,30 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true
         },
 
-        title: {
+        admin_id: {
             type: DataTypes.STRING,
             allowNull: false,
         },
 
-        description: {
+        topic: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+
+        question: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+
+        answer: {
             type: DataTypes.TEXT,
-            allowNull: false,
-        },
-
-        video_url: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-
-        page_url:{
-            type: DataTypes.STRING,
             allowNull: false,
         }
     }, {
         sequelize,
         underscored: true,
-        tableName: 'static_content',
-        modelName: 'StaticContent',
+        tableName: 'faq',
+        modelName: 'Faq',
     });
-    return StaticContent;
+    return Faq;
 };
