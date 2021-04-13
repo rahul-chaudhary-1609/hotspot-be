@@ -36,5 +36,32 @@ module.exports = {
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
-    }
+    },
+
+    getFaqs: async (req, res) => {
+        try {
+            const getfaqData = await staticContent.getFaqs();
+            utilityFunction.successResponse(res, {getfaqData}, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getFaqQuestions: async (req, res) => {
+        try {
+            const faqQuestions = await staticContent.getFaqQuestions(req.query);
+            utilityFunction.successResponse(res, {faqQuestions}, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    addFaq: async (req, res) => {
+        try {
+            const responseFromService = await staticContent.addFaq(req.body, req.user);
+            utilityFunction.successResponse(res, responseFromService.dataValues, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 }

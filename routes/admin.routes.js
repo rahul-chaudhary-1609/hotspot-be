@@ -183,4 +183,8 @@ router.get('/getStaticContents',adminAuthentication.validateAdminToken, staticCo
 router.get('/getStaticContentDetails',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getStaticContentDetails), staticContentController.getStaticContentDetails);
 router.post('/updateStaticContent',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.updateStaticContent), staticContentController.updateStaticContent);
 
+router.get('/getFaqs',adminAuthentication.validateAdminToken, staticContentController.getFaqs);
+router.get('/getFaqQuestions',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getFaqQuestions), staticContentController.getFaqQuestions);
+router.post('/addFaq',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addFaq), staticContentController.addFaq);
+
 module.exports = router;

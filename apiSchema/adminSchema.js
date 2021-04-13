@@ -275,6 +275,19 @@ module.exports = {
         page_url: Joi.string().optional(),
         video_url: Joi.number().optional()
     }),
+
+    addFaq: Joi.object({
+        topic_id: Joi.number().optional(),
+        topic_name: Joi.string().optional(),
+        question: Joi.string().required(),
+        answer: Joi.string().required()
+    }),
+
+    getFaqQuestions: Joi.object({
+        id: Joi.string().required() ,
+        page: Joi.number().optional(),        
+        page_size: Joi.number().optional()     
+    }),
 }
 
 
