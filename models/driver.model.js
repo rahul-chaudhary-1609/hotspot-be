@@ -34,6 +34,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(45),
       allowNull:false,
     },
+
+    password: {
+      type: DataTypes.STRING(),
+      allowNull:false,
+    },
+
     country_code: {
       type: DataTypes.STRING(45),
     },

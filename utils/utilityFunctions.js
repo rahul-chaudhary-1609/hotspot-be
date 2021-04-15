@@ -4,6 +4,7 @@ const constants = require('../constants')
 const _ = require('lodash');
 const FCM = require('fcm-node');
 const fcm = new FCM(process.env.FCM_SERVER_KEY); //put your server key here
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 
 /* function for sending the error response */
@@ -149,4 +150,53 @@ module.exports.sendFcmNotification = async (tokens, notification) => {
     } else {
         console.log("No FCM Device token registered yet.");
     }
+}
+
+module.exports.sentOtp = async (params) => {
+
+    client
+    .verify
+    .services(process.env.TWILIO_SERVICE_ID)
+    .verifications
+    .create({
+        to: `${params.country_code}${params.phone_no}`,
+        channel: 'sms'
+    })
+    .then((resp) => {
+        return 1;
+        //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
+    })
+    .catch((error) => {
+        if (error.status === 429) {
+            //.status(429).json({ status: 429, message: `Too many requests` });
+            return 1;
+            //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
+        } else {
+            return 0;
+        }
+        
+    })
+    
+}
+
+module.exports.verifyOtp = async (params) => {
+
+    client
+    .verify
+    .services(process.env.TWILIO_SERVICE_ID)
+    .verificationChecks
+    .create({
+        to: `${params.country_code}${params.phone_no}`,
+        code: params.code
+    })
+    .then((resp) => {
+        if (resp.status === "approved") {
+           return 1;
+        } else {
+            return 0;
+        }
+    }).catch((error) => {
+        return error;
+    })
+    
 }

@@ -111,6 +111,10 @@
       {
         "name": "Customer Payment",
         "description": "customer payment Api's"
+      },
+      {
+        "name": "Driver Onboarding",
+        "description": "driver onboarding Api's"
       }
       
       
@@ -5495,7 +5499,69 @@
             ],
             "responses": {}
           }
+        },
+
+
+
+
+
+
+        "/driver/login": {
+          "post": {
+            "tags": [
+              "driver onboarding Api's"
+            ],
+            "description": "For driver login",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "phone_or_id",
+                "in": "formData",
+                "description": "enter phone or driver id",
+                "default": "",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "password",
+                "in": "formData",
+                "description": "enter password",
+                "default": "",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+      },
+
+      "/driver/forgot_password": {
+        "post": {
+          "tags": [
+            "driver onboarding Api's"
+          ],
+          "description": "For driver login",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "phone",
+              "in": "formData",
+              "description": "enter phone",
+              "default": "",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
         }
+    }
+
+
+
 
     }
 }
