@@ -10,6 +10,7 @@ module.exports = {
     invalid_email: "Incorrect Email",
     invalid_email_password: "Invalid email or password",
     invalid_email_phone: "Invalid email or phone",
+    invalid_phone: "Invalid phone",
     invalid_old_password:"Invalid old password",
     deactivate_account: 'Your account has been de-activated by Admin. Please contact to admin',
     delete_account: 'Your account has been deleted by Admin. Please contact to admin',
@@ -74,7 +75,12 @@ module.exports = {
     update_success: "Updated successfully",
     delete_success: "Deleted successfully",
     only_pickup_available: "Sorry! Only pickups available in your area.",
-    invalid_id:'Invalid id.'
+    invalid_id:'Invalid id.',
+    invalid_id_or_phone: 'Invalid id or phone',
+    not_approved: 'Your account is not approved by admin',
+    rejected_account: 'Your account is rejected by admin.',
+    invalid_number_or_country_code: 'Invalid number or country code.'
+
   },
 
   code: {

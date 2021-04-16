@@ -73,4 +73,23 @@ module.exports =
       })
 
   },
+
+
+  validateDriverToken: (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    let token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        token = authHeader;
+        if (!token) return res.sendStatus(401);
+    }
+
+    jwt.verify(token, process.env.DRIVER_SECRET_KEY, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    })
+
+  }
+
 }

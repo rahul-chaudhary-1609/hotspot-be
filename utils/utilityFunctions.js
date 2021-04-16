@@ -4,6 +4,7 @@ const constants = require('../constants')
 const _ = require('lodash');
 const FCM = require('fcm-node');
 const fcm = new FCM(process.env.FCM_SERVER_KEY); //put your server key here
+const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 
 /* function for sending the error response */
@@ -149,4 +150,59 @@ module.exports.sendFcmNotification = async (tokens, notification) => {
     } else {
         console.log("No FCM Device token registered yet.");
     }
+}
+
+module.exports.sentOtp = async (params) => {
+
+    return new Promise(((resolve, reject) => {
+        client
+        .verify
+        .services(process.env.TWILIO_SERVICE_ID)
+        .verifications
+        .create({
+            to: `${params.country_code}${params.phone_no}`,
+            channel: 'sms'
+        })
+        .then((resp) => {
+            resolve(1);
+            //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
+        })
+        .catch((error) => {
+            if (error.status === 429) {
+                //.status(429).json({ status: 429, message: `Too many requests` });
+                resolve(1);
+                //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
+            } else {
+                resolve(0);
+            }
+        })
+    }));
+    
+}
+
+module.exports.verifyOtp = async (params) => {
+
+    return new Promise(((resolve, reject) => {
+        client
+        .verify
+        .services(process.env.TWILIO_SERVICE_ID)
+        .verificationChecks
+        .create({
+            to: `${params.country_code}${params.phone_no}`,
+            code: params.otp
+        })
+        .then((resp) => {
+            console.log(resp);
+            if (resp.status == 'approved') {
+                resolve(1);
+            } else {
+                resolve(0);
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            resolve(0);
+        })
+    }));
+    
 }

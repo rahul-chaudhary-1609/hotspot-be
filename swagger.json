@@ -111,6 +111,10 @@
       {
         "name": "Customer Payment",
         "description": "customer payment Api's"
+      },
+      {
+        "name": "Driver Onboarding",
+        "description": "driver onboarding Api's"
       }
       
       
@@ -5495,7 +5499,249 @@
             ],
             "responses": {}
           }
+        },
+
+
+
+
+
+
+        "/driver/login": {
+          "post": {
+            "tags": [
+              "driver onboarding Api's"
+            ],
+            "description": "For driver login",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "phone_or_id",
+                "in": "formData",
+                "description": "enter phone or driver id",
+                "default": "",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "password",
+                "in": "formData",
+                "description": "enter password",
+                "default": "",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+      },
+
+      "/driver/forgot_password": {
+        "post": {
+          "tags": [
+            "driver onboarding Api's"
+          ],
+          "description": "For driver login",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "phone",
+              "in": "formData",
+              "description": "enter phone",
+              "default": "",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
         }
+    },
+
+    "/driver/verify_otp": {
+      "post": {
+        "tags": [
+          "driver onboarding Api's"
+        ],
+        "description": "For driver login",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "formData",
+            "description": "enter phone",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "otp",
+            "in": "formData",
+            "description": "enter otp",
+            "required": true,
+            "type": "number"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/change_password": {
+      "post": {
+        "tags": [
+          "driver onboarding Api's"
+        ],
+        "description": "For driver login",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "description": "enter phone",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/sign_up_step1": {
+      "post": {
+        "tags": [
+          "driver onboarding Api's"
+        ],
+        "description": "For driver login",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "phone_no",
+            "in": "formData",
+            "description": "enter phone_no",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "country_code",
+            "in": "formData",
+            "description": "enter country_code",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "referral_code",
+            "in": "formData",
+            "description": "enter referral_code",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/sign_up_details_step1": {
+      "post": {
+        "tags": [
+          "driver onboarding Api's"
+        ],
+        "description": "For driver login",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "profile_picture_url",
+            "in": "formData",
+            "description": "enter profile_picture_url",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "first_name",
+            "in": "formData",
+            "description": "enter first_name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "last_name",
+            "in": "formData",
+            "description": "enter last_name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "description": "enter email",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dob",
+            "in": "formData",
+            "description": "enter dob",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "gender",
+            "in": "formData",
+            "description": "enter gender",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "nationality",
+            "in": "formData",
+            "description": "enter nationality",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "passport_picture_url",
+            "in": "formData",
+            "description": "enter passport_picture_url",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "passport_number",
+            "in": "formData",
+            "description": "enter passport_number",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    }
+
+
+
+
 
     }
 }

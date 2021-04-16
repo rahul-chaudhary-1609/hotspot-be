@@ -18,8 +18,15 @@ app.use(cors());
 
 app.use(express.json());
 
+
+app.get('/', (req, res) => {
+    res.send("<center><p><b>Welcome to Hotspot!</b></p></center>");
+});
+
 app.use('/apiDocs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { swaggerOptions: { docExpansion: "none"}}));
-app.use('/',router);
+
+// app.use('/',router);
+require("./routes")(app);
 
 
 

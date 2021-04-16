@@ -23,17 +23,23 @@ module.exports = (sequelize, DataTypes) => {
     }, 
     first_name:{
       type:DataTypes.STRING(45),
-      allowNull: false,
+      allowNull: true,
     },
     last_name:{
       type:DataTypes.STRING(45),
-      allowNull: false,
+      allowNull: true,
     },
     
     email: {
       type: DataTypes.STRING(45),
-      allowNull:false,
+      allowNull:true,
     },
+
+    password: {
+      type: DataTypes.STRING(),
+      allowNull:true,
+    },
+
     country_code: {
       type: DataTypes.STRING(45),
     },
@@ -50,6 +56,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(45),
     },
     passport_picture_url: {
+      type: DataTypes.STRING,
+    },
+
+    profile_picture_url: {
       type: DataTypes.STRING,
     },
     
@@ -73,6 +83,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue:false
     },
     device_token: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    referral_code: {
       type: DataTypes.STRING,
       allowNull: true
     },
