@@ -18,6 +18,8 @@ router.post('/verify_otp',joiValidation.validateBody(apiSchema.verify_otp), onBo
 router.post('/change_password', driverAuthentication.validateDriverToken,  joiValidation.validateBody(apiSchema.change_password), onBoardingController.change_password);
 router.post('/sign_up_step1',  joiValidation.validateBody(apiSchema.sign_up_step1), onBoardingController.sign_up_step1);
 router.post('/sign_up_details_step1', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.sign_up_details_step1), onBoardingController.sign_up_details_step1);
+router.post('/sign_up_details_step2', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.sign_up_details_step2), onBoardingController.sign_up_details_step2);
+router.post('/sign_up_details_step3', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.sign_up_details_step3), onBoardingController.sign_up_details_step3);
 
 
 module.exports = router;

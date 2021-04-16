@@ -79,13 +79,39 @@ class OnBoardingController {
     */
     sign_up_details_step1 = async (req, res, next) => {
         try {
-            const forgotPasswordRes = await onBoradingServices.sign_up_details_step1(req.body, req.user);
-            return sendResponse(res, constants.MESSAGES.success, forgotPasswordRes);
+            const responseData = await onBoradingServices.sign_up_details_step1(req.body, req.user);
+            return sendResponse(res, constants.MESSAGES.success, responseData);
         } catch (e) {
             next(e);
         }
     }
 
+
+    /*
+    * function for sign up details step 2
+    * @req :  password
+    */
+    sign_up_details_step2 = async (req, res, next) => {
+        try {
+            const responseData = await onBoradingServices.sign_up_details_step2(req.body, req.user);
+            return sendResponse(res, constants.MESSAGES.success, responseData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    /*
+        * function for sign up details step 3
+        * @req :  password
+        */
+    sign_up_details_step3 = async (req, res, next) => {
+        try {
+            const responseData = await onBoradingServices.sign_up_details_step3(req.body, req.user);
+            return sendResponse(res, constants.MESSAGES.success, responseData);
+        } catch (e) {
+            next(e);
+        }
+    }
 }
 
 module.exports = { OnBoardingController }

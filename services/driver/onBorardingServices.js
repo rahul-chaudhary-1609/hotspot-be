@@ -1,11 +1,9 @@
-const { Driver } = require('../../models');
+const { Driver, DriverAddress, DriverVehicleDetail, DriverBankDetail } = require('../../models');
 const constants = require('../../constants');
 const { ErrorHandler } = require('../../utils/handler');
 const utilityFunction = require("../../utils/utilityFunctions")
-const { constant } = require('lodash');
 const { Op } = require("sequelize");
 const responseToken = require("../../utils/responseToken");
-const { param } = require('../../routes/driver.routes');
 
 class OnBoradinServices  {
 
@@ -144,8 +142,8 @@ class OnBoradinServices  {
             throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.acc_already_exists);
         } else {
             let otpData = await utilityFunction.sentOtp(params);
-            console.log(otpData);
             if (otpData) {
+                params.password = await utilityFunction.bcryptPassword(params.password);
                 return await Driver.create(params);
             } else {
                 throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_number_or_country_code);
@@ -154,15 +152,43 @@ class OnBoradinServices  {
         }
     }
 
-     /*
+    /*
     * function for sign up details step 1
     */
     sign_up_details_step1 = async (params, user) => {
-       return Driver.update(params,{
+       return await Driver.update(params,{
            where: {
                id: user.id
            }
        })
+    }
+
+    /*
+    * function for sign up details step 2
+    */
+    sign_up_details_step2 = async (params, user) => {
+        params.driver_id = user.id;
+        let driverBankDetails = {
+            driver_id: params.driver_id,
+            bank_name: params.bank_name,
+            account_number: params.account_number,
+            account_holder_name: params.account_holder_name
+        }
+        delete params.bank_name;
+        delete params.account_number;
+        delete params.account_holder_name;
+        return await Promise.all([
+            DriverBankDetail.create(driverBankDetails),
+            DriverAddress.create(params)
+        ])
+    }
+
+    /*
+        * function for sign up details step 3
+        */
+    sign_up_details_step3 = async (params, user) => {
+        params.driver_id = user.id;
+        return await DriverVehicleDetail.create(params);
     }
 }
 

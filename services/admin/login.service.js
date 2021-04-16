@@ -7,6 +7,7 @@ const sendMail = require('../../utils/mail');
 const adminAWS=require('../../utils/aws')
 const _ = require('lodash');
 const { Op } = require("sequelize");
+const fetch = require('node-fetch');
 
 module.exports = {
     login: async (params) => {
@@ -269,5 +270,15 @@ module.exports = {
                 where: { id: user.id}
             }
         )
+    },
+
+    htmlFileUrlToTextConvert: async (user) => {
+        return new Promise(((resolve, reject) => {
+            fetch(
+                'https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/1618472120042.html'
+              )
+              .then((res) => res.text())
+              .then((body) => resolve(body));
+        }));
     },
 }
