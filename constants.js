@@ -78,7 +78,8 @@ module.exports = {
     invalid_id:'Invalid id.',
     invalid_id_or_phone: 'Invalid id or phone',
     not_approved: 'Your account is not approved by admin',
-    rejected_account: 'Your account is rejected by admin.'
+    rejected_account: 'Your account is rejected by admin.',
+    invalid_number_or_country_code: 'Invalid number or country code.'
 
   },
 

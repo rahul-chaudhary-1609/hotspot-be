@@ -154,49 +154,55 @@ module.exports.sendFcmNotification = async (tokens, notification) => {
 
 module.exports.sentOtp = async (params) => {
 
-    client
-    .verify
-    .services(process.env.TWILIO_SERVICE_ID)
-    .verifications
-    .create({
-        to: `${params.country_code}${params.phone_no}`,
-        channel: 'sms'
-    })
-    .then((resp) => {
-        return 1;
-        //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
-    })
-    .catch((error) => {
-        if (error.status === 429) {
-            //.status(429).json({ status: 429, message: `Too many requests` });
-            return 1;
+    return new Promise(((resolve, reject) => {
+        client
+        .verify
+        .services(process.env.TWILIO_SERVICE_ID)
+        .verifications
+        .create({
+            to: `${params.country_code}${params.phone_no}`,
+            channel: 'sms'
+        })
+        .then((resp) => {
+            resolve(1);
             //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
-        } else {
-            return 0;
-        }
-        
-    })
+        })
+        .catch((error) => {
+            if (error.status === 429) {
+                //.status(429).json({ status: 429, message: `Too many requests` });
+                resolve(1);
+                //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
+            } else {
+                resolve(0);
+            }
+        })
+    }));
     
 }
 
 module.exports.verifyOtp = async (params) => {
 
-    client
-    .verify
-    .services(process.env.TWILIO_SERVICE_ID)
-    .verificationChecks
-    .create({
-        to: `${params.country_code}${params.phone_no}`,
-        code: params.code
-    })
-    .then((resp) => {
-        if (resp.status === "approved") {
-           return 1;
-        } else {
-            return 0;
-        }
-    }).catch((error) => {
-        return error;
-    })
+    return new Promise(((resolve, reject) => {
+        client
+        .verify
+        .services(process.env.TWILIO_SERVICE_ID)
+        .verificationChecks
+        .create({
+            to: `${params.country_code}${params.phone_no}`,
+            code: params.otp
+        })
+        .then((resp) => {
+            console.log(resp);
+            if (resp.status == 'approved') {
+                resolve(1);
+            } else {
+                resolve(0);
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+            resolve(0);
+        })
+    }));
     
 }

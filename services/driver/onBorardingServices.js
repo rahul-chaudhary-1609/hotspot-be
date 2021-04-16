@@ -4,7 +4,8 @@ const { ErrorHandler } = require('../../utils/handler');
 const utilityFunction = require("../../utils/utilityFunctions")
 const { constant } = require('lodash');
 const { Op } = require("sequelize");
-const responseToken = require("../../utils/responseToken")
+const responseToken = require("../../utils/responseToken");
+const { param } = require('../../routes/driver.routes');
 
 class OnBoradinServices  {
 
@@ -64,9 +65,9 @@ class OnBoradinServices  {
     }
 
     /*
-    * function for login
+    * function for forgot password
     */
-   forgot_password = async (params) => {
+    forgot_password = async (params) => {
        let getDriverData = await Driver.findOne({
            where: {
                phone_no: params.phone
@@ -77,9 +78,92 @@ class OnBoradinServices  {
             let otpData = await utilityFunction.sentOtp(getDriverData);
             return otpData;
        } else {
-        throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_phone);
+            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_phone);
        }
-   }
+    }
+
+     /*
+    * function for verify_otp
+    */
+    verify_otp = async (params) => {
+        let getDriverData = await utilityFunction.convertPromiseToObject( await Driver.findOne({
+            where: {
+                phone_no: params.phone
+            }
+        }));
+
+        if (getDriverData) {
+            let verifyReq = {
+                country_code: getDriverData.country_code,
+                phone_no: params.phone,
+                otp: params.otp
+            }
+
+            let otpData = await utilityFunction.verifyOtp(verifyReq);
+            if (otpData) {
+                const accessToken = await responseToken.generateDriverAccessToken({
+                    admin: false,
+                    id: getDriverData.id,
+                    email: getDriverData.email,
+                    first_name: getDriverData.first_name,
+                    last_name: getDriverData.last_name
+                });
+                getDriverData.token = accessToken;
+
+                return getDriverData;
+
+            } else {
+                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_otp);
+            }
+        } else {
+            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_phone);
+        }
+    }
+
+    /*
+    * function for change password
+    */
+    change_password = async (params, user) => {
+        let updateDriver = {
+            password: await utilityFunction.bcryptPassword(params.password)
+        }
+        return Driver.update(updateDriver, {
+            where: { id: user.id}
+        })
+    }
+
+    /*
+    * function for sign up
+    */
+    sign_up_step1 = async (params) => {
+        let driverData = await Driver.findOne({
+            where: { phone_no: params.phone_no}
+        });
+
+        if (driverData) {
+            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.acc_already_exists);
+        } else {
+            let otpData = await utilityFunction.sentOtp(params);
+            console.log(otpData);
+            if (otpData) {
+                return await Driver.create(params);
+            } else {
+                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_number_or_country_code);
+            }
+            
+        }
+    }
+
+     /*
+    * function for sign up details step 1
+    */
+    sign_up_details_step1 = async (params, user) => {
+       return Driver.update(params,{
+           where: {
+               id: user.id
+           }
+       })
+    }
 }
 
 module.exports = { OnBoradinServices }
