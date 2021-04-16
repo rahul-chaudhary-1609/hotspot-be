@@ -272,10 +272,10 @@ module.exports = {
         )
     },
 
-    htmlFileUrlToTextConvert: async (user) => {
+    htmlFileUrlToTextConvert: async (params) => {
         return new Promise(((resolve, reject) => {
             fetch(
-                'https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/1618472120042.html'
+                params.file_url
               )
               .then((res) => res.text())
               .then((body) => resolve(body));
