@@ -37,6 +37,8 @@ router.post('/updateProfile', adminAuthentication.validateAdminToken, joiValidat
 
 router.get('/getAdminProfile', adminAuthentication.validateAdminToken, adminLoginController.getAdminProfile);
 
+router.get('/htmlFileUrlToTextConvert', adminAuthentication.validateAdminToken, adminLoginController.htmlFileUrlToTextConvert);
+
 //for image upload
 router.put('/uploadImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminLoginController.uploadImage);
 
