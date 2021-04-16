@@ -160,7 +160,7 @@ module.exports = {
 
     setFavoriteFood: async (req, res) => {
          try {
-            const responseFromService = await restaurantService.setFavoriteFood(req.user);
+            const responseFromService = await restaurantService.setFavoriteFood(req.body,req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
