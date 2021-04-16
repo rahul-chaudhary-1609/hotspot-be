@@ -17,7 +17,7 @@ module.exports = {
                     }
             });
             
-            if (card || !card.is_deleted) {
+            if (card && !card.is_deleted) {
                 throw new Error(constants.MESSAGES.payment_card_already_exist);
             }
 
