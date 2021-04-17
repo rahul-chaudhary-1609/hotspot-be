@@ -10,7 +10,7 @@ module.exports = {
     
         try {
             const responseFromService = await loginService.loginWithEmail(req.body);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.login_success);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.log_in);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
@@ -20,7 +20,7 @@ module.exports = {
 
         try {
             const responseFromService = await loginService.loginWithPhone(req.body);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.login_success);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.log_in);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }

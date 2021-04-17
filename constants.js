@@ -1,5 +1,7 @@
 module.exports = {
   MESSAGES: {
+    log_in: "Logged in successfully",
+    Cust_not_verified:"Customer's email id is not Verified.",
     login_success: 'Login Success',
     sub_admin_added: "Sub admin added successfully",
     new_admin_added: "Admin added successfully",
@@ -80,7 +82,6 @@ module.exports = {
     not_approved: 'Your account is not approved by admin',
     rejected_account: 'Your account is rejected by admin.',
     invalid_number_or_country_code: 'Invalid number or country code.'
-
   },
 
   code: {

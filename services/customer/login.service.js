@@ -130,11 +130,11 @@ module.exports = {
         
 
             if (!tempEmail) {
-                throw new Error(constants.MESSAGES.email_not_verified);
+                throw new Error(constants.MESSAGES.Cust_not_verified);
             }
 
             if (!tempEmail.is_email_verified) {
-                throw new Error(constants.MESSAGES.email_not_verified);
+                throw new Error(constants.MESSAGES.Cust_not_verified);
             }
 
             const is_email_verified = true;
@@ -1141,11 +1141,11 @@ module.exports = {
 
 
             if (!tempEmail) {
-                throw new Error(constants.MESSAGES.email_not_verified);
+                throw new Error(constants.MESSAGES.Cust_not_verified);
             }
 
             if (!tempEmail.is_email_verified) {
-                throw new Error(constants.MESSAGES.email_not_verified);
+                throw new Error(constants.MESSAGES.Cust_not_verified);
             }
 
             const is_email_verified = true;
