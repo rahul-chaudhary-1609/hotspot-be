@@ -487,7 +487,7 @@ module.exports = {
             const phone_verification_otp_expiry = customer.phone_verification_otp_expiry;
             const now = new Date();
 
-            const timeDiff = Math.floor((now.getTime() - phone_verification_otp_expiry.getTime()) / 1000)
+            const timeDiff = Math.floor((now.getTime() - (new Date(phone_verification_otp_expiry)).getTime()) / 1000)
             if (timeDiff > constants.otp_expiry_time) {
                 throw new Error(constants.MESSAGES.expire_otp);
             }
@@ -668,7 +668,7 @@ module.exports = {
             const email_verification_otp_expiry = tempEmail.email_verification_otp_expiry;
             const now = new Date();
 
-            const timeDiff = Math.floor((now.getTime() - email_verification_otp_expiry.getTime()) / 1000)
+            const timeDiff = Math.floor((now.getTime() - (new Date(email_verification_otp_expiry)).getTime()) / 1000)
             if (timeDiff > constants.otp_expiry_time) {
                 throw new Error(constants.MESSAGES.expire_otp);
             }
@@ -876,7 +876,7 @@ module.exports = {
             const reset_pass_expiry = customer.reset_pass_expiry;
             const now = new Date();
 
-            const timeDiff = Math.floor((now.getTime() - reset_pass_expiry.getTime()) / 1000)
+            const timeDiff = Math.floor((now.getTime() - (new Date(reset_pass_expiry)).getTime()) / 1000)
             if (timeDiff > constants.otp_expiry_time) {
                 throw new Error(constants.MESSAGES.expire_otp);
             }
