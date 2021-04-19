@@ -288,6 +288,16 @@ module.exports = {
         page: Joi.number().optional(),        
         page_size: Joi.number().optional()     
     }),
+    deleteFaq: Joi.object().keys({
+        //faq_ids: Joi.array().items(Joi.string()).unique()
+        topic_id: Joi.number().required()
+      }),
+
+      editFaq: Joi.object().keys({
+        topic: Joi.string().optional() ,
+        question: Joi.string().optional() ,
+        answer: Joi.string().optional() 
+      }),
 }
 
 

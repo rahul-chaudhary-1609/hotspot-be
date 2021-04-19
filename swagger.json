@@ -680,6 +680,87 @@
       }
     },
 
+    "/admin/deleteFaq": {
+      "post": {
+        "tags": [
+          "Admin Static Content"
+        ],
+        "description": "Api to delete faq",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "topic_id",
+            "in": "formData",
+            "description": "topic id to be deleted",
+            "required": true,
+            "type": "number"
+          }
+
+        ],
+        "responses": {}
+      }
+    },
+
+    "/admin/editFaq/{topic_id}": {
+      "put": {
+        "tags": [
+          "Admin Static Content"
+        ],
+        "description": "Api to edit faq",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "topic_id",
+            "in": "path",
+            "description": "topic id to be edited",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "topic",
+            "in": "formData",
+            "description": "topic name to be edited",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "question",
+            "in": "formData",
+            "description": "question to be edited",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "answer",
+            "in": "formData",
+            "description": "answer to be edited",
+            "required": false,
+            "type": "string"
+          }
+
+        ],
+        "responses": {}
+      }
+    },
+
 
 
 

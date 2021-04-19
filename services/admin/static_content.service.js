@@ -43,6 +43,7 @@ module.exports = {
         }
         
      },
+     //deleteFaq: async(faqId,adminId)=>{},
  
      getFaqs: async () => {
          return await FaqTopics.findAll({
