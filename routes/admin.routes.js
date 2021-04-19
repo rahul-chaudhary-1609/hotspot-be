@@ -188,7 +188,7 @@ router.post('/updateStaticContent',adminAuthentication.validateAdminToken,joiVal
 router.get('/getFaqs',adminAuthentication.validateAdminToken, staticContentController.getFaqs);
 router.get('/getFaqQuestions',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getFaqQuestions), staticContentController.getFaqQuestions);
 router.post('/addFaq',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addFaq), staticContentController.addFaq);
-router.post('/deleteFaq',adminAuthentication.validateAdminToken, staticContentController.deleteFaq)
-router.put('/editFaq/:topic_id',adminAuthentication.validateAdminToken, staticContentController.editFaq)
+router.post('/deleteFaq',adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.deleteFaq),staticContentController.deleteFaq)
+router.put('/editFaq/:topic_id',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editFaq), staticContentController.editFaq)
 
 module.exports = router;

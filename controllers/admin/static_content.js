@@ -68,11 +68,6 @@ module.exports = {
     },
     async deleteFaq (req, res) {
         try {
-          const validationResult = await schema.deleteFaq.validateAsync(req.body)
-          if (validationResult.error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code)
-            return
-          }
           console.log(typeof(req.user.id))
           const faqData = await staticContent.deleteFaq(req.body, req.user);
           console.log(faqData)
@@ -86,13 +81,6 @@ module.exports = {
 
       async editFaq (req, res) {
         try {
-          const validationResult = await schema.editFaq.validateAsync(req.body)
-          if (validationResult.error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code)
-            return
-          }
-          console.log(req.body)
-          console.log(req.params.topic_id)
           const faqData = await staticContent.editFaq(req.body, req.user,req.params.topic_id);
           console.log(faqData)
           utilityFunction.successResponse(res, {}, constants.MESSAGES.success)
