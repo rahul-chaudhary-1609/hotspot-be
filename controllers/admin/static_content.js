@@ -70,11 +70,11 @@ module.exports = {
         try {
           console.log(typeof(req.user.id))
           const faqData = await staticContent.deleteFaq(req.body, req.user);
-          console.log(faqData)
+          console.log("data is",faqData)
           
-          utilityFunction.successResponse(res, {}, constants.MESSAGES.success)
-        } catch (err) {
-          console.log(err)
+          utilityFunction.successResponse(res, faqData, constants.MESSAGES.success)
+        } catch (error) {
+          console.log(error)
           utilityFunction.errorResponse(res, error, constants.code.error_code)
         }
       },
@@ -83,9 +83,9 @@ module.exports = {
         try {
           const faqData = await staticContent.editFaq(req.body, req.user,req.params.topic_id);
           console.log(faqData)
-          utilityFunction.successResponse(res, {}, constants.MESSAGES.success)
-        } catch (err) {
-          console.log(err)
+          utilityFunction.successResponse(res, faqData, constants.MESSAGES.success)
+        } catch (error) {
+          console.log(error)
           utilityFunction.errorResponse(res, error, constants.code.error_code)
         }
       }
