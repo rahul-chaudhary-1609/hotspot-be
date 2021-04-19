@@ -74,19 +74,9 @@ module.exports = {
             return
           }
           console.log(typeof(req.user.id))
-          const faqData = await Faq.destroy({
-            where: {
-                //topic_id:Number(req.body.topic_id),
-                topic_id:Number(req.body.topic_id),
-                admin_id:String(req.user.id)
-            } 
-        })
-        const faqTopicsData = await FaqTopics.destroy({
-            where: {
-                id:Number(req.body.topic_id)
-            } 
-        })
-          console.log(faqTopicsData)
+          const faqData = await staticContent.deleteFaq(req.body, req.user);
+          console.log(faqData)
+          
           utilityFunction.successResponse(res, {}, constants.MESSAGES.success)
         } catch (err) {
           console.log(err)
@@ -103,10 +93,8 @@ module.exports = {
           }
           console.log(req.body)
           console.log(req.params.topic_id)
-        const faqData=await Faq.update({ question:req.body.question,answer:req.body.answer }, { where: {topic_id:Number(req.params.topic_id),admin_id:String(req.user.id)} });
+          const faqData = await staticContent.editFaq(req.body, req.user,req.params.topic_id);
           console.log(faqData)
-        const faqTopicsData=await FaqTopics.update({ topic:req.body.topic }, { where: {id:Number(req.params.topic_id)} });
-          console.log(faqTopicsData)
           utilityFunction.successResponse(res, {}, constants.MESSAGES.success)
         } catch (err) {
           console.log(err)

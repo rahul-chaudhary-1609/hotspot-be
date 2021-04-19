@@ -43,7 +43,43 @@ module.exports = {
         }
         
      },
-     //deleteFaq: async(faqId,adminId)=>{},
+
+     /*deleteFaq: async (params, user) => {
+        const faqData = await Faq.destroy({
+            where: {
+                //topic_id:Number(req.body.topic_id),
+                topic_id:Number(params.topic_id),
+                admin_id:String(user.id)
+            } 
+        })
+        const faqTopicsData = await FaqTopics.destroy({
+            where: {
+                id:Number(params.topic_id)
+            } 
+        })
+    ],*/
+          
+     deleteFaq: async(params,admin)=>{
+        const faqData = await Faq.destroy({
+            where: {
+                //topic_id:Number(req.body.topic_id),
+                topic_id:Number(params.topic_id),
+                admin_id:String(admin.id)
+            } 
+        })
+        const faqTopicsData = await FaqTopics.destroy({
+            where: {
+                id:Number(params.topic_id)
+            } 
+        })
+     },
+
+     editFaq: async(params,admin,topicId)=>{
+        const faqData=await Faq.update({ question:params.question,answer:params.answer }, { where: {topic_id:Number(topicId),admin_id:String(admin.id)} });
+        console.log(faqData)
+      const faqTopicsData=await FaqTopics.update({ topic:params.topic }, { where: {id:Number(topicId)} });
+        console.log(faqTopicsData)
+     },
  
      getFaqs: async () => {
          return await FaqTopics.findAll({
