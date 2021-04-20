@@ -44,7 +44,30 @@ module.exports = {
         
      },
 
-          
+     getFaq: async(admin,id)=>{
+        let checkId = await Faq.findOne({
+            where: {id: id}
+        })
+        if (checkId) {
+            /*const faqData = await Faq.findOne({
+                where: {
+                    //topic_id:Number(req.body.topic_id),
+                    id:Number(id),
+                    admin_id:String(admin.id)
+                } 
+            })*/
+            return await Faq.findOne({
+                where: {
+                    //topic_id:Number(req.body.topic_id),
+                    id:Number(id),
+                    //admin_id:String(admin.id)
+                } 
+            })
+        } else {
+            throw new Error(constants.MESSAGES.invalid_id);
+        }
+     },
+     
      deleteFaq: async(params,admin)=>{
         let checkTopicId = await Faq.findOne({
             where: { topic_id: params.topic_id}

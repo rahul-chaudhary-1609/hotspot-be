@@ -78,6 +78,16 @@ module.exports = {
           utilityFunction.errorResponse(res, error, constants.code.error_code)
         }
       },
+      async getFaq (req, res) {
+        try {
+          const faqData = await staticContent.getFaq(req.user,req.params.id);
+          console.log(faqData)
+          utilityFunction.successResponse(res, faqData.dataValues, constants.MESSAGES.success)
+        } catch (error) {
+          console.log(error)
+          utilityFunction.errorResponse(res, error, constants.code.error_code)
+        }
+      },
 
       async editFaq (req, res) {
         try {

@@ -190,5 +190,5 @@ router.get('/getFaqQuestions',adminAuthentication.validateAdminToken,joiValidati
 router.post('/addFaq',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addFaq), staticContentController.addFaq);
 router.post('/deleteFaq',adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.deleteFaq),staticContentController.deleteFaq)
 router.put('/editFaq/:topic_id',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editFaq), staticContentController.editFaq)
-
+router.get('/getFaq/:id',adminAuthentication.validateAdminToken, staticContentController.getFaq);
 module.exports = router;
