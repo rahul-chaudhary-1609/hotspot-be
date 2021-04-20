@@ -58,7 +58,7 @@ module.exports = {
     success: 'Success',
     no_customers: "No customers found",
     no_customer: "customers not found with provided id",
-    no_restaurant: "Restaurant not found with provided id",
+    no_restaurant: "No restaurant found",
     no_dish: "No Dish found",
     no_driver: "No driver found",
     no_order: "No order found",

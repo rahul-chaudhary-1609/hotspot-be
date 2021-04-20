@@ -32,9 +32,11 @@ module.exports = {
             query.offset = offset;
             query.raw = true;
 
-            let restaurantList = await Restaurant.findAndCountAll(query);
-            if(restaurantList)
-                return { restaurantList };
+        let restaurantList = await Restaurant.findAndCountAll(query);
+
+        if (restaurantList && restaurantList.count == 0) throw new Error(constants.MESSAGES.no_restaurant);
+        
+        return { restaurantList };
 
         
     },
