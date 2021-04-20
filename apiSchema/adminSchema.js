@@ -217,9 +217,10 @@ module.exports = {
     }),
 
     hotspotSchema: Joi.object({
-        name:Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).messages({
-            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
-        }),
+        name: Joi.string().trim().required(),
+        //     regex(/^[a-zA-Z\s]+$/).max(45).messages({
+        //     "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        // }),
         location: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
         location_detail: Joi.string().required(),
         city: Joi.string().max(45).required(),
