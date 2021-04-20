@@ -16,6 +16,24 @@ module.exports = {
         });
     },
 
+    getFaqTopics: async () => {
+        const faqData = await Faq.findAll({
+        }) 
+        const ids = [...new Set(faqData.map(item => item.topic_id))];
+        console.log(ids)
+        ids.sort();
+        const Params = [];
+      for(let i=0;i<ids.length;i++)
+      {
+        let topicData = await FaqTopics.findOne({
+            where: { id: ids[i] }
+        })
+        Params.push(topicData.dataValues) 
+      }
+        return Params
+    },
+    
+
     getStaticContentDetails: async (params) => {
         return await StaticContent.findOne({
             where: { id: params.id }
@@ -49,18 +67,9 @@ module.exports = {
             where: {id: id}
         })
         if (checkId) {
-            /*const faqData = await Faq.findOne({
-                where: {
-                    //topic_id:Number(req.body.topic_id),
-                    id:Number(id),
-                    admin_id:String(admin.id)
-                } 
-            })*/
             return await Faq.findOne({
                 where: {
-                    //topic_id:Number(req.body.topic_id),
                     id:Number(id),
-                    //admin_id:String(admin.id)
                 } 
             })
         } else {
@@ -75,7 +84,6 @@ module.exports = {
         if (checkTopicId) {
             const faqData = await Faq.destroy({
                 where: {
-                    //topic_id:Number(req.body.topic_id),
                     topic_id:Number(params.topic_id),
                     admin_id:String(admin.id)
                 } 
@@ -96,10 +104,6 @@ module.exports = {
         } else {
             throw new Error(constants.MESSAGES.invalid_id);
         }
-       /* const faqData=await Faq.update({ question:params.question,answer:params.answer }, { where: {topic_id:Number(topicId),admin_id:String(admin.id)} });
-        console.log(faqData)
-      const faqTopicsData=await FaqTopics.update({ topic:params.topic }, { where: {id:Number(topicId)} });
-        console.log(faqTopicsData)*/
      },
  
      getFaqs: async () => {

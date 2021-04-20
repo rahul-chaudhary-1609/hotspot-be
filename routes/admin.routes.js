@@ -191,4 +191,5 @@ router.post('/addFaq',adminAuthentication.validateAdminToken,joiValidation.valid
 router.post('/deleteFaq',adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.deleteFaq),staticContentController.deleteFaq)
 router.put('/editFaq/:topic_id',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editFaq), staticContentController.editFaq)
 router.get('/getFaq/:id',adminAuthentication.validateAdminToken, staticContentController.getFaq);
+router.get('/getFaqTopics',adminAuthentication.validateAdminToken, staticContentController.getFaqTopics);
 module.exports = router;
