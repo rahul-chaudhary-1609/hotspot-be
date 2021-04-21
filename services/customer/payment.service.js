@@ -3,6 +3,7 @@ const models = require('../../models');
 const validate = require('../../apiSchema/customerSchema');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const constants = require("../../constants");
+const utilityFunction=require('../../utils/utilityFunctions')
 
 module.exports = {
 
@@ -172,7 +173,9 @@ module.exports = {
    payment: async (params,user) => {
        
             
-            const customer = user;
+     const customer = await utilityFunction.convertPromiseToObject(
+       await models.Customer.findByPk(user.id)
+            );
             
             const stripePaymentMethod = await stripe.paymentMethods.create({
               type: "card",

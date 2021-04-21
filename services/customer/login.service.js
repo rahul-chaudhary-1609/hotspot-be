@@ -35,11 +35,11 @@ module.exports = {
         
 
             if (passwordHash.verify(password, customer.password)) {
-
-                delete customer.password;
             
                 const user = {
-                    ...customer
+                    id: customer.id,
+                    name: customer.name,
+                    email:customer.email,
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
@@ -82,10 +82,11 @@ module.exports = {
             
                 if (!customer.is_phone_verified) throw new Error(constants.MESSAGES.phone_not_verified);
 
-                delete customer.password
 
                 const user = {
-                    ...customer,
+                    id: customer.id,
+                    name: customer.name,
+                    email:customer.email,
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
@@ -168,10 +169,11 @@ module.exports = {
                     })
                 );
 
-                delete customer.password
 
                 const user = {
-                    ...customer,
+                    id: customer.id,
+                    name: customer.name,
+                    email:customer.email,
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
@@ -229,10 +231,12 @@ module.exports = {
                         })
                 );
 
-                delete getCustomer.password
+                
             
                 const user = {
-                    ...getCustomer,
+                    id: getCustomer.id,
+                    name: getCustomer.name,
+                    email:getCustomer.email,
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
@@ -253,10 +257,12 @@ module.exports = {
                         })
                 );
 
-                delete getCustomer.password
+                
             
                 const user = {
-                    ...getCustomer,
+                    id: getCustomer.id,
+                    name: getCustomer.name,
+                    email:getCustomer.email,
                 };
 
 
@@ -297,10 +303,12 @@ module.exports = {
                         })
                 );
 
-                delete getCustomer.password
+                
             
                 const user = {
-                    ...getCustomer,
+                    id: getCustomer.id,
+                    name: getCustomer.name,
+                    email:getCustomer.email,
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
@@ -321,10 +329,12 @@ module.exports = {
                         })
                 );
 
-                delete getCustomer.password
+                
             
                 const user = {
-                    ...getCustomer,
+                    id: getCustomer.id,
+                    name: getCustomer.name,
+                    email:getCustomer.email,
                 };
 
 
@@ -364,10 +374,12 @@ module.exports = {
                         })
                 );
 
-                delete getCustomer.password
+                
             
                 const user = {
-                    ...getCustomer,
+                    id: getCustomer.id,
+                    name: getCustomer.name,
+                    email:getCustomer.email,
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
@@ -390,10 +402,12 @@ module.exports = {
                         })
                 );
 
-                delete getCustomer.password
+                
             
                 const user = {
-                    ...getCustomer,
+                    id: getCustomer.id,
+                    name: getCustomer.name,
+                    email:getCustomer.email,
                 };
 
 
@@ -502,10 +516,12 @@ module.exports = {
                     returning: true,
                 });
 
-                delete customer.password
+                
 
                 let user = {
-                    ...customer
+                    id:customer.id,
+                    name: customer.name,
+                    email:customer.email,
                 };
 
                 let accessToken = responseToken.generateCustomerAccessToken(user);
@@ -539,10 +555,12 @@ module.exports = {
                     throw new Error(constants.MESSAGES.error_occurred);
                 })
                
-            delete customer.password
+            
 
             let user = {
-                ...customer
+                id: customer.id,
+                name: customer.name,
+                email:customer.email,
             };
 
             let accessToken = responseToken.generateCustomerAccessToken(user);
@@ -1091,7 +1109,7 @@ module.exports = {
                 password,
             }, {
                 where: {
-                    email: (params.user.email).toLowerCase()
+                    email: (user.email).toLowerCase()
                 },
                 returning: true,
             });
@@ -1170,10 +1188,12 @@ module.exports = {
         
             const getCustomer = await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(user.id));
 
-            delete getCustomer.password
+            
             
             user = {
-                ...getCustomer   
+                id: getCustomer.id,
+                name: getCustomer.name,
+                email:getCustomer.email,   
             }
 
             const accessToken = responseToken.generateCustomerAccessToken(user);
