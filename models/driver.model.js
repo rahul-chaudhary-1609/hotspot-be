@@ -75,21 +75,6 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
       comment: '0=>pending,1=>approved,2=>rejected'
     },
-    is_approved: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    is_rejected: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    is_deleted: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue:false
-    },
     device_token: {
       type: DataTypes.STRING,
       allowNull: true

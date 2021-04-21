@@ -55,12 +55,6 @@ module.exports = (sequelize, DataTypes) => {
             comment: '0=>inactive,1=>active,2=>deleted'
         },
 
-        is_deleted: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
-        },
-
     }, {
         sequelize,
         underscored: true,

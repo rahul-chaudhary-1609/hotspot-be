@@ -33,11 +33,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
-        is_deleted: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
-        },
+
 
     }, {
         sequelize,
