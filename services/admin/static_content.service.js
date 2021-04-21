@@ -22,15 +22,11 @@ module.exports = {
         const ids = [...new Set(faqData.map(item => item.topic_id))];
         console.log(ids)
         ids.sort();
-        const Params = [];
-      for(let i=0;i<ids.length;i++)
-      {
-        let topicData = await FaqTopics.findOne({
-            where: { id: ids[i] }
-        })
-        Params.push(topicData.dataValues) 
-      }
-        return Params
+      let topicData = await FaqTopics.findAll({
+        where: { id: ids},
+        raw:true
+      })
+        return topicData
     },
     
 
