@@ -48,6 +48,13 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
+        status: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '0=>inactive,1=>active,2=>deleted'
+        },
+
         is_deleted: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
