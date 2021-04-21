@@ -29,67 +29,67 @@ module.exports = {
             ];
 
             //const L = [{ location: P, distance: `${Math.floor(randomLocation.distance(P, P))} m`}]
-            const hotspotLocation = await models.HotspotLocation.findAndCountAll({
-                where: {
-                    customer_id
-                }
-            });
+            // const hotspotLocation = await models.HotspotLocation.findAndCountAll({
+            //     where: {
+            //         customer_id
+            //     }
+            // });
 
-            if (hotspotLocation.count < 3) {
+            // if (hotspotLocation.count < 3) {
 
-                for (let i = 0; i < 4; i++) {
-                    let nP = randomLocation.randomCirclePoint(P, R);
-                    nP = {
-                        latitude: parseFloat((nP.latitude).toFixed(7)),
-                        longitude: parseFloat((nP.longitude).toFixed(7))
-                    }
+            //     for (let i = 0; i < 4; i++) {
+            //         let nP = randomLocation.randomCirclePoint(P, R);
+            //         nP = {
+            //             latitude: parseFloat((nP.latitude).toFixed(7)),
+            //             longitude: parseFloat((nP.longitude).toFixed(7))
+            //         }
 
-                    const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${nP.latitude},${nP.longitude}&key=AIzaSyA7NF6WwqPWNK2kDDVN6ayffGd10-0aqJs`);
+            //         const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${nP.latitude},${nP.longitude}&key=AIzaSyA7NF6WwqPWNK2kDDVN6ayffGd10-0aqJs`);
 
-                    const jsonResponse = await response.json();
+            //         const jsonResponse = await response.json();
                 
-                    console.log("jsonResponse", jsonResponse.results[0].address_components)
+            //         console.log("jsonResponse", jsonResponse.results[0].address_components)
 
-                    const findAddressType = (key) => {
-                        return jsonResponse.results[0].address_components.find((val) => val.types[0] === key)
-                    }
+            //         const findAddressType = (key) => {
+            //             return jsonResponse.results[0].address_components.find((val) => val.types[0] === key)
+            //         }
 
-                    const location_detail = jsonResponse.results[0].formatted_address;
-                    const name = location_detail.split(',')[1];
-                    const location = [nP.latitude, nP.longitude];
-                    const delivery_shifts = available_delivery_shifts[Math.floor(Math.random() * available_delivery_shifts.length)];
+            //         const location_detail = jsonResponse.results[0].formatted_address;
+            //         const name = location_detail.split(',')[1];
+            //         const location = [nP.latitude, nP.longitude];
+            //         const delivery_shifts = available_delivery_shifts[Math.floor(Math.random() * available_delivery_shifts.length)];
             
-                    const cityComponent = findAddressType("administrative_area_level_2") || findAddressType("postal_town") || findAddressType("locality");
-                    const city = cityComponent?cityComponent.long_name:null;
-                    const state = findAddressType("administrative_area_level_1")?findAddressType("administrative_area_level_1").long_name:null;
-                    const country = findAddressType("country")?findAddressType("country").long_name:null;
-                    const postal_code = findAddressType("postal_code")?findAddressType("postal_code").long_name:null;
+            //         const cityComponent = findAddressType("administrative_area_level_2") || findAddressType("postal_town") || findAddressType("locality");
+            //         const city = cityComponent?cityComponent.long_name:null;
+            //         const state = findAddressType("administrative_area_level_1")?findAddressType("administrative_area_level_1").long_name:null;
+            //         const country = findAddressType("country")?findAddressType("country").long_name:null;
+            //         const postal_code = findAddressType("postal_code")?findAddressType("postal_code").long_name:null;
         
-                    if (location_detail && city && state && country && postal_code) {
+            //         if (location_detail && city && state && country && postal_code) {
 
                     
-                        const hotspotLocationID = await models.HotspotLocation.create({
-                            name, location, location_detail, city, state, postal_code, country, delivery_shifts, customer_id
-                        });
-                        const hotspot_location_id = hotspotLocationID.getDataValue('id');
-                        const dropoff_detail = location_detail.split(',').slice(0, 2).join(',');
+            //             const hotspotLocationID = await models.HotspotLocation.create({
+            //                 name, location, location_detail, city, state, postal_code, country, delivery_shifts, customer_id
+            //             });
+            //             const hotspot_location_id = hotspotLocationID.getDataValue('id');
+            //             const dropoff_detail = location_detail.split(',').slice(0, 2).join(',');
                     
 
-                        for (let j = 0; j < 3; j++) {
-                            await models.HotspotDropoff.create({
-                                hotspot_location_id, dropoff_detail
-                            });
-                        }
+            //             for (let j = 0; j < 3; j++) {
+            //                 await models.HotspotDropoff.create({
+            //                     hotspot_location_id, dropoff_detail
+            //                 });
+            //             }
                                                   
-                    }
-                }
-            }
+            //         }
+            //     }
+            // }
                 
 
             const hotspotLocations = await models.HotspotLocation.findAll({
-                where: {
-                    customer_id
-                }
+                // where: {
+                //     customer_id
+                // }
             });
 
             const locations = hotspotLocations.map((val) => {
@@ -129,9 +129,9 @@ module.exports = {
             if (choiceType === 'pickup') throw new Error(constants.MESSAGES.no_hotspot);
 
             const hotspotLocations = await models.HotspotLocation.findAll({
-                where: {
-                    customer_id
-                }
+                // where: {
+                //     customer_id
+                // }
             });
 
             const locations = hotspotLocations.map((val) => {
@@ -195,7 +195,7 @@ module.exports = {
           }, {
               where: {
                   id:hotspot_location_id,
-                  customer_id
+                  //customer_id
               },
               returning: true,
           });
