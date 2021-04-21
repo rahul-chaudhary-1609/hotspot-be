@@ -1403,7 +1403,7 @@ module.exports = {
                 }
             });
 
-            if (!restaurantHotspot || restaurantHotspot.is_deleted)  throw new Error(constants.MESSAGES.only_pickup_available);
+            if (!restaurantHotspot || (restaurantHotspot.status!=constants.STATUS.active))  throw new Error(constants.MESSAGES.only_pickup_available);
 
 
             const hotspotLocation = await models.HotspotLocation.findOne({
@@ -1509,7 +1509,7 @@ module.exports = {
                 }
             })
 
-            if (!restaurantDish || restaurantDish.is_deleted)  throw new Error(constants.MESSAGES.no_dish);
+            if (!(restaurantDish) || (restaurantDish.status==constants.STATUS.active))  throw new Error(constants.MESSAGES.no_dish);
 
             const dishAddOn = await models.DishAddOn.findAll({
                 where: {

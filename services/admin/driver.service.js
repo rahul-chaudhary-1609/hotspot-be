@@ -13,7 +13,14 @@ module.exports = {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
     
         let query = {};
-        query.where = { is_deleted: false,is_rejected:false };
+        query.where = {
+            status: {
+                [Op.not]:constants.STATUS.deleted
+            },
+            approval_status: {
+                [Op.not]:constants.DRIVER_APPROVAL_STATUS .rejected
+            }
+        };
         if (params.searchKey) {
             let searchKey = params.searchKey;
             query.where = {
@@ -50,7 +57,7 @@ module.exports = {
                 email: val.email,
                 phone: val.phone_no ? `${val.country_code} ${val.phone_no}` : null,
                 status: val.status,
-                is_approved:val.is_approved,
+                approval_status:val.approval_status,
                 signupDate: val.createdAt,
                 total_deliveries: val.Orders.length,
                 total_earnings: val.Orders.reduce(
@@ -193,7 +200,7 @@ module.exports = {
             if (!driver) throw new Error(constants.MESSAGES.no_driver);
 
 
-            if (!([0, 1].includes(status))) throw new Error(constants.MESSAGES.invalid_status);
+            if (!([constants.STATUS.inactive,constants.STATUS.active].includes(status))) throw new Error(constants.MESSAGES.invalid_status);
 
             await models.Driver.update({
                 status,
@@ -220,7 +227,7 @@ module.exports = {
 
 
             await models.Driver.update({
-                is_approved:true,
+                approval_status:constants.DRIVER_APPROVAL_STATUS .approved,
             },
                 {
                     where: {

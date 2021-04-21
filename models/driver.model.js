@@ -65,7 +65,15 @@ module.exports = (sequelize, DataTypes) => {
     
     status: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       defaultValue: 1,
+      comment: '0=>inactive,1=>active,2=>deleted'
+    },
+    approval_status: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: '0=>pending,1=>approved,2=>rejected'
     },
     is_approved: {
       type: DataTypes.BOOLEAN,

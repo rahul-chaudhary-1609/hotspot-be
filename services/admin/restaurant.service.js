@@ -12,7 +12,7 @@ module.exports = {
             
 
             let query = {};
-            query.where = {is_deleted:false};
+            query.where = {status:[constants.STATUS.inactive,constants.STATUS.active]};
             if(params.searchKey) {
                 let searchKey = params.searchKey;
                 query.where = {
@@ -208,10 +208,10 @@ module.exports = {
 
             const restaurant = await Restaurant.findByPk(restaurantId);
 
-            if (!restaurant || restaurant.is_deleted) throw new Error(constants.MESSAGES.no_restaurant);
+            if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
 
             await Restaurant.update({
-                is_deleted: true,
+                status:constants.STATUS.deleted,
                 },
                 {
                     where: {
@@ -248,7 +248,7 @@ module.exports = {
 
     restaurantCategoryList: async () => {
 
-            let restaurantCategoryList = await RestaurantCategory.findAndCountAll({where:{is_deleted: false},raw: true});
+            let restaurantCategoryList = await RestaurantCategory.findAndCountAll({where:{status:constants.STATUS.active},raw: true});
             if(restaurantCategoryList)
                 return { restaurantCategoryList };
         
@@ -283,7 +283,7 @@ module.exports = {
             let [offset, limit] =await utilityFunction.pagination(params.page, params.page_size);
 
             let query = {};
-            query.where = { is_deleted: false };
+            query.where = { status:constants.STATUS.active, };
             if (params.searchKey) {
                 let searchKey = params.searchKey;
 
@@ -365,7 +365,7 @@ module.exports = {
             let dishId = params.dishId;
 
             await RestaurantDish.update({
-                is_deleted: true,
+                status:constants.STATUS.deleted,
             },
                 {
                     where: {

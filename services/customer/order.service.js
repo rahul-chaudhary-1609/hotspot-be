@@ -192,7 +192,7 @@ module.exports = {
                 where: {
                     customer_id: user.id,
                     restaurant_id,
-                    is_deleted:false,
+                    status:constants.STATUS.active,
                 }
             });
 
@@ -205,14 +205,14 @@ module.exports = {
                 const dish = await models.RestaurantDish.findOne({
                     where: {
                         id: item.restaurant_dish_id,
-                        is_deleted: false,
+                        status:constants.STATUS.active,
                     }
                 })
 
                 const dishAddOn=await models.DishAddOn.findAll({
                     where: {
                         id: item.dish_add_on_ids,
-                        is_deleted:false,
+                        status:constants.STATUS.active,
                     }
                 })
 
@@ -272,7 +272,7 @@ module.exports = {
                 const cart = await models.Cart.findAndCountAll({
                     where: {
                         id:cart_ids,
-                        is_deleted:false,
+                        status:constants.STATUS.active,
                     }
                 });
                 
@@ -288,14 +288,14 @@ module.exports = {
                         const dish = await models.RestaurantDish.findOne({
                             where: {
                                 id: item.restaurant_dish_id,
-                                is_deleted: false,
+                                status:constants.STATUS.active,
                             }
                         })
 
                         const dishAddOn = await models.DishAddOn.findAll({
                             where: {
                                 id: item.dish_add_on_ids,
-                                is_deleted: false,
+                                status:constants.STATUS.active,
                             }
                         })
 
@@ -408,7 +408,7 @@ module.exports = {
                 const cart = await models.Cart.findAndCountAll({
                     where: {
                         id:cart_ids,
-                        is_deleted:false,
+                        status:constants.STATUS.active,
                     }
                 });
                 
@@ -419,14 +419,14 @@ module.exports = {
                     const dish = await models.RestaurantDish.findOne({
                         where: {
                             id: item.restaurant_dish_id,
-                            is_deleted: false,
+                            status:constants.STATUS.active,
                         }
                     })
 
                     const dishAddOn=await models.DishAddOn.findAll({
                         where: {
                             id: item.dish_add_on_ids,
-                            is_deleted:false,
+                            status:constants.STATUS.active,
                         }
                     })
 
@@ -538,7 +538,7 @@ module.exports = {
                 }
             })
 
-            if (!order || order.is_deleted) throw new Error(constants.MESSAGES.no_order);
+            if (!order) throw new Error(constants.MESSAGES.no_order);
 
             let orderInfo = null;
 
@@ -577,7 +577,7 @@ module.exports = {
                 }
             })
 
-            if (!order || order.is_deleted) throw new Error(constants.MESSAGES.no_order);
+            if (!order) throw new Error(constants.MESSAGES.no_order);
 
             await models.Order.update({
                 delivery_datetime,
@@ -605,7 +605,7 @@ module.exports = {
                 }
             })
 
-            if (!order || order.is_deleted) throw new Error(constants.MESSAGES.no_order);
+            if (!order) throw new Error(constants.MESSAGES.no_order);
 
             const orderPayment = await models.OrderPayment.findOne({
                 where: {
@@ -646,7 +646,6 @@ module.exports = {
                 where: {
                     customer_id: user.id,
                     status: [1,2,3,4],
-                    is_deleted:false,
                 },
                 order: [
                     ['id', 'DESC']

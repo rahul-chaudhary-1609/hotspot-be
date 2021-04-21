@@ -10,7 +10,7 @@ module.exports = {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
         let query = {};
-        query.where = { is_deleted: false };
+        query.where = {};
         if (params.searchKey) {
             let searchKey = params.searchKey;
             query.where = {
@@ -57,7 +57,7 @@ module.exports = {
 
         let customer = await model.Customer.findByPk(customerId);
 
-        if (!customer || customer.is_deleted) throw new Error(constants.MESSAGES.no_customer);
+        if (!customer) throw new Error(constants.MESSAGES.no_customer);
 
         customer = {
             id: customer.id,
@@ -86,7 +86,7 @@ module.exports = {
         if (!customer) throw new Error(constants.MESSAGES.no_customer);
 
 
-        if (!([0, 1].includes(status))) throw new Error(constants.MESSAGES.invalid_status);
+        if (!([constants.STATUS.inactive, constants.STATUS.active].includes(status))) throw new Error(constants.MESSAGES.invalid_status);
 
         await model.Customer.update({
             status,
@@ -182,10 +182,10 @@ module.exports = {
 
         const customer = await model.Customer.findByPk(customerId);
 
-        if (!customer || customer.is_deleted) throw new Error(constants.MESSAGES.no_customer);
+        if (!customer) throw new Error(constants.MESSAGES.no_customer);
 
         await model.Customer.update({
-            is_deleted: true,
+            status: constants.STATUS.deleted,
         },
             {
                 where: {

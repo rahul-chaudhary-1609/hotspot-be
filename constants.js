@@ -161,7 +161,19 @@ CUSTOM_JOI_MESSAGE : {
     driver_only: 2,
     customer_only: 3,
     restaurant_only: 4
-  }
+  },
+
+  STATUS : {
+    inactive: 0,
+    active: 1,
+    deleted: 2,
+  },
+  
+  DRIVER_APPROVAL_STATUS : {
+    pending: 0,
+    approved: 1,
+    rejected:2,
+}
 
 }
 

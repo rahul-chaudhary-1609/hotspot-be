@@ -1,12 +1,13 @@
 const models = require('../../models');
 const { Op } = require("sequelize");
+const constants = require('../../constants');
 
 module.exports = {
     getTotalCustomers: async () => {
 
             const customers = await models.Customer.findAndCountAll({
                 where: {
-                    is_deleted: false,
+                    status:constants.STATUS.active,
                 }
             });
 
@@ -19,7 +20,7 @@ module.exports = {
 
             const restaurants = await models.Restaurant.findAndCountAll({
                 where: {
-                    is_deleted: false,
+                    status:constants.STATUS.active,
                 }
             });
 
@@ -33,7 +34,8 @@ module.exports = {
 
             const drivers = await models.Driver.findAndCountAll({
                 where: {
-                    is_deleted: false,
+                    status: constants.STATUS.active,
+                    approval_status:constants.DRIVER_APPROVAL_STATUS .approved
                 }
             });
 
@@ -46,7 +48,6 @@ module.exports = {
 
             const orders = await models.Order.findAndCountAll({
                 where: {
-                    is_deleted: false,
                     status:[1,2,3,4]
                 }
             });
@@ -60,7 +61,6 @@ module.exports = {
                 
             const totalAmount = await models.Order.sum('amount',{
                 where:  {
-                    is_deleted: false,
                     status: [1,2, 3, 4],
                 }
             });
@@ -75,7 +75,6 @@ module.exports = {
 
             const totalAmount = await models.Order.sum('amount',{
                 where:  {
-                    is_deleted: false,
                         status: [1,2, 3, 4],
                     created_at:{
                         [Op.between]: [params.start_date, params.end_date]

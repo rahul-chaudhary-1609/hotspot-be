@@ -69,7 +69,6 @@ module.exports = {
 
             let tomorrow = new Date(`${(new Date()).getFullYear()}-${(new Date()).getMonth() + 1}-${(new Date()).getDate() + 1}`);
             query.where = {
-                is_deleted: false,
                 delivery_datetime: {
                     [Op.lt]:tomorrow,
                 },
@@ -146,7 +145,6 @@ module.exports = {
 
             let tomorrow = new Date(`${(new Date()).getFullYear()}-${(new Date()).getMonth() + 1}-${(new Date()).getDate() + 1}`);
             query.where = {
-                is_deleted: false,
                 delivery_datetime: {
                     [Op.gte]:tomorrow,
                 },
@@ -210,7 +208,6 @@ module.exports = {
             let query = {};
 
             query.where = {
-                is_deleted: false,
                 status:4,
                 
             };

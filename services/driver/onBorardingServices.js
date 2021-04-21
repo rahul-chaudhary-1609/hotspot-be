@@ -25,18 +25,17 @@ class OnBoradinServices  {
         if(driverData) {
             console.log(driverData);
             // check account is approved or not
-            if (!driverData.is_approved) {
-                console.log(driverData.is_approved);
+            if ((driverData.approval_status!=constants.DRIVER_APPROVAL_STATUS .approved)) {
                 throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.not_approved);
             }
 
             // check account is deactivated or not
-            if (driverData.is_deleted) {
+            if (driverData.status==constants.STATUS.deleted) {
                 throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.deactivate_account);
             }
 
             // check account is rejected or not
-            if (driverData.is_rejected) {
+            if (driverData.approval_status==constants.DRIVER_APPROVAL_STATUS .rejected) {
                 throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.rejected_account);
             }
 

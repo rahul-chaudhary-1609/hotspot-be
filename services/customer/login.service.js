@@ -29,7 +29,7 @@ module.exports = {
 
             if (!customer) throw new Error(constants.MESSAGES.invalid_email_password);
 
-            if (!customer.status) throw new Error(constants.MESSAGES.deactivate_account);
+            if (customer.status==constants.STATUS.inactive) throw new Error(constants.MESSAGES.deactivate_account);
 
             if (customer.is_social) throw new Error(constants.MESSAGES.social_media_account);           
         
@@ -71,7 +71,7 @@ module.exports = {
 
             if (!customer) throw new Error(constants.MESSAGES.invalid_email_password);
 
-            if (!customer.status) throw new Error(constants.MESSAGES.deactivate_account);
+            if (customer.status==constants.STATUS.inactive) throw new Error(constants.MESSAGES.deactivate_account);
 
 
             if (customer.is_social) throw new Error(constants.MESSAGES.social_media_account);
@@ -245,7 +245,7 @@ module.exports = {
             }
             else {
 
-                if (!customer.status) if (!customer.status) throw new Error(constants.MESSAGES.deactivate_account);
+                if (customer.status==constants.STATUS.inactive) throw new Error(constants.MESSAGES.deactivate_account);
 
                 if (!customer.is_social) throw new Error(constants.MESSAGES.social_media_account_already_not_registered);
                 if (!customer.google_id) throw new Error(constants.MESSAGES.social_media_account_already_registered);
@@ -317,7 +317,7 @@ module.exports = {
             }
             else {
 
-                if (!customer.status) if (!customer.status) throw new Error(constants.MESSAGES.deactivate_account);
+                if (customer.status==constants.STATUS.inactive) throw new Error(constants.MESSAGES.deactivate_account);
 
                 if (!customer.is_social) throw new Error(constants.MESSAGES.social_media_account_already_not_registered);
                 if (!customer.facebook_id) throw new Error(constants.MESSAGES.social_media_account_already_registered);
@@ -390,7 +390,7 @@ module.exports = {
             }
             else {
 
-                if (!customer.status) if (!customer.status) throw new Error(constants.MESSAGES.deactivate_account);
+                if (customer.status==constants.STATUS.inactive) throw new Error(constants.MESSAGES.deactivate_account);
 
                 if (!customer.is_social) throw new Error(constants.MESSAGES.social_media_account_already_not_registered);
                 if (!customer.apple_id) throw new Error(constants.MESSAGES.social_media_account_already_registered);

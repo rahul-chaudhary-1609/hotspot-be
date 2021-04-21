@@ -18,7 +18,7 @@ module.exports = {
                     }
             });
             
-            if (card && !card.is_deleted) {
+            if (card && (card.status==constants.STATUS.active)) {
                 throw new Error(constants.MESSAGES.payment_card_already_exist);
             }
 
@@ -40,7 +40,7 @@ module.exports = {
 
             let card = await models.CustomerCard.findByPk(id);
             
-            if (!card || card.is_deleted) {
+            if (!card || (card.status==constants.STATUS.deleted)) {
                 throw new Error(constants.MESSAGES.no_payment_card);
             }
 
@@ -66,7 +66,7 @@ module.exports = {
             let cards = await models.CustomerCard.findAll({
                 where: {
                     customer_id: user.id,
-                    is_deleted:false,
+                    status:constants.STATUS.active
                     }
             });
             
@@ -95,7 +95,7 @@ module.exports = {
 
             let card = await models.CustomerCard.findByPk(id);
             
-            if (!card || card.is_deleted) {
+            if (!card || (card.status==constants.STATUS.deleted)) {
                 throw new Error(constants.MESSAGES.no_payment_card);
             }
 
@@ -110,7 +110,7 @@ module.exports = {
 
             let card = await models.CustomerCard.findByPk(id);
             
-            if (!card || card.is_deleted) {
+            if (!card || (card.status==constants.STATUS.active)) {
                 throw new Error(constants.MESSAGES.no_payment_card);
             }
 
@@ -149,12 +149,12 @@ module.exports = {
 
             let card = await models.CustomerCard.findByPk(id);
             
-            if (!card  || card.is_deleted) {
+            if (!card  || (card.status==constants.STATUS.active)) {
                throw new Error(constants.MESSAGES.no_payment_card);
             }
 
             await models.CustomerCard.update({                
-                is_deleted:true,
+                status:constants.STATUS.deleted,
             },
                 {
                     where: {
