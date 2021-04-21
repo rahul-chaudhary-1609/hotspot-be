@@ -789,6 +789,27 @@
         "responses": {}
       }
     },
+    "/admin/getFaqTopics": {
+      "get": {
+        "tags": [
+          "Admin Static Content"
+        ],
+        "description": "Api to get faqsTopics that have questions ",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
 
 
 

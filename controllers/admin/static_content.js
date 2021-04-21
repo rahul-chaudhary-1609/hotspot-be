@@ -23,6 +23,15 @@ module.exports = {
         }
     },
 
+    getFaqTopics: async (req, res) => {
+        try {
+            const getFaqTopicsData = await staticContent.getFaqTopics();
+            utilityFunction.successResponse(res, {getFaqTopicsData}, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     getStaticContentDetails: async (req, res) => {
         try {
             const responseFromService = await staticContent.getStaticContentDetails(req.query);
