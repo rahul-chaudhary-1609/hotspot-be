@@ -255,8 +255,8 @@ module.exports = {
         owner_phone: Joi.string().trim().regex(/^\(?\d{10}$/).min(10).max(10).messages({
             "string.pattern.base":constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
         }),       
-        lat: Joi.string().required(),
-        long:Joi.string().required(),
+        lat: Joi.number().required(),
+        long:Joi.number().required(),
         address: Joi.string().required(),
         deliveries_per_shift: Joi.number().required(),
         cut_off_time: Joi.number().required(),
