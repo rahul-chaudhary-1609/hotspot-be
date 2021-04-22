@@ -264,6 +264,7 @@ module.exports = {
         working_hours_to: Joi.string().required(),
         order_type: Joi.number().required(),
         restaurant_category_id: Joi.number().required(),
+        hotspot_location_ids: Joi.array(),
     }),
 
     restaurantIdSchema: Joi.object({
