@@ -258,6 +258,7 @@ module.exports = {
               where: {
                   order_type:[2,3],
                   //customer_id
+                  status:constants.STATUS.active
               }
           });
           
@@ -408,6 +409,7 @@ module.exports = {
             const restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
+                    status:constants.STATUS.active
                 }
             });
 
@@ -426,6 +428,7 @@ module.exports = {
             const restaurant = await models.Restaurant.findOne({
                 where: {
                     id: restaurant_id,
+                    status:constants.STATUS.active
                 }
             })
 
@@ -490,6 +493,7 @@ module.exports = {
           const restaurant = await models.Restaurant.findAll({
               where: {
                   id: restaurant_ids,
+                  status:constants.STATUS.active
               }
           });
 
@@ -634,7 +638,8 @@ module.exports = {
                             restaurant_name: {
                                 [Op.iLike]: `%${searchPhrase}%`,
                             },
-                        }
+                        },
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -654,6 +659,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                         
                     },
                     order: [
@@ -669,6 +675,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                         
                     },
                     order: [
@@ -684,6 +691,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                     },
                 });
             }
@@ -692,6 +700,7 @@ module.exports = {
                 restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'ASC'],
@@ -703,6 +712,7 @@ module.exports = {
                 restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'DESC'],
@@ -714,7 +724,7 @@ module.exports = {
                  restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
-                    
+                    status:constants.STATUS.active
                 }
             });
             }             
@@ -736,7 +746,8 @@ module.exports = {
                     where: {
                         restaurant_name: {
                             [Op.iLike]: `%${searchPhrase}%`,
-                        }
+                        },
+                        status:constants.STATUS.active
                     }
                 });
 
@@ -848,7 +859,8 @@ module.exports = {
                         restaurant_name: {
                             [Op.iLike]: `%${searchPhrase}%`,
                         },
-                    }
+                    },
+                    status:constants.STATUS.active
                    
                 }
             });
@@ -967,7 +979,8 @@ module.exports = {
                             restaurant_name: {
                                 [Op.iLike]: `%${searchPhrase}%`,
                             },
-                        }
+                        },
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -988,6 +1001,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
 
                     },
                     order: [
@@ -1004,6 +1018,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
 
                     },
                     order: [
@@ -1020,6 +1035,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                     },
                 });
             }
@@ -1028,7 +1044,8 @@ module.exports = {
                 restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
-                        order_type:3,
+                        order_type: 3,
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'ASC'],
@@ -1041,6 +1058,7 @@ module.exports = {
                     where: {
                         id: restaurant_ids,
                         order_type: 3,
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'DESC'],
@@ -1052,7 +1070,8 @@ module.exports = {
                 restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
-                        order_type:3,
+                        order_type: 3,
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -1153,7 +1172,8 @@ module.exports = {
                             restaurant_name: {
                                 [Op.iLike]: `%${searchPhrase}%`,
                             },
-                        }
+                        },
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -1174,6 +1194,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
 
                     },
                     order: [
@@ -1190,6 +1211,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
 
                     },
                     order: [
@@ -1206,6 +1228,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                     },
                 });
             }
@@ -1215,6 +1238,7 @@ module.exports = {
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'ASC'],
@@ -1228,6 +1252,7 @@ module.exports = {
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'DESC'],
@@ -1240,6 +1265,7 @@ module.exports = {
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -1296,6 +1322,7 @@ module.exports = {
             const restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
+                    status:constants.STATUS.active
                 }
             });
 
@@ -1337,6 +1364,7 @@ module.exports = {
                     where: {
                         id: restaurant_id,
                         order_type: [1, 3],
+                        status:constants.STATUS.active
                     }
                 });
 
@@ -1366,6 +1394,7 @@ module.exports = {
                     where: {
                         id: restaurant_id,
                         order_type: [2],
+                        status:constants.STATUS.active
                     }
                 });
 
@@ -1525,7 +1554,8 @@ module.exports = {
                   'id','restaurant_name'
               ],
                 where: {
-                    id:restaurantDish.restaurant_id
+                    id: restaurantDish.restaurant_id,
+                    status:constants.STATUS.active
                 }
             })
 
