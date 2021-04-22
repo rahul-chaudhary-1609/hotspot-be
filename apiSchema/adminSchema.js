@@ -246,6 +246,29 @@ module.exports = {
         driver_ids: Joi.array(),
     }),
 
+    restaurantSchema: Joi.object({
+        restaurant_name: Joi.string().trim().required(),
+        restaurant_image_url: Joi.string().trim().required(),
+        owner_name: Joi.string().trim().required(),
+        role: Joi.string().trim().required(),
+        owner_email: Joi.string().trim().email().required(),
+        owner_phone: Joi.string().trim().regex(/^\(?\d{10}$/).min(10).max(10).messages({
+            "string.pattern.base":constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
+        }),       
+        location: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
+        address: Joi.string().required(),
+        deliveries_per_shift: Joi.number().required(),
+        cut_off_time: Joi.number().required(),
+        working_hours_from: Joi.string().required(),
+        working_hours_to: Joi.string().required(),
+        order_type: Joi.number().required(),
+        restaurant_category_id: Joi.number().required(),
+    }),
+
+    restaurantIdSchema: Joi.object({
+        restaurantId: Joi.number().required(),
+    }),
+
     getDriverEarningDetails : Joi.object({
         driver_id: Joi.number().required(),
         page: Joi.number().required(),        

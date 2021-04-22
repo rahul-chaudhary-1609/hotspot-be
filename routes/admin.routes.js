@@ -47,17 +47,17 @@ router.put('/uploadImage',adminAuthentication.validateAdminToken, adminMulter.up
 
 router.get('/restaurantCategoryList',adminAuthentication.validateAdminToken, adminRestaurantController.restaurantCategoryList);
 
-router.post('/addRestaurant',adminAuthentication.validateAdminToken, adminRestaurantController.addRestaurant);
+router.post('/addRestaurant',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.addRestaurant);
 
 router.get('/listRestaurant',adminAuthentication.validateAdminToken, adminRestaurantController.listRestaurant);
 
-router.put('/changeRestaurantStatus/:restaurantId',adminAuthentication.validateAdminToken, adminRestaurantController.changeRestaurantStatus);
+router.put('/changeRestaurantStatus/:restaurantId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.restaurantIdSchema), adminRestaurantController.changeRestaurantStatus);
 
-router.get('/getRestaurant/:restaurantId',adminAuthentication.validateAdminToken, adminRestaurantController.getRestaurant);
+router.get('/getRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.restaurantIdSchema),adminRestaurantController.getRestaurant);
 
-router.put('/editRestaurant/:restaurantId',adminAuthentication.validateAdminToken, adminRestaurantController.editRestaurant);
+router.put('/editRestaurant/:restaurantId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.restaurantIdSchema),joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.editRestaurant);
 
-router.delete('/deleteRestaurant/:restaurantId',adminAuthentication.validateAdminToken, adminRestaurantController.deleteRestaurant);
+router.delete('/deleteRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.restaurantIdSchema),adminRestaurantController.deleteRestaurant);
 
 //router.put('/uploadRestaurantImage',adminAuthentication.validateAdminToken,adminMulter.upload, adminRestaurantController.uploadRestaurantImage);
 

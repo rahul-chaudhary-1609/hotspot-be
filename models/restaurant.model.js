@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         country_code: {
             type: DataTypes.STRING(10),
-            allowNull: false,
+            allowNull: true,
         },
         location: {
             type: DataTypes.ARRAY(DataTypes.FLOAT),
@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
         },
         deliveries_per_shift: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.BIGINT,
         },
         cut_off_time: {
             type: DataTypes.FLOAT,
