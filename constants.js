@@ -62,7 +62,7 @@ module.exports = {
     no_customer: "Customers not found with provided id",
     no_restaurant: "No restaurant found",
     no_dish: "No Dish found",
-    no_driver: "No driver found",
+    //no_driver: "No driver found",
     no_order: "No order found",
     no_fee: "No fee found",
     no_hotspot: "No hotspot found",
