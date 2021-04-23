@@ -117,17 +117,7 @@ class OnBoradinServices  {
         }
     }
 
-    /*
-    * function for change password
-    */
-    change_password = async (params, user) => {
-        let updateDriver = {
-            password: await utilityFunction.bcryptPassword(params.password)
-        }
-        return Driver.update(updateDriver, {
-            where: { id: user.id}
-        })
-    }
+    
 
     /*
     * function for sign up
@@ -188,6 +178,41 @@ class OnBoradinServices  {
     sign_up_details_step3 = async (params, user) => {
         params.driver_id = user.id;
         return await DriverVehicleDetail.create(params);
+    }
+
+
+    changePassword= async (params, driver) => {
+        const driverData = await utilityFunction.convertPromiseToObject( 
+            await Driver.findOne({
+                where: {
+                    id: driver.id
+                }
+            })
+        );
+
+        let comparedPassword = await utilityFunction.comparePassword(params.old_password, driverData.password);
+        if (comparedPassword) {
+            let update = {
+                password: await utilityFunction.bcryptPassword(params.new_password)
+            }
+            
+            return await Driver.update(update,{ where: {id: driver.id} });
+        } else {
+            throw new Error(constants.MESSAGES.invalid_old_password);
+        } 
+    }
+
+    logout= async (driver) => {
+    
+        let update = {
+            'device_token': null,
+        };
+        let condition = {
+            id: driver.id
+        }
+        await Driver.update(update,{ where: condition });
+        return true;
+        
     }
 }
 

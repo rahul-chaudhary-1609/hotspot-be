@@ -47,18 +47,6 @@ class OnBoardingController {
         }
     }
 
-    /*
-    * function for change password
-    * @req :  password
-    */
-    change_password = async (req, res, next) => {
-        try {
-            const forgotPasswordRes = await onBoradingServices.change_password(req.body, req.user);
-            return sendResponse(res, constants.MESSAGES.success, forgotPasswordRes);
-        } catch (e) {
-            next(e);
-        }
-    }
 
     /*
     * function for sign up step 1
@@ -110,6 +98,24 @@ class OnBoardingController {
             return sendResponse(res, constants.MESSAGES.success, responseData);
         } catch (e) {
             next(e);
+        }
+    }
+
+    changeDriverPassword=async (req, res) => {
+        try {
+            const responseFromService = await onBoradingServices.changePassword(req.body, req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.password_change_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    }
+
+    logout= async (req, res) => {
+        try {
+            const responseFromService = await onBoradingServices.logout(req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.logout_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     }
 }

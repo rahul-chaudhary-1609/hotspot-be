@@ -115,6 +115,14 @@
       {
         "name": "Driver Onboarding",
         "description": "driver onboarding Api's"
+      },
+      {
+        "name": "Driver Account",
+        "description": "driver account Api's"
+      },
+      {
+        "name": "Driver Static Content",
+        "description": "driver static content Api's"
       }
       
       
@@ -5669,7 +5677,7 @@
         "/driver/login": {
           "post": {
             "tags": [
-              "driver onboarding Api's"
+              "Driver Onboarding"
             ],
             "description": "For driver login",
             "consumes": [
@@ -5697,10 +5705,32 @@
           }
       },
 
+      "/driver/logout": {
+        "get": {
+          "tags": [
+            "Driver Onboarding"
+          ],
+          "description": "Api to get driver logout",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+      },
+
       "/driver/forgot_password": {
         "post": {
           "tags": [
-            "driver onboarding Api's"
+            "Driver Onboarding"
           ],
           "description": "For driver login",
           "consumes": [
@@ -5723,7 +5753,7 @@
     "/driver/verify_otp": {
       "post": {
         "tags": [
-          "driver onboarding Api's"
+          "Driver Onboarding"
         ],
         "description": "For driver login",
         "consumes": [
@@ -5749,12 +5779,12 @@
       }
     },
 
-    "/driver/change_password": {
+    "/driver/changePassword": {
       "post": {
         "tags": [
-          "driver onboarding Api's"
+          "Driver Onboarding"
         ],
-        "description": "For driver login",
+        "description": "For driver change password",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -5767,9 +5797,16 @@
             "type": "string"
           },
           {
-            "name": "password",
+            "name": "old_password",
             "in": "formData",
-            "description": "enter phone",
+            "description": "old_password",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "new_password",
+            "in": "formData",
+            "description": "new_password",
             "required": true,
             "type": "string"
           }
@@ -5781,7 +5818,7 @@
     "/driver/sign_up_step1": {
       "post": {
         "tags": [
-          "driver onboarding Api's"
+          "Driver Onboarding"
         ],
         "description": "For driver login",
         "consumes": [
@@ -5824,7 +5861,7 @@
     "/driver/sign_up_details_step1": {
       "post": {
         "tags": [
-          "driver onboarding Api's"
+          "Driver Onboarding"
         ],
         "description": "For driver login",
         "consumes": [
@@ -5909,7 +5946,7 @@
     "/driver/sign_up_details_step2": {
       "post": {
         "tags": [
-          "driver onboarding Api's"
+          "Driver Onboarding"
         ],
         "description": "For driver login",
         "consumes": [
@@ -5987,7 +6024,7 @@
     "/driver/sign_up_details_step3": {
       "post": {
         "tags": [
-          "driver onboarding Api's"
+          "Driver Onboarding"
         ],
         "description": "For driver login",
         "consumes": [
@@ -6060,7 +6097,420 @@
         ],
         "responses": {}
       }
+    },
+
+
+    "/driver/editDriverPersonalDetails": {
+      "put": {
+        "tags": [
+          "Driver Account"
+        ],
+        "description": "For editing driver personal details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "profile_picture_url",
+            "in": "formData",
+            "description": "enter profile_picture_url",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "first_name",
+            "in": "formData",
+            "description": "enter first_name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "last_name",
+            "in": "formData",
+            "description": "enter last_name",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "description": "enter email",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "dob",
+            "in": "formData",
+            "description": "enter dob",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "gender",
+            "in": "formData",
+            "description": "enter gender",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "nationality",
+            "in": "formData",
+            "description": "enter nationality",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "passport_picture_url",
+            "in": "formData",
+            "description": "enter passport_picture_url",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "passport_number",
+            "in": "formData",
+            "description": "enter passport_number",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getDriverPersonalDetails": {
+      "get": {
+        "tags": [
+          "Driver Account"
+        ],
+        "description": "For getting driver personal details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/editDriverAddressDetails": {
+      "put": {
+        "tags": [
+          "Driver Account"
+        ],
+        "description": "For editing drivers address and bank details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address_line1",
+            "in": "formData",
+            "description": "enter address_line1",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "street",
+            "in": "formData",
+            "description": "enter street",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "city",
+            "in": "formData",
+            "description": "enter city",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "in": "formData",
+            "description": "enter state",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "postal_code",
+            "in": "formData",
+            "description": "enter postal_code",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getDriverAddressDetails": {
+      "get": {
+        "tags": [
+          "Driver Account"
+        ],
+        "description": "For getting driver address details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/editDriverVehicleDetails": {
+      "put": {
+        "tags": [
+          "Driver Account"
+        ],
+        "description": "For editing driver vehicle details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "vehicle_type",
+            "in": "formData",
+            "description": "enter vehicle_type",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "image_url",
+            "in": "formData",
+            "description": "enter image_url",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "plate_number",
+            "in": "formData",
+            "description": "enter plate_number",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "vehicle_model",
+            "in": "formData",
+            "description": "enter vehicle_model",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "license_number",
+            "in": "formData",
+            "description": "enter license_number",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "license_image_url",
+            "in": "formData",
+            "description": "enter license_image_url",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "insurance_number",
+            "in": "formData",
+            "description": "enter insurance_number",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "insurance_image_url",
+            "in": "formData",
+            "description": "enter insurance_image_url",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getDriverVehicleDetails": {
+      "get": {
+        "tags": [
+          "Driver Account"
+        ],
+        "description": "For getting driver vehicle details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+
+    "/driver/editDriverBankDetails": {
+      "put": {
+        "tags": [
+          "Driver Account"
+        ],
+        "description": "For editing driver bank details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "bank_type",
+            "in": "formData",
+            "description": "enter bank_type",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "account_number",
+            "in": "formData",
+            "description": "enter account_number",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "account_holder_name",
+            "in": "formData",
+            "description": "enter account_holder_name",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getDriverBankDetails": {
+      "get": {
+        "tags": [
+          "Driver Account"
+        ],
+        "description": "For getting driver bank details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getSupportFaq/{topic_id}": {
+      "get": {
+        "tags": [
+          "Driver Static Content"
+        ],
+        "description": "Api to get help and support faq's",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "topic_id",
+            "in": "path",
+            "description": "topic id of help and supportfor which question answer required",
+            "required": true,
+            "type": "number"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getStaticContent/{id}": {
+      "get": {
+        "tags": [
+          "Driver Static Content"
+        ],
+        "description": "Api to get static content for aboutUs,privacyPolicy etc",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id to get static contents",
+            "required": true,
+            "type": "number"
+          }
+        ],
+        "responses": {}
+      }
     }
+
+
 
 
 

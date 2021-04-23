@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { Customer, Admin } = require('../models');
+const { Customer, Admin, Driver } = require('../models');
 const constants = require("../constants");
 
 
@@ -75,7 +75,7 @@ module.exports =
   },
 
 
-  validateDriverToken: (req, res, next) => {
+  validateDriverToken: async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     let token = authHeader && authHeader.split(' ')[1];
 
@@ -83,9 +83,41 @@ module.exports =
         token = authHeader;
         if (!token) return res.sendStatus(401);
     }
-
-    jwt.verify(token, process.env.DRIVER_SECRET_KEY, (err, user) => {
-        if (err) return res.sendStatus(403);
+    let response = {};
+    jwt.verify(token, process.env.DRIVER_SECRET_KEY, async (err, user) => {
+      
+        //if (err) return res.sendStatus(403);
+        if (err) {
+          response.status = 403;
+          response.message = err.message
+          return res.status(response.status).send(response);
+      }
+        const driver = await Driver.findByPk(user.id);
+        
+        console.log("driver.status",driver.status)
+        console.log("driver.approval_status",driver.approval_status)
+        
+          if (driver.status == 0) {
+              response.status = 401;
+              response.message = constants.MESSAGES.deactivate_account
+              return res.status(response.status).send(response);
+          }
+            else if (driver.status == 2) {
+              response.status = 401;
+              response.message = constants.MESSAGES.delete_account
+              return res.status(response.status).send(response);
+          }
+          else if (driver.approval_status == 0) {
+            response.status = 401;
+            response.message =constants.MESSAGES.not_approved
+            return res.status(response.status).send(response);
+        }
+        else if (driver.approval_status == 2) {
+          response.status = 401;
+          response.message =constants.MESSAGES.rejected_account
+          return res.status(response.status).send(response);
+      }
+        
         req.user = user;
         next();
     })
