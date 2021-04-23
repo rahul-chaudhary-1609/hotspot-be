@@ -70,7 +70,7 @@ router.post('/addDish',adminAuthentication.validateAdminToken,joiValidation.vali
 
 router.get('/getDish/:dishId',adminAuthentication.validateAdminToken, adminRestaurantController.getDish);
 
-router.get('/listDishes',adminAuthentication.validateAdminToken, adminRestaurantController.listDishes);
+router.get('/listDishes/:restaurantId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.restaurantIdSchema), adminRestaurantController.listDishes);
 
 router.put('/editDish/:dishId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.dishSchema), adminRestaurantController.editDish);
 

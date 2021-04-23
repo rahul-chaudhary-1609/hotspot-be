@@ -1493,7 +1493,7 @@
           }
         },
         
-        "/admin/listDishes": {
+        "/admin/listDishes/{restaurantId}": {
           "get": {
             "tags": [
               "Admin Menu Management"
@@ -1509,6 +1509,13 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "restaurantId",
+                "in": "path",
+                "description": "enter the restaurant Id",
+                "required": true,
+                "type": "number"
               },
               {
                 "name": "searchKey",

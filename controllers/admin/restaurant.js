@@ -96,7 +96,7 @@ module.exports = {
     
     listDishes: async (req, res) => {
         try {
-            const responseFromService = await restaurantService.listDishes(req.query);
+            const responseFromService = await restaurantService.listDishes({ ...req.query, ...req.params});
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
