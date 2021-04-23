@@ -1243,7 +1243,7 @@ module.exports = {
             const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id:hotspot_location_id,
-                    customer_id
+                    //customer_id
                 }
             });
 
@@ -1270,7 +1270,7 @@ module.exports = {
             }, {
                 where: {
                     id:hotspot_location_id,
-                    customer_id
+                    //customer_id
                 },
                 returning: true,
             });
@@ -1299,7 +1299,7 @@ module.exports = {
                 const hotspotLocation = await models.HotspotLocation.findOne({
                     where: {
                         id: val.hotspot_location_id,
-                        customer_id: user.id
+                        //customer_id: user.id
                     }
                 });
                 
@@ -1336,7 +1336,7 @@ module.exports = {
             const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
                     id:hotspot_location_id,
-                    customer_id
+                    //customer_id
                 }
             });
 

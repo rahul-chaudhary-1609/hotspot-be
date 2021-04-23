@@ -3,6 +3,7 @@ const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
 const adminAWS = require('../../utils/aws');
 const constants = require("../../constants");
+const dummyData = require("../../services/customer/dummyData");
 
 module.exports = {
     listRestaurant: async(params) => {
@@ -44,7 +45,12 @@ module.exports = {
     addRestaurant: async(params) => {
     
 
-            let restaurantExists = await Restaurant.findOne({where: {owner_email: params.owner_email}});
+        let restaurantExists = await Restaurant.findOne({
+            where: {
+                owner_email: params.owner_email,
+                status: {
+                [Op.not]:constants.STATUS.deleted
+            }}});
             if(!restaurantExists) {
                 // const point = { type: 'Point', coordinates: [] };
                 // point.coordinates.push(params.long);
@@ -248,6 +254,14 @@ module.exports = {
 
     restaurantCategoryList: async () => {
 
+            let restaurantCategory = await RestaurantCategory.findAndCountAll();
+
+                if (restaurantCategory.count === 0) {
+                    await RestaurantCategory.bulkCreate(
+                        [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" }, { name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
+                    );
+            }
+        
             let restaurantCategoryList = await RestaurantCategory.findAndCountAll({where:{status:constants.STATUS.active},raw: true});
             if(restaurantCategoryList)
                 return { restaurantCategoryList };
@@ -255,9 +269,18 @@ module.exports = {
     },
 
     dishCategoryList: async () => {
+
+        let dishCategory = await DishCategory.findAndCountAll();
+
+            if (dishCategory.count === 0) {
+                await DishCategory.bulkCreate(
+                    dummyData.dishCategories,
+                    { returning: ['id'] },
+                );
+            }
     
 
-            let dishCategory = await DishCategory.findAll();
+             dishCategory = await DishCategory.findAll();
 
             const dishCategories = await dishCategory.map((val) => {
                 return {

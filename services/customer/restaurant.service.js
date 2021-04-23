@@ -56,8 +56,11 @@ const getRestaurantCard =  async (args) => {
                 let ndtHours = parseInt(time.split(':')[0]);
                 let ndtMinutes = parseInt(time.split(':')[1]);
 
-                let cotHours = Math.floor((val.cut_off_time * 60) / 60);
-                let cotMinutes = (val.cut_off_time * 60) % 60;
+                // let cotHours = Math.floor((val.cut_off_time * 60) / 60);
+                // let cotMinutes = (val.cut_off_time * 60) % 60;
+
+                let cotHours = Math.floor((val.cut_off_time) / 60);
+                let cotMinutes = (val.cut_off_time) % 60;
 
                 let displayHours = Math.abs(ndtHours - cotHours);
                 let displayMinutes = Math.abs(ndtMinutes-cotMinutes);
@@ -73,16 +76,16 @@ const getRestaurantCard =  async (args) => {
                 else return `${displayHours}:${displayMinutes}:00`
             }
 
-            const dishes = dummyData.getDishes(val, dish_category_ids);
+            // const dishes = dummyData.getDishes(val, dish_category_ids);
 
-            const restaurantDish = await models.RestaurantDish.findAndCountAll({
-                where: {
-                    restaurant_id: val.id,
-                }
-            });
-            if (restaurantDish.count === 0) {
-                await models.RestaurantDish.bulkCreate(dishes);
-            }
+            // const restaurantDish = await models.RestaurantDish.findAndCountAll({
+            //     where: {
+            //         restaurant_id: val.id,
+            //     }
+            // });
+            // if (restaurantDish.count === 0) {
+            //     await models.RestaurantDish.bulkCreate(dishes);
+            // }
 
 
             if (favRestaurant) is_favorite = true;
@@ -202,59 +205,60 @@ module.exports = {
 
           let dishCategory = await models.DishCategory.findAndCountAll();
 
-            if (dishCategory.count === 0) {
-                await models.DishCategory.bulkCreate(
-                    dummyData.dishCategories,
-                    { returning: ['id'] },
-                );
-            }
+        //     if (dishCategory.count === 0) {
+        //         await models.DishCategory.bulkCreate(
+        //             dummyData.dishCategories,
+        //             { returning: ['id'] },
+        //         );
+        //     }
 
 
           let restaurant = await models.Restaurant.findAndCountAll({
               where: {
                   order_type:2,
-                  customer_id
+                  //customer_id
               }
           });
 
-          if (restaurant.count === 0) {
+        //   if (restaurant.count === 0) {
 
-          const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=10&ll=${params.latitude},${params.longitude}&query=coffee`
+        //   const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=10&ll=${params.latitude},${params.longitude}&query=coffee`
 
-          const response = await fetch(`${URL}`);
+        //   const response = await fetch(`${URL}`);
 
-          const jsonResponse = await response.json();
+        //   const jsonResponse = await response.json();
 
-              const newRestaurants = jsonResponse.response.groups[0].items.map((item) => {
-                  const owner = dummyData.owners[Math.floor(Math.random() * dummyData.owners.length)];
-                  const working_hour = dummyData.working_hours[Math.floor(Math.random() * dummyData.working_hours.length)];
-                  return {
-                      restaurant_name: item.venue.name,
-                      restaurant_image_url: dummyData.restaurant_image_urls[Math.floor(Math.random() * dummyData.restaurant_image_urls.length)],
-                      owner_name: owner.name,
-                      country_code: owner.country_code,
-                      owner_phone:owner.phone,
-                      owner_email: owner.email,
-                      address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
-                      location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
-                      deliveries_per_shift: 20,
-                      cut_off_time: dummyData.cut_off_times[Math.floor(Math.random() * dummyData.cut_off_times.length)],
-                      avg_food_price: dummyData.avg_food_prices[Math.floor(Math.random() * dummyData.avg_food_prices.length)],
-                      working_hours_from: working_hour.from,
-                      working_hours_to: working_hour.to,
-                      order_type: order_types[Math.floor(Math.random() * order_types.length)],
-                      restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
-                      customer_id,
-                  }
-              });
+        //       const newRestaurants = jsonResponse.response.groups[0].items.map((item) => {
+        //           const owner = dummyData.owners[Math.floor(Math.random() * dummyData.owners.length)];
+        //           const working_hour = dummyData.working_hours[Math.floor(Math.random() * dummyData.working_hours.length)];
+        //           return {
+        //               restaurant_name: item.venue.name,
+        //               restaurant_image_url: dummyData.restaurant_image_urls[Math.floor(Math.random() * dummyData.restaurant_image_urls.length)],
+        //               owner_name: owner.name,
+        //               country_code: owner.country_code,
+        //               owner_phone:owner.phone,
+        //               owner_email: owner.email,
+        //               address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
+        //               location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
+        //               deliveries_per_shift: 20,
+        //               cut_off_time: dummyData.cut_off_times[Math.floor(Math.random() * dummyData.cut_off_times.length)],
+        //               avg_food_price: dummyData.avg_food_prices[Math.floor(Math.random() * dummyData.avg_food_prices.length)],
+        //               working_hours_from: working_hour.from,
+        //               working_hours_to: working_hour.to,
+        //               order_type: order_types[Math.floor(Math.random() * order_types.length)],
+        //               restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
+        //               customer_id,
+        //           }
+        //       });
           
-              await models.Restaurant.bulkCreate(newRestaurants);
-          }
+        //       await models.Restaurant.bulkCreate(newRestaurants);
+        //   }
 
           restaurant = await models.Restaurant.findAll({
               where: {
                   order_type:[2,3],
-                  customer_id
+                  //customer_id
+                  status:constants.STATUS.active
               }
           });
           
@@ -265,16 +269,16 @@ module.exports = {
           const restaurants = [];
           for (const val of restaurant) {
 
-              const dishes = dummyData.getDishes(val, dish_category_ids);
+            //   const dishes = dummyData.getDishes(val, dish_category_ids);
 
-            const restaurantDish = await models.RestaurantDish.findAndCountAll({
-                where: {
-                    restaurant_id: val.id,
-                }
-            });
-            if (restaurantDish.count === 0) {
-                await models.RestaurantDish.bulkCreate(dishes);
-            }
+            // const restaurantDish = await models.RestaurantDish.findAndCountAll({
+            //     where: {
+            //         restaurant_id: val.id,
+            //     }
+            // });
+            // if (restaurantDish.count === 0) {
+            //     await models.RestaurantDish.bulkCreate(dishes);
+            // }
               
 
             restaurants.push({
@@ -335,12 +339,12 @@ module.exports = {
 
             let dishCategory = await models.DishCategory.findAndCountAll();
 
-            if (dishCategory.count === 0) {
-                await models.DishCategory.bulkCreate(
-                   dummyData.dishCategories,
-                    { returning: ['id'] },
-                );
-            }
+            // if (dishCategory.count === 0) {
+            //     await models.DishCategory.bulkCreate(
+            //        dummyData.dishCategories,
+            //         { returning: ['id'] },
+            //     );
+            // }
 
 
             let restaurantHotspot = await models.RestaurantHotspot.findAndCountAll({
@@ -349,47 +353,47 @@ module.exports = {
                 }
             });
 
-            if (restaurantHotspot.count === 0) {
+            // if (restaurantHotspot.count === 0) {
 
-                const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=10&ll=${params.latitude},${params.longitude}&query=coffee`
+            //     const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=10&ll=${params.latitude},${params.longitude}&query=coffee`
 
-                const response = await fetch(`${URL}`);
+            //     const response = await fetch(`${URL}`);
 
-                const jsonResponse = await response.json();
+            //     const jsonResponse = await response.json();
 
-                const restaurants = jsonResponse.response.groups[0].items.map((item) => {
-                    const owner = dummyData.owners[Math.floor(Math.random() * dummyData.owners.length)];
-                    const working_hour = dummyData.working_hours[Math.floor(Math.random() * dummyData.working_hours.length)];
-                    return {
-                        restaurant_name: item.venue.name,
-                        restaurant_image_url: dummyData.restaurant_image_urls[Math.floor(Math.random() * dummyData.restaurant_image_urls.length)],
-                        owner_name: owner.name,
-                        country_code: owner.country_code,
-                        owner_phone: owner.phone,
-                        owner_email: owner.email,
-                        address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
-                        location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
-                        deliveries_per_shift: 20,
-                        cut_off_time: dummyData.cut_off_times[Math.floor(Math.random() * dummyData.cut_off_times.length)],
-                        avg_food_price: dummyData.avg_food_prices[Math.floor(Math.random() * dummyData.avg_food_prices.length)],
-                        working_hours_from: working_hour.from,
-                        working_hours_to: working_hour.to,
-                        order_type: order_types[Math.floor(Math.random() * order_types.length)],
-                        restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
-                        customer_id,
-                    }
-                });
+            //     const restaurants = jsonResponse.response.groups[0].items.map((item) => {
+            //         const owner = dummyData.owners[Math.floor(Math.random() * dummyData.owners.length)];
+            //         const working_hour = dummyData.working_hours[Math.floor(Math.random() * dummyData.working_hours.length)];
+            //         return {
+            //             restaurant_name: item.venue.name,
+            //             restaurant_image_url: dummyData.restaurant_image_urls[Math.floor(Math.random() * dummyData.restaurant_image_urls.length)],
+            //             owner_name: owner.name,
+            //             country_code: owner.country_code,
+            //             owner_phone: owner.phone,
+            //             owner_email: owner.email,
+            //             address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
+            //             location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
+            //             deliveries_per_shift: 20,
+            //             cut_off_time: dummyData.cut_off_times[Math.floor(Math.random() * dummyData.cut_off_times.length)],
+            //             avg_food_price: dummyData.avg_food_prices[Math.floor(Math.random() * dummyData.avg_food_prices.length)],
+            //             working_hours_from: working_hour.from,
+            //             working_hours_to: working_hour.to,
+            //             order_type: order_types[Math.floor(Math.random() * order_types.length)],
+            //             restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
+            //             customer_id,
+            //         }
+            //     });
 
-                const restaurantBulkCreate = await models.Restaurant.bulkCreate(restaurants);
-                const restaurantHotspotRows = restaurantBulkCreate.map((val) => {
-                    return {
-                        hotspot_location_id: hotspot_location_id,
-                        restaurant_id: val.id,
-                    }
+            //     const restaurantBulkCreate = await models.Restaurant.bulkCreate(restaurants);
+            //     const restaurantHotspotRows = restaurantBulkCreate.map((val) => {
+            //         return {
+            //             hotspot_location_id: hotspot_location_id,
+            //             restaurant_id: val.id,
+            //         }
 
-                })
-                await models.RestaurantHotspot.bulkCreate(restaurantHotspotRows);
-            }
+            //     })
+            //     await models.RestaurantHotspot.bulkCreate(restaurantHotspotRows);
+            // }
 
             restaurantHotspot = await models.RestaurantHotspot.findAll({
                 attributes: [
@@ -405,6 +409,7 @@ module.exports = {
             const restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
+                    status:constants.STATUS.active
                 }
             });
 
@@ -423,6 +428,7 @@ module.exports = {
             const restaurant = await models.Restaurant.findOne({
                 where: {
                     id: restaurant_id,
+                    status:constants.STATUS.active
                 }
             })
 
@@ -487,6 +493,7 @@ module.exports = {
           const restaurant = await models.Restaurant.findAll({
               where: {
                   id: restaurant_ids,
+                  status:constants.STATUS.active
               }
           });
 
@@ -631,7 +638,8 @@ module.exports = {
                             restaurant_name: {
                                 [Op.iLike]: `%${searchPhrase}%`,
                             },
-                        }
+                        },
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -651,6 +659,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                         
                     },
                     order: [
@@ -666,6 +675,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                         
                     },
                     order: [
@@ -681,6 +691,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                     },
                 });
             }
@@ -689,6 +700,7 @@ module.exports = {
                 restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'ASC'],
@@ -700,6 +712,7 @@ module.exports = {
                 restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'DESC'],
@@ -711,7 +724,7 @@ module.exports = {
                  restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
-                    
+                    status:constants.STATUS.active
                 }
             });
             }             
@@ -733,7 +746,8 @@ module.exports = {
                     where: {
                         restaurant_name: {
                             [Op.iLike]: `%${searchPhrase}%`,
-                        }
+                        },
+                        status:constants.STATUS.active
                     }
                 });
 
@@ -845,7 +859,8 @@ module.exports = {
                         restaurant_name: {
                             [Op.iLike]: `%${searchPhrase}%`,
                         },
-                    }
+                    },
+                    status:constants.STATUS.active
                    
                 }
             });
@@ -964,7 +979,8 @@ module.exports = {
                             restaurant_name: {
                                 [Op.iLike]: `%${searchPhrase}%`,
                             },
-                        }
+                        },
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -985,6 +1001,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
 
                     },
                     order: [
@@ -1001,6 +1018,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
 
                     },
                     order: [
@@ -1017,6 +1035,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                     },
                 });
             }
@@ -1025,7 +1044,8 @@ module.exports = {
                 restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
-                        order_type:3,
+                        order_type: 3,
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'ASC'],
@@ -1038,6 +1058,7 @@ module.exports = {
                     where: {
                         id: restaurant_ids,
                         order_type: 3,
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'DESC'],
@@ -1049,7 +1070,8 @@ module.exports = {
                 restaurant = await models.Restaurant.findAll({
                     where: {
                         id: restaurant_ids,
-                        order_type:3,
+                        order_type: 3,
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -1150,7 +1172,8 @@ module.exports = {
                             restaurant_name: {
                                 [Op.iLike]: `%${searchPhrase}%`,
                             },
-                        }
+                        },
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -1171,6 +1194,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
 
                     },
                     order: [
@@ -1187,6 +1211,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
 
                     },
                     order: [
@@ -1203,6 +1228,7 @@ module.exports = {
                         avg_food_price: {
                             [Op.lte]: params.max_price,
                         },
+                        status:constants.STATUS.active
                     },
                 });
             }
@@ -1212,6 +1238,7 @@ module.exports = {
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'ASC'],
@@ -1225,6 +1252,7 @@ module.exports = {
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
+                        status:constants.STATUS.active
                     },
                     order: [
                         ['avg_food_price', 'DESC'],
@@ -1237,6 +1265,7 @@ module.exports = {
                     where: {
                         id: restaurant_ids,
                         order_type: [1, 3],
+                        status:constants.STATUS.active
 
                     }
                 });
@@ -1293,6 +1322,7 @@ module.exports = {
             const restaurant = await models.Restaurant.findAll({
                 where: {
                     id: restaurant_ids,
+                    status:constants.STATUS.active
                 }
             });
 
@@ -1334,6 +1364,7 @@ module.exports = {
                     where: {
                         id: restaurant_id,
                         order_type: [1, 3],
+                        status:constants.STATUS.active
                     }
                 });
 
@@ -1363,6 +1394,7 @@ module.exports = {
                     where: {
                         id: restaurant_id,
                         order_type: [2],
+                        status:constants.STATUS.active
                     }
                 });
 
@@ -1522,7 +1554,8 @@ module.exports = {
                   'id','restaurant_name'
               ],
                 where: {
-                    id:restaurantDish.restaurant_id
+                    id: restaurantDish.restaurant_id,
+                    status:constants.STATUS.active
                 }
             })
 
