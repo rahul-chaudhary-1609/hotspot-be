@@ -305,8 +305,8 @@ module.exports = {
 
             let [offset, limit] =await utilityFunction.pagination(params.page, params.page_size);
 
-            let query = {};
-            query.where = { status:constants.STATUS.active, };
+        let query = {};
+            query.where = { status:constants.STATUS.active, restaurant_id:parseInt(params.restaurantId)};
             if (params.searchKey) {
                 let searchKey = params.searchKey;
 
