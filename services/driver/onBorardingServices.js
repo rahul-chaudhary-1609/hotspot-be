@@ -23,7 +23,6 @@ class OnBoradinServices  {
         }));
 
         if(driverData) {
-            console.log(driverData);
             // check account is approved or not
             if ((driverData.approval_status!=constants.DRIVER_APPROVAL_STATUS .approved)) {
                 throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.not_approved);
