@@ -140,6 +140,14 @@ module.exports = {
         account_holder_name: Joi.string().trim().optional()
     }),
 
+    getEarningList: Joi.object({
+        type: Joi.number().min(0).max(1).required(),
+        start_date: Joi.string().trim().optional(),
+        end_date: Joi.string().trim().optional(),
+        page: Joi.number().required(),
+        page_size: Joi.number().required()
+    }),
+
 
 
 }

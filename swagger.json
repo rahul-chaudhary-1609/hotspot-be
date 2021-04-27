@@ -6515,6 +6515,65 @@
         ],
         "responses": {}
       }
+    },
+
+    "/driver/getEarningList": {
+      "get": {
+        "tags": [
+          "Driver Static Content"
+        ],
+        "description": "Api to get static content for aboutUs,privacyPolicy etc",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "enter type, 0=> pending, 1=> collected",
+            "required": true,
+            "type": "number",
+            "enum":[0,1]
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "description": "enter start_date, YYYY-MM-DD",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "description": "enter end_date, YYYY-MM-DD",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "current page count to access",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "no of items per page",
+            "required": true,
+            "type": "number"
+          }
+
+        ],
+        "responses": {}
+      }
     }
 
 
