@@ -39,7 +39,7 @@ module.exports = {
                 id:val.id,
                 name: val.name,
                 email: val.email,
-                phone: val.phone_no ? `${val.country_code} ${val.phone_no}`: null,
+                phone: val.phone_no ? val.phone_no: null,
                 city: val.city,
                 state: val.state,
                 signupDate: val.createdAt,
