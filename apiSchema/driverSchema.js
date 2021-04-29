@@ -148,6 +148,11 @@ module.exports = {
         page_size: Joi.number().required()
     }),
 
+    getEarningDetails: Joi.object({
+        type: Joi.number().min(0).max(1).required(),
+        id: Joi.number().required()
+    }),
+
 
 
 }

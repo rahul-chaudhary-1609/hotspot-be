@@ -43,6 +43,24 @@ class EarningServices  {
         });
     }
 
+    /*
+    * function for get earning details
+    */
+    getEarningDetails = async (params) => {
+        return await DriverEarningDetail.findAndCountAll({
+            where: {
+                status: params.type,
+                id: params.id
+            },
+            include:[
+                {
+                    model: Order,
+                    required: false,
+                }
+            ]
+        });
+    }
+
    
 }
 

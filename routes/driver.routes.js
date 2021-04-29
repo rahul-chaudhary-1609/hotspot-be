@@ -46,4 +46,5 @@ router.get('/getStaticContent/:id', driverAuthentication.validateDriverToken, st
 
 // earning API's
 router.get('/getEarningList', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningList), earningController.getEarningList);
+router.get('/getEarningDetails', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningDetails), earningController.getEarningDetails);
 module.exports = router;

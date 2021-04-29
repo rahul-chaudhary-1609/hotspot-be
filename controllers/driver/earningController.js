@@ -14,8 +14,20 @@ class EarningController {
     */
     getEarningList = async (req, res, next) => {
         try {
-          console.log(req.query);
             const getEarningListData = await earningServices.getEarningList(req.query);
+            return sendResponse(res, constants.MESSAGES.success, getEarningListData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    /*
+    * function for get earning details
+    * @req :  type, id
+    */
+    getEarningDetails = async (req, res, next) => {
+        try {
+            const getEarningListData = await earningServices.getEarningDetails(req.query);
             return sendResponse(res, constants.MESSAGES.success, getEarningListData);
         } catch (e) {
             next(e);
