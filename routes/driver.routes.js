@@ -12,6 +12,8 @@ const { OnBoardingController }   = require('../controllers/driver/onBoardingCont
 const onBoardingController = new OnBoardingController(); 
 const accountController = require('../controllers/driver/account');
 const staticContentController = require('../controllers/driver/staticContent');
+const homeController = require('../controllers/driver/home');
+
 // on boarding API's
 router.post('/login',joiValidation.validateBody(apiSchema.login), onBoardingController.login);
 router.post('/forgot_password',joiValidation.validateBody(apiSchema.forgot_password), onBoardingController.forgot_password);
@@ -39,5 +41,14 @@ router.get('/getDriverBankDetails', driverAuthentication.validateDriverToken, ac
 
 router.get('/getSupportFaq/:topic_id', driverAuthentication.validateDriverToken, staticContentController.helpFaq);
 router.get('/getStaticContent/:id', driverAuthentication.validateDriverToken, staticContentController.getStaticContent);
+
+// home API's
+router.get('/getPickups', driverAuthentication.validateDriverToken, homeController.getPickups);
+router.get('/getDeliveries', driverAuthentication.validateDriverToken, homeController.getDeliveries);
+router.get('/getDeliveryDetail/:delivery_id', driverAuthentication.validateDriverToken, homeController.getDeliveryDetails);
+router.get('/getPickupDetails/:pickup_id', driverAuthentication.validateDriverToken, homeController.getPickupDetails);
+router.post('/sendNotification/:delivery_id',driverAuthentication.validateDriverToken, homeController.sendDeliveryNotification);
+router.get('/getTotalCount', driverAuthentication.validateDriverToken, homeController.getTotalCount);
+router.post('/deliveryImage', driverAuthentication.validateDriverToken,joiValidation.validateBody(apiSchema.deliveryImage), homeController.getTotalCount);
 
 module.exports = router;

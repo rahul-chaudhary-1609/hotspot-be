@@ -101,15 +101,37 @@ router.delete('/deleteCustomer/:customerId',adminAuthentication.validateAdminTok
 
 router.get('/getTotalCustomers',adminAuthentication.validateAdminToken, adminDashboardController.getTotalCustomers);
 
+router.get('/getCustomersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getCustomersViaHotspot);
+
 router.get('/getTotalRestaurants',adminAuthentication.validateAdminToken, adminDashboardController.getTotalRestaurants);
 
 router.get('/getTotalDrivers',adminAuthentication.validateAdminToken, adminDashboardController.getTotalDrivers);
 
+router.get('/getDriversViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getDriversViaHotspot);
+
 router.get('/getTotalOrders',adminAuthentication.validateAdminToken, adminDashboardController.getTotalOrders);
+
+router.get('/getOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getOrdersViaHotspot);
+
+router.get('/getProcessingOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getProcessingOrdersViaHotspot);
+
+router.get('/getCompletedOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getCompletedOrdersViaHotspot);
 
 router.get('/getTotalRevenue',adminAuthentication.validateAdminToken, adminDashboardController.getTotalRevenue);
 
 router.get('/getTotalRevenueByDate',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.dateSchema), adminDashboardController.getTotalRevenueByDate);
+
+router.get('/getTodayOrders/:status',adminAuthentication.validateAdminToken,adminDashboardController.getTodayOrders);
+
+router.get('/getCurrentMonthOrders/:status',adminAuthentication.validateAdminToken ,adminDashboardController.getCurrentMonthOrders);
+
+router.get('/getCurrentYearOrders/:status',adminAuthentication.validateAdminToken, adminDashboardController.getCurrentYearOrders);
+
+router.get('/getCurrentWeekOrders/:status', adminAuthentication.validateAdminToken,adminDashboardController.getCurrentWeekOrders);
+
+router.get('/getHotspots', adminAuthentication.validateAdminToken,adminDashboardController.getHotspots);
+
+router.get('/getHotspotDetail/:hotspot_id', adminAuthentication.validateAdminToken,adminDashboardController.getHotspotDetail);
 
 
 //Driver Management

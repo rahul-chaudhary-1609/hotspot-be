@@ -140,6 +140,11 @@ module.exports = {
         account_holder_name: Joi.string().trim().optional()
     }),
 
+    deliveryImage: Joi.object({
+        url: Joi.string().trim().required(),
+        order_id: Joi.string().trim().required()
+    }),
+
 
 
 }

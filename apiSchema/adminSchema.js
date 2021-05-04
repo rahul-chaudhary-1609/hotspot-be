@@ -271,6 +271,10 @@ module.exports = {
         restaurantId: Joi.number().required(),
     }),
 
+    statusTypeSchema: Joi.object({
+        restaurantId: Joi.number(),
+    }),
+
     getDriverEarningDetails : Joi.object({
         driver_id: Joi.number().required(),
         page: Joi.number().required(),        

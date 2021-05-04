@@ -123,6 +123,10 @@
       {
         "name": "Driver Static Content",
         "description": "driver static content Api's"
+      },
+      {
+        "name": "Driver Home Management",
+        "description": "driver home management Api's"
       }
       
       
@@ -851,6 +855,35 @@
           }
         },
 
+
+        "/admin/getCustomersViaHotspot/{hotspot_id}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total number of customers via hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },          {
+                "name": "hotspot_id",
+                "in": "path",
+                "description": "hostspot  id to get customer count",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
         "/admin/getTotalRestaurants": {
           "get": {
             "tags": [
@@ -895,6 +928,35 @@
           }
         },
 
+
+        "/admin/getDriversViaHotspot/{hotspot_id}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total number of drivers via hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },          {
+                "name": "hotspot_id",
+                "in": "path",
+                "description": "hostspot  id to get drivers count ",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
         "/admin/getTotalOrders": {
           "get": {
             "tags": [
@@ -909,6 +971,91 @@
                 "name": "Authorization",
                 "in": "header",
                 "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+
+        "/admin/getOrdersViaHotspot/{hotspot_id}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total number of orders via hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },          {
+                "name": "hotspot_id",
+                "in": "path",
+                "description": "hostspot  id to get order count",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getProcessingOrdersViaHotspot/{hotspot_id}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total number of  preprocessing orders via hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },          {
+                "name": "hotspot_id",
+                "in": "path",
+                "description": "hostspot  id to get order count",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getCompletedOrdersViaHotspot/{hotspot_id}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total number of completed orders via hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },          {
+                "name": "hotspot_id",
+                "in": "path",
+                "description": "hostspot  id to get order count",
                 "required": true,
                 "type": "string"
               }
@@ -968,6 +1115,123 @@
                 "in": "query",
                 "description": "YYYY-MM-DD",
                 "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+
+        "/admin/getTodayOrders/{status}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total current day orders",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "in": "path",
+                "description": "order status to get details of",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getCurrentMonthOrders/{status}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total current month orders",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "in": "path",
+                "description": "order status to get details of",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getCurrentYearOrders/{status}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total current year orders",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "in": "path",
+                "description": "order status to get details of",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getCurrentWeekOrders/{status}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total current week orders",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "status",
+                "in": "path",
+                "description": "order status to get details of",
+                "required": false,
                 "type": "string"
               }
             ],
@@ -6511,6 +6775,201 @@
             "description": "id to get static contents",
             "required": true,
             "type": "number"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+
+    "/driver/getPickups": {
+      "get": {
+        "tags": [
+          "Driver Home Management"
+        ],
+        "description": "Api to get pickups on home screen",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+
+    "/driver/getPickupDetails/{pickup_id}": {
+      "get": {
+        "tags": [
+          "Driver Home Management"
+        ],
+        "description": "Api to get deliveries on home screen",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pickup_id",
+            "in": "path",
+            "description": "order id to get details",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+
+
+
+
+    "/driver/getDeliveries": {
+      "get": {
+        "tags": [
+          "Driver Home Management"
+        ],
+        "description": "Api to get deliveries on home screen",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getDeliveryDetail/{delivery_id}": {
+      "get": {
+        "tags": [
+          "Driver Home Management"
+        ],
+        "description": "Api to get deliveries on home screen",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "delivery_id",
+            "in": "path",
+            "description": "order id to get details",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/sendNotification/{delivery_id}": {
+      "post": {
+        "tags": [
+          "Driver Home Management"
+        ],
+        "description": "Api to send notification to delivering customers",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "delivery_id",
+            "in": "path",
+            "description": "order id to get details",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getTotalCount": {
+      "get": {
+        "tags": [
+          "Driver Home Management"
+        ],
+        "description": "Api to get total counts of icku and deliveries on a day",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/deliveryImage": {
+      "post": {
+        "tags": [
+          "Driver Home Management"
+        ],
+        "description": "Api to save delivery image url",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "order_id",
+            "in": "formData",
+            "description": "order id for updating url",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "url",
+            "in": "formData",
+            "description": "url of image to be updated",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {}
