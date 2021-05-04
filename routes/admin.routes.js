@@ -119,27 +119,20 @@ router.get('/getProcessingOrdersViaHotspot/:hotspot_id',adminAuthentication.vali
 
 router.get('/getCompletedOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getCompletedOrdersViaHotspot);
 
+router.get('/getProcessingOrders',adminAuthentication.validateAdminToken, adminDashboardController.getProcessingOrders);
+
+router.get('/getCompletedOrder',adminAuthentication.validateAdminToken, adminDashboardController.getCompletedOrders);
+
 router.get('/getTotalRevenue',adminAuthentication.validateAdminToken, adminDashboardController.getTotalRevenue);
 
 router.get('/getTotalRevenueByDate',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.dateSchema), adminDashboardController.getTotalRevenueByDate);
 
-router.get('/getTodayOrders',adminAuthentication.validateAdminToken,adminDashboardController.getTodayOrders);
-
-router.get('/getCurrentMonthOrders',adminAuthentication.validateAdminToken ,adminDashboardController.getCurrentMonthOrders);
-
-router.get('/getCurrentYearOrders',adminAuthentication.validateAdminToken, adminDashboardController.getCurrentYearOrders);
-
-router.get('/getCurrentWeekOrders', adminAuthentication.validateAdminToken,adminDashboardController.getCurrentWeekOrders);
+router.get('/getOrderStats',adminAuthentication.validateAdminToken,adminDashboardController.getOrderStats);
 
 router.get('/getTotalRevenueViaHotspot/:hotspot_id', adminAuthentication.validateAdminToken,adminDashboardController.getTotalRevenueViaHotspot);
 
-router.get('/getTodayRevenue',adminAuthentication.validateAdminToken,adminDashboardController.getTodayRevenue);
+router.get('/getRevenueStats',adminAuthentication.validateAdminToken,adminDashboardController.getRevenueStats);
 
-router.get('/getCurrentMonthRevenue',adminAuthentication.validateAdminToken ,adminDashboardController.getCurrentMonthRevenue);
-
-router.get('/getCurrentYearRevenue',adminAuthentication.validateAdminToken, adminDashboardController.getCurrentYearRevenue);
-
-router.get('/getCurrentWeekRevenue', adminAuthentication.validateAdminToken,adminDashboardController.getCurrentWeekRevenue);
 
 
 //Driver Management
