@@ -210,7 +210,7 @@ module.exports = {
 
     deleteRestaurant: async (params) => { 
 
-            const restaurantId = params.restaurantId;
+            const restaurantId = parseInt(params.restaurantId);
 
             const restaurant = await Restaurant.findByPk(restaurantId);
 
@@ -225,6 +225,12 @@ module.exports = {
                     },
                     returning: true,
                 })
+
+        await RestaurantHotspot.destroy({
+            where: {
+                    restaurant_id:restaurantId,
+                }
+            })
         return true;
         
     },

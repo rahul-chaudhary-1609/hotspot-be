@@ -8,8 +8,11 @@ const router=express.Router();
 const multer = require('../middlewares/multer');
 
 const { OnBoardingController }   = require('../controllers/driver/onBoardingController');
+const { EarningController }   = require('../controllers/driver/earningController');
 
 const onBoardingController = new OnBoardingController(); 
+const earningController = new EarningController(); 
+
 const accountController = require('../controllers/driver/account');
 const staticContentController = require('../controllers/driver/staticContent');
 const homeController = require('../controllers/driver/home');
@@ -51,4 +54,8 @@ router.post('/sendNotification/:delivery_id',driverAuthentication.validateDriver
 router.get('/getTotalCount', driverAuthentication.validateDriverToken, homeController.getTotalCount);
 router.post('/deliveryImage', driverAuthentication.validateDriverToken,joiValidation.validateBody(apiSchema.deliveryImage), homeController.getTotalCount);
 
+
+// earning API's
+router.get('/getEarningList', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningList), earningController.getEarningList);
+router.get('/getEarningDetails', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningDetails), earningController.getEarningDetails);
 module.exports = router;

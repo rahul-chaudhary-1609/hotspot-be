@@ -55,7 +55,7 @@ module.exports = {
                 id:val.id,
                 name: val.first_name+" "+val.last_name,
                 email: val.email,
-                phone: val.phone_no ? `${val.country_code} ${val.phone_no}` : null,
+                phone: val.phone_no ?val.phone_no : null,
                 status: val.status,
                 approval_status:val.approval_status,
                 signupDate: val.createdAt,

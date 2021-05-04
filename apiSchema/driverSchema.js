@@ -144,6 +144,19 @@ module.exports = {
         url: Joi.string().trim().required(),
         order_id: Joi.string().trim().required()
     }),
+    
+    getEarningList: Joi.object({
+        type: Joi.number().min(0).max(1).required(),
+        start_date: Joi.string().trim().optional(),
+        end_date: Joi.string().trim().optional(),
+        page: Joi.number().required(),
+        page_size: Joi.number().required()
+    }),
+
+    getEarningDetails: Joi.object({
+        type: Joi.number().min(0).max(1).required(),
+        id: Joi.number().required()
+    }),
 
 
 
