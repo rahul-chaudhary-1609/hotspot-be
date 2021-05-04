@@ -979,6 +979,28 @@
           }
         },
 
+        "/admin/getHotspotCount": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total number of hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
         "/admin/getOrdersViaHotspot/{hotspot_id}": {
           "get": {
@@ -1123,7 +1145,7 @@
         },
 
 
-        "/admin/getTodayOrders/{status}": {
+        "/admin/getTodayOrders": {
           "get": {
             "tags": [
               "Admin Dashboard"
@@ -1139,20 +1161,13 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
-              },
-              {
-                "name": "status",
-                "in": "path",
-                "description": "order status to get details of",
-                "required": false,
-                "type": "string"
               }
             ],
             "responses": {}
           }
         },
 
-        "/admin/getCurrentMonthOrders/{status}": {
+        "/admin/getCurrentMonthOrders": {
           "get": {
             "tags": [
               "Admin Dashboard"
@@ -1168,20 +1183,13 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
-              },
-              {
-                "name": "status",
-                "in": "path",
-                "description": "order status to get details of",
-                "required": false,
-                "type": "string"
               }
             ],
             "responses": {}
           }
         },
 
-        "/admin/getCurrentYearOrders/{status}": {
+        "/admin/getCurrentYearOrders": {
           "get": {
             "tags": [
               "Admin Dashboard"
@@ -1197,20 +1205,13 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
-              },
-              {
-                "name": "status",
-                "in": "path",
-                "description": "order status to get details of",
-                "required": false,
-                "type": "string"
               }
             ],
             "responses": {}
           }
         },
 
-        "/admin/getCurrentWeekOrders/{status}": {
+        "/admin/getCurrentWeekOrders": {
           "get": {
             "tags": [
               "Admin Dashboard"
@@ -1226,19 +1227,129 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
-              },
-              {
-                "name": "status",
-                "in": "path",
-                "description": "order status to get details of",
-                "required": false,
-                "type": "string"
               }
             ],
             "responses": {}
           }
         },
         
+
+        "/admin/getTotalRevenueViaHotspot/{hotspot_id}": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total revenue",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "hotspot_id",
+                "in": "path",
+                "description": "hotspot to get revenue of",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getTodayRevenue": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total current day revenue",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getCurrentMonthRevenue": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total current month revenue",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getCurrentYearRevenue": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total current year revenue",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getCurrentWeekRevenue": {
+          "get": {
+            "tags": [
+              "Admin Dashboard"
+            ],
+            "description": "Api to get total current week revenue",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 

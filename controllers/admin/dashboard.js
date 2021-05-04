@@ -57,6 +57,15 @@ module.exports = {
         }
     },
 
+    getHotspotCount: async (req, res) => {
+        try {
+            const responseFromService = await dashboardService.getHotspotCount();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
 
     /***************************recent code for admin dashboard***************************/
     getCustomersViaHotspot: async (req, res) => {
@@ -143,18 +152,48 @@ module.exports = {
         }
     },
 
-    getHotspots: async (req, res) => {
+   
+
+    getTotalRevenueViaHotspot: async (req, res) => {
         try {
-            const responseFromService = await dashboardService.getHotspots();
+            const responseFromService = await dashboardService.getTotalRevenueViaHotspot(req.params.hotspot_id);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
-    getHotspotDetail: async (req, res) => {
+
+    getTodayRevenue: async (req, res) => {
         try {
-            const responseFromService = await dashboardService.getHotspotDetail(req.params.hotspot_id);
+            const responseFromService = await dashboardService.getTodayRevenue();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getCurrentMonthRevenue: async (req, res) => {
+        try {
+            const responseFromService = await dashboardService.getCurrentMonthRevenue();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getCurrentYearRevenue: async (req, res) => {
+        try {
+            const responseFromService = await dashboardService.getCurrentYearRevenue();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getCurrentWeekRevenue: async (req, res) => {
+        try {
+            const responseFromService = await dashboardService.getCurrentWeekRevenue();
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

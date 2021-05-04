@@ -90,6 +90,16 @@ module.exports = {
          
     },
 
+    getHotspotCount: async () => {
+
+      const hotspots = await models.HotspotLocation.findAndCountAll({
+      });
+
+      return { numberOfHotspots:hotspots.count };
+
+   
+     },
+
 
     /***************************recent code for admin dashboard***************************/
     getCustomersViaHotspot: async (hotspotId) => {
@@ -176,19 +186,15 @@ module.exports = {
       },
 
 
-      getTodayOrders: async (orderStatus) => {
+      getTodayOrders: async () => {
         const startDate = moment().format('YYYY-MM-DD ');
         const endDate = moment(startDate).add(1, 'days').format('YYYY-MM-DD ')
-          const where =  {
-            created_at: {
+        const orders = await models.Order.findAndCountAll({
+            where: {
+              created_at: {
                 [Op.between]: [startDate, endDate]
               },
-        }
-        if (!(orderStatus)) {
-            where.status = orderStatus
-          }
-        const orders = await models.Order.findAndCountAll({
-            where: where
+            }
         });
 
         return { numberOfTodayOrders:orders.count };
@@ -196,22 +202,18 @@ module.exports = {
      
       },
 
-      getCurrentMonthOrders: async (orderStatus) => {
+      getCurrentMonthOrders: async () => {
         const getMonth = moment().format('M');
         const getYear = moment().format('Y');
         const startDate = moment([getYear,getMonth - 1, 1]).format('YYYY-MM-DD ')
         const daysInMonth = moment(startDate).daysInMonth()
         const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
-        const where =  {
-            created_at: {
+        const orders = await models.Order.findAndCountAll({
+            where:{
+              created_at: {
                 [Op.between]: [startDate, endDate]
               },
-        }
-        if (!(orderStatus)) {
-            where.status = orderStatus
-          }
-        const orders = await models.Order.findAndCountAll({
-            where: where
+            }
         });
        
         return { currentMonthOrders:orders.count };
@@ -219,21 +221,17 @@ module.exports = {
      
       },
 
-      getCurrentYearOrders: async (orderStatus) => {
+      getCurrentYearOrders: async () => {
         const getYear = moment().format('Y');
         const StartMonth = 1 // 1:January
         const startDate = moment([getYear,StartMonth-1, 1]).format('YYYY-MM-DD ')
         const endDate = moment(startDate).add(1, 'year').format('YYYY-MM-DD')
-        const where =  {
-            created_at: {
+        const orders = await models.Order.findAndCountAll({
+            where: {
+              created_at: {
                 [Op.between]: [startDate, endDate]
               },
-        }
-        if (!(orderStatus)) {
-            where.status = orderStatus
-          }
-        const orders = await models.Order.findAndCountAll({
-            where: where
+            }
         });
   
         return { currentYearOrders:orders.count };
@@ -242,19 +240,15 @@ module.exports = {
       },
 
 
-      getCurrentWeekOrders: async (orderStatus) => {
+      getCurrentWeekOrders: async () => {
         const startDate = moment().startOf('week');
         const endDate = moment().endOf('week');
-        const where =  {
-            created_at: {
+        const orders = await models.Order.findAndCountAll({
+            where:{
+              created_at: {
                 [Op.between]: [startDate, endDate]
               },
-        }
-        if (!(orderStatus)) {
-            where.status = orderStatus
-          }
-        const orders = await models.Order.findAndCountAll({
-            where:where
+            }
         });
   
         return { currentWeekOrders:orders.count };
@@ -262,27 +256,96 @@ module.exports = {
      
       },
 
-      getHotspots: async () => {
+    
 
-        const hotspots = await models.HotspotLocation.findAndCountAll({
-        });
 
-        return hotspots;
-
-     
-      },
-
-    getHotspotDetail: async (hotspotId) => {
-
-        const hotspotDetail = await models.HotspotLocation.findOne({
-            where:{
-              id:hotspotId
+      getTotalRevenueViaHotspot: async (hotspotId) => {
+                
+        const totalAmount = await models.Order.sum('amount',{
+            where:  {
+                status: [1,2, 3, 4],
+                hotspot_location_id:hotspotId,
             }
         });
-
-        return hotspotDetail.dataValues;
+       
+        
+        return {totalRevenue:totalAmount };
 
      
       },
+
+      getTodayRevenue: async () => {
+        const startDate = moment().format('YYYY-MM-DD ');
+        const endDate = moment(startDate).add(1, 'days').format('YYYY-MM-DD ')
+        const totalAmount = await models.Order.sum('amount',{
+          where:  {
+              status: [1,2, 3, 4],
+              created_at: {
+                [Op.between]: [startDate, endDate]
+              },
+          }
+      });
+        return { todayRevenue:totalAmount };
+
+     
+      },
+
+      getCurrentMonthRevenue: async () => {
+        const getMonth = moment().format('M');
+        const getYear = moment().format('Y');
+        const startDate = moment([getYear,getMonth - 1, 1]).format('YYYY-MM-DD ')
+        const daysInMonth = moment(startDate).daysInMonth()
+        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
+        const totalAmount = await models.Order.sum('amount',{
+          where:  {
+              status: [1,2, 3, 4],
+              created_at: {
+                [Op.between]: [startDate, endDate]
+              },
+          }
+      });
+       
+        return { currentMonthRevenue:totalAmount };
+
+     
+      },
+
+
+      getCurrentYearRevenue: async () => {
+        const getYear = moment().format('Y');
+        const StartMonth = 1 // 1:January
+        const startDate = moment([getYear,StartMonth-1, 1]).format('YYYY-MM-DD ')
+        const endDate = moment(startDate).add(1, 'year').format('YYYY-MM-DD')
+        const totalAmount = await models.Order.sum('amount',{
+          where:  {
+              status: [1,2, 3, 4],
+              created_at: {
+                [Op.between]: [startDate, endDate]
+              },
+          }
+      });
+  
+        return { currentYearRevenue:totalAmount };
+
+     
+      },
+
+
+      getCurrentWeekRevenue: async () => {
+        const startDate = moment().startOf('week');
+        const endDate = moment().endOf('week');
+        const totalAmount = await models.Order.sum('amount',{
+          where:  {
+              status: [1,2, 3, 4],
+              created_at: {
+                [Op.between]: [startDate, endDate]
+              },
+          }
+      });
+        return { currentWeekRevenue:totalAmount };
+
+     
+      },
+
     /***************************recent code for admin dashboard***************************/
 }

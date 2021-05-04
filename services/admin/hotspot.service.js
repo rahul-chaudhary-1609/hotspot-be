@@ -239,6 +239,7 @@ module.exports = {
                 return {
                     id:val.id,
                     name: val.name,
+                    location: val.location,
                     locationDetail: val.location_detail,                   
                 }
             })
