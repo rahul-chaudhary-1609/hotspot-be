@@ -3435,6 +3435,20 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
               }
             ],
             "responses": {}

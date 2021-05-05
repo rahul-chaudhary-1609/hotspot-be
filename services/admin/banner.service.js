@@ -4,16 +4,14 @@ const constants = require('../../constants');
 const moment = require('moment');
 
 module.exports = {
-    listBanners: async () => {
-
+    listBanners: async (params) => {
+        let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
             const banners = await models.HotspotOffer.findAndCountAll({
-                
+            limit:limit,
+            offset: offset
             });
-
-            return { banners };
-
-         
-    },
+            return { banners };    
+     },
 
     addBanner: async (params) => {
 

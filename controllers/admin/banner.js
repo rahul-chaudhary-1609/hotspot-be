@@ -6,7 +6,7 @@ const constants = require("../../constants");
 module.exports = {
     listBanners: async (req, res) => {
         try {
-            const responseFromService = await bannerService.listBanners();
+            const responseFromService = await bannerService.listBanners(rq.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
