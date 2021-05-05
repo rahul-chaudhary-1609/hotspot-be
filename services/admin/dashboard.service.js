@@ -292,7 +292,7 @@ module.exports = {
         const todayOrders = await models.Order.findAndCountAll({
             where: {
               status:[1,2,3,4],
-              uddated_at: {
+              updated_at: {
                 [Op.between]: [todayStartDate, todayEndDate]
               },
             }
