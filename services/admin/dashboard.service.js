@@ -231,8 +231,17 @@ module.exports = {
         const StartMonth = 1 // 1:January
         const yearStartDate = moment([getYear,StartMonth-1, 1]).format('YYYY-MM-DD ')
         const yearEndDate = moment(yearStartDate).add(1, 'year').format('YYYY-MM-DD')
+       
+        const totalOrders = await models.Order.findAndCountAll({
+          where: {
+              status:[1,2,3,4]
+          }
+      });
+
+
         const todayOrders = await models.Order.findAndCountAll({
             where: {
+              status:[1,2,3,4],
               created_at: {
                 [Op.between]: [todayStartDate, todayEndDate]
               },
@@ -240,6 +249,7 @@ module.exports = {
         });
         const monthOrders = await models.Order.findAndCountAll({
           where:{
+            status:[1,2,3,4],
             created_at: {
               [Op.between]: [monthStartDate, monthEndDate]
             },
@@ -248,17 +258,14 @@ module.exports = {
 
       const yearOrders = await models.Order.findAndCountAll({
         where: {
+          status:[1,2,3,4],
           created_at: {
             [Op.between]: [yearStartDate, yearEndDate]
           },
         }
-    });
-
-
-        return { numberOfTodayOrders:todayOrders.count,numberOfMonthlyOrders:monthOrders.count,numberOfYearlyOrders:yearOrders.count };
-
-     
-      },
+     });
+    return { numberOfTotalOrders:totalOrders.count,numberOfTodayOrders:todayOrders.count,numberOfMonthlyOrders:monthOrders.count,numberOfYearlyOrders:yearOrders.count };
+     },
 
 
       getTotalRevenueViaHotspot: async (hotspotId) => {
@@ -313,7 +320,7 @@ module.exports = {
             },
         }
       });
-        return { todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
+        return { totalRevenue:100000,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
 
      
       },

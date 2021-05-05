@@ -75,6 +75,11 @@
         "name": "Admin Static Content",
         "description": "admin Static Content Api's"
       },
+      {
+        "name": "Admin Banner Management",
+        "description": "admin banner management Api's"
+      },
+      
       
       {
         "name": "Customer Signup",
@@ -127,7 +132,13 @@
       {
         "name": "Driver Home Management",
         "description": "driver home management Api's"
+      },
+      {
+        "name": "Driver Earning Management",
+        "description": "driver earning management Api's"
       }
+
+      
       
       
     ],
@@ -3407,6 +3418,149 @@
             "responses": {}
           }
         },
+
+        "/admin//listBanners": {
+          "get": {
+            "tags": [
+              "Admin Banner Management"
+            ],
+            "description": "Api to get banners",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/addBanner": {
+          "post": {
+            "tags": [
+              "Admin Banner Management"
+            ],
+            "description": "Api to add banner",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name of title",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "image_url",
+                "in": "formData",
+                "description": "image url to be uploaded",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "order",
+                "in": "formData",
+                "description": "sequence order",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/editBanner/{banner_id}": {
+          "put": {
+            "tags": [
+              "Admin Banner Management"
+            ],
+            "description": "Api to edit banner",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },{
+                "name": "banner_id",
+                "in": "path",
+                "description": "id of the banner to be edited",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enter name of title",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "image_url",
+                "in": "formData",
+                "description": "image url to be uploaded",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "order",
+                "in": "formData",
+                "description": "sequence order",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/deleteBanner/{banner_id}": {
+          "delete": {
+            "tags": [
+              "Admin Banner Management"
+            ],
+            "description": "Api to delete banner",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },{
+                "name": "banner_id",
+                "in": "path",
+                "description": "id of the banner to be deleted",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+  
 
 
 
@@ -6807,6 +6961,9 @@
     },
 
 
+
+
+
     "/driver/getPickups": {
       "get": {
         "tags": [
@@ -6995,6 +7152,106 @@
             "description": "url of image to be updated",
             "required": true,
             "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+
+
+
+
+    "/driver/getEarningList": {
+      "get": {
+        "tags": [
+          "Driver Earning Management"
+        ],
+        "description": "Api to get earning list",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "enter type, 0=> pending, 1=> collected",
+            "required": true,
+            "type": "number",
+            "enum":[0,1]
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "description": "enter start_date, YYYY-MM-DD",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "description": "enter end_date, YYYY-MM-DD",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "current page count to access",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "no of items per page",
+            "required": true,
+            "type": "number"
+          }
+
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getEarningDetails": {
+      "get": {
+        "tags": [
+          "Driver Earning Management"
+        ],
+        "description": "Api to get earning details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "enter id",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "enter type, 0=> pending, 1=> collected",
+            "required": true,
+            "type": "number",
+            "enum":[0,1]
           }
         ],
         "responses": {}

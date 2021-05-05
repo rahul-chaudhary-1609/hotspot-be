@@ -28,6 +28,15 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        order: {
+            type: DataTypes.INTEGER,
+            allowNull:false,
+        },
+        status: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
+          },
 
 
     }, {
@@ -36,5 +45,6 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'hotspot_offers',
         modelName: 'HotspotOffer',
     });
+    //HotspotOffer.sync({ alter: true })
     return HotspotOffer;
 };

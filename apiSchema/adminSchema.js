@@ -328,6 +328,18 @@ module.exports = {
         question: Joi.string().optional() ,
         answer: Joi.string().optional() 
       }),
+
+      addBanner: Joi.object({
+        name: Joi.string().required(),
+        image_url: Joi.string().required(),
+        order: Joi.number().required()
+    }),
+
+    editBanner: Joi.object({
+        name: Joi.string().optional(),
+        image_url: Joi.string().optional(),
+        order: Joi.number().optional()
+    }),
 }
 
 

@@ -15,6 +15,7 @@ const adminFeeController = require('../controllers/admin/fee');
 const adminHotspotController = require('../controllers/admin/hotspot');
 const notificationController = require('../controllers/admin/notification');
 const staticContentController = require('../controllers/admin/static_content');
+const bannerController = require('../controllers/admin/banner');
 
 const adminAuthentication = require('../middlewares/jwt');
 const adminMulter = require('../middlewares/multer');
@@ -215,4 +216,11 @@ router.post('/deleteFaq',adminAuthentication.validateAdminToken, joiValidation.v
 router.put('/editFaq/:topic_id',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editFaq), staticContentController.editFaq)
 router.get('/getFaq/:id',adminAuthentication.validateAdminToken, staticContentController.getFaq);
 router.get('/getFaqTopics',adminAuthentication.validateAdminToken, staticContentController.getFaqTopics);
+
+
+// Banner api's
+router.get('/listBanners',adminAuthentication.validateAdminToken, bannerController.listBanners);
+router.post('/addBanner',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addBanner),bannerController.addBanner);
+router.put('/editBanner/:banner_id',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editBanner),bannerController.editBanner);
+router.delete('/deleteBanner/:banner_id',adminAuthentication.validateAdminToken, bannerController.deleteBanner)
 module.exports = router;
