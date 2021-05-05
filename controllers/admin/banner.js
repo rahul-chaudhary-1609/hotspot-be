@@ -6,7 +6,7 @@ const constants = require("../../constants");
 module.exports = {
     listBanners: async (req, res) => {
         try {
-            const responseFromService = await bannerService.listBanners(rq.query);
+            const responseFromService = await bannerService.listBanners(req.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -24,7 +24,7 @@ module.exports = {
 
     editBanner: async (req, res) => {
         try {
-            const responseFromService = await bannerService.editBanner(req.body,req.params.banner_id);
+            const responseFromService = await bannerService.editBanner({ ...req.params,...req.body });
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -33,7 +33,7 @@ module.exports = {
 
     deleteBanner: async (req, res) => {
         try {
-            const responseFromService = await bannerService.deleteBanner(req.params.banner_id);
+            const responseFromService = await bannerService.deleteBanner(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

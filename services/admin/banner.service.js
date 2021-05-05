@@ -7,6 +7,7 @@ module.exports = {
     listBanners: async (params) => {
         let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
             const banners = await models.HotspotOffer.findAndCountAll({
+           where: { status: [0,1]},
             limit:limit,
             offset: offset
             });
@@ -23,28 +24,24 @@ module.exports = {
     },
 
 
-    editBanner: async(params,bannerId)=>{
+    editBanner: async(params)=>{
         let checkBannerId = await models.HotspotOffer.findOne({
-            where: { id: bannerId}
+            where: { id: params.banner_id}
         })
         if (checkBannerId) {
-            const bannerData=await models.HotspotOffer.update({ name:params.name,image_url:params.image_url }, { where: {id:Number(bannerId)}});
+            const bannerData=await models.HotspotOffer.update({ name:params.name,image_url:params.image_url }, { where: {id:Number(params.banner_id)}});
             return true
         } else {
             throw new Error(constants.MESSAGES.invalid_id);
         }
      },
 
-     deleteBanner: async(bannerId)=>{
+     deleteBanner: async(params)=>{
         let checkBannerId = await models.HotspotOffer.findOne({
-            where: { id: bannerId}
+            where: { id: params.banner_id}
         })
         if (checkBannerId) {
-            const bannerData = await models.HotspotOffer.destroy({
-                where: {
-                    id:Number(bannerId),
-                } 
-            })
+            await models.HotspotOffer.update({ status:2}, { where: {id:Number(params.banner_id)}});
             return true
         } else {
             throw new Error(constants.MESSAGES.invalid_id);

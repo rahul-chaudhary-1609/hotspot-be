@@ -88,7 +88,7 @@ module.exports = {
     /***************************recent code for admin dashboard***************************/
     getCustomersViaHotspot: async (req, res) => {
         try {
-            const responseFromService = await dashboardService.getCustomersViaHotspot(req.params.hotspot_id);
+            const responseFromService = await dashboardService.getCustomersViaHotspot(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -98,7 +98,7 @@ module.exports = {
 
     getDriversViaHotspot: async (req, res) => {
         try {
-            const responseFromService = await dashboardService.getDriversViaHotspot(req.params.hotspot_id);
+            const responseFromService = await dashboardService.getDriversViaHotspot(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -108,7 +108,7 @@ module.exports = {
 
     getOrdersViaHotspot: async (req, res) => {
         try {
-            const responseFromService = await dashboardService.getOrdersViaHotspot(req.params.hotspot_id);
+            const responseFromService = await dashboardService.getOrdersViaHotspot(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -117,7 +117,7 @@ module.exports = {
 
     getProcessingOrdersViaHotspot: async (req, res) => {
         try {
-            const responseFromService = await dashboardService.getProcessingOrdersViaHotspot(req.params.hotspot_id);
+            const responseFromService = await dashboardService.getProcessingOrdersViaHotspot(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -126,7 +126,7 @@ module.exports = {
 
     getCompletedOrdersViaHotspot: async (req, res) => {
         try {
-            const responseFromService = await dashboardService.getCompletedOrdersViaHotspot(req.params.hotspot_id);
+            const responseFromService = await dashboardService.getCompletedOrdersViaHotspot(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -146,7 +146,7 @@ module.exports = {
 
     getTotalRevenueViaHotspot: async (req, res) => {
         try {
-            const responseFromService = await dashboardService.getTotalRevenueViaHotspot(req.params.hotspot_id);
+            const responseFromService = await dashboardService.getTotalRevenueViaHotspot(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -163,31 +163,6 @@ module.exports = {
         }
     },
 
-    getCurrentMonthRevenue: async (req, res) => {
-        try {
-            const responseFromService = await dashboardService.getCurrentMonthRevenue();
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
 
-    getCurrentYearRevenue: async (req, res) => {
-        try {
-            const responseFromService = await dashboardService.getCurrentYearRevenue();
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
-
-    getCurrentWeekRevenue: async (req, res) => {
-        try {
-            const responseFromService = await dashboardService.getCurrentWeekRevenue();
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
     /***************************recent code for admin dashboard***************************/
 }
