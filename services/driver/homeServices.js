@@ -89,17 +89,17 @@ module.exports = {
 },
 
 
- pickupDetails: async(driver,pickupId)=>{
+ pickupDetails: async(user,params)=>{
   let checkId = await Pickup.findOne({
       where: {
-          pickup_id:pickupId,
+          pickup_id:params.pickup_id,
           created_at : { [Op.gte]: new Date().toLocaleDateString() }
   }
   })
   if (checkId) {
      const pickupData =  await Pickup.findAndCountAll({
       where: {
-        pickup_id:pickupId,
+        pickup_id:params.pickup_id,
       }
      })
      //const orderIds = pickupData.rows.map(data => { return data.order_id })
@@ -188,17 +188,17 @@ module.exports = {
         }
      },
 
-     DeliveryDetails: async(driver,deliveryId)=>{
+     DeliveryDetails: async(user,params)=>{
         let checkId = await Delivery.findOne({
             where: {
-                delivery_id:deliveryId,
+                delivery_id:params.delivery_id,
                 created_at : { [Op.gte]: new Date().toLocaleDateString() } 
         }
         })
         if (checkId) {
           const deliveryData =  await Delivery.findAndCountAll({
             where: {
-              delivery_id:deliveryId,
+              delivery_id:params.delivery_id,
             }
            })
            console.log(deliveryData)
@@ -225,7 +225,7 @@ module.exports = {
           console.log("dropoff details",dropOffDetails)
                   const deliveryDetails= await Delivery.findOne({
                     where: {
-                      delivery_id:deliveryId,
+                      delivery_id:params.delivery_id,
                     },
                    attributes: [Sequelize.literal(`"Driver"."first_name","Driver"."last_name","delivery_datetime","HotspotLocation"."location" as "hotspot_location","HotspotLocation"."location_detail","HotspotLocation"."city","HotspotLocation"."state","HotspotLocation"."postal_code","HotspotLocation"."country"`)],
                     raw: true,
@@ -260,17 +260,17 @@ module.exports = {
         }
      },
 
-     deliveryNotifications: async(driver,deliveryId)=>{
+     deliveryNotifications: async(user,params)=>{
        
       let checkId = await Delivery.findOne({
           where: {
-              delivery_id:deliveryId
+              delivery_id:params.delivery_id
       }
       })
       if (checkId) {
       const Details= await Delivery.findAll({
         where: {
-          delivery_id:deliveryId,
+          delivery_id:params.delivery_id,
           //type:constants.ORDER_TYPE.delivery
         },
        attributes: [Sequelize.literal(`"Driver"."first_name","Driver"."last_name","Customer"."name","Customer"."device_token","delivery_image_url"`)],

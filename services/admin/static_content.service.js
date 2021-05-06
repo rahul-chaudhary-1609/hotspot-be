@@ -58,14 +58,14 @@ module.exports = {
         
      },
 
-     getFaq: async(admin,id)=>{
+     getFaq: async(params)=>{
         let checkId = await Faq.findOne({
-            where: {id: id}
+            where: {id: params.id}
         })
         if (checkId) {
             return await Faq.findOne({
                 where: {
-                    id:Number(id),
+                    id:Number(params.id),
                 } 
             })
         } else {
@@ -73,7 +73,7 @@ module.exports = {
         }
      },
      
-     deleteFaq: async(params,admin)=>{
+     deleteFaq: async(params,user)=>{
         let checkTopicId = await Faq.findOne({
             where: { topic_id: params.topic_id}
         })
@@ -81,7 +81,7 @@ module.exports = {
             const faqData = await Faq.destroy({
                 where: {
                     topic_id:Number(params.topic_id),
-                    admin_id:String(admin.id)
+                    admin_id:String(user.id)
                 } 
             })
             return true
@@ -90,12 +90,12 @@ module.exports = {
         }
      },
 
-     editFaq: async(params,admin,topicId)=>{
+     editFaq: async(params,user)=>{
         let checkTopicId = await Faq.findOne({
-            where: { topic_id: topicId}
+            where: { topic_id: params.topic_id}
         })
         if (checkTopicId) {
-            const faqData=await Faq.update({ question:params.question,answer:params.answer }, { where: {topic_id:Number(topicId),admin_id:String(admin.id)} });
+            const faqData=await Faq.update({ question:params.question,answer:params.answer }, { where: {topic_id:Number(params.ttopiv_id),admin_id:String(user.id)} });
             return true
         } else {
             throw new Error(constants.MESSAGES.invalid_id);

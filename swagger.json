@@ -136,6 +136,10 @@
       {
         "name": "Driver Earning Management",
         "description": "driver earning management Api's"
+      },
+      {
+        "name": "Website Management",
+        "description": "Website Content Api's"
       }
 
       
@@ -7270,7 +7274,85 @@
         ],
         "responses": {}
       }
+    },
+
+
+
+
+
+    "/website/getFaqTopics": {
+      "get": {
+        "tags": [
+          "Website Management"
+        ],
+        "description": "Api to get faqsTopics that have questions ",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+        ],
+        "responses": {}
+      }
+    },
+
+    "/website/getFaqDetails": {
+      "get": {
+        "tags": [
+          "Website Management"
+        ],
+        "description": "Api to get faq",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "enter faq id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "current page count to access",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "no of items per page",
+            "required": false,
+            "type": "number"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/website/getStaticContent/{id}": {
+      "post": {
+        "tags": [
+          "Website Management"
+        ],
+        "description": "Api to get static content details",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id to get details",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
     }
+
 
 
 

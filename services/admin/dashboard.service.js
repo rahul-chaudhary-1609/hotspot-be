@@ -132,8 +132,8 @@ module.exports = {
                 [Op.between]: [startDate, endDate]
               }
         }
-    });
-    const pickupOrders = await models.Order.findAndCountAll({
+     });
+     const pickupOrders = await models.Order.findAndCountAll({
       where: {
           status:constants.ORDER_DELIVERY_STATUS.food_being_prepared,
           type:constants.ORDER_TYPE.pickup,
@@ -141,16 +141,16 @@ module.exports = {
               [Op.between]: [startDate, endDate]
             }
       }
-  });
-  const pickupdeliveryOrders = await models.Order.findAndCountAll({
-    where: {
+     });
+      const pickupdeliveryOrders = await models.Order.findAndCountAll({
+        where: {
         status:[constants.ORDER_DELIVERY_STATUS.food_being_prepared,constants.ORDER_DELIVERY_STATUS.delivered],
         type:constants.ORDER_TYPE.both,
         updated_at: {
             [Op.between]: [startDate, endDate]
           }
-    }
-});
+      }
+   });
     const totalOrders = deliveryOrders.count+pickupOrders.count+pickupdeliveryOrders.count
     return { numberOfCompletedOrders:totalOrders };
 
@@ -164,6 +164,7 @@ module.exports = {
         const customers = await models.CustomerFavLocation.findAndCountAll({
             where: {
                 hotspot_location_id:params.hotspot_id,
+                status:constants.STATUS.active
             }
         });
 
@@ -179,6 +180,8 @@ module.exports = {
         const drivers = await models.HotspotDriver.findAndCountAll({
             where: {
                 hotspot_location_id:params.hotspot_id,
+                status: constants.STATUS.active,
+                approval_status:constants.DRIVER_APPROVAL_STATUS .approved
             }
         });
 
@@ -344,6 +347,11 @@ module.exports = {
         const StartMonth = 1 // 1:January
         const yearStartDate = moment([getYear,StartMonth-1, 1]).format('YYYY-MM-DD ')
         const yearEndDate = moment(yearStartDate).add(1, 'year').format('YYYY-MM-DD')
+        const TotalAmount = await models.Order.sum('amount',{
+          where:  {
+              status: [1,2, 3, 4],
+          }
+      });
         const todayTotalAmount = await models.Order.sum('amount',{
           where:  {
               status: [1,2, 3, 4],
@@ -370,7 +378,7 @@ module.exports = {
             },
         }
       });
-        return { totalRevenue:100000,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
+        return { totalRevenue:TotalAmount,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
 
      
       },
