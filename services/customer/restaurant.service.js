@@ -1541,7 +1541,7 @@ module.exports = {
                 }
             })
 
-            if (!(restaurantDish) || (restaurantDish.status==constants.STATUS.active))  throw new Error(constants.MESSAGES.no_dish);
+            if (!(restaurantDish) || (restaurantDish.status==constants.STATUS.deleted))  throw new Error(constants.MESSAGES.no_dish);
 
             const dishAddOn = await models.DishAddOn.findAll({
                 where: {
