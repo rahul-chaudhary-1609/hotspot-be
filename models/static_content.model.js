@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         underscored: true,
-        tableName: 'static_content',
+        tableName: 'static_contents',
         modelName: 'StaticContent',
     });
     return StaticContent;

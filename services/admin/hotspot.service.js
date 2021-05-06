@@ -233,7 +233,7 @@ module.exports = {
 
             let hotspotList = await models.HotspotLocation.findAndCountAll(query);
             
-            if (hotspotList.count === 0) throw new Error(constants.MESSAGES.no_driver);
+            if (hotspotList.count === 0) throw new Error(constants.MESSAGES.no_hotspot);
 
             hotspotList.rows = hotspotList.rows.map((val) => {
                 return {

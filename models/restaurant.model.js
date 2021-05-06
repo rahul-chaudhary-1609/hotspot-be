@@ -81,6 +81,15 @@ module.exports = (sequelize, DataTypes) => {
         customer_id: {
             type: DataTypes.INTEGER,
         },
+        percentage_fee: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+            defaultValue: 70,
+            comment: 'How much percent order will the restaurant have. Default is 70%'
+        },
+        agreement_doc_url: {
+            type: DataTypes.STRING,
+        },
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,

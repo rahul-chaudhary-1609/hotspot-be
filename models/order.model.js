@@ -30,6 +30,12 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             unique:true,
         },
+        order_pickup_id: {
+            type: DataTypes.STRING,
+        },
+        order_delivery_id: {
+            type: DataTypes.STRING,
+        },
         customer_id: {
             type: DataTypes.INTEGER,
             allowNull: false,

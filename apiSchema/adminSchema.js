@@ -264,6 +264,7 @@ module.exports = {
         working_hours_to: Joi.string().required(),
         order_type: Joi.number().required(),
         restaurant_category_id: Joi.number().required(),
+        agreement_doc_url: Joi.number().optional(),
         hotspot_location_ids: Joi.array(),
     }),
 
@@ -282,7 +283,7 @@ module.exports = {
     }),
 
     addNotification: Joi.object({
-        title: Joi.string().required(),
+        title: Joi.string().required(), 
         description: Joi.string().required(),
         reciever_id: Joi.number().optional(),    
         type:  Joi.number().min(1).max(4).required(),   
