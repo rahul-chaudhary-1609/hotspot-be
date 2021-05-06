@@ -3,7 +3,7 @@ const {
     Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class Pickup extends Model {
+    class OrderDelivery extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -11,67 +11,64 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Pickup.belongsTo(models.Customer);
-            Pickup.belongsTo(models.Restaurant);
-            Pickup.belongsTo(models.HotspotLocation)
-            Pickup.belongsTo(models.HotspotDropoff)
-            Pickup.belongsTo(models.Driver);
+            OrderDelivery.belongsTo(models.HotspotLocation)
+            OrderDelivery.belongsTo(models.Driver);
         }
     }
-    Pickup.init({
+    OrderDelivery.init({
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        pickup_id: {
+        delivery_id: {
             type: DataTypes.STRING,
-            allowNull: false,
-        },
-        order_id: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        customer_id: {
-            type: DataTypes.INTEGER,
             allowNull: false,
         },
 
         hotspot_location_id: {
             type: DataTypes.INTEGER,
         },
-
-        hotspot_dropoff_id: {
-            type: DataTypes.INTEGER,
+        hotspot_fee: {
+            type: DataTypes.FLOAT,
         },
-
-        restaurant_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
+        order_count: {
+            type: DataTypes.BIGINT,
+        },
+        amount: {
+            type: DataTypes.FLOAT,
+        },
+        tip_amount: {
+            type: DataTypes.FLOAT,
         },
         driver_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        driver_fee: {
+            type: DataTypes.FLOAT,
+        },
 
         delivery_datetime: {
             type: DataTypes.DATE,
         },
-        pickup_datetime: {
-            type: DataTypes.DATE,
+        delivery_image_urls: {
+            type: DataTypes.ARRAY(DataTypes.STRING),
         },
-
+        delivery_details: {
+            type: DataTypes.JSON,
+        },
 
 
 
     }, {
         sequelize,
         underscored: true,
-        tableName: 'pickups',
-        modelName: 'Pickup',
+        tableName: 'order_deliveries',
+        modelName: 'OrderDelivery',
     });
-    //Pickup.sync({ alter: true })
-    return Pickup;
+    //Delivery.sync({ alter: true })
+    return OrderDelivery;
     
 };

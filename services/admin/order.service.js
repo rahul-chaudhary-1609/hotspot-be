@@ -327,7 +327,7 @@ module.exports = {
                     order_range_to: {
                         [Op.gte]:order.amount,
                     },
-                    file_type: 'driver',             
+                    fee_type: 'driver',             
                     
                 }
             })
