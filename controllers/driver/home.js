@@ -15,7 +15,7 @@ module.exports = {
 
   async getPickupDetails (req, res) {
     try {
-      const deliveryDetails = await homeServices.pickupDetails(req.user,req.params.pickup_id);
+      const deliveryDetails = await homeServices.pickupDetails(req.user,req.params);
       utilityFunction.successResponse(res, {pickupDetails}, constants.MESSAGES.success)
     } catch (error) {
       console.log(error)
@@ -36,7 +36,7 @@ module.exports = {
 
       async getDeliveryDetails (req, res) {
         try {
-          const deliveryDetails = await homeServices.DeliveryDetails(req.user,req.params.delivery_id);
+          const deliveryDetails = await homeServices.DeliveryDetails(req.user,req.params);
           utilityFunction.successResponse(res, {deliveryDetails}, constants.MESSAGES.success)
         } catch (error) {
           console.log(error)
@@ -46,7 +46,7 @@ module.exports = {
 
       async sendDeliveryNotification (req, res) {
         try {
-          const deliveryDetails = await homeServices.deliveryNotifications(req.user,req.params.delivery_id);
+          const deliveryDetails = await homeServices.deliveryNotifications(req.user,req.params);
           utilityFunction.successResponse(res, {deliveryDetails}, constants.MESSAGES.success)
         } catch (error) {
           console.log(error)

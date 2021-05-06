@@ -89,7 +89,7 @@ module.exports = {
       },
       async getFaq (req, res) {
         try {
-          const faqData = await staticContent.getFaq(req.user,req.params.id);
+          const faqData = await staticContent.getFaq(req.user,req.params);
           console.log(faqData)
           utilityFunction.successResponse(res, faqData.dataValues, constants.MESSAGES.success)
         } catch (error) {
@@ -100,7 +100,7 @@ module.exports = {
 
       async editFaq (req, res) {
         try {
-          const faqData = await staticContent.editFaq(req.body, req.user,req.params.topic_id);
+          const faqData = await staticContent.editFaq({ ...req.params,...req.body },req.user);
           console.log(faqData)
           utilityFunction.successResponse(res, faqData, constants.MESSAGES.success)
         } catch (error) {

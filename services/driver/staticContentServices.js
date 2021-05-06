@@ -5,14 +5,14 @@ const utility = require('../../utils/utilityFunctions');
 
 module.exports = {
 
-    getHelpFaq: async(admin,topicId)=>{
+    getHelpFaq: async(user,params)=>{
         let checkId = await Faq.findOne({
-            where: {topic_id:topicId}
+            where: {topic_id:params.topic_id}
         })
         if (checkId) {
             return await Driver.findAll({
                 where: {
-                    topic_id:Number(topicId),
+                    topic_id:Number(params.topic_id),
                 } 
             })
         } else {
@@ -23,14 +23,14 @@ module.exports = {
 
      
 
-     getStaticContent: async(admin,contentId)=>{
+     getStaticContent: async(user,params)=>{
         let checkId = await StaticContent.findOne({
-            where: {id:contentId}
+            where: {id:params.id}
         })
         if (checkId) {
             return await StaticContent.findOne({
                 where: {
-                    id:contentId,
+                    id:params.id,
                 } 
             })
         } else {

@@ -26,6 +26,7 @@ module.exports = function(router) {
     router.use("/admin", require("./admin.routes"));
     router.use("/customer", require("./customer.routes"));
     router.use(`/driver`, require("./driver.routes"));
+    router.use(`/website`, require("./website.routes"));
     router.use((err, req, res, next) => {
         err.method_name = req.url
         handler.handleError(err, res);
