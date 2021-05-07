@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            OrderPickup.belongsTo(models.Restaurant);
             OrderPickup.belongsTo(models.HotspotLocation)
             OrderPickup.belongsTo(models.Driver);
         }
@@ -30,11 +29,6 @@ module.exports = (sequelize, DataTypes) => {
 
         hotspot_location_id: {
             type: DataTypes.INTEGER,
-        },
-
-        restaurant_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
         },
         restaurant_fee: {
             type: DataTypes.FLOAT,

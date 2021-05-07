@@ -322,26 +322,48 @@ module.exports = {
         const orderPickup = await models.OrderPickup.findOne({
             where: {
                 hotspot_location_id: order.hotspot_location_id,
-                restaurant_id: order.restaurant_id,
                 delivery_datetime: order.delivery_datetime,
                 driver_id:driver.id
                 }
         })
-    
         let order_pickup_id="PIC-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
         if (orderPickup) {
+            let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
             orderPickup.restaurant_fee += order.order_details.restaurant.fee;
-            orderPickup.order_count =parseInt(orderPickup.order_count)+ 1;
+            orderPickup.order_count =parseInt(currentOrderPickup.order_count)+ 1;
             orderPickup.amount += order.amount;
-            orderPickup.tip_amount+= order.tip_amount;
+            orderPickup.tip_amount += order.tip_amount;
+            let updatedRestaurant = [];
+            let findRestaurant = currentOrderPickup.pickup_details.restaurants.find(({ id }) => id == order.order_details.restaurant.id);
+            if (findRestaurant) {
+                updatedRestaurant = currentOrderPickup.pickup_details.restaurants.map((rest) => {
+                    if (rest.id == order.order_details.restaurant.id) {
+                        rest.order_count = parseInt(rest.order_count)+1;
+                        return rest;
+                    }
+                    else {
+                        return rest;
+                    }
+                })
+            }
+            else {
+                order.order_details.restaurant.order_count = 1;
+                updatedRestaurant=[...currentOrderPickup.pickup_details.restaurants,order.order_details.restaurant];
+            }
+            orderPickup.pickup_details = {
+                hotspot:currentOrderPickup.pickup_details.hotspot,
+                restaurants: updatedRestaurant,
+                driver:currentOrderPickup.pickup_details.driver,
+            };
             orderPickup.save();            
             order_pickup_id = orderPickup.order_pickup_id;
+
         }
         else {
+            order.order_details.restaurant.order_count = 1;
             let orderPickupObj = {
                 pickup_id: order_pickup_id,
                 hotspot_location_id: order.hotspot_location_id,
-                restaurant_id: order.restaurant_id,
                 restaurant_fee:order.order_details.restaurant.fee,
                 order_count: 1,
                 amount:order.amount,
@@ -350,7 +372,7 @@ module.exports = {
                 delivery_datetime:order.delivery_datetime,
                 pickup_details: {
                     hotspot:order.order_details.hotspot,
-                    restaurant:order.order_details.restaurant,
+                    restaurants:[order.order_details.restaurant],
                     driver,
                 }
                 
@@ -371,6 +393,8 @@ module.exports = {
                 
             }
         })
+
+        delete order.order_details.restaurant.order_count;
 
         await models.Order.update({
             status: 2,            
