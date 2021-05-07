@@ -30,9 +30,6 @@ module.exports = (sequelize, DataTypes) => {
         hotspot_location_id: {
             type: DataTypes.INTEGER,
         },
-        restaurant_fee: {
-            type: DataTypes.FLOAT,
-        },
         order_count: {
             type: DataTypes.BIGINT,
         },

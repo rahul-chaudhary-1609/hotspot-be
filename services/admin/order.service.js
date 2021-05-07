@@ -329,7 +329,6 @@ module.exports = {
         let order_pickup_id="PIC-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
         if (orderPickup) {
             let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
-            orderPickup.restaurant_fee += order.order_details.restaurant.fee;
             orderPickup.order_count =parseInt(currentOrderPickup.order_count)+ 1;
             orderPickup.amount += order.amount;
             orderPickup.tip_amount += order.tip_amount;
@@ -338,7 +337,8 @@ module.exports = {
             if (findRestaurant) {
                 updatedRestaurant = currentOrderPickup.pickup_details.restaurants.map((rest) => {
                     if (rest.id == order.order_details.restaurant.id) {
-                        rest.order_count = parseInt(rest.order_count)+1;
+                        rest.order_count = parseInt(rest.order_count) + 1;
+                        rest.fee += order.order_details.restaurant.fee;
                         return rest;
                     }
                     else {
@@ -364,7 +364,6 @@ module.exports = {
             let orderPickupObj = {
                 pickup_id: order_pickup_id,
                 hotspot_location_id: order.hotspot_location_id,
-                restaurant_fee:order.order_details.restaurant.fee,
                 order_count: 1,
                 amount:order.amount,
                 tip_amount:order.tip_amount,
