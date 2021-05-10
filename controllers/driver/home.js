@@ -48,7 +48,7 @@ module.exports = {
       async getDeliveryDetails (req, res) {
         try {
           const deliveryDetails = await homeServices.DeliveryDetails(req.user,req.params);
-          utilityFunction.successResponse(res, {deliveryDetails}, constants.MESSAGES.success)
+          utilityFunction.successResponse(res, deliveryDetails, constants.MESSAGES.success)
         } catch (error) {
           console.log(error)
           utilityFunction.errorResponse(res, error, constants.code.error_code)

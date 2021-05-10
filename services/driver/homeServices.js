@@ -61,7 +61,8 @@ module.exports = {
           },
          }
   })
-  if (checkId) {
+  if (checkId.length) {
+    console.log("andar")
     const pickups = await models.OrderPickup.findAndCountAll({
       where:{
         driver_id:user.id,
@@ -189,10 +190,23 @@ module.exports = {
       where:{
         pickup_id:params.pickup_id,
       },
-      //attributes: ["pickup_id",[Sequelize.json('pickup_details.hotspot.name'), 'hotspotName'],[Sequelize.json('pickup_details.hotspot.location_detail'), 'hotspotLocationDetail'],"delivery_datetime"]
     })
     pickupDetail.driverName = pickupData.dataValues.pickup_details.driver.first_name + " " + pickupData.dataValues.pickup_details.driver.last_name
-    console.log(pickupDetail)
+    pickupDetail.deliveryDate = moment(pickupData.dataValues.delivery_datetime).format('DD-MMM-YYYY');
+    pickupDetail.hotspotName = pickupData.dataValues.pickup_details.hotspot.name
+    pickupDetail.hotspotLocationDetail = pickupData.dataValues.pickup_details.hotspot.location_detail
+    pickupDetail.pickup_id = pickupData.dataValues.pickup_id
+    pickupDetail.restaurants = []
+    pickupData.dataValues.pickup_details.restaurants.forEach(element => {
+      let restaurantDetails = {
+        restaurantName:element.restaurant_name,
+        restaurantAddress:element.address,
+        retaurantLocation:element.location,
+        orderCount:element.order_count
+      }
+       pickupDetail.restaurants.push(restaurantDetails)
+    })
+    console.log(pickupData.dataValues)
     return pickupDetail
   } 
   else {
@@ -281,7 +295,7 @@ module.exports = {
     },
 
 
-    Deliveries: async(driver)=>{
+/*    Deliveries: async(driver)=>{
         let checkId = await Delivery.findOne({
             where: {
                 driver_id:driver.id,
@@ -321,9 +335,37 @@ module.exports = {
         else {
             throw new Error(constants.MESSAGES.no_current_delivery);
         }
-     },
+     },*/
 
-     DeliveryDetails: async(user,params)=>{
+     Deliveries: async(user)=>{
+      const todayStartDate = moment().format('YYYY-MM-DD ');
+      const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
+      let checkId = await models.OrderDelivery.findAll({
+          where: {
+              driver_id:user.id,
+              delivery_datetime: {
+                [Op.between]: [todayStartDate, todayEndDate]
+              },
+             }
+      })
+      if (checkId.length) {
+        const deliveries = await models.OrderDelivery.findAndCountAll({
+          where:{
+            driver_id:user.id,
+            delivery_datetime: {
+              [Op.between]: [todayStartDate, todayEndDate]
+            },
+          },
+          attributes: ["delivery_id",[Sequelize.json('delivery_details.hotspot.name'), 'hotspotName'],[Sequelize.json('delivery_details.hotspot.location_detail'), 'hotspotLocationDetail'],"delivery_datetime"]
+        })
+        return deliveries
+      } 
+      else {
+          throw new Error(constants.MESSAGES.no_current_delivery);
+      }
+    },    
+
+/*     DeliveryDetails: async(user,params)=>{
         let checkId = await Delivery.findOne({
             where: {
                 delivery_id:params.delivery_id,
@@ -393,9 +435,47 @@ module.exports = {
         else {
             throw new Error(constants.MESSAGES.no_order);
         }
-     },
+     },*/
 
-     deliveryNotifications: async(user,params)=>{
+     DeliveryDetails: async(user,params)=>{
+
+      let checkDeliveryId = await models.OrderDelivery.findOne({
+          where: {
+            delivery_id:params.delivery_id,
+             }
+      })
+      const deliveryDetail = [];
+      if (checkDeliveryId) {
+        const deliveryData = await models.OrderDelivery.findOne({
+          where:{
+            delivery_id:params.delivery_id,
+          },
+        })
+        console.log("aaaaaaaaaaaaaaaaa",deliveryData.dataValues)
+        deliveryDetail.driverName = deliveryData.dataValues.delivery_details.driver.first_name + " " + deliveryData.dataValues.delivery_details.driver.last_name
+        deliveryDetail.deliveryDate = moment(deliveryData.dataValues.delivery_datetime).format('DD-MMM-YYYY');
+        deliveryDetail.hotspotName = deliveryData.dataValues.delivery_details.hotspot.name
+        deliveryDetail.hotspotLocationDetail = deliveryData.dataValues.delivery_details.hotspot.location_detail
+        deliveryDetail.delivery_id = deliveryData.dataValues.delivery_id
+        deliveryDetail.dropOffs = deliveryData.dataValues.delivery_details.hotspot.dropoff.dropoff_detail
+        //deliveryData.dataValues.delivery_details.restaurants.forEach(element => {
+       /* let restaurantDetails = {
+          restaurantName:element.restaurant_name,
+          restaurantAddress:element.address,
+          retaurantLocation:element.location,
+          orderCount:element.order_count
+          }*/
+         // console.log(element)
+  //         pickupDetail.restaurants.push(restaurantDetails)
+       //})
+        return deliveryDetail
+      } 
+      else {
+          throw new Error(constants.MESSAGES.no_current_pickup);
+      }
+      },
+
+/*     deliveryNotifications: async(user,params)=>{
        
       let checkId = await Delivery.findOne({
           where: {
@@ -438,7 +518,53 @@ module.exports = {
       else {
           throw new Error(constants.MESSAGES.no_order);
       }
-   },
+   },*/
+
+
+   deliveryNotifications: async(user,params)=>{
+       
+    let checkId = await models.Order.findOne({
+        where: {
+            order_delivery_id:params.delivery_id
+    }
+    })
+    if (checkId) {
+    const Details= await models.Order.findAll({
+      where: {
+        order_delivery_id:params.delivery_id,
+        //type:constants.ORDER_TYPE.delivery
+      },
+     attributes: [Sequelize.literal(`"Driver"."first_name","Driver"."last_name","Customer"."name","Customer"."device_token","delivery_image_url"`)],
+      raw: true,
+      include: [{
+        model: Driver,
+        required: true,
+        attributes: [],
+      },
+       {
+        model: Customer,
+        required: true,
+        attributes: []
+      }]
+    })
+    Details.forEach(element => {
+      const message = {
+        notification: {
+          title: 'Delivery Notification',
+          body: `Hi ${element.name}.Your order has been delivered to the given drop off location by ${element.first_name} ${element.last_name}`,
+          image:`${element.delivery_image_url}`
+        },
+        data: {}
+      }
+      console.log(message)
+     // utility.sendFcmNotification(element.device_token,message);
+    })
+   
+    } 
+    else {
+        throw new Error(constants.MESSAGES.no_order);
+    }
+ },
 
    addImageUrl: async (driver,params) => {
     let checkId = await Delivery.findOne({
