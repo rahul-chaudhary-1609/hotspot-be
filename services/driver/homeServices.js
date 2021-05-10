@@ -1,11 +1,13 @@
 const { Order,Customer,Restaurant,HotspotLocation,HotspotDropoff,Driver,Pickup,Delivery} = require('../../models');
 const { Op } = require("sequelize");
+const models = require("../../models");
+const moment = require('moment');
 const Sequelize  = require("sequelize");
 const constants = require("../../constants");
 const utility = require('../../utils/utilityFunctions');
 
 module.exports = {
-  Pickups: async(driver)=>{
+/*  Pickups: async(driver)=>{
     let checkId = await Pickup.findOne({
         where: {
             driver_id:driver.id,
@@ -45,7 +47,36 @@ module.exports = {
     else {
         throw new Error(constants.MESSAGES.no_current_pickup);
     }
- },
+ },*/
+
+
+ Pickups: async(user)=>{
+  const todayStartDate = moment().format('YYYY-MM-DD ');
+  const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
+  let checkId = await models.OrderPickup.findAll({
+      where: {
+          driver_id:user.id,
+          delivery_datetime: {
+            [Op.between]: [todayStartDate, todayEndDate]
+          },
+         }
+  })
+  if (checkId) {
+    const pickups = await models.OrderPickup.findAndCountAll({
+      where:{
+        driver_id:user.id,
+        delivery_datetime: {
+          [Op.between]: [todayStartDate, todayEndDate]
+        },
+      },
+      attributes: ["pickup_id",[Sequelize.json('pickup_details.hotspot.name'), 'hotspotName'],[Sequelize.json('pickup_details.hotspot.location_detail'), 'hotspotLocationDetail'],"delivery_datetime"]
+    })
+    return pickups
+  } 
+  else {
+      throw new Error(constants.MESSAGES.no_current_pickup);
+  }
+},
 
 
 
@@ -89,7 +120,7 @@ module.exports = {
 },
 
 
- pickupDetails: async(user,params)=>{
+ /*pickupDetails: async(user,params)=>{
   let checkId = await Pickup.findOne({
       where: {
           pickup_id:params.pickup_id,
@@ -143,7 +174,111 @@ module.exports = {
   else {
       throw new Error(constants.MESSAGES.no_order);
   }
-},
+},*/
+
+  pickupDetails: async(user,params)=>{
+
+  let checkPickupId = await models.OrderPickup.findOne({
+      where: {
+        pickup_id:params.pickup_id,
+         }
+  })
+  const pickupDetail = [];
+  if (checkPickupId) {
+    const pickupData = await models.OrderPickup.findOne({
+      where:{
+        pickup_id:params.pickup_id,
+      },
+      //attributes: ["pickup_id",[Sequelize.json('pickup_details.hotspot.name'), 'hotspotName'],[Sequelize.json('pickup_details.hotspot.location_detail'), 'hotspotLocationDetail'],"delivery_datetime"]
+    })
+    pickupDetail.driverName = pickupData.dataValues.pickup_details.driver.first_name + " " + pickupData.dataValues.pickup_details.driver.last_name
+    console.log(pickupDetail)
+    return pickupDetail
+  } 
+  else {
+      throw new Error(constants.MESSAGES.no_current_pickup);
+  }
+  },
+
+  confirmPickups: async(user,params)=>{
+    const delivery_id="DEL-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
+    let checkPickupId = await models.OrderPickup.findOne({
+        where: {
+          pickup_id:params.pickup_id,
+           }
+    })
+    //console.log(checkPickupId.dataValues)
+
+    const deliveryId=delivery_id
+    if (checkPickupId) {
+      const pickupData = await models.Order.findAndCountAll({
+        where:{
+          order_pickup_id:params.pickup_id,
+        },
+      })
+      const addPickupTime=await models.OrderPickup.update({
+        pickup_datetime:new Date().toLocaleString(),
+      },
+        {
+            where: {
+              pickup_id:params.pickup_id,
+            },
+        });
+      const orderIds = pickupData.rows.map(data => { return data.order_id })
+
+      const addDeliveryIds=await models.Order.update({
+        order_delivery_id:delivery_id,
+      },
+        {
+            where: {
+                order_id: orderIds,
+            },
+        });
+
+      const orderDelivery = await models.OrderDelivery.findOne({
+        where: {
+            hotspot_location_id: checkPickupId.dataValues.pickup_details.hotspot.id,
+            delivery_datetime: checkPickupId.dataValues.delivery_datetime,
+            driver_id:checkPickupId.dataValues.driver_id
+            }
+    })
+    if(orderDelivery) {
+      const updatedeliveryId=await models.OrderDelivery.update({
+        delivery_id:delivery_id,
+      },
+        {
+            where: {
+              hotspot_location_id: checkPickupId.dataValues.pickup_details.hotspot.id,
+              delivery_datetime: checkPickupId.dataValues.delivery_datetime,
+              driver_id:checkPickupId.dataValues.driver_id
+            },
+        });
+    }
+    else {
+      let orderDeliveryObj = {
+        delivery_id:deliveryId,// delivery_id,
+        hotspot_location_id: checkPickupId.dataValues.hotspot_location_id,
+        order_count: checkPickupId.dataValues.order_count,
+        amount:checkPickupId.dataValues.amount,
+        tip_amount:checkPickupId.dataValues.tip_amount,
+        driver_id:checkPickupId.dataValues.driver_id,
+        delivery_datetime:checkPickupId.dataValues.delivery_datetime,
+        delivery_details: {
+            hotspot:checkPickupId.dataValues.pickup_details.hotspot,
+            restaurants:[checkPickupId.dataValues.pickup_details.restaurant],
+            driver:checkPickupId.dataValues.pickup_details.driver
+        }
+        
+    }
+    const deliveryData=await models.OrderDelivery.create(orderDeliveryObj)
+    
+    }
+    return true
+    } 
+    else {
+        throw new Error(constants.MESSAGES.no_current_pickup);
+    }
+    },
 
 
     Deliveries: async(driver)=>{

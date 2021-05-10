@@ -15,8 +15,19 @@ module.exports = {
 
   async getPickupDetails (req, res) {
     try {
-      const deliveryDetails = await homeServices.pickupDetails(req.user,req.params);
-      utilityFunction.successResponse(res, {pickupDetails}, constants.MESSAGES.success)
+      const pickupDetails = await homeServices.pickupDetails(req.user,req.params);
+      utilityFunction.successResponse(res, pickupDetails, constants.MESSAGES.success)
+    } catch (error) {
+      console.log(error)
+      utilityFunction.errorResponse(res, error, constants.code.error_code)
+    }
+  },
+
+  async confirmPickups (req, res) {
+    try {
+      const pickupDetails = await homeServices.confirmPickups(req.user,req.params);
+      console.log("aaaaaaaaaaaaaaaa",pickupDetails)
+      utilityFunction.successResponse(res, pickupDetails, constants.MESSAGES.success)
     } catch (error) {
       console.log(error)
       utilityFunction.errorResponse(res, error, constants.code.error_code)

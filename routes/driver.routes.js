@@ -53,6 +53,7 @@ router.get('/getPickupDetails/:pickup_id', driverAuthentication.validateDriverTo
 router.post('/sendNotification/:delivery_id',driverAuthentication.validateDriverToken, homeController.sendDeliveryNotification);
 router.get('/getTotalCount', driverAuthentication.validateDriverToken, homeController.getTotalCount);
 router.post('/deliveryImage', driverAuthentication.validateDriverToken,joiValidation.validateBody(apiSchema.deliveryImage), homeController.getTotalCount);
+router.put('/confirmPickups/:pickup_id', driverAuthentication.validateDriverToken, homeController.confirmPickups);
 
 
 // earning API's
