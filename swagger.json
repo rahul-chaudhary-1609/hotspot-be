@@ -72,6 +72,11 @@
       },
 
       {
+        "name": "Admin Earning Management",
+        "description": "admin schedule settings Api's"
+      },
+
+      {
         "name": "Admin Static Content",
         "description": "admin Static Content Api's"
       },
@@ -3272,9 +3277,40 @@
           }
         },
 
-       
 
 
+
+
+
+
+
+
+
+
+
+
+        "/admin/getOrderDeliveries": {
+          "get": {
+            "tags": [
+              "Admin Earning Management"
+            ],
+            "description": "Api to get order deliveries",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        
 
 
 

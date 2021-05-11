@@ -16,6 +16,7 @@ const adminHotspotController = require('../controllers/admin/hotspot');
 const notificationController = require('../controllers/admin/notification');
 const staticContentController = require('../controllers/admin/static_content');
 const bannerController = require('../controllers/admin/banner');
+const earningController = require('../controllers/admin/earning');
 
 const adminAuthentication = require('../middlewares/jwt');
 const adminMulter = require('../middlewares/multer');
@@ -224,3 +225,7 @@ router.post('/addBanner',adminAuthentication.validateAdminToken,joiValidation.va
 router.put('/editBanner/:banner_id',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editBanner),bannerController.editBanner);
 router.delete('/deleteBanner/:banner_id',adminAuthentication.validateAdminToken, bannerController.deleteBanner)
 module.exports = router;
+
+
+//earming Management
+router.get('/getOrderDeliveries',adminAuthentication.validateAdminToken, earningController.getOrderDeliveries);
