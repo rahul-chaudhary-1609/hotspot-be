@@ -158,6 +158,10 @@ module.exports = {
         id: Joi.number().required()
     }),
 
+    confirmOrderPickup: Joi.object({
+        order_pickup_id: Joi.string().required()
+    }),
+
 
 
 }

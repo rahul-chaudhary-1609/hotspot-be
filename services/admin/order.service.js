@@ -315,14 +315,15 @@ module.exports = {
                 }
             })
         );
-
     
         if (!driver) throw new Error(constants.MESSAGES.no_driver);
 
+        let currentOrder = order;
+        delete currentOrder.order_details.hotspot.dropoff;
         const orderPickup = await models.OrderPickup.findOne({
             where: {
-                hotspot_location_id: order.hotspot_location_id,
-                delivery_datetime: order.delivery_datetime,
+                hotspot_location_id: currentOrder.hotspot_location_id,
+                delivery_datetime: currentOrder.delivery_datetime,
                 driver_id:driver.id
                 }
         })
@@ -330,15 +331,15 @@ module.exports = {
         if (orderPickup) {
             let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
             orderPickup.order_count =parseInt(currentOrderPickup.order_count)+ 1;
-            orderPickup.amount += order.amount;
-            orderPickup.tip_amount += order.tip_amount;
+            orderPickup.amount += currentOrder.amount;
+            orderPickup.tip_amount += currentOrder.tip_amount;
             let updatedRestaurant = [];
-            let findRestaurant = currentOrderPickup.pickup_details.restaurants.find(({ id }) => id == order.order_details.restaurant.id);
+            let findRestaurant = currentOrderPickup.pickup_details.restaurants.find(({ id }) => id == currentOrder.order_details.restaurant.id);
             if (findRestaurant) {
                 updatedRestaurant = currentOrderPickup.pickup_details.restaurants.map((rest) => {
-                    if (rest.id == order.order_details.restaurant.id) {
+                    if (rest.id == currentOrder.order_details.restaurant.id) {
                         rest.order_count = parseInt(rest.order_count) + 1;
-                        rest.fee += order.order_details.restaurant.fee;
+                        rest.fee += currentOrder.order_details.restaurant.fee;
                         return rest;
                     }
                     else {
@@ -347,8 +348,8 @@ module.exports = {
                 })
             }
             else {
-                order.order_details.restaurant.order_count = 1;
-                updatedRestaurant=[...currentOrderPickup.pickup_details.restaurants,order.order_details.restaurant];
+                currentOrder.order_details.restaurant.order_count = 1;
+                updatedRestaurant=[...currentOrderPickup.pickup_details.restaurants,currentOrder.order_details.restaurant];
             }
             orderPickup.pickup_details = {
                 hotspot:currentOrderPickup.pickup_details.hotspot,
@@ -356,22 +357,22 @@ module.exports = {
                 driver:currentOrderPickup.pickup_details.driver,
             };
             orderPickup.save();            
-            order_pickup_id = orderPickup.order_pickup_id;
+            order_pickup_id = orderPickup.pickup_id;
 
         }
         else {
-            order.order_details.restaurant.order_count = 1;
+            currentOrder.order_details.restaurant.order_count = 1;
             let orderPickupObj = {
                 pickup_id: order_pickup_id,
-                hotspot_location_id: order.hotspot_location_id,
+                hotspot_location_id: currentOrder.hotspot_location_id,
                 order_count: 1,
-                amount:order.amount,
-                tip_amount:order.tip_amount,
+                amount:currentOrder.amount,
+                tip_amount:currentOrder.tip_amount,
                 driver_id:driver.id,
-                delivery_datetime:order.delivery_datetime,
+                delivery_datetime:currentOrder.delivery_datetime,
                 pickup_details: {
-                    hotspot:order.order_details.hotspot,
-                    restaurants:[order.order_details.restaurant],
+                    hotspot:currentOrder.order_details.hotspot,
+                    restaurants:[currentOrder.order_details.restaurant],
                     driver,
                 }
                 
@@ -393,7 +394,7 @@ module.exports = {
             }
         })
 
-        delete order.order_details.restaurant.order_count;
+        //delete order.order_details.restaurant.order_count;
 
         await models.Order.update({
             status: 2,            

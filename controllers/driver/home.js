@@ -23,6 +23,15 @@ module.exports = {
     }
   },
 
+  confirmOrderPickup: async (req, res) => {
+        try {
+            const responseFromService = await homeServices.confirmOrderPickup(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
   async confirmPickups (req, res) {
     try {
       const pickupDetails = await homeServices.confirmPickups(req.user,req.params);

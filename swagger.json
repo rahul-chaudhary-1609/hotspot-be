@@ -7206,6 +7206,35 @@
       }
     },
 
+    "/driver/confirmOrderPickup/{order_pickup_id}": {
+      "put": {
+        "tags": [
+          "Driver Home Management"
+        ],
+        "description": "Api to confirm pickups",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "order_pickup_id",
+            "in": "path",
+            "description": "order pickup id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
 
 
 

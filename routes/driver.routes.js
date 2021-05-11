@@ -54,6 +54,7 @@ router.post('/sendNotification/:delivery_id',driverAuthentication.validateDriver
 router.get('/getTotalCount', driverAuthentication.validateDriverToken, homeController.getTotalCount);
 router.post('/deliveryImage', driverAuthentication.validateDriverToken,joiValidation.validateBody(apiSchema.deliveryImage), homeController.getTotalCount);
 router.put('/confirmPickups/:pickup_id', driverAuthentication.validateDriverToken, homeController.confirmPickups);
+router.put('/confirmOrderPickup/:order_pickup_id',driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.confirmOrderPickup), homeController.confirmOrderPickup);
 
 
 // earning API's

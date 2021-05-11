@@ -214,6 +214,87 @@ module.exports = {
   }
   },
 
+  confirmOrderPickup: async (params) => {
+    
+    let orderPickup = await models.OrderPickup.findOne({
+        where: {
+          pickup_id:params.order_pickup_id,
+      }
+    })
+
+    let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
+
+    const totalDeliveryAmount = currentOrderPickup.amount + currentOrderPickup.tip_amount;
+
+    const driver_fee = await models.Fee.findOne({
+            where: {
+                order_range_from: {
+                    [Op.lte]:totalDeliveryAmount,
+                },
+                order_range_to: {
+                    [Op.gte]:totalDeliveryAmount,
+                },
+                fee_type: 'driver',             
+                
+            }
+    })
+
+    const restaurant_fee = currentOrderPickup.pickup_details.restaurants.reduce((result, restaurant) => result + restaurant.fee, 0);
+
+    let orderDropoffs = await utility.convertPromiseToObject(
+      await models.Order.findAll({
+        attributes: [
+          'hotspot_dropoff_id',
+          [Sequelize.fn('COUNT', Sequelize.col('id')), 'orderCount'],
+
+        ],
+        where:{
+          order_pickup_id:params.order_pickup_id,
+        },
+        group: ['"Order.hotspot_dropoff_id"'],
+      })
+    )
+
+    const hotspot_fee = totalDeliveryAmount - restaurant_fee - driver_fee.fee;
+
+    const delivery_id="DEL-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
+    let orderDeliveryObj = {
+      delivery_id,
+      hotspot_location_id: currentOrderPickup.hotspot_location_id,
+      hotspot_fee,
+      order_count: currentOrderPickup.order_count,
+      amount: currentOrderPickup.amount,
+      tip_amount:currentOrderPickup.tip_amount,
+      driver_id:currentOrderPickup.driver_id,
+      driver_fee:driver_fee.fee,
+      delivery_datetime:currentOrderPickup.delivery_datetime,
+      delivery_details: {
+        ...currentOrderPickup.pickup_details,
+        dropOffs:orderDropoffs,
+      },
+    }
+
+    console.log("orderDeliveryObj", orderDeliveryObj)
+    
+    await models.Order.update({
+        order_delivery_id:delivery_id,
+      },
+        {
+          where:{
+          order_pickup_id:params.order_pickup_id,
+        }
+      }
+    )
+
+    orderPickup.pickup_datetime = new Date();
+    orderPickup.save()
+
+    let orderDelivery = await utility.convertPromiseToObject(await models.OrderDelivery.create(orderDeliveryObj));
+
+    return { orderDelivery };
+
+  },
+
   confirmPickups: async(user,params)=>{
     const delivery_id="DEL-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
     let checkPickupId = await models.OrderPickup.findOne({
