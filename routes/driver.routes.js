@@ -7,11 +7,11 @@ const driverAuthentication = require('../middlewares/jwt');
 const router=express.Router();
 const multer = require('../middlewares/multer');
 
-const { OnBoardingController }   = require('../controllers/driver/onBoardingController');
-const { EarningController }   = require('../controllers/driver/earningController');
+const onBoardingController = require('../controllers/driver/onBoardingController');
+const earningController  = require('../controllers/driver/earningController');
 
-const onBoardingController = new OnBoardingController(); 
-const earningController = new EarningController(); 
+//const onBoardingController = new OnBoardingController(); 
+//const earningController = new EarningController(); 
 
 const accountController = require('../controllers/driver/account');
 const staticContentController = require('../controllers/driver/staticContent');
