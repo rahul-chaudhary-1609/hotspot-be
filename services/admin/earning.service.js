@@ -12,5 +12,15 @@ module.exports = {
         )
     },
     
+    getOrderDeliveryDetails: async (params) => {
+        return await utility.convertPromiseToObject(
+            await models.Order.findAndCountAll({
+                where: {
+                    order_delivery_id:params.order_delivery_id
+                },
+                order: [["createdAt", "DESC"]]
+            })
+        )
+    }
 
 }

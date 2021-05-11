@@ -342,7 +342,9 @@ module.exports = {
         order: Joi.number().optional()
     }),
 
-   
+    getOrderDeliveryDetails: Joi.object({
+        order_delivery_id: Joi.string().required()
+    }),
 }
 
 

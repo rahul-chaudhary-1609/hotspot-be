@@ -3310,7 +3310,37 @@
             "responses": {}
           }
         },
-        
+        "/admin/getOrderDeliveryDetails/{order_delivery_id}": {
+          "get": {
+            "tags": [
+              "Admin Earning Management"
+            ],
+            "description": "Api to get a order delivery details",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "order_delivery_id",
+                "in": "path",
+                "description": "order delivery idn",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+       
+
+
 
 
 
