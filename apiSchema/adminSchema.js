@@ -345,6 +345,15 @@ module.exports = {
     getOrderDeliveryDetails: Joi.object({
         order_delivery_id: Joi.string().required()
     }),
+
+    getOrderDeliveries: Joi.object({
+        search_key: Joi.string().optional(),
+        start_date: Joi.date().optional(),
+        end_date: Joi.date().greater(Joi.ref('start_date')).optional(),
+        filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").optional(),
+        page: Joi.number().optional(),
+        page_size: Joi.number().optional(),
+    }),
 }
 
 

@@ -10,23 +10,23 @@ module.exports = {
         
         console.log(params,user);
         
-        const customer_id = user.id;
+        // const customer_id = user.id;
 
-            //temporary for dummy data only
+        //     //temporary for dummy data only
 
-            const P = {
-                latitude: params.latitude,
-                longitude: params.longitude
-            }
+        //     const P = {
+        //         latitude: params.latitude,
+        //         longitude: params.longitude
+        //     }
 
-            const R = 5000 // meters
+        //     const R = 5000 // meters
 
-            const available_delivery_shifts = [
-                ['09:00 AM', '12:00 PM', '03:30 PM'],
-                ['09:30 AM', '12:30 PM', '04:00 PM'],
-                ['10:00 AM', '01:00 PM', '04:30 PM'],
-                ['10:30 AM', '01:30 PM', '05:00 PM']
-            ];
+        //     const available_delivery_shifts = [
+        //         ['09:00 AM', '12:00 PM', '03:30 PM'],
+        //         ['09:30 AM', '12:30 PM', '04:00 PM'],
+        //         ['10:00 AM', '01:00 PM', '04:30 PM'],
+        //         ['10:30 AM', '01:30 PM', '05:00 PM']
+        //     ];
 
             //const L = [{ location: P, distance: `${Math.floor(randomLocation.distance(P, P))} m`}]
             // const hotspotLocation = await models.HotspotLocation.findAndCountAll({
@@ -120,7 +120,7 @@ module.exports = {
 
     checkHotspotLocation: async (user) => {
             console.log(user);
-            const customer_id = user.id;
+            //const customer_id = user.id;
 
             const options = ['hotspot', 'pickup'];
 

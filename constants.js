@@ -72,6 +72,7 @@ module.exports = {
     no_payment: "no payment details found",
     confirm_payment: "Payment confirmed",
     no_payment_card: "No payment card found",
+    no_record: "No record found",
     payment_card_already_exist: "Payment card wth same card number already exist",
     invalid_status: "Plese send a valid status",
     picture_upload_success: "Picture uploaded successfully",

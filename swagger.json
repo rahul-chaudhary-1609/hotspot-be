@@ -3305,7 +3305,51 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "search_key",
+                "in": "query",
+                "description": "search key",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "start_date",
+                "in": "query",
+                "description": "start date- format: YYYY-DD-MM",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "end_date",
+                "in": "query",
+                "description": "end date- format: YYYY-DD-MM",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "filter_key",
+                "in": "query",
+                "description": "filter key",
+                "required":false,
+                "type": "string",
+                "enum":["Daily","Weekly","Monthly","Yearly"]
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "page",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "page size",
+                "required": false,
+                "type": "number"
               }
+
             ],
             "responses": {}
           }
@@ -3330,7 +3374,7 @@
               {
                 "name": "order_delivery_id",
                 "in": "path",
-                "description": "order delivery idn",
+                "description": "order delivery id",
                 "required": true,
                 "type": "string"
               }

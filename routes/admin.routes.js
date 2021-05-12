@@ -228,6 +228,6 @@ module.exports = router;
 
 
 //earming Management
-router.get('/getOrderDeliveries',adminAuthentication.validateAdminToken, earningController.getOrderDeliveries);
+router.get('/getOrderDeliveries',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrderDeliveries), earningController.getOrderDeliveries);
 router.get('/getOrderDeliveryDetails/:order_delivery_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getOrderDeliveryDetails), earningController.getOrderDeliveryDetails);
 
