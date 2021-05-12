@@ -274,7 +274,6 @@ module.exports = {
       },
     }
 
-    console.log("orderDeliveryObj", orderDeliveryObj)
     
     await models.Order.update({
         order_delivery_id:delivery_id,
