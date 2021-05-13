@@ -224,15 +224,13 @@ module.exports = {
 
     let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
 
-    const totalDeliveryAmount = currentOrderPickup.amount + currentOrderPickup.tip_amount;
-
     const driver_fee = await models.Fee.findOne({
             where: {
                 order_range_from: {
-                    [Op.lte]:totalDeliveryAmount,
+                    [Op.lte]:currentOrderPickup.amount,
                 },
                 order_range_to: {
-                    [Op.gte]:totalDeliveryAmount,
+                    [Op.gte]:currentOrderPickup.amount,
                 },
                 fee_type: 'driver',             
                 
@@ -255,7 +253,7 @@ module.exports = {
       })
     )
 
-    const hotspot_fee = totalDeliveryAmount - restaurant_fee - driver_fee.fee;
+    const hotspot_fee = currentOrderPickup.amount - restaurant_fee - driver_fee.fee;
 
     const delivery_id="DEL-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
     let orderDeliveryObj = {

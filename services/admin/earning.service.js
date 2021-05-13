@@ -75,7 +75,7 @@ module.exports = {
             }
         }
 
-        let orderDelivery = await utility.convertPromiseToObject(
+        let orderDeliveries = await utility.convertPromiseToObject(
             await models.OrderDelivery.findAndCountAll({
                 where: whereCondition,
                 order: [["createdAt", "DESC"]],
@@ -84,9 +84,18 @@ module.exports = {
             })
         )
 
-        if (orderDelivery.count == 0) throw new Error(constants.MESSAGES.no_record);
+        if (orderDeliveries.count == 0) throw new Error(constants.MESSAGES.no_record);
 
-        return {orderDelivery};
+        let orderDeliveriesRows = []
+        
+        for (let orderDelivery of orderDeliveries.rows) {
+            orderDelivery.order_amount = orderDelivery.amount - orderDelivery.tip_amount;
+            orderDeliveriesRows.push(orderDelivery)
+        }
+
+        orderDeliveries.rows = orderDeliveriesRows;
+
+        return {orderDeliveries};
     },
     
     getOrderDeliveryDetails: async (params) => {
@@ -187,9 +196,8 @@ module.exports = {
         let ordersRows = []
         
         for (let order of orders.rows) {
-            let totalOrderAmount = order.amount + order.tip_amount;
             order.restaurant_fee = order.order_details.restaurant.fee;
-            order.hotspot_fee = totalOrderAmount - order.order_details.restaurant.fee;
+            order.hotspot_fee = order.amount - order.order_details.restaurant.fee;
             ordersRows.push(order)
         }
 

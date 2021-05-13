@@ -381,18 +381,18 @@ module.exports = {
         }
     
 
-        const fee = await models.Fee.findOne({
-            where: {
-                order_range_from: {
-                    [Op.lte]:order.amount,
-                },
-                order_range_to: {
-                    [Op.gte]:order.amount,
-                },
-                fee_type: 'driver',             
+        // const fee = await models.Fee.findOne({
+        //     where: {
+        //         order_range_from: {
+        //             [Op.lte]:order.amount,
+        //         },
+        //         order_range_to: {
+        //             [Op.gte]:order.amount,
+        //         },
+        //         fee_type: 'driver',             
                 
-            }
-        })
+        //     }
+        // })
 
         //delete order.order_details.restaurant.order_count;
 
