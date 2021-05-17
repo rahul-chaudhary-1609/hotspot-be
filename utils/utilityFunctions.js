@@ -206,3 +206,14 @@ module.exports.verifyOtp = async (params) => {
     }));
     
 }
+
+module.exports.getMonday = (params) => {
+    let date = new Date(params);
+    let day = date.getDay();
+    let diff =date.getDate() - day + (day == 0 ? -6 : 1);
+    return new Date(date.setDate(diff));
+}
+
+module.exports.getOnlyDate = (params) => {
+    return params.toJSON().replace(/[:]|[.]|[Z]/g, '').slice(0,10)
+}

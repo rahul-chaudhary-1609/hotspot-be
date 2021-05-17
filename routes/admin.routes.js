@@ -231,3 +231,4 @@ module.exports = router;
 router.get('/getOrderDeliveries',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrderDeliveries), earningController.getOrderDeliveries);
 router.get('/getOrderDeliveryDetails/:order_delivery_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getOrderDeliveryDetails), earningController.getOrderDeliveryDetails);
 router.get('/getPickupOrders',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getPickupOrders), earningController.getPickupOrders);
+router.get('/getRestaurantEarnings',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getRestaurantEarnings), earningController.getRestaurantEarnings);

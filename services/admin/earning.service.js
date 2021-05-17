@@ -3,6 +3,15 @@ const {sequelize}=require('../../models');
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const constants = require("../../constants");
+const moment = require("moment");
+const order = require('../../controllers/customer/order');
+
+const getStartAndEndDate = (params) => {
+    let startDate = utility.getMonday(new Date(params.now))
+    let endDate = utility.getMonday(new Date(params.now))        
+    endDate.setDate(startDate.getDate() + 6);
+    return {startDate,endDate}
+}
 
 module.exports = {
     getOrderDeliveries: async (params) => {
@@ -204,5 +213,237 @@ module.exports = {
         orders.rows = ordersRows;
 
         return {orders};
+    },
+
+    getRestaurantEarnings: async (params) => {
+
+        let restaurantPayment = await models.RestaurantPayment.findAndCountAll({
+            order:[['to_date','DESC']]
+        });
+
+        let now = restaurantPayment.count > 0 ? (new Date(restaurantPayment.rows[0].to_date)) : new Date(process.env.PAYMENT_CALCULATION_START_DATE);
+        now = new Date(now)
+        now.setDate(now.getDate()+1)
+
+        let date = getStartAndEndDate({ now })
+
+        let newRestaurantPayment = [];
+
+        models.RestaurantPayment.hasOne(models.Restaurant,{foreign_key:"id",sourceKey:"restaurant_id",targetKey:"id"})
+        
+        while (date.endDate < (new Date())) {
+            let orders = await utility.convertPromiseToObject(
+            await models.Order.findAll({
+                attributes: [
+                    'restaurant_id',
+                    [sequelize.fn("sum", sequelize.cast(sequelize.json("order_details.restaurant.fee"), 'float')), "restaurant_fee"],
+                    [sequelize.fn("count", sequelize.col("Order.id")), "order_count"],
+                    [sequelize.fn("sum", sequelize.col("amount")), "amount"],
+                    [sequelize.fn("sum", sequelize.col("tip_amount")), "tip_amount"],
+                ],
+                where: {
+                    delivery_datetime: {
+                        [Op.and]: [
+                            { [Op.gte]: utility.getOnlyDate(date.startDate) },
+                            {[Op.lte]:utility.getOnlyDate(date.endDate)}
+                        ]
+                    }
+                },
+                include: [
+                    {
+                        model: models.Restaurant,
+                        attributes: ['id', 'restaurant_name'],
+                        required:true,
+                    }
+                ],
+                group:['"restaurant_id"','"Restaurant.id"']
+            })
+            )
+
+            orders = orders.map((order) => {
+                let orderObj= {
+                    ...order,
+                    payment_id:"PID-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '')+"-"+order.restaurant_id,
+                    from_date: utility.getOnlyDate(date.startDate),
+                    to_date: utility.getOnlyDate(date.endDate),
+                    restaurant_name:order.Restaurant.restaurant_name,
+                    payment_details: {
+                        restaurnat:{
+                            ...order.Restaurant
+                        }
+                    }
+                }
+
+                delete orderObj.Restaurant;
+
+                return orderObj
+            })
+            newRestaurantPayment.push(...orders)            
+            date.endDate.setDate(date.endDate.getDate() + 1)
+            now = utility.getOnlyDate(date.endDate);
+            date=getStartAndEndDate({ now })
+        }
+
+        console.log(newRestaurantPayment);
+
+        await models.RestaurantPayment.bulkCreate(newRestaurantPayment);
+
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+
+        
+        let whereCondition = {};
+        if (params.search_key) {
+            let searchKey = params.search_key;
+            whereCondition = {
+                ...whereCondition,
+                [Op.or]: [
+                    { restaurant_name: { [Op.iLike]: `%${searchKey}%` } },
+                    { payment_id: { [Op.iLike]: `%${searchKey}%` } },
+                ]
+            };
+        }
+
+        if (params.start_date && params.end_date) {
+            whereCondition = {
+                ...whereCondition,
+                [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                
+            };
+        }
+        else if (params.filter_key) {
+            let start_date = new Date();
+            let end_date = new Date();
+            if (params.filter_key == "Daily") {
+                start_date.setDate(end_date.getDate() - 1)
+                whereCondition = {
+                    ...whereCondition,
+                    [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                };
+            }
+            else if (params.filter_key == "Weekly") {
+                start_date.setDate(end_date.getDate() - 7)
+                whereCondition = {
+                    ...whereCondition,
+                    [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                };
+            }
+            else if (params.filter_key == "Monthly") {
+                start_date.setMonth(end_date.getMonth() - 1)
+                whereCondition = {
+                    ...whereCondition,
+                    [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                };
+            }
+            else if (params.filter_key == "Yearly") {
+                start_date.getFullYear(end_date.getFullYear() - 1)
+                whereCondition = {
+                    ...whereCondition,
+                    [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                };
+            }
+        }
+
+
+        return await utility.convertPromiseToObject(await models.RestaurantPayment.findAndCountAll({
+                where: whereCondition,
+                order: [["createdAt", "DESC"]],
+                limit,
+                offset,
+            }))
     }
 }
