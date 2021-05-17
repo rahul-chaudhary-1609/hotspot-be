@@ -40,6 +40,15 @@ module.exports = {
         }
     },
 
+    getBanner: async (req, res) => {
+        try {
+            const responseFromService = await bannerService.getBanner(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     
 
 }

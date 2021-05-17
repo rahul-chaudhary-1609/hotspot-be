@@ -3603,7 +3603,7 @@
           }
         },
 
-        "/admin//listBanners": {
+        "/admin/listBanners": {
           "get": {
             "tags": [
               "Admin Banner Management"
@@ -3751,6 +3751,35 @@
                 "name": "banner_id",
                 "in": "path",
                 "description": "id of the banner to be deleted",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+
+        "/admin/getBanner/{banner_id}": {
+          "get": {
+            "tags": [
+              "Admin Banner Management"
+            ],
+            "description": "Api to get banner",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },{
+                "name": "banner_id",
+                "in": "path",
+                "description": "id of the banner ",
                 "required": true,
                 "type": "string"
               }
