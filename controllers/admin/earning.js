@@ -23,7 +23,7 @@ module.exports = {
 
     getPickupOrders: async (req, res) => {
          try {
-            const responseFromService = await earningService.getPickupOrders(req.params);
+            const responseFromService = await earningService.getPickupOrders(req.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -33,6 +33,33 @@ module.exports = {
     getRestaurantEarnings: async (req, res) => {
          try {
             const responseFromService = await earningService.getRestaurantEarnings(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getOrdersByRestaurantIdAndDateRange: async (req, res) => {
+         try {
+            const responseFromService = await earningService.getOrdersByRestaurantIdAndDateRange(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getDriverEarnings: async (req, res) => {
+         try {
+            const responseFromService = await earningService.getDriverEarnings(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getOrdersByDriverIdAndDateRange: async (req, res) => {
+         try {
+            const responseFromService = await earningService.getOrdersByDriverIdAndDateRange(req.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

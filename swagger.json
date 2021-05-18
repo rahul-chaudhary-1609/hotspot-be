@@ -3354,7 +3354,7 @@
             "responses": {}
           }
         },
-        "/admin/getOrderDeliveryDetails/{order_delivery_id}": {
+        "/admin/getOrderDeliveryDetails": {
           "get": {
             "tags": [
               "Admin Earning Management"
@@ -3373,10 +3373,24 @@
               },
               {
                 "name": "order_delivery_id",
-                "in": "path",
+                "in": "query",
                 "description": "order delivery id",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "page",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "page size",
+                "required": false,
+                "type": "number"
               }
             ],
             "responses": {}
@@ -3456,7 +3470,7 @@
             "tags": [
               "Admin Earning Management"
             ],
-            "description": "Api to get pickup orders",
+            "description": "Api to get Restaurant Earnings",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -3520,7 +3534,187 @@
             "responses": {}
           }
         },
-       
+        "/admin/getOrdersByRestaurantIdAndDateRange": {
+          "get": {
+            "tags": [
+              "Admin Earning Management"
+            ],
+            "description": "Api to get Orders By Restaurant Id And Date Range",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_id",
+                "in": "query",
+                "description": "restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "start_date",
+                "in": "query",
+                "description": "start date- format: YYYY-DD-MM",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "end_date",
+                "in": "query",
+                "description": "end date- format: YYYY-DD-MM",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "page",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "page size",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+       "/admin/getDriverEarnings": {
+        "get": {
+          "tags": [
+            "Admin Earning Management"
+          ],
+          "description": "Api to get Driver Earnings",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "search_key",
+              "in": "query",
+              "description": "search key",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "start_date",
+              "in": "query",
+              "description": "start date- format: YYYY-DD-MM",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "end_date",
+              "in": "query",
+              "description": "end date- format: YYYY-DD-MM",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "filter_key",
+              "in": "query",
+              "description": "filter key",
+              "required": false,
+              "type": "string",
+              "enum": [
+                "Daily",
+                "Weekly",
+                "Monthly",
+                "Yearly"
+              ]
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "description": "page",
+              "required": false,
+              "type": "number"
+            },
+            {
+              "name": "page_size",
+              "in": "query",
+              "description": "page size",
+              "required": false,
+              "type": "number"
+            }
+          ],
+          "responses": {}
+        }
+      },
+      "/admin/getOrdersByDriverIdAndDateRange": {
+        "get": {
+          "tags": [
+            "Admin Earning Management"
+          ],
+          "description": "Api to get Orders By driver Id And Date Range",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "driver_id",
+              "in": "query",
+              "description": "driver id",
+              "required": true,
+              "type": "number"
+            },
+            {
+              "name": "start_date",
+              "in": "query",
+              "description": "start date- format: YYYY-DD-MM",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "end_date",
+              "in": "query",
+              "description": "end date- format: YYYY-DD-MM",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "description": "page",
+              "required": false,
+              "type": "number"
+            },
+            {
+              "name": "page_size",
+              "in": "query",
+              "description": "page size",
+              "required": false,
+              "type": "number"
+            }
+          ],
+          "responses": {}
+        }
+      },
 
 
 

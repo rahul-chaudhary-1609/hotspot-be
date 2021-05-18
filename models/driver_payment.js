@@ -3,7 +3,7 @@ const {
     Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class OrderDelivery extends Model {
+    class DriverPayment extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -11,27 +11,31 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            //OrderDelivery.belongsTo(models.HotspotLocation)
-            //OrderDelivery.belongsTo(models.Driver);
         }
     }
-    OrderDelivery.init({
+    DriverPayment.init({
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
-        delivery_id: {
+        payment_id: {
             type: DataTypes.STRING,
             allowNull: false,
         },
 
-        hotspot_location_id: {
+        driver_id: {
             type: DataTypes.INTEGER,
+            allowNull: false,
         },
-        hotspot_fee: {
+        driver_name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        driver_fee: {
             type: DataTypes.DECIMAL(15,2),
+            allowNull: false,
         },
         order_count: {
             type: DataTypes.BIGINT,
@@ -39,36 +43,40 @@ module.exports = (sequelize, DataTypes) => {
         amount: {
             type: DataTypes.DECIMAL(15,2),
         },
+
         tip_amount: {
             type: DataTypes.DECIMAL(15,2),
         },
-        driver_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        driver_fee: {
-            type: DataTypes.DECIMAL(15,2),
-        },
 
-        delivery_datetime: {
-            type: DataTypes.DATE,
+        from_date: {
+            type: DataTypes.DATEONLY,
         },
-        delivery_image_urls: {
-            type: DataTypes.ARRAY(DataTypes.STRING),
+        to_date: {
+            type: DataTypes.DATEONLY,
         },
-        delivery_details: {
+        payment_details: {
             type: DataTypes.JSON,
         },
-
-
+        transaction_id: {
+            type: DataTypes.STRING,
+        },
+        payment_date: {
+            type: DataTypes.STRING,
+        },
+        status: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '0=>not_paid,1=>in_process,2=>paid'
+        },
 
     }, {
         sequelize,
         underscored: true,
-        tableName: 'order_deliveries',
-        modelName: 'OrderDelivery',
+        tableName: 'driver_payments',
+        modelName: 'DriverPayment',
     });
     //Delivery.sync({ alter: true })
-    return OrderDelivery;
+    return DriverPayment;
     
 };

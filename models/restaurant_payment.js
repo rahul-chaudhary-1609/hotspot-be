@@ -34,18 +34,18 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         restaurant_fee: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
             allowNull: false,
         },
         order_count: {
             type: DataTypes.BIGINT,
         },
         amount: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
         },
 
         tip_amount: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
         },
 
         from_date: {
@@ -56,6 +56,18 @@ module.exports = (sequelize, DataTypes) => {
         },
         payment_details: {
             type: DataTypes.JSON,
+        },
+        transaction_id: {
+            type: DataTypes.STRING,
+        },
+        payment_date: {
+            type: DataTypes.STRING,
+        },
+        status: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '0=>not_paid,1=>in_process,2=>paid'
         },
 
     }, {

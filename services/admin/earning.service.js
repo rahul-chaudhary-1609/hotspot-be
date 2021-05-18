@@ -84,6 +84,8 @@ module.exports = {
             }
         }
 
+        // models.OrderDelivery.hasOne(models.HotspotLocation,{foreignKey:"id",sourceKey:"hotspot_location_id",targetKey:"id"})
+
         let orderDeliveries = await utility.convertPromiseToObject(
             await models.OrderDelivery.findAndCountAll({
                 where: whereCondition,
@@ -108,12 +110,16 @@ module.exports = {
     },
     
     getOrderDeliveryDetails: async (params) => {
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+
         return await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
                     order_delivery_id:params.order_delivery_id
                 },
-                order: [["createdAt", "DESC"]]
+                order: [["createdAt", "DESC"]],
+                offset,
+                limit
             })
         )
     },
@@ -242,6 +248,7 @@ module.exports = {
                     [sequelize.fn("sum", sequelize.col("tip_amount")), "tip_amount"],
                 ],
                 where: {
+                    status: constants.ORDER_DELIVERY_STATUS.delivered,
                     delivery_datetime: {
                         [Op.and]: [
                             { [Op.gte]: utility.getOnlyDate(date.startDate) },
@@ -445,5 +452,285 @@ module.exports = {
                 limit,
                 offset,
             }))
-    }
+    },
+
+    getOrdersByRestaurantIdAndDateRange: async (params) => {
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+
+        return await utility.convertPromiseToObject(
+            await models.Order.findAndCountAll({
+                where: {
+                    restaurant_id:params.restaurant_id,
+                    delivery_datetime: {
+                        [Op.and]: [
+                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                            {[Op.lte]:utility.getOnlyDate(new Date(params.end_date))}
+                        ]
+                    }
+                },
+                order: [["createdAt", "DESC"]],
+                offset,
+                limit
+                
+            })
+        )
+    },
+
+    getDriverEarnings: async (params) => {
+
+        let driverPayment = await models.DriverPayment.findAndCountAll({
+            order:[['to_date','DESC']]
+        });
+
+        let now = driverPayment.count > 0 ? (new Date(driverPayment.rows[0].to_date)) : new Date(process.env.PAYMENT_CALCULATION_START_DATE);
+        now = new Date(now)
+        now.setDate(now.getDate()+1)
+
+        let date = getStartAndEndDate({ now })
+
+        let newDriverPayment = [];
+
+        
+        while (date.endDate < (new Date())) {
+            let orderDeliveries = await utility.convertPromiseToObject(
+            await models.OrderDelivery.findAll({
+                attributes: [
+                    'driver_id',
+                    [sequelize.fn("sum", sequelize.col("driver_fee")), "driver_fee"],
+                    [sequelize.fn("sum", sequelize.col("order_count")), "order_count"],
+                    [sequelize.fn("sum", sequelize.col("amount")), "amount"],
+                    [sequelize.fn("sum", sequelize.col("tip_amount")), "tip_amount"],
+                ],
+                where: {
+                    delivery_datetime: {
+                        [Op.and]: [
+                            { [Op.gte]: utility.getOnlyDate(date.startDate) },
+                            {[Op.lte]:utility.getOnlyDate(date.endDate)}
+                        ]
+                    }
+                },
+                group:['"driver_id"']
+            })
+            )
+
+            let formattedOrderDeliveries = [];
+            
+            for (let orderDelivery of orderDeliveries) {
+                let driver = await utility.convertPromiseToObject(
+                    await models.Driver.findOne({
+                        attributes:['id','first_name','last_name'],
+                        where: {
+                            id:orderDelivery.driver_id
+                        }
+                    })
+                )
+
+                let orderDeliveryObj= {
+                    ...orderDelivery,
+                    payment_id:"PID-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '')+"-"+order.driver_id,
+                    from_date: utility.getOnlyDate(date.startDate),
+                    to_date: utility.getOnlyDate(date.endDate),
+                    driver_name:driver.first_name+driver.last_name,
+                    payment_details: {
+                        driver:{
+                            ...driver
+                        }
+                    }
+                }
+
+                formattedOrderDeliveries.push(orderDeliveryObj);
+
+            }
+
+            newDriverPayment.push(...formattedOrderDeliveries)            
+            date.endDate.setDate(date.endDate.getDate() + 1)
+            now = utility.getOnlyDate(date.endDate);
+            date=getStartAndEndDate({ now })
+        }
+
+        console.log(newDriverPayment);
+
+        await models.DriverPayment.bulkCreate(newDriverPayment);
+
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+
+        
+        let whereCondition = {};
+        if (params.search_key) {
+            let searchKey = params.search_key;
+            whereCondition = {
+                ...whereCondition,
+                [Op.or]: [
+                    { driver_name: { [Op.iLike]: `%${searchKey}%` } },
+                    { payment_id: { [Op.iLike]: `%${searchKey}%` } },
+                ]
+            };
+        }
+
+        if (params.start_date && params.end_date) {
+            whereCondition = {
+                ...whereCondition,
+                [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                
+            };
+        }
+        else if (params.filter_key) {
+            let start_date = new Date();
+            let end_date = new Date();
+            if (params.filter_key == "Daily") {
+                start_date.setDate(end_date.getDate() - 1)
+                whereCondition = {
+                    ...whereCondition,
+                    [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                };
+            }
+            else if (params.filter_key == "Weekly") {
+                start_date.setDate(end_date.getDate() - 7)
+                whereCondition = {
+                    ...whereCondition,
+                    [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                };
+            }
+            else if (params.filter_key == "Monthly") {
+                start_date.setMonth(end_date.getMonth() - 1)
+                whereCondition = {
+                    ...whereCondition,
+                    [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                };
+            }
+            else if (params.filter_key == "Yearly") {
+                start_date.getFullYear(end_date.getFullYear() - 1)
+                whereCondition = {
+                    ...whereCondition,
+                    [Op.or]: [
+                    {
+                        from_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                    {
+                        to_date: {
+                            [Op.and]: [
+                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                            ]                
+                        }
+
+                    },
+                ]
+                };
+            }
+        }
+
+
+        return await utility.convertPromiseToObject(await models.DriverPayment.findAndCountAll({
+                where: whereCondition,
+                order: [["createdAt", "DESC"]],
+                limit,
+                offset,
+            }))
+    },
+
+    getOrdersByDriverIdAndDateRange: async (params) => {
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+
+        return await utility.convertPromiseToObject(
+            await models.Order.findAndCountAll({
+                where: {
+                    driver_id:params.restaurant_id,
+                    delivery_datetime: {
+                        [Op.and]: [
+                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                            {[Op.lte]:utility.getOnlyDate(new Date(params.end_date))}
+                        ]
+                    }
+                },
+                order: [["createdAt", "DESC"]],
+                offset,
+                limit
+                
+            })
+        )
+    },
+
 }

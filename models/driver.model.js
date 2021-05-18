@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   Driver.init({
     id:{
-      type: DataTypes.BIGINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true

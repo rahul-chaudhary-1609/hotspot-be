@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
         location: {
-            type: DataTypes.ARRAY(DataTypes.FLOAT),
+            type: DataTypes.ARRAY(DataTypes.DECIMAL(15,2)),
             allowNull: false,
         },
         address: {
@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
         },
         cut_off_time: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
         },
         avg_food_price: {
             type: DataTypes.INTEGER,
@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
         },
         percentage_fee: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
             allowNull: false,
             defaultValue: 70,
             comment: 'How much percent order will the restaurant have. Default is 70%'

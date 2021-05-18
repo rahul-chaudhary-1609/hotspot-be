@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         fee:{
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
             allowNull: false,
         }        
 

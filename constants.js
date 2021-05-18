@@ -171,6 +171,12 @@ CUSTOM_JOI_MESSAGE : {
     active: 1,
     deleted: 2,
   },
+
+  PAYMENT_STATUS : {
+    not_paid: 0,
+    in_pocess: 1,
+    paid: 2,
+  },
   
   DRIVER_APPROVAL_STATUS : {
     pending: 0,

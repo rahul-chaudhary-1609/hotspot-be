@@ -34,10 +34,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
         },
         amount: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
         },
         tip_amount: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
         },
         driver_id: {
             type: DataTypes.INTEGER,

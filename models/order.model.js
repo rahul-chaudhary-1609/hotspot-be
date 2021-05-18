@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         amount: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
             allowNull: false,
         },
 
@@ -71,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         tip_amount: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
         },
         
         cooking_instructions: {
@@ -95,7 +95,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         driver_fee: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.DECIMAL(15,2),
         },
 
         push_order_id: {
