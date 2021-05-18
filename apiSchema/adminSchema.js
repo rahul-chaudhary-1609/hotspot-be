@@ -344,60 +344,60 @@ module.exports = {
 
     getOrderDeliveryDetails: Joi.object({
         order_delivery_id: Joi.string().required(),
-        page: Joi.number().empty().optional(),
-        page_size: Joi.number().empty().optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
     }),
 
     getOrderDeliveries: Joi.object({
-        search_key: Joi.string().empty().optional(),
-        start_date: Joi.date().empty().optional(),
+        search_key: Joi.string().allow(null, '').optional(),
+        start_date: Joi.date().allow(null, '').optional(),
         end_date: Joi.date().empty().greater(Joi.ref('start_date')).optional(),
         filter_key: Joi.string().empty().valid("Daily", "Weekly", "Monthly", "Yearly").optional(),
-        page: Joi.number().empty().optional(),
-        page_size: Joi.number().empty().optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
     }),
 
     getPickupOrders: Joi.object({
-        search_key: Joi.string().empty().optional(),
-        start_date: Joi.date().empty().optional(),
-        end_date: Joi.date().greater(Joi.ref('start_date')).empty().optional(),
-        filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").empty().optional(),
-        page: Joi.number().empty().optional(),
-        page_size: Joi.number().empty().optional(),
+        search_key: Joi.string().allow(null, '').optional(),
+        start_date: Joi.date().allow(null, '').optional(),
+        end_date: Joi.date().greater(Joi.ref('start_date')).allow(null, '').optional(),
+        filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").allow(null, '').optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
     }),
 
     getRestaurantEarnings: Joi.object({
-        search_key: Joi.string().empty().optional(),
-        start_date: Joi.date().empty().optional(),
-        end_date: Joi.date().greater(Joi.ref('start_date')).empty().optional(),
-        filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").empty().optional(),
-        page: Joi.number().empty().optional(),
-        page_size: Joi.number().empty().optional(),
+        search_key: Joi.string().allow(null, '').optional(),
+        start_date: Joi.date().allow(null, '').optional(),
+        end_date: Joi.date().greater(Joi.ref('start_date')).allow(null, '').optional(),
+        filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").allow(null, '').optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
     }),
 
     getOrdersByRestaurantIdAndDateRange: Joi.object({
         restaurant_id: Joi.number().required(),
         start_date: Joi.date().required(),
         end_date: Joi.date().greater(Joi.ref('start_date')).required(),
-        page: Joi.number().empty().optional(),
-        page_size: Joi.number().empty().optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
     }),
 
     getDriverEarnings: Joi.object({
-        search_key: Joi.string().empty().optional(),
-        start_date: Joi.date().empty().optional(),
-        end_date: Joi.date().greater(Joi.ref('start_date')).empty().optional(),
-        filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").empty().optional(),
-        page: Joi.number().empty().optional(),
-        page_size: Joi.number().empty().optional(),
+        search_key: Joi.string().allow(null, '').optional(),
+        start_date: Joi.date().allow(null, '').optional(),
+        end_date: Joi.date().greater(Joi.ref('start_date')).allow(null, '').optional(),
+        filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").allow(null, '').optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
     }),
 
     getOrdersByDriverIdAndDateRange: Joi.object({
         driver_id: Joi.number().required(),
         start_date: Joi.date().required(),
         end_date: Joi.date().greater(Joi.ref('start_date')).required(),
-        page: Joi.number().empty().optional(),
-        page_size: Joi.number().empty().optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
     }),
 
 
