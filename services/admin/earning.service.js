@@ -235,7 +235,6 @@ module.exports = {
 
         let newRestaurantPayment = [];
 
-        models.RestaurantPayment.hasOne(models.Restaurant,{foreign_key:"id",sourceKey:"restaurant_id",targetKey:"id"})
         
         while (date.endDate < (new Date())) {
             let orders = await utility.convertPromiseToObject(
@@ -256,42 +255,46 @@ module.exports = {
                         ]
                     }
                 },
-                include: [
-                    {
-                        model: models.Restaurant,
-                        attributes: ['id', 'restaurant_name'],
-                        required:true,
-                    }
-                ],
-                group:['"restaurant_id"','"Restaurant.id"']
+                group:['"restaurant_id"']
             })
             )
 
-            orders = orders.map((order) => {
+            let formattedOrders = [];
+            
+            for (let order of orders) {
+                let restaurant = await utility.convertPromiseToObject(
+                    await models.Restaurant.findOne({
+                        attributes:['id','restaurant_name'],
+                        where: {
+                            id:order.restaurant_id
+                        }
+                    })
+                )
+
                 let orderObj= {
                     ...order,
                     payment_id:"PID-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '')+"-"+order.restaurant_id,
                     from_date: utility.getOnlyDate(date.startDate),
                     to_date: utility.getOnlyDate(date.endDate),
-                    restaurant_name:order.Restaurant.restaurant_name,
+                    restaurant_name:restaurant.restaurant_name,
                     payment_details: {
                         restaurnat:{
-                            ...order.Restaurant
+                            ...restaurant
                         }
                     }
                 }
 
-                delete orderObj.Restaurant;
+                formattedOrders.push(orderObj);
 
-                return orderObj
-            })
-            newRestaurantPayment.push(...orders)            
+            }
+
+            newRestaurantPayment.push(...formattedOrders)            
             date.endDate.setDate(date.endDate.getDate() + 1)
             now = utility.getOnlyDate(date.endDate);
             date=getStartAndEndDate({ now })
         }
 
-        console.log(newRestaurantPayment);
+        //console.log(newRestaurantPayment);
 
         await models.RestaurantPayment.bulkCreate(newRestaurantPayment);
 
@@ -527,7 +530,7 @@ module.exports = {
 
                 let orderDeliveryObj= {
                     ...orderDelivery,
-                    payment_id:"PID-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '')+"-"+order.driver_id,
+                    payment_id:"PID-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '')+"-"+orderDelivery.driver_id,
                     from_date: utility.getOnlyDate(date.startDate),
                     to_date: utility.getOnlyDate(date.endDate),
                     driver_name:driver.first_name+driver.last_name,
@@ -548,7 +551,7 @@ module.exports = {
             date=getStartAndEndDate({ now })
         }
 
-        console.log(newDriverPayment);
+        //console.log(newDriverPayment);
 
         await models.DriverPayment.bulkCreate(newDriverPayment);
 
