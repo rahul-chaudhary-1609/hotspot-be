@@ -100,7 +100,7 @@ module.exports = {
         let orderDeliveriesRows = []
         
         for (let orderDelivery of orderDeliveries.rows) {
-            orderDelivery.order_amount = orderDelivery.amount - orderDelivery.tip_amount;
+            orderDelivery.order_amount = parseFloat(orderDelivery.amount) - parseFloat(orderDelivery.tip_amount);
             orderDeliveriesRows.push(orderDelivery)
         }
 
@@ -211,8 +211,8 @@ module.exports = {
         let ordersRows = []
         
         for (let order of orders.rows) {
-            order.restaurant_fee = order.order_details.restaurant.fee;
-            order.hotspot_fee = order.amount - order.order_details.restaurant.fee;
+            order.restaurant_fee = parseFloat(order.order_details.restaurant.fee);
+            order.hotspot_fee = parseFloat(order.amount) - parseFloat(order.order_details.restaurant.fee);
             ordersRows.push(order)
         }
 

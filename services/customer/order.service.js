@@ -219,7 +219,7 @@ module.exports = {
                 let addOnPrice = 0;
                 
                 const addOns = dishAddOn.map((addOn) => {
-                    addOnPrice = addOnPrice + addOn.price
+                    addOnPrice = addOnPrice + parseFloat(addOn.price)
                     return addOn.name
                 })
 
@@ -229,7 +229,7 @@ module.exports = {
                     itemName: dish.name,
                     itemCount: item.cart_count,
                     itemAddOn: addOns,
-                    itemPrice:(dish.price*item.cart_count)+addOnPrice                    
+                    itemPrice:(parseFloat(dish.price)*item.cart_count)+addOnPrice                    
                 })
             }
 
@@ -261,8 +261,8 @@ module.exports = {
             if (order) {
                 // const hotspot_location_id = params.hotspot_location_id ? parseInt(params.hotspot_location_id) : order.order_details.hotspot.id;
                 // const hotspot_dropoff_id = params.hotspot_dropoff_id? parseInt(params.hotspot_dropoff_id):order.order_details.hotspot.dropoff.id;
-                const amount = params.amount? parseFloat(params.amount): order.amount;
-                const tip_amount = params.tip_amount? parseFloat(params.tip_amount): order.tip_amount;
+                const amount = params.amount? parseFloat(params.amount): parseFloat(order.amount);
+                const tip_amount = params.tip_amount? parseFloat(params.tip_amount): parseFloat(order.tip_amount);
                 const status = params.status?parseInt(params.status):order.status;
                 const type = params.order_type?parseInt(params.order_type):order.type;
                 const cooking_instructions = params.cooking_instructions || order.cooking_instructions;
@@ -302,7 +302,7 @@ module.exports = {
                         let addOnPrice = 0;
                     
                         const addOns = dishAddOn.map((addOn) => {
-                            addOnPrice = addOnPrice + addOn.price
+                            addOnPrice = addOnPrice + parseFloat(addOn.price)
                             return addOn.name
                         })
 
@@ -310,7 +310,7 @@ module.exports = {
                             itemName: dish.name,
                             itemCount: item.cart_count,
                             itemAddOn: addOns,
-                            itemPrice: (dish.price * item.cart_count) + addOnPrice
+                            itemPrice: (parseFloat(dish.price) * item.cart_count) + addOnPrice
                         })
                     }
                 }
@@ -433,7 +433,7 @@ module.exports = {
                     let addOnPrice = 0;
                     
                     const addOns = dishAddOn.map((addOn) => {
-                        addOnPrice = addOnPrice + addOn.price
+                        addOnPrice = addOnPrice + parseFloat(addOn.price)
                         return addOn.name
                     })
 
@@ -441,7 +441,7 @@ module.exports = {
                         itemName: dish.name,
                         itemCount: item.cart_count,
                         itemAddOn: addOns,
-                        itemPrice:(dish.price*item.cart_count)+addOnPrice                    
+                        itemPrice:(parseFloat(dish.price*item).cart_count)+addOnPrice                    
                     })
                 }
 
@@ -499,7 +499,7 @@ module.exports = {
                     hotspot,
                     restaurant: {
                         ...restaurant,
-                        fee:((amount - tip_amount) * restaurant.percentage_fee) / 100,
+                        fee:((amount - tip_amount) * parseFloat(restaurant.percentage_fee)) / 100,
                     },
                     driver: null,
                     ordered_items
@@ -695,7 +695,7 @@ module.exports = {
                 restaurant: order.order_details.restaurant.restaurant_name,
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 orderItems:order.order_details.ordered_items,
-                amount: order.amount,
+                amount: parseFloat(order.amount),
                 status,
             }
             

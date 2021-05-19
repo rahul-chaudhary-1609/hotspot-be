@@ -33,7 +33,7 @@ module.exports = {
             const order_range_from = params.order_range_from?parseInt(params.order_range_from):readFee.order_range_from;
             const order_range_to = params.order_range_to?parseInt(params.order_range_to):readFee.order_range_to;
             const fee_type = params.fee_type || readFee.fee_type;
-            const fee = params.fee?parseFloat(params.fee):readFee.fee;
+            const fee = params.fee?parseFloat(params.fee):parseFloat(readFee.fee);
 
             await models.Fee.update({
                 order_range_from,order_range_to,fee_type,fee

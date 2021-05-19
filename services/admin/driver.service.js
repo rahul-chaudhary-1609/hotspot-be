@@ -62,7 +62,7 @@ module.exports = {
                 total_deliveries: val.Orders.length,
                 total_earnings: val.Orders.reduce(
                     function(sum, current) {
-                        return sum + (current.driver_fee+current.tip_amount);
+                        return sum + (parseFloat(current.driver_fee)+parseFloat(current.tip_amount));
                     }, 
                 0)                         
             }
@@ -131,7 +131,7 @@ module.exports = {
             driver.total_deliveries = driver.Orders.length;
             driver.total_earnings = driver.Orders.reduce(
                     function(sum, current) {
-                        return sum + (current.driver_fee+current.tip_amount);
+                        return sum + (parseFloat(current.driver_fee)+parseFloat(current.tip_amount));
                     }, 
                 0);       
 

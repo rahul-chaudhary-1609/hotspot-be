@@ -227,17 +227,17 @@ module.exports = {
     const driver_fee = await models.Fee.findOne({
             where: {
                 order_range_from: {
-                    [Op.lte]:currentOrderPickup.amount,
+                    [Op.lte]:parseFloat(currentOrderPickup.amount),
                 },
                 order_range_to: {
-                    [Op.gte]:currentOrderPickup.amount,
+                    [Op.gte]:parseFloat(currentOrderPickup.amount),
                 },
                 fee_type: 'driver',             
                 
             }
     })
 
-    const restaurant_fee = currentOrderPickup.pickup_details.restaurants.reduce((result, restaurant) => result + restaurant.fee, 0);
+    const restaurant_fee = currentOrderPickup.pickup_details.restaurants.reduce((result, restaurant) => result + parseFloat(restaurant.fee), 0);
 
     let orderDropoffs = await utility.convertPromiseToObject(
       await models.Order.findAll({
@@ -253,7 +253,7 @@ module.exports = {
       })
     )
 
-    const hotspot_fee = currentOrderPickup.amount - restaurant_fee - driver_fee.fee;
+    const hotspot_fee = parseFloat(currentOrderPickup.amount) - parseFloat(restaurant_fee) - parseFloat(driver_fee.fee);
 
     const delivery_id="DEL-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
     let orderDeliveryObj = {
@@ -261,10 +261,10 @@ module.exports = {
       hotspot_location_id: currentOrderPickup.hotspot_location_id,
       hotspot_fee,
       order_count: currentOrderPickup.order_count,
-      amount: currentOrderPickup.amount,
-      tip_amount:currentOrderPickup.tip_amount,
+      amount: parseFloat(currentOrderPickup.amount),
+      tip_amount:parseFloat(currentOrderPickup.tip_amount),
       driver_id:currentOrderPickup.driver_id,
-      driver_fee:driver_fee.fee,
+      driver_fee:parseFloat(driver_fee.fee),
       delivery_datetime:currentOrderPickup.delivery_datetime,
       delivery_details: {
         ...currentOrderPickup.pickup_details,
@@ -351,8 +351,8 @@ module.exports = {
         delivery_id:deliveryId,// delivery_id,
         hotspot_location_id: checkPickupId.dataValues.hotspot_location_id,
         order_count: checkPickupId.dataValues.order_count,
-        amount:checkPickupId.dataValues.amount,
-        tip_amount:checkPickupId.dataValues.tip_amount,
+        amount:parseFloat(checkPickupId.dataValues.amount),
+        tip_amount:parseFloat(checkPickupId.dataValues.tip_amount),
         driver_id:checkPickupId.dataValues.driver_id,
         delivery_datetime:checkPickupId.dataValues.delivery_datetime,
         delivery_details: {

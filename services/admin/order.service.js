@@ -31,7 +31,7 @@ const getOrderRow =  async (args) => {
                     name: val.order_details.hotspot.name,
                     details: val.order_details.hotspot.location_detail,
                 }:null,
-                amount: val.amount,
+                amount: parseFloat(val.amount),
                 restaurant:val.order_details.restaurant.restaurant_name,
                 status,
                 delivery_datetime: val.delivery_datetime,
@@ -282,7 +282,7 @@ module.exports = {
                     details: order.order_details.hotspot.location_detail,
                 } : null,
                 orderItems:order.order_details.ordered_items,
-                amount: order.amount,
+                amount: parseFloat(order.amount),
                 status,
                 driver: order.order_details.driver? `${order.order_details.driver.first_name} ${order.order_details.driver.last_name}`:null,
                 delivery_image_urls:order.delivery_image_urls,
@@ -331,15 +331,15 @@ module.exports = {
         if (orderPickup) {
             let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
             orderPickup.order_count =parseInt(currentOrderPickup.order_count)+ 1;
-            orderPickup.amount += currentOrder.amount;
-            orderPickup.tip_amount += currentOrder.tip_amount;
+            orderPickup.amount = parseFloat(orderPickup.amount)+parseFloat(currentOrder.amount);
+            orderPickup.tip_amount = parseFloat(orderPickup.tip_amount)+parseFloat(currentOrder.tip_amount);
             let updatedRestaurant = [];
             let findRestaurant = currentOrderPickup.pickup_details.restaurants.find(({ id }) => id == currentOrder.order_details.restaurant.id);
             if (findRestaurant) {
                 updatedRestaurant = currentOrderPickup.pickup_details.restaurants.map((rest) => {
                     if (rest.id == currentOrder.order_details.restaurant.id) {
                         rest.order_count = parseInt(rest.order_count) + 1;
-                        rest.fee += currentOrder.order_details.restaurant.fee;
+                        rest.fee =parseFloat(rest.fee)+ parseFloat(currentOrder.order_details.restaurant.fee);
                         return rest;
                     }
                     else {
@@ -366,8 +366,8 @@ module.exports = {
                 pickup_id: order_pickup_id,
                 hotspot_location_id: currentOrder.hotspot_location_id,
                 order_count: 1,
-                amount:currentOrder.amount,
-                tip_amount:currentOrder.tip_amount,
+                amount:parseFloat(currentOrder.amount),
+                tip_amount:parseFloat(currentOrder.tip_amount),
                 driver_id:driver.id,
                 delivery_datetime:currentOrder.delivery_datetime,
                 pickup_details: {
