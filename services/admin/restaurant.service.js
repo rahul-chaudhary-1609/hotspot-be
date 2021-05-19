@@ -264,8 +264,8 @@ module.exports = {
 
                 if (restaurantCategory.count === 0) {
                     await RestaurantCategory.bulkCreate(
-                        [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" }, { name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
-                    );
+                        [{ name: "Sandwiches" }, { name: "Healthy" }, { name: "Vegan" }, { name: "Mexican" }, { name: "Asian" }, { name: "Deserts" }], { returning: ['id'] },
+                );
             }
         
             let restaurantCategoryList = await RestaurantCategory.findAndCountAll({where:{status:constants.STATUS.active},raw: true});

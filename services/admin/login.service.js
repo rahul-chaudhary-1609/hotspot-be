@@ -198,15 +198,6 @@ module.exports = {
             const pictureBuffer = fileParams.buffer;
 
             const params = adminAWS.setParams(pictureKey, pictureBuffer);
-
-            // adminAWS.s3.upload(params, async (error, data) => {
-            //     if (error) throw new Error(constants.MESSAGES.picture_upload_error);
-
-            //     const image_url = data.Location;
-
-                
-            //     return { image_url };
-            // })
         
             const s3upload = adminAWS.s3.upload(params).promise();
             const image_url=await s3upload.then(function (data) {

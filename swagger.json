@@ -345,7 +345,7 @@
                 "description": "enter folder name",
                 "required": true,
                 "type": "string",
-                "enum":["customer","restaurant","dish","driver","driver_vehicle","driver_license","driver_insurance","other"]
+                "enum":["customer","restaurant","dish","driver","driver_vehicle","driver_license","driver_insurance","agreement_doc","other"]
               }
             ],
             "responses": {}
