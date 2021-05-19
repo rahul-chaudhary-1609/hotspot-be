@@ -194,7 +194,7 @@ module.exports = {
 
             const pictureName = fileParams.originalname.split('.');
             const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `admin/${fileParams.folderName}/${now}.${pictureType}`;
+            const pictureKey = `admin/${fileParams.folderName}/${pictureName[0]?pictureName[0]:''}_${now}.${pictureType}`;
             const pictureBuffer = fileParams.buffer;
 
             const params = adminAWS.setParams(pictureKey, pictureBuffer);
