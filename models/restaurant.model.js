@@ -11,8 +11,6 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Restaurant.belongsTo(models.RestaurantCategory)
-            Restaurant.belongsTo(models.Customer)
         }
     }
     Restaurant.init({
@@ -50,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: true,
         },
         location: {
-            type: DataTypes.ARRAY(DataTypes.DECIMAL(15,2)),
+            type: DataTypes.ARRAY(DataTypes.FLOAT),
             allowNull: false,
         },
         address: {
@@ -60,7 +58,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BIGINT,
         },
         cut_off_time: {
-            type: DataTypes.DECIMAL(15,2),
+            type: DataTypes.FLOAT,
         },
         avg_food_price: {
             type: DataTypes.INTEGER,
@@ -75,14 +73,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             comment: '1=> delivery only, 2=>pickup only, 3=> both'
         },
-        restaurant_category_id: {
-            type: DataTypes.INTEGER,
+        restaurant_category_ids: {
+            type: DataTypes.ARRAY(DataTypes.INTEGER),
         },
         customer_id: {
             type: DataTypes.INTEGER,
         },
         percentage_fee: {
-            type: DataTypes.DECIMAL(15,2),
+            type: DataTypes.DECIMAL(5,2),
             allowNull: false,
             defaultValue: 70,
             comment: 'How much percent order will the restaurant have. Default is 70%'

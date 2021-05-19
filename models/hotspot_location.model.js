@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         location: {
-            type: DataTypes.ARRAY(DataTypes.DECIMAL(15,2)),
+            type: DataTypes.ARRAY(DataTypes.FLOAT),
             allowNull: false,
         },
         location_detail: {

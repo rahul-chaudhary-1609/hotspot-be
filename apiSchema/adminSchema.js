@@ -263,7 +263,7 @@ module.exports = {
         working_hours_from: Joi.string().required(),
         working_hours_to: Joi.string().required(),
         order_type: Joi.number().required(),
-        restaurant_category_id: Joi.number().required(),
+        restaurant_category_ids: Joi.array().required(),
         agreement_doc_url: Joi.number().optional(),
         hotspot_location_ids: Joi.array(),
     }),
@@ -351,7 +351,7 @@ module.exports = {
     getOrderDeliveries: Joi.object({
         search_key: Joi.string().allow(null, '').optional(),
         start_date: Joi.date().allow(null, '').optional(),
-        end_date: Joi.date().empty().greater(Joi.ref('start_date')).optional(),
+        end_date: Joi.date().empty().optional(),
         filter_key: Joi.string().empty().valid("Daily", "Weekly", "Monthly", "Yearly").optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
@@ -360,7 +360,7 @@ module.exports = {
     getPickupOrders: Joi.object({
         search_key: Joi.string().allow(null, '').optional(),
         start_date: Joi.date().allow(null, '').optional(),
-        end_date: Joi.date().greater(Joi.ref('start_date')).allow(null, '').optional(),
+        end_date: Joi.date().allow(null, '').optional(),
         filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").allow(null, '').optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
@@ -369,7 +369,7 @@ module.exports = {
     getRestaurantEarnings: Joi.object({
         search_key: Joi.string().allow(null, '').optional(),
         start_date: Joi.date().allow(null, '').optional(),
-        end_date: Joi.date().greater(Joi.ref('start_date')).allow(null, '').optional(),
+        end_date: Joi.date().allow(null, '').optional(),
         filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").allow(null, '').optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
@@ -378,7 +378,7 @@ module.exports = {
     getOrdersByRestaurantIdAndDateRange: Joi.object({
         restaurant_id: Joi.number().required(),
         start_date: Joi.date().required(),
-        end_date: Joi.date().greater(Joi.ref('start_date')).required(),
+        end_date: Joi.date().required(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
     }),
@@ -386,7 +386,7 @@ module.exports = {
     getDriverEarnings: Joi.object({
         search_key: Joi.string().allow(null, '').optional(),
         start_date: Joi.date().allow(null, '').optional(),
-        end_date: Joi.date().greater(Joi.ref('start_date')).allow(null, '').optional(),
+        end_date: Joi.date().allow(null, '').optional(),
         filter_key: Joi.string().valid("Daily", "Weekly", "Monthly", "Yearly").allow(null, '').optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
@@ -395,7 +395,7 @@ module.exports = {
     getOrdersByDriverIdAndDateRange: Joi.object({
         driver_id: Joi.number().required(),
         start_date: Joi.date().required(),
-        end_date: Joi.date().greater(Joi.ref('start_date')).required(),
+        end_date: Joi.date().required(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
     }),

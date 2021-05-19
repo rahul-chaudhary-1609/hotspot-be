@@ -1356,6 +1356,13 @@
                   "type": "string"
               },
               {
+                "name": "role",
+                "in": "formData",
+                "description": "role",
+                "required": true,
+                "type": "string"
+              },
+              {
                   "name": "owner_email",
                   "in": "formData",
                   "description": "owner email",
@@ -1437,14 +1444,19 @@
                   "in": "formData",
                   "description": "1: Delivery, 2: Pickup, 3: Both",
                   "required": true,
-                  "type": "string"
+                  "type": "string",
+                  "enum":[1,2,3]
               },
               {
-                  "name": "restaurant_category_id",
+                  "name": "restaurant_category_ids",
                   "in": "formData",
-                  "description": "restaurant category id in number",
+                  "description": "[id1,id2,id3...]",
                   "required": true,
-                  "type": "string"
+                  "type": "array",
+                  "items":{
+                    "type":"number"
+                  },
+                  "minItems": 1
               }
               ],
               "responses": {}
