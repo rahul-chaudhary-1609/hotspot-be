@@ -1407,9 +1407,12 @@
               {
                 "name": "hotspot_location_ids",
                 "in": "formData",
-                "description": "eg: 1,2,3,....",
+                "description": "[1,2,3,...]",
                 "required": false,
-                "type": "string"
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
               },
               {
                   "name": "deliveries_per_shift",
@@ -1450,13 +1453,20 @@
               {
                   "name": "restaurant_category_ids",
                   "in": "formData",
-                  "description": "[id1,id2,id3...]",
+                  "description": "[1,2,3...]",
                   "required": true,
                   "type": "array",
                   "items":{
                     "type":"number"
                   },
                   "minItems": 1
+              },
+              {
+                "name": "agreement_doc_url",
+                "in": "formData",
+                "description": "agreement_doc_url",
+                "required": false,
+                "type": "string"
               }
               ],
               "responses": {}
@@ -1557,46 +1567,53 @@
                 "type": "number"
               },
               {
-                  "name": "restaurant_name",
-                  "in": "formData",
-                  "description": "restaurant name",
-                  "required": true,
-                  "type": "string"
+                "name": "restaurant_name",
+                "in": "formData",
+                "description": "restaurant name",
+                "required": true,
+                "type": "string"
               },
               {
-                  "name": "restaurant_image_url",
-                  "in": "formData",
-                  "description": "restaurant image url",
-                  "required": true,
-                  "type": "string"
+                "name": "restaurant_image_url",
+                "in": "formData",
+                "description": "restaurant image url",
+                "required": true,
+                "type": "string"
               },
               {
-                  "name": "owner_name",
-                  "in": "formData",
-                  "description": "owner name",
-                  "required": true,
-                  "type": "string"
+                "name": "owner_name",
+                "in": "formData",
+                "description": "owner name",
+                "required": true,
+                "type": "string"
               },
               {
-                  "name": "owner_email",
-                  "in": "formData",
-                  "description": "owner email",
-                  "required": true,
-                  "type": "string"
+                "name": "role",
+                "in": "formData",
+                "description": "role",
+                "required": true,
+                "type": "string"
               },
               {
-                  "name": "owner_phone",
-                  "in": "formData",
-                  "description": "owner phone",
-                  "required": true,
-                  "type": "string"
+                "name": "owner_email",
+                "in": "formData",
+                "description": "owner email",
+                "required": true,
+                "type": "string"
               },
               {
-                  "name": "country_code",
-                  "in": "formData",
-                  "description": "country code",
-                  "required": true,
-                  "type": "string"
+                "name": "owner_phone",
+                "in": "formData",
+                "description": "owner phone",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "country_code",
+                "in": "formData",
+                "description": "country code",
+                "required": true,
+                "type": "string"
               },
               {
                 "name": "lat",
@@ -1613,60 +1630,79 @@
                 "type": "number"
               },
               {
-                  "name": "address",
-                  "in": "formData",
-                  "description": "address",
-                  "required": true,
-                  "type": "string"
+                "name": "address",
+                "in": "formData",
+                "description": "address",
+                "required": true,
+                "type": "string"
               },
               {
                 "name": "hotspot_location_ids",
                 "in": "formData",
-                "description": "eg: 1,2,3,....",
+                "description": "[1,2,3,....]",
                 "required": false,
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              {
+                "name": "deliveries_per_shift",
+                "in": "formData",
+                "description": "deliveries per shift in number",
+                "required": true,
                 "type": "string"
               },
               {
-                  "name": "deliveries_per_shift",
-                  "in": "formData",
-                  "description": "deliveries per shift in number",
-                  "required": true,
-                  "type": "string"
+                "name": "cut_off_time",
+                "in": "formData",
+                "description": "cut off time in HH:MM:SS",
+                "required": true,
+                "type": "string"
               },
               {
-                  "name": "cut_off_time",
-                  "in": "formData",
-                  "description": "cut off time in HH:MM:SS",
-                  "required": true,
-                  "type": "string"
+                "name": "working_hours_from",
+                "in": "formData",
+                "description": "working hours from in HH:MM:SS",
+                "required": true,
+                "type": "string"
               },
               {
-                  "name": "working_hours_from",
-                  "in": "formData",
-                  "description": "working hours from in HH:MM:SS",
-                  "required": true,
-                  "type": "string"
+                "name": "working_hours_to",
+                "in": "formData",
+                "description": "working hours to in HH:MM:SS",
+                "required": true,
+                "type": "string"
               },
               {
-                  "name": "working_hours_to",
-                  "in": "formData",
-                  "description": "working hours to in HH:MM:SS",
-                  "required": true,
-                  "type": "string"
+                "name": "order_type",
+                "in": "formData",
+                "description": "1: Delivery, 2: Pickup, 3: Both",
+                "required": true,
+                "type": "string",
+                "enum": [
+                  1,
+                  2,
+                  3
+                ]
               },
               {
-                  "name": "order_type",
-                  "in": "formData",
-                  "description": "1: Delivery, 2: Pickup, 3: Both",
-                  "required": true,
-                  "type": "string"
-              },
-              {
-                  "name": "restaurant_category_id",
-                  "in": "formData",
-                  "description": "restaurant category id in number",
-                  "required": true,
+                "name": "restaurant_category_ids",
+                "in": "formData",
+                "description": "[1,2,3...]",
+                "required": true,
+                "type": "array",
+                "items": {
                   "type": "number"
+                },
+                "minItems": 1
+              },
+              {
+                "name": "agreement_doc_url",
+                "in": "formData",
+                "description": "agreement_doc_url",
+                "required": false,
+                "type": "string"
               }
               ],
               "responses": {}
