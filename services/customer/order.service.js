@@ -391,6 +391,7 @@ module.exports = {
                     }
                 );
 
+
                 return { order_id:order.order_id };
             }
             else {
@@ -441,7 +442,7 @@ module.exports = {
                         itemName: dish.name,
                         itemCount: item.cart_count,
                         itemAddOn: addOns,
-                        itemPrice:(parseFloat(dish.price*item).cart_count)+addOnPrice                    
+                        itemPrice:(parseFloat(dish.price)*item.cart_count)+addOnPrice                    
                     })
                 }
 
@@ -518,7 +519,6 @@ module.exports = {
                     cooking_instructions,
                     delivery_datetime
                 });
-
 
 
                 return { order_id:newOrder.order_id };

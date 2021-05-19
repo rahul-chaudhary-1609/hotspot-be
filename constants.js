@@ -84,7 +84,8 @@ module.exports = {
     invalid_id_or_phone: 'Invalid id or phone',
     not_approved: 'Your account is not approved by admin',
     rejected_account: 'Your account is rejected by admin.',
-    invalid_number_or_country_code: 'Invalid number or country code.'
+    invalid_number_or_country_code: 'Invalid number or country code.',
+    hotspot_can_not_delete:"This hotspot can not be deleted until atleast one restaurant is associated with this hotspot",
   },
 
   code: {

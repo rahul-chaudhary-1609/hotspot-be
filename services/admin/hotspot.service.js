@@ -350,46 +350,52 @@ module.exports = {
     deleteHotspot: async (params) => {
         
 
-            const hotspotLocationId = params.hotspotLocationId;
+        const hotspotLocationId = params.hotspotLocationId;
 
-            const hotspot = await models.HotspotLocation.findByPk(hotspotLocationId);
+        const hotspot = await models.HotspotLocation.findByPk(hotspotLocationId);
 
-            if (!hotspot) throw new Error(constants.MESSAGES.no_hotspot);
-
-
-            
-            await models.HotspotDropoff.destroy({
-                where: {
+        if (!hotspot) throw new Error(constants.MESSAGES.no_hotspot);
+    
+        let hotspotRestaurant = await models.RestaurantHotspot.findOne({
+            where: {
                     hotspot_location_id:hotspotLocationId,
-                },
-                force:true,
-            })
-            
+                }
+        })
+        
+        if (hotspotRestaurant) throw new Error(constants.MESSAGES.hotspot_can_not_delete);
+        
+        await models.HotspotDropoff.destroy({
+            where: {
+                hotspot_location_id:hotspotLocationId,
+            },
+            force:true,
+        })
+        
 
-            
-            await models.RestaurantHotspot.destroy({
-                where: {
-                    hotspot_location_id:hotspotLocationId,
-                },
-                force:true,
-            })
-            
-            await models.HotspotDriver.destroy({
-                where: {
-                    hotspot_location_id:hotspotLocationId,
-                },
-                force:true,
-            })
+        
+        await models.RestaurantHotspot.destroy({
+            where: {
+                hotspot_location_id:hotspotLocationId,
+            },
+            force:true,
+        })
+        
+        await models.HotspotDriver.destroy({
+            where: {
+                hotspot_location_id:hotspotLocationId,
+            },
+            force:true,
+        })
 
-            await models.HotspotLocation.destroy({
-                where: {
-                    id:hotspotLocationId,
-                },
-                force:true,
-            })
+        await models.HotspotLocation.destroy({
+            where: {
+                id:hotspotLocationId,
+            },
+            force:true,
+        })
 
 
-            return true;
+        return true;
 
         
     },
