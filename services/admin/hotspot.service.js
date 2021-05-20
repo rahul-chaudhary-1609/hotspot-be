@@ -165,13 +165,34 @@ module.exports = {
                      await models.HotspotDropoff.findOrCreate({
                             where: {
                                 hotspot_location_id: hotspotLocationId,
-                                dropoff_detail:dropoff.toLowerCase(),
+                                dropoff_detail:dropoff,
                             },
                             defaults: {
                                 hotspot_location_id: hotspotLocationId,
-                                dropoff_detail:dropoff.toLowerCase(),
+                                dropoff_detail:dropoff,
                             }
                         });
+                }
+
+                let currentDropoffs = await utility.convertPromiseToObject(
+                    await models.HotspotDropoff.findAll({
+                        where: {
+                            hotspot_location_id:hotspotLocationId,
+                        }
+                    })
+                )
+
+                for (let dropoff of currentDropoffs) {
+                    if (!dropoffs.includes(dropoff)) {
+                        await models.HotspotDropoff.destroy({
+                                where: {
+                                    hotspot_location_id: hotspotLocationId,
+                                    dropoff_detail:dropoff,
+                                    
+                                },
+                                force: true,
+                            })
+                    }
                 }
 
             }
