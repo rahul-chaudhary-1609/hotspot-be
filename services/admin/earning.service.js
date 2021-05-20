@@ -407,7 +407,7 @@ module.exports = {
                     
                 };
             }
-            else if (filter_key == "Yearly") {
+            else if (params.filter_key == "Yearly") {
                 start_date.getFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     [Op.and]: [
@@ -668,7 +668,7 @@ module.exports = {
                     
                 };
             }
-            else if (filter_key == "Yearly") {
+            else if (params.filter_key == "Yearly") {
                 start_date.getFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     [Op.and]: [
