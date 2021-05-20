@@ -14,7 +14,7 @@ module.exports = {
 
     getOrderDeliveryDetails: async (req, res) => {
          try {
-            const responseFromService = await earningService.getOrderDeliveryDetails(req.params);
+            const responseFromService = await earningService.getOrderDeliveryDetails(req.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

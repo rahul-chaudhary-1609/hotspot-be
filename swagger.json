@@ -3558,8 +3558,6 @@
                 "required": false,
                 "type": "string",
                 "enum": [
-                  "Daily",
-                  "Weekly",
                   "Monthly",
                   "Yearly"
                 ]
@@ -3683,8 +3681,6 @@
               "required": false,
               "type": "string",
               "enum": [
-                "Daily",
-                "Weekly",
                 "Monthly",
                 "Yearly"
               ]

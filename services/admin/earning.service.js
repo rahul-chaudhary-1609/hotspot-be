@@ -117,6 +117,24 @@ module.exports = {
                 where: {
                     order_delivery_id:params.order_delivery_id
                 },
+                include: [
+                    {
+                        model: models.HotspotLocation,
+                        attributes: ['id', 'name'],
+                        required:false,
+                    },
+                    {
+                        model: models.Restaurant,
+                        attributes: ['id', 'restaurant_name'],
+                        required:false,
+                    },
+                    {
+                        model: models.HotspotDropoff,
+                        attributes: ['id', 'dropoff_detail'],
+                        required:false,
+                    }                 
+                    
+                ],
                 order: [["createdAt", "DESC"]],
                 offset,
                 limit
@@ -305,18 +323,29 @@ module.exports = {
         if (params.search_key) {
             let searchKey = params.search_key;
             whereCondition = {
-                ...whereCondition,
-                [Op.or]: [
-                    { restaurant_name: { [Op.iLike]: `%${searchKey}%` } },
-                    { payment_id: { [Op.iLike]: `%${searchKey}%` } },
+                [Op.and]: [
+                    {
+                        ...whereCondition,
+                    },
+                    {
+                        [Op.or]: [
+                            { restaurant_name: { [Op.iLike]: `%${searchKey}%` } },
+                            { payment_id: { [Op.iLike]: `%${searchKey}%` } },
+                        ]
+                    }
                 ]
+                
             };
         }
 
         if (params.start_date && params.end_date) {
             whereCondition = {
-                ...whereCondition,
-                [Op.or]: [
+                [Op.and]: [
+                    {
+                        ...whereCondition
+                    },
+                    {
+                        [Op.or]: [
                     {
                         from_date: {
                             [Op.and]: [
@@ -337,113 +366,78 @@ module.exports = {
                     },
                 ]
                 
+                    }
+                ]
+                
             };
         }
         else if (params.filter_key) {
             let start_date = new Date();
             let end_date = new Date();
-            if (params.filter_key == "Daily") {
-                start_date.setDate(end_date.getDate() - 1)
-                whereCondition = {
-                    ...whereCondition,
-                    [Op.or]: [
-                    {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
-
-                    },
-                    {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
-
-                    },
-                ]
-                };
-            }
-            else if (params.filter_key == "Weekly") {
-                start_date.setDate(end_date.getDate() - 7)
-                whereCondition = {
-                    ...whereCondition,
-                    [Op.or]: [
-                    {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
-
-                    },
-                    {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
-
-                    },
-                ]
-                };
-            }
-            else if (params.filter_key == "Monthly") {
+            if (params.filter_key == "Monthly") {
                 start_date.setMonth(end_date.getMonth() - 1)
                 whereCondition = {
-                    ...whereCondition,
-                    [Op.or]: [
-                    {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+                    [Op.and]: [
+                        {
+                            ...whereCondition,
+                        },
+                        {
+                            [Op.or]: [
+                                {
+                                    from_date: {
+                                        [Op.and]: [
+                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        ]                
+                                    }
 
-                    },
-                    {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+                                },
+                                {
+                                    to_date: {
+                                        [Op.and]: [
+                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        ]                
+                                    }
 
-                    },
-                ]
+                                },
+                            ]
+                        }
+                    ]
+                    
                 };
             }
             else if (params.filter_key == "Yearly") {
                 start_date.getFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
-                    ...whereCondition,
-                    [Op.or]: [
-                    {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+                    [Op.and]: [
+                        {
+                            ...whereCondition,
+                        },
+                        {
+                            [Op.or]: [
+                                {
+                                    from_date: {
+                                        [Op.and]: [
+                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        ]                
+                                    }
 
-                    },
-                    {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+                                },
+                                {
+                                    to_date: {
+                                        [Op.and]: [
+                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        ]                
+                                    }
 
-                    },
-                ]
+                                },
+                            ]
+                        }
+                    ]
+                    
                 };
             }
         }
@@ -471,6 +465,24 @@ module.exports = {
                         ]
                     }
                 },
+                include: [
+                    {
+                        model: models.HotspotLocation,
+                        attributes: ['id', 'name'],
+                        required:false,
+                    },
+                    {
+                        model: models.Restaurant,
+                        attributes: ['id', 'restaurant_name'],
+                        required:false,
+                    },
+                    {
+                        model: models.HotspotDropoff,
+                        attributes: ['id', 'dropoff_detail'],
+                        required:false,
+                    }                 
+                    
+                ],
                 order: [["createdAt", "DESC"]],
                 offset,
                 limit
@@ -562,145 +574,122 @@ module.exports = {
         if (params.search_key) {
             let searchKey = params.search_key;
             whereCondition = {
-                ...whereCondition,
-                [Op.or]: [
-                    { driver_name: { [Op.iLike]: `%${searchKey}%` } },
-                    { payment_id: { [Op.iLike]: `%${searchKey}%` } },
-                ]
+                [Op.and]: [
+                    {
+                        ...whereCondition,
+                    },
+                    {
+                        [Op.or]: [
+                            { driver_name: { [Op.iLike]: `%${searchKey}%` } },
+                            { payment_id: { [Op.iLike]: `%${searchKey}%` } },
+                        ]
+                    }
+                ]               
+                
             };
         }
 
         if (params.start_date && params.end_date) {
             whereCondition = {
-                ...whereCondition,
-                [Op.or]: [
+                [Op.and]: [
                     {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
-
+                        ...whereCondition,
                     },
                     {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+                        [Op.or]: [
+                            {
+                                from_date: {
+                                    [Op.and]: [
+                                        { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                        {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                    ]                
+                                }
 
-                    },
+                            },
+                            {
+                                to_date: {
+                                    [Op.and]: [
+                                        { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                        {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                    ]                
+                                }
+
+                            },
+                        ]
+                    }
                 ]
+                
+                
                 
             };
         }
         else if (params.filter_key) {
             let start_date = new Date();
             let end_date = new Date();
-            if (params.filter_key == "Daily") {
-                start_date.setDate(end_date.getDate() - 1)
-                whereCondition = {
-                    ...whereCondition,
-                    [Op.or]: [
-                    {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
-
-                    },
-                    {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
-
-                    },
-                ]
-                };
-            }
-            else if (params.filter_key == "Weekly") {
-                start_date.setDate(end_date.getDate() - 7)
-                whereCondition = {
-                    ...whereCondition,
-                    [Op.or]: [
-                    {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
-
-                    },
-                    {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
-
-                    },
-                ]
-                };
-            }
-            else if (params.filter_key == "Monthly") {
+            if (params.filter_key == "Monthly") {
                 start_date.setMonth(end_date.getMonth() - 1)
                 whereCondition = {
-                    ...whereCondition,
-                    [Op.or]: [
-                    {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+                    [Op.and]: [
+                        {
+                            ...whereCondition,
+                        },
+                        {
+                            [Op.or]: [
+                                {
+                                    from_date: {
+                                        [Op.and]: [
+                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        ]                
+                                    }
 
-                    },
-                    {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+                                },
+                                {
+                                    to_date: {
+                                        [Op.and]: [
+                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        ]                
+                                    }
 
-                    },
-                ]
+                                },
+                            ]
+                        }
+                    ]
+                    
                 };
             }
             else if (params.filter_key == "Yearly") {
                 start_date.getFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
-                    ...whereCondition,
-                    [Op.or]: [
-                    {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+                    [Op.and]: [
+                        {
+                            ...whereCondition,
+                        },
+                        {
+                            [Op.or]: [
+                                {
+                                    from_date: {
+                                        [Op.and]: [
+                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        ]                
+                                    }
 
-                    },
-                    {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+                                },
+                                {
+                                    to_date: {
+                                        [Op.and]: [
+                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        ]                
+                                    }
 
-                    },
-                ]
+                                },
+                            ]
+                        }
+                    ]
+                    
                 };
             }
         }
@@ -728,6 +717,24 @@ module.exports = {
                         ]
                     }
                 },
+                include: [
+                    {
+                        model: models.HotspotLocation,
+                        attributes: ['id', 'name'],
+                        required:false,
+                    },
+                    {
+                        model: models.Restaurant,
+                        attributes: ['id', 'restaurant_name'],
+                        required:false,
+                    },
+                    {
+                        model: models.HotspotDropoff,
+                        attributes: ['id', 'dropoff_detail'],
+                        required:false,
+                    }                 
+                    
+                ],
                 order: [["createdAt", "DESC"]],
                 offset,
                 limit
