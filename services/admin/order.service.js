@@ -281,6 +281,7 @@ module.exports = {
                     name: order.order_details.hotspot.name,
                     details: order.order_details.hotspot.location_detail,
                 } : null,
+                dropoff:order.order_details.hotspot?order.order_details.hotspot.dropoff:null,
                 orderItems:order.order_details.ordered_items,
                 amount: parseFloat(order.amount),
                 type:order.type,
