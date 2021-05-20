@@ -386,8 +386,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -395,8 +395,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -407,7 +407,7 @@ module.exports = {
                     
                 };
             }
-            else if (params.filter_key == "Yearly") {
+            else if (filter_key == "Yearly") {
                 start_date.getFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     [Op.and]: [
@@ -419,8 +419,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -428,8 +428,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -647,8 +647,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -656,8 +656,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -668,7 +668,7 @@ module.exports = {
                     
                 };
             }
-            else if (params.filter_key == "Yearly") {
+            else if (filter_key == "Yearly") {
                 start_date.getFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     [Op.and]: [
@@ -680,8 +680,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -689,8 +689,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 

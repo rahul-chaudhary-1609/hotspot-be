@@ -160,7 +160,7 @@ module.exports = {
                 // })
 
                 // await models.HotspotDropoff.bulkCreate(hotspotDropoffRows);
-
+                console.log("dropoffs",dropoffs)
                 for (let dropoff of dropoffs) {
                      await models.HotspotDropoff.findOrCreate({
                             where: {
@@ -182,7 +182,10 @@ module.exports = {
                     })
                 )
 
+                console.log("currentDropoffs",currentDropoffs)
+
                 for (let dropoff of currentDropoffs) {
+                    console.log("dropoff",dropoff)
                     if (!dropoffs.includes(dropoff)) {
                         await models.HotspotDropoff.destroy({
                                 where: {
