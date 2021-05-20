@@ -73,7 +73,7 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.getFullYear(end_date.getFullYear() - 1)
+                start_date.setFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     ...whereCondition,
                     delivery_datetime: {
@@ -204,7 +204,7 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.getFullYear(end_date.getFullYear() - 1)
+                start_date.setFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     ...whereCondition,
                     delivery_datetime: {
@@ -408,7 +408,7 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.getFullYear(end_date.getFullYear() - 1)
+                start_date.setFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     [Op.and]: [
                         {
@@ -669,7 +669,7 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.getFullYear(end_date.getFullYear() - 1)
+                start_date.setFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     [Op.and]: [
                         {
