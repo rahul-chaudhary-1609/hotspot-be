@@ -717,7 +717,7 @@ module.exports = {
         return await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
-                    driver_id:params.restaurant_id,
+                    driver_id:params.driver_id,
                     delivery_datetime: {
                         [Op.and]: [
                             { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
