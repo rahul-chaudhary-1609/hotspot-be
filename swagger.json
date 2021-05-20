@@ -7677,11 +7677,18 @@
             "type": "string"
           },
           {
-            "name": "order_id",
+            "name": "delivery_id",
             "in": "formData",
-            "description": "order id for updating url",
+            "description": "delivery id for updating url",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "dropoff_id",
+            "in": "formData",
+            "description": "dropoff id for updating url",
+            "required": true,
+            "type": "number"
           },
           {
             "name": "url",

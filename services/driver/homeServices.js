@@ -62,7 +62,40 @@ module.exports = {
          }
   })
   if (checkId.length) {
-    console.log("andar")
+/*    let gethotspotId = await models.OrderPickup.findAll({
+      where: {
+          driver_id:user.id,
+          delivery_datetime: {
+            [Op.between]: [todayStartDate, todayEndDate]
+          },
+         },
+         //attributes: ["hotspot_location_id"],
+         raw:true
+  })
+  console.log(gethotspotId)
+  const hotspotIds = gethotspotId.map(data => { return data.hotspot_location_id })
+  console.log("hotspotlocationid",hotspotIds)
+  let gethotspotShifts = await models.HotspotLocation.findAll({
+    where: {
+        id:hotspotIds,
+       },
+       //attributes: ["hotspot_location_id"],
+       raw:true
+})
+console.log(gethotspotShifts)
+const deliveryShifts = gethotspotShifts.map(data => { return data.delivery_shifts })
+console.log("hotspotdeliveryshifts",deliveryShifts)
+ for(let i=0;i<deliveryShifts.length;i++)
+ {
+       const pickups = await models.OrderPickup.findAndCountAll({
+      where:{
+        driver_id:user.id,
+        delivery_datetime:deliveryShifts[i][0]
+      },
+      attributes: ["pickup_id",[Sequelize.json('pickup_details.hotspot.name'), 'hotspotName'],[Sequelize.json('pickup_details.hotspot.location_detail'), 'hotspotLocationDetail'],"pickup_datetime","delivery_datetime"]
+    })
+    return pickups
+ }*/
     const pickups = await models.OrderPickup.findAndCountAll({
       where:{
         driver_id:user.id,
@@ -70,7 +103,7 @@ module.exports = {
           [Op.between]: [todayStartDate, todayEndDate]
         },
       },
-      attributes: ["pickup_id",[Sequelize.json('pickup_details.hotspot.name'), 'hotspotName'],[Sequelize.json('pickup_details.hotspot.location_detail'), 'hotspotLocationDetail'],"delivery_datetime"]
+      attributes: ["pickup_id",[Sequelize.json('pickup_details.hotspot.name'), 'hotspotName'],[Sequelize.json('pickup_details.hotspot.location_detail'), 'hotspotLocationDetail'],"pickup_datetime","delivery_datetime"]
     })
     return pickups
   } 
@@ -192,7 +225,7 @@ module.exports = {
       },
     })
     pickupDetail.driverName = pickupData.dataValues.pickup_details.driver.first_name + " " + pickupData.dataValues.pickup_details.driver.last_name
-    pickupDetail.deliveryDate = moment(pickupData.dataValues.delivery_datetime).format('DD-MMM-YYYY');
+    pickupDetail.delivery_datetime = pickupData.dataValues.delivery_datetime,
     pickupDetail.hotspotName = pickupData.dataValues.pickup_details.hotspot.name
     pickupDetail.hotspotLocationDetail = pickupData.dataValues.pickup_details.hotspot.location_detail
     pickupDetail.pickup_id = pickupData.dataValues.pickup_id
@@ -202,6 +235,7 @@ module.exports = {
         restaurantName:element.restaurant_name,
         restaurantAddress:element.address,
         retaurantLocation:element.location,
+        pickup_datetime:pickupData.dataValues.pickup_datetime,
         orderCount:element.order_count
       }
        pickupDetail.restaurants.push(restaurantDetails)
@@ -535,17 +569,31 @@ module.exports = {
         deliveryDetail.hotspotName = deliveryData.dataValues.delivery_details.hotspot.name
         deliveryDetail.hotspotLocationDetail = deliveryData.dataValues.delivery_details.hotspot.location_detail
         deliveryDetail.delivery_id = deliveryData.dataValues.delivery_id
-        deliveryDetail.dropOffs = deliveryData.dataValues.delivery_details.hotspot.dropoff.dropoff_detail
-        //deliveryData.dataValues.delivery_details.restaurants.forEach(element => {
-       /* let restaurantDetails = {
-          restaurantName:element.restaurant_name,
-          restaurantAddress:element.address,
-          retaurantLocation:element.location,
-          orderCount:element.order_count
-          }*/
-         // console.log(element)
-  //         pickupDetail.restaurants.push(restaurantDetails)
-       //})
+        deliveryDetail.dropOffs = []
+       const dropOffIds = deliveryData.dataValues.delivery_details.dropOffs.map(data => { return data.hotspot_dropoff_id })
+        console.log(dropOffIds)
+        const getDropOffLocations = await models.HotspotDropoff.findAll({
+          where:{
+            id:dropOffIds
+          },
+          raw:true
+        })
+        //console.log(getDropOffLocations)
+        const dropOffDetails = getDropOffLocations.map(data => { return data.dropoff_detail })
+        console.log(dropOffDetails)
+        const dropOffCount = deliveryData.dataValues.delivery_details.dropOffs.map(data => { return data.orderCount })
+        console.log(dropOffCount)
+        var dropOffData = dropOffDetails.map(function (value, index){
+          return [value, dropOffCount[index]]
+       })
+       console.log(dropOffData)
+       dropOffData.forEach( element =>{
+        let dropOffs = {
+          dropOffLocation:element[0],
+          orderCount:element[1]
+        }
+      deliveryDetail.dropOffs.push(dropOffs)
+    })
         return deliveryDetail
       } 
       else {
@@ -610,9 +658,9 @@ module.exports = {
     const Details= await models.Order.findAll({
       where: {
         order_delivery_id:params.delivery_id,
-        //type:constants.ORDER_TYPE.delivery
+        //'Customer.notification_status':true
       },
-     attributes: [Sequelize.literal(`"Driver"."first_name","Driver"."last_name","Customer"."name","Customer"."device_token","delivery_image_url"`)],
+     attributes: [Sequelize.literal(`"Driver"."id" AS "driverId","Driver"."first_name","Driver"."last_name","Customer"."id"AS "customerId","Customer"."name","Customer"."device_token","delivery_image_urls"`)],
       raw: true,
       include: [{
         model: Driver,
@@ -621,21 +669,32 @@ module.exports = {
       },
        {
         model: Customer,
+        where: {
+          notification_status:true
+         },
         required: true,
-        attributes: []
+        attributes: [],
       }]
     })
     Details.forEach(element => {
-      const message = {
-        notification: {
-          title: 'Delivery Notification',
-          body: `Hi ${element.name}.Your order has been delivered to the given drop off location by ${element.first_name} ${element.last_name}`,
-          image:`${element.delivery_image_url}`
-        },
-        data: {}
-      }
-      console.log(message)
-     // utility.sendFcmNotification(element.device_token,message);
+      var deliveryNotificationData = {
+        title: 'Delivery Notification',
+        body: `Hi ${element.name}.Your order has been delivered to the given drop off location by ${element.first_name} ${element.last_name}`,
+        image:`${element.delivery_image_urls}`
+    }
+      console.log(deliveryNotificationData)
+      /*console.log("driver id",element.driverId)
+      console.log("user id",element.customerId)
+      console.log("title",deliveryNotificationData.title)
+      console.log("description",deliveryNotificationData.body)*/
+     //utility.sendFcmNotification(element.device_token,deliveryNotificationData);
+     /*const newNotifcation = await models.Notifcation.create({
+      title:deliveryNotificationData.title,
+      description:deliveryNotificationData.body,
+      sender_id:element.driverId,
+      reciever_id:element.customerId
+     })*/
+
     })
    
     } 
@@ -645,15 +704,15 @@ module.exports = {
  },
 
    addImageUrl: async (driver,params) => {
-    let checkId = await Delivery.findOne({
+    let checkId = await models.Order.findOne({
       where: {
-          order_id:params.order_id
+          order_delivery_id:params.delivery_id
   }
   })
     if(checkId)
     {
-      const addToDelivery=await Delivery.update(params.url,{ where: {order_id:params.order_id} });
-    const addToOrder=await order.update(params.url,{ where: {order_id:params.order_id} });
+  //const addToDelivery=await Delivery.update(params.url,{ where: {order_id:params.order_id} });
+    const addToOrder=await models.Order.update(params.url,{ where: {order_delivery_id:params.delivery_id,hotspot_dropoff_id:params.dropoff_id,driver_id:driver.id} });
      return true
     }
     else {

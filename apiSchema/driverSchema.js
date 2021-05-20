@@ -142,7 +142,8 @@ module.exports = {
 
     deliveryImage: Joi.object({
         url: Joi.string().trim().required(),
-        order_id: Joi.string().trim().required()
+        delivery_id: Joi.string().trim().required(),
+        dropoff_id: Joi.number().required()
     }),
     
     getEarningList: Joi.object({
