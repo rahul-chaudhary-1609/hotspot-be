@@ -145,21 +145,34 @@ module.exports = {
 
             if (dropoffs) {
 
-                await models.HotspotDropoff.destroy({
-                    where: {
-                        hotspot_location_id:hotspotLocationId,
-                    },
-                    force: true,
-                })
+                // await models.HotspotDropoff.destroy({
+                //     where: {
+                //         hotspot_location_id:hotspotLocationId,
+                //     },
+                //     force: true,
+                // })
 
-                const hotspotDropoffRows = dropoffs.map((dropoff) => {
-                    return {
-                        hotspot_location_id: hotspotLocationId,
-                        dropoff_detail:dropoff,
-                    }
-                })
+                // const hotspotDropoffRows = dropoffs.map((dropoff) => {
+                //     return {
+                //         hotspot_location_id: hotspotLocationId,
+                //         dropoff_detail:dropoff,
+                //     }
+                // })
 
-                await models.HotspotDropoff.bulkCreate(hotspotDropoffRows);
+                // await models.HotspotDropoff.bulkCreate(hotspotDropoffRows);
+
+                for (let dropoff of dropoffs) {
+                     await models.HotspotDropoff.findOrCreate({
+                            where: {
+                                hotspot_location_id: hotspotLocationId,
+                                dropoff_detail:dropoff.toLowerCase(),
+                            },
+                            defaults: {
+                                hotspot_location_id: hotspotLocationId,
+                                dropoff_detail:dropoff.toLowerCase(),
+                            }
+                        });
+                }
 
             }
 

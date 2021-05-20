@@ -505,6 +505,7 @@ module.exports = {
 
         let newDriverPayment = [];
 
+        models.Driver.hasOne(models.DriverBankDetail,{foreignKey:'driver_id',sourceKey:'id',targetKey:'driver_id'})
         
         while (date.endDate < (new Date())) {
             let orderDeliveries = await utility.convertPromiseToObject(
@@ -536,7 +537,14 @@ module.exports = {
                         attributes:['id','first_name','last_name'],
                         where: {
                             id:orderDelivery.driver_id
-                        }
+                        },
+                        include: [
+                            {
+                                model: models.DriverBankDetail,
+                                attributes:["id","driver_id","bank_name","account_number","account_holder_name"],
+                                required:false
+                            },
+                        ]
                     })
                 )
 
@@ -545,7 +553,7 @@ module.exports = {
                     payment_id:"PID-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '')+"-"+orderDelivery.driver_id,
                     from_date: utility.getOnlyDate(date.startDate),
                     to_date: utility.getOnlyDate(date.endDate),
-                    driver_name:driver.first_name+driver.last_name,
+                    driver_name:`${driver.first_name} ${driver.last_name}`,
                     payment_details: {
                         driver:{
                             ...driver
