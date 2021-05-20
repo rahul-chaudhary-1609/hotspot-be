@@ -194,19 +194,10 @@ module.exports = {
 
             const pictureName = fileParams.originalname.split('.');
             const pictureType = pictureName[pictureName.length - 1];
-            const pictureKey = `admin/${fileParams.folderName}/${now}.${pictureType}`;
+            const pictureKey = `admin/${fileParams.folderName}/${pictureName[0]?pictureName[0]:''}_${now}.${pictureType}`;
             const pictureBuffer = fileParams.buffer;
 
             const params = adminAWS.setParams(pictureKey, pictureBuffer);
-
-            // adminAWS.s3.upload(params, async (error, data) => {
-            //     if (error) throw new Error(constants.MESSAGES.picture_upload_error);
-
-            //     const image_url = data.Location;
-
-                
-            //     return { image_url };
-            // })
         
             const s3upload = adminAWS.s3.upload(params).promise();
             const image_url=await s3upload.then(function (data) {

@@ -508,7 +508,7 @@ module.exports = {
 
             if (restaurantCategory.count === 0) {
                 await models.RestaurantCategory.bulkCreate(
-                    [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" }, { name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
+                    [{ name: "Sandwiches" }, { name: "Healthy" }, { name: "Vegan" }, { name: "Mexican" }, { name: "Asian" }, { name: "Deserts" }], { returning: ['id'] },
                 );
             }
 

@@ -48,14 +48,13 @@ module.exports = {
     cut_off_times: [0.5, 1, 1.5],
     
     dishCategories : [
-                        { name: "Sushi", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131045GMT0530.png" },
-                        { name: "Pizza", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131151GMT0530.png" },
-                        { name: "Burger", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131313GMT0530.png" },
-                        { name: "Fries", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131004GMT0530.png" },
-                        { name: "Meat", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021130914GMT0530.png" },
-                        { name: "Chinese", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131120GMT0530.png" },
-                        { name: "Breakfast", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/rahulchaudharyalgoworkscomWedFeb102021131237GMT0530.png" },
-
+                        { name: "Sandwiches", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/dish/sandwiches_1621424456720.png" },
+                        { name: "Healthy", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/dish/healthy_1621424429538.png" },
+                        { name: "Vegan", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/dish/vegan_1621424391818.png" },
+                        { name: "Mexican", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/dish/maxican_1621424340875.png" },
+                        { name: "Asian", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/dish/asian_1621424289008.png" },
+                        { name: "Deserts", image_url: "https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/dish/deserts_1621421253335.png" },
+                        
     ],
 
     hotspotOfferBanners : [
