@@ -188,6 +188,7 @@ module.exports = {
                 for (let dropoff of currentDropoffs) {
                     console.log("dropoff",dropoff)
                     if (!dropoffs.includes(dropoff.dropoff_detail)) {
+                        console.log("dropoff",dropoff,dropoffs.includes(dropoff.dropoff_detail))
                         await models.HotspotDropoff.destroy({
                                 where: {
                                     hotspot_location_id: hotspotLocationId,
