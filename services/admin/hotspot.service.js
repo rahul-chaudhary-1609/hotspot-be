@@ -192,7 +192,7 @@ module.exports = {
                         await models.HotspotDropoff.destroy({
                                 where: {
                                     hotspot_location_id: hotspotLocationId,
-                                    dropoff_detail:dropoff,
+                                    dropoff_detail:dropoff.dropoff_detail,
                                     
                                 },
                                 force: true,
