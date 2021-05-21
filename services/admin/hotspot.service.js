@@ -176,6 +176,7 @@ module.exports = {
 
                 let currentDropoffs = await utility.convertPromiseToObject(
                     await models.HotspotDropoff.findAll({
+                        attributes:["dropoff_detail"],
                         where: {
                             hotspot_location_id:hotspotLocationId,
                         }
