@@ -25,7 +25,8 @@ module.exports = {
                 ...whereCondition,
                 [Op.or]: [
                     { delivery_id: { [Op.iLike]: `%${searchKey}%` } },
-                    //sequelize.where(sequelize.fn('JSON_VALUE', sequelize.col('delivery_details'), '$.hotspot.name'), { [Op.iLike]: `%${searchKey}%` })
+                    sequelize.where(sequelize.json('delivery_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` })
+                    //sequelize.literal(`delivery_details->'hotspot'->>'name' ilike '%${searchKey}%'`),
                 ]
             };
         }
@@ -112,7 +113,7 @@ module.exports = {
     getOrderDeliveryDetails: async (params) => {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
-        return await utility.convertPromiseToObject(
+        let orderDeliveryDetails=  await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
                     order_delivery_id:params.order_delivery_id
@@ -140,6 +141,10 @@ module.exports = {
                 limit
             })
         )
+
+        if (orderDeliveryDetails.count == 0) throw new Error(constants.MESSAGES.no_record);
+        
+        return orderDeliveryDetails
     },
 
     getPickupOrders: async (params) => {
@@ -443,18 +448,22 @@ module.exports = {
         }
 
 
-        return await utility.convertPromiseToObject(await models.RestaurantPayment.findAndCountAll({
+        let restaurantEarnings= await utility.convertPromiseToObject(await models.RestaurantPayment.findAndCountAll({
                 where: whereCondition,
                 order: [["createdAt", "DESC"]],
                 limit,
                 offset,
-            }))
+        }))
+        
+        if (restaurantEarnings.count == 0) throw new Error(constants.MESSAGES.no_record);
+        
+        return restaurantEarnings
     },
 
     getOrdersByRestaurantIdAndDateRange: async (params) => {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
-        return await utility.convertPromiseToObject(
+        let ordersByRestaurantIdAndDateRange= await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
                     restaurant_id: params.restaurant_id,
@@ -490,6 +499,10 @@ module.exports = {
                 
             })
         )
+
+        if (ordersByRestaurantIdAndDateRange.count == 0) throw new Error(constants.MESSAGES.no_order);
+        
+        return ordersByRestaurantIdAndDateRange
     },
 
     getDriverEarnings: async (params) => {
@@ -704,18 +717,22 @@ module.exports = {
         }
 
 
-        return await utility.convertPromiseToObject(await models.DriverPayment.findAndCountAll({
+        let driverEarnings= await utility.convertPromiseToObject(await models.DriverPayment.findAndCountAll({
                 where: whereCondition,
                 order: [["createdAt", "DESC"]],
                 limit,
                 offset,
-            }))
+        }))
+        
+        if (driverEarnings.count == 0) throw new Error(constants.MESSAGES.no_record);
+        
+        return driverEarnings
     },
 
     getOrdersByDriverIdAndDateRange: async (params) => {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
-        return await utility.convertPromiseToObject(
+        let ordersByDriverIdAndDateRange= await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
                     driver_id: params.driver_id,
@@ -751,6 +768,10 @@ module.exports = {
                 
             })
         )
+
+        if (ordersByDriverIdAndDateRange.count == 0) throw new Error(constants.MESSAGES.no_order);
+        
+        return ordersByDriverIdAndDateRange
     },
 
 }
