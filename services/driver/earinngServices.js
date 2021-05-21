@@ -84,7 +84,8 @@ module.exports = {
             }
             else{
                 moment().format('YYYY-MM-DD hh:mm:ss')
-                result.status="Delivered"
+                result.status="Delivered",
+                result.totalEarnings=element.driver_fee
             }
             earningData.push(result)
            })
