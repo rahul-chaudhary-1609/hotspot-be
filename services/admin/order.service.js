@@ -1,4 +1,5 @@
 const models = require('../../models');
+const {sequelize}=require('../../models');
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const constants = require("../../constants");
@@ -79,6 +80,9 @@ module.exports = {
                     ...query.where,
                     [Op.or]: [
                         { order_id: { [Op.iLike]: `%${searchKey}%` } },
+                        sequelize.where(sequelize.json('order_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` }),
+                        sequelize.where(sequelize.json('order_details.customer.name'), { [Op.iLike]: `%${searchKey}%` }),
+                        sequelize.where(sequelize.json('order_details.restaurant.restaurant_name'), { [Op.iLike]: `%${searchKey}%` }),
                     ]
                 };
             }
@@ -155,6 +159,9 @@ module.exports = {
                     ...query.where,
                     [Op.or]: [
                         { order_id: { [Op.iLike]: `%${searchKey}%` } },
+                        sequelize.where(sequelize.json('order_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` }),
+                        sequelize.where(sequelize.json('order_details.customer.name'), { [Op.iLike]: `%${searchKey}%` }),
+                        sequelize.where(sequelize.json('order_details.restaurant.restaurant_name'), { [Op.iLike]: `%${searchKey}%` }),
                     ]
                 };
             }
@@ -217,6 +224,11 @@ module.exports = {
                     ...query.where,
                     [Op.or]: [
                         { order_id: { [Op.iLike]: `%${searchKey}%` } },
+                        sequelize.where(sequelize.json('order_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` }),
+                        sequelize.where(sequelize.json('order_details.customer.name'), { [Op.iLike]: `%${searchKey}%` }),
+                        sequelize.where(sequelize.json('order_details.restaurant.restaurant_name'), { [Op.iLike]: `%${searchKey}%` }),
+                        sequelize.where(sequelize.json('order_details.driver.first_name'), { [Op.iLike]: `%${searchKey}%` }),
+                        sequelize.where(sequelize.json('order_details.driver.last_name'), { [Op.iLike]: `%${searchKey}%` }),
                     ]
                 };
             }

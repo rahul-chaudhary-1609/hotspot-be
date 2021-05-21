@@ -25,7 +25,8 @@ module.exports = {
                 ...whereCondition,
                 [Op.or]: [
                     { delivery_id: { [Op.iLike]: `%${searchKey}%` } },
-                    //sequelize.where(sequelize.fn('JSON_VALUE', sequelize.col('delivery_details'), '$.hotspot.name'), { [Op.iLike]: `%${searchKey}%` })
+                    sequelize.where(sequelize.json('delivery_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` })
+                    //sequelize.literal(`delivery_details->'hotspot'->>'name' ilike '%${searchKey}%'`),
                 ]
             };
         }
@@ -73,7 +74,7 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.getFullYear(end_date.getFullYear() - 1)
+                start_date.setFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     ...whereCondition,
                     delivery_datetime: {
@@ -112,7 +113,7 @@ module.exports = {
     getOrderDeliveryDetails: async (params) => {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
-        return await utility.convertPromiseToObject(
+        let orderDeliveryDetails=  await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
                     order_delivery_id:params.order_delivery_id
@@ -140,6 +141,10 @@ module.exports = {
                 limit
             })
         )
+
+        if (orderDeliveryDetails.count == 0) throw new Error(constants.MESSAGES.no_record);
+        
+        return orderDeliveryDetails
     },
 
     getPickupOrders: async (params) => {
@@ -204,7 +209,7 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.getFullYear(end_date.getFullYear() - 1)
+                start_date.setFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     ...whereCondition,
                     delivery_datetime: {
@@ -386,8 +391,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -395,8 +400,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -408,7 +413,7 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.getFullYear(end_date.getFullYear() - 1)
+                start_date.setFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     [Op.and]: [
                         {
@@ -419,8 +424,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -428,8 +433,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -443,21 +448,26 @@ module.exports = {
         }
 
 
-        return await utility.convertPromiseToObject(await models.RestaurantPayment.findAndCountAll({
+        let restaurantEarnings= await utility.convertPromiseToObject(await models.RestaurantPayment.findAndCountAll({
                 where: whereCondition,
                 order: [["createdAt", "DESC"]],
                 limit,
                 offset,
-            }))
+        }))
+        
+        if (restaurantEarnings.count == 0) throw new Error(constants.MESSAGES.no_record);
+        
+        return restaurantEarnings
     },
 
     getOrdersByRestaurantIdAndDateRange: async (params) => {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
-        return await utility.convertPromiseToObject(
+        let ordersByRestaurantIdAndDateRange= await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
-                    restaurant_id:params.restaurant_id,
+                    restaurant_id: params.restaurant_id,
+                    status: constants.ORDER_DELIVERY_STATUS.delivered,
                     delivery_datetime: {
                         [Op.and]: [
                             { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
@@ -489,6 +499,10 @@ module.exports = {
                 
             })
         )
+
+        if (ordersByRestaurantIdAndDateRange.count == 0) throw new Error(constants.MESSAGES.no_order);
+        
+        return ordersByRestaurantIdAndDateRange
     },
 
     getDriverEarnings: async (params) => {
@@ -646,8 +660,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -655,8 +669,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -668,7 +682,7 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.getFullYear(end_date.getFullYear() - 1)
+                start_date.setFullYear(end_date.getFullYear() - 1)
                 whereCondition = {
                     [Op.and]: [
                         {
@@ -679,8 +693,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -688,8 +702,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
                                         ]                
                                     }
 
@@ -703,21 +717,26 @@ module.exports = {
         }
 
 
-        return await utility.convertPromiseToObject(await models.DriverPayment.findAndCountAll({
+        let driverEarnings= await utility.convertPromiseToObject(await models.DriverPayment.findAndCountAll({
                 where: whereCondition,
                 order: [["createdAt", "DESC"]],
                 limit,
                 offset,
-            }))
+        }))
+        
+        if (driverEarnings.count == 0) throw new Error(constants.MESSAGES.no_record);
+        
+        return driverEarnings
     },
 
     getOrdersByDriverIdAndDateRange: async (params) => {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
-        return await utility.convertPromiseToObject(
+        let ordersByDriverIdAndDateRange= await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
-                    driver_id:params.restaurant_id,
+                    driver_id: params.driver_id,
+                    status: constants.ORDER_DELIVERY_STATUS.delivered,
                     delivery_datetime: {
                         [Op.and]: [
                             { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
@@ -749,6 +768,10 @@ module.exports = {
                 
             })
         )
+
+        if (ordersByDriverIdAndDateRange.count == 0) throw new Error(constants.MESSAGES.no_order);
+        
+        return ordersByDriverIdAndDateRange
     },
 
 }
