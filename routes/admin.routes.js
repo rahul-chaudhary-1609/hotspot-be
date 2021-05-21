@@ -174,6 +174,8 @@ router.get('/getOrderDetails/:orderId',adminAuthentication.validateAdminToken, a
 
 router.put('/assignDriver/:orderId',adminAuthentication.validateAdminToken, adminOrderController.assignDriver);
 
+router.get('/getDriverListByHotspot',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getDriverListByHotspot), adminOrderController.getDriverListByHotspot);
+
 
 //Fee Settings
 

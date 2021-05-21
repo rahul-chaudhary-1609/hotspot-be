@@ -46,5 +46,14 @@ module.exports = {
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
+    },
+
+    getDriverListByHotspot: async (req, res) => {
+        try {
+            const responseFromService = await orderService.getDriverListByHotspot(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
     }
 }

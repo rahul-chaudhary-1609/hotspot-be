@@ -401,6 +401,11 @@ module.exports = {
     }),
 
 
+    getDriverListByHotspot: Joi.object({
+        hotspot_location_id: Joi.number().required(),
+    }),
+
+
 }
 
 
