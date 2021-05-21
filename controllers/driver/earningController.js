@@ -10,7 +10,7 @@ module.exports = {
     */
    getEarningList:async (req, res) => {
     try {
-        const getEarningListData = await earningServices.getEarningList(req.query);
+        const getEarningListData = await earningServices.getEarningList(req.user,req.query);
         utilityFunction.successResponse(res, getEarningListData, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -21,15 +21,25 @@ module.exports = {
     * function for get earning details
     * @req :  type, id
     */
-   getEarningDetails:async (req, res) => {
+/*   getEarningDetails:async (req, res) => {
     try {
         const getEarningListData = await earningServices.getEarningDetails(req.query);
         utilityFunction.successResponse(res, getEarningListData, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
     }
+  }*/
+
+     getTotalEarnings:async (req, res) => {
+    try {
+        const getTotalEarnings = await earningServices.getTotalEarnings(req.user,req.query);
+        utilityFunction.successResponse(res, getTotalEarnings, constants.MESSAGES.success);
+    } catch (error) {
+        utilityFunction.errorResponse(res, error, constants.code.error_code);
+    }
   }
 }
+
 
 
 

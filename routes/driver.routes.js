@@ -59,5 +59,6 @@ router.put('/confirmOrderPickup/:order_pickup_id',joiValidation.validateParams(a
 
 // earning API's
 router.get('/getEarningList', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningList), earningController.getEarningList);
-router.get('/getEarningDetails', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningDetails), earningController.getEarningDetails);
+//router.get('/getEarningDetails', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningDetails), earningController.getEarningDetails);
+router.get('/getTotalEarnings', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getTotalEarnings), earningController.getTotalEarnings);
 module.exports = router;

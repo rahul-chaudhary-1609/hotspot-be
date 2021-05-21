@@ -62,40 +62,6 @@ module.exports = {
          }
   })
   if (checkId.length) {
-/*    let gethotspotId = await models.OrderPickup.findAll({
-      where: {
-          driver_id:user.id,
-          delivery_datetime: {
-            [Op.between]: [todayStartDate, todayEndDate]
-          },
-         },
-         //attributes: ["hotspot_location_id"],
-         raw:true
-  })
-  console.log(gethotspotId)
-  const hotspotIds = gethotspotId.map(data => { return data.hotspot_location_id })
-  console.log("hotspotlocationid",hotspotIds)
-  let gethotspotShifts = await models.HotspotLocation.findAll({
-    where: {
-        id:hotspotIds,
-       },
-       //attributes: ["hotspot_location_id"],
-       raw:true
-})
-console.log(gethotspotShifts)
-const deliveryShifts = gethotspotShifts.map(data => { return data.delivery_shifts })
-console.log("hotspotdeliveryshifts",deliveryShifts)
- for(let i=0;i<deliveryShifts.length;i++)
- {
-       const pickups = await models.OrderPickup.findAndCountAll({
-      where:{
-        driver_id:user.id,
-        delivery_datetime:deliveryShifts[i][0]
-      },
-      attributes: ["pickup_id",[Sequelize.json('pickup_details.hotspot.name'), 'hotspotName'],[Sequelize.json('pickup_details.hotspot.location_detail'), 'hotspotLocationDetail'],"pickup_datetime","delivery_datetime"]
-    })
-    return pickups
- }*/
     const pickups = await models.OrderPickup.findAndCountAll({
       where:{
         driver_id:user.id,
@@ -114,43 +80,28 @@ console.log("hotspotdeliveryshifts",deliveryShifts)
 
 
 
- totalCount: async(driver)=>{
-  let checkPickup = await Pickup.findOne({
-      where: {
-          driver_id:driver.id,
-          created_at : { [Op.gte]: new Date().toLocaleDateString() } 
-  }
-  })
-  let checkDelivery = await Pickup.findOne({
+ totalCount: async(user)=>{
+  const todayStartDate = moment().format('YYYY-MM-DD ');
+  const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
+  const pickupData= await models.OrderPickup.findAndCountAll({
     where: {
-        driver_id:driver.id,
-        created_at : { [Op.gte]: new Date().toLocaleDateString() } 
-}
-})
-  if (checkPickup || checkDelivery) {
-  
-            const pickupData= await Pickup.findAndCountAll({
-              where: {
-                  driver_id:driver.id,
-                  created_at : { [Op.gte]: new Date().toLocaleDateString() }
-              },
-              distinct: true,
-              col: 'pickup_id'
-            })
+        driver_id:user.id,
+        delivery_datetime: {
+          [Op.between]: [todayStartDate, todayEndDate]
+        }
+    },
+  })
 
-            const deliveryData= await Delivery.findAndCountAll({
-              where: {
-                  driver_id:driver.id,
-                  created_at : { [Op.gte]: new Date().toLocaleDateString() }
-              },
-              distinct: true,
-              col: 'delivery_id'
-            })
-            return pickupData.count+deliveryData.count
-  } 
-  else {
-      throw new Error(constants.MESSAGES.no_order);
-  }
+  const deliveryData= await models.OrderDelivery.findAndCountAll({
+    where: {
+        driver_id:user.id,
+        delivery_datetime: {
+          [Op.between]: [todayStartDate, todayEndDate]
+        }
+    },
+  })
+  return pickupData.count+deliveryData.count
+
 },
 
 
@@ -563,7 +514,6 @@ console.log("hotspotdeliveryshifts",deliveryShifts)
             delivery_id:params.delivery_id,
           },
         })
-        console.log("aaaaaaaaaaaaaaaaa",deliveryData.dataValues)
         deliveryDetail.driverName = deliveryData.dataValues.delivery_details.driver.first_name + " " + deliveryData.dataValues.delivery_details.driver.last_name
         deliveryDetail.deliveryDate = moment(deliveryData.dataValues.delivery_datetime).format('DD-MMM-YYYY');
         deliveryDetail.hotspotName = deliveryData.dataValues.delivery_details.hotspot.name
@@ -578,7 +528,6 @@ console.log("hotspotdeliveryshifts",deliveryShifts)
           },
           raw:true
         })
-        //console.log(getDropOffLocations)
         const dropOffDetails = getDropOffLocations.map(data => { return data.dropoff_detail })
         console.log(dropOffDetails)
         const dropOffCount = deliveryData.dataValues.delivery_details.dropOffs.map(data => { return data.orderCount })
@@ -586,7 +535,6 @@ console.log("hotspotdeliveryshifts",deliveryShifts)
         var dropOffData = dropOffDetails.map(function (value, index){
           return [value, dropOffCount[index]]
        })
-       console.log(dropOffData)
        dropOffData.forEach( element =>{
         let dropOffs = {
           dropOffLocation:element[0],

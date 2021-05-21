@@ -159,6 +159,12 @@ module.exports = {
         id: Joi.number().required()
     }),
 
+    getTotalEarnings: Joi.object({
+        type: Joi.number().min(0).max(1).required(),
+        start_date: Joi.string().trim().optional(),
+        end_date: Joi.string().trim().optional()
+    }),
+
     confirmOrderPickup: Joi.object({
         order_pickup_id: Joi.string().required()
     }),

@@ -7820,6 +7820,51 @@
       }
     },
 
+
+    "/driver/getTotalEarnings": {
+      "get": {
+        "tags": [
+          "Driver Earning Management"
+        ],
+        "description": "Api to get total earnings",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "enter type, 0=> pending, 1=> paid",
+            "required": true,
+            "type": "number",
+            "enum":[0,1]
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "description": "enter start_date, YYYY-MM-DD",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "description": "enter end_date, YYYY-MM-DD",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
     "/driver/getEarningDetails": {
       "get": {
         "tags": [
