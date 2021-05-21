@@ -66,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 1,
+            defaultValue: 0,
             comment: '0=>not_paid,1=>in_process,2=>paid'
         },
 
