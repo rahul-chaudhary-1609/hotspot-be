@@ -55,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
         },
         deliveries_per_shift: {
-            type: DataTypes.BIGINT,
+            type: DataTypes.INTEGER,
         },
         cut_off_time: {
             type: DataTypes.FLOAT,

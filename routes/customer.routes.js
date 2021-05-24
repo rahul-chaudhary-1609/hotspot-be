@@ -116,9 +116,9 @@ router.get('/get-default-hotspot', customerAuthentication.validateCustomerToken,
 
 //Restaurants Routes
 
-router.get('/get-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getRestaurantSchema), RestaurantController.getRestaurant);
+// router.get('/get-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getRestaurantSchema), RestaurantController.getRestaurant);
 
-router.get('/get-hotspot-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getHotspotRestaurantSchema),RestaurantController.getHotspotRestaurant);
+// router.get('/get-hotspot-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getHotspotRestaurantSchema),RestaurantController.getHotspotRestaurant);
 
 router.post('/set-favorite-restaurant', customerAuthentication.validateCustomerToken,  RestaurantController.setFavoriteRestaurant);
 
@@ -130,15 +130,15 @@ router.get('/get-restaurant-category', customerAuthentication.validateCustomerTo
 
 router.get('/get-search-suggestion', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getSearchSuggestionSchema), RestaurantController.getSearchSuggestion);
 
-router.get('/get-search-result', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getSearchResultSchema), RestaurantController.getSearchResult);
+// router.get('/get-search-result', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getSearchResultSchema), RestaurantController.getSearchResult);
 
-router.post('/get-hotspot-restaurant-with-filter', customerAuthentication.validateCustomerToken, RestaurantController.getHotspotRestaurantWithFilter);
+// router.post('/get-hotspot-restaurant-with-filter', customerAuthentication.validateCustomerToken, RestaurantController.getHotspotRestaurantWithFilter);
 
 router.post('/get-hotspot-restaurant-pickup', customerAuthentication.validateCustomerToken, RestaurantController.getHotspotRestaurantPickup);
 
 router.post('/get-hotspot-restaurant-delivery', customerAuthentication.validateCustomerToken, RestaurantController.getHotspotRestaurantDelivery);
 
-router.get('/get-hotspot-restaurant-with-quick-filter', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getQuickFilterSchema), RestaurantController.getHotspotRestaurantWithQuickFilter);
+// router.get('/get-hotspot-restaurant-with-quick-filter', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getQuickFilterSchema), RestaurantController.getHotspotRestaurantWithQuickFilter);
 
 router.get('/get-offer-banner', customerAuthentication.validateCustomerToken, RestaurantController.getOfferBanner);
 
