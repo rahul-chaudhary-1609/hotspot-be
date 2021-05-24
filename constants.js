@@ -175,8 +175,7 @@ CUSTOM_JOI_MESSAGE : {
 
   PAYMENT_STATUS : {
     not_paid: 0,
-    in_pocess: 1,
-    paid: 2,
+    paid: 1,
   },
   
   DRIVER_APPROVAL_STATUS : {

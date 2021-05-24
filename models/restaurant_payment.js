@@ -67,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
-            comment: '0=>not_paid,1=>in_process,2=>paid'
+            comment: '0=>not_paid,1=>paid'
         },
 
     }, {

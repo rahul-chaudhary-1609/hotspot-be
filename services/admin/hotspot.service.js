@@ -390,13 +390,13 @@ module.exports = {
 
         if (!hotspot) throw new Error(constants.MESSAGES.no_hotspot);
     
-        let hotspotRestaurant = await models.RestaurantHotspot.findOne({
-            where: {
-                    hotspot_location_id:hotspotLocationId,
-                }
-        })
+        // let hotspotRestaurant = await models.RestaurantHotspot.findOne({
+        //     where: {
+        //             hotspot_location_id:hotspotLocationId,
+        //         }
+        // })
         
-        if (hotspotRestaurant) throw new Error(constants.MESSAGES.hotspot_can_not_delete);
+        // if (hotspotRestaurant) throw new Error(constants.MESSAGES.hotspot_can_not_delete);
         
         await models.HotspotDropoff.destroy({
             where: {

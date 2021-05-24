@@ -289,7 +289,8 @@ module.exports = {
                 deliveryDateTime: order.delivery_datetime,
                 customer: order.order_details.customer.name,
                 restaurant: order.order_details.restaurant.restaurant_name,
-                hotspotLocation: order.order_details.hotspot? {
+                hotspotLocation: order.order_details.hotspot ? {
+                    id:order.order_details.hotspot.id,
                     name: order.order_details.hotspot.name,
                     details: order.order_details.hotspot.location_detail,
                 } : null,
@@ -428,5 +429,35 @@ module.exports = {
         return true;
 
         
+    },
+
+    getDriverListByHotspot: async (params) => {
+         
+        let hotspotDrivers = await utility.convertPromiseToObject(
+            await models.HotspotDriver.findAll({
+                attributes: ['driver_id'],
+                where: {
+                    hotspot_location_id:parseInt(params.hotspot_location_id)
+                }
+            })
+        )
+
+        let driver_ids = hotspotDrivers.map(hotspotDriver => hotspotDriver.driver_id);
+
+        let drivers = await utility.convertPromiseToObject(
+            await models.Driver.findAndCountAll({
+                attributes: ['id', 'first_name', 'last_name'],
+                where: {
+                    id: driver_ids,
+                    approval_status: constants.DRIVER_APPROVAL_STATUS.approved,
+                    status:constants.STATUS.active,
+                    
+                }
+            })
+        )
+
+        if (drivers.count == 0) throw new Error(constants.MESSAGES.no_driver);
+
+        return drivers;
     }
 }
