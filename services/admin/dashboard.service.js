@@ -64,10 +64,7 @@ module.exports = {
 
     getTotalRevenue: async () => {
                 
-            const totalAmount = await models.Order.sum('amount',{
-                where:  {
-                    status: [1,2, 3, 4],
-                }
+            const totalAmount = await models.OrderDelivery.sum('hotspot_fee',{
             });
            
             
@@ -323,9 +320,8 @@ module.exports = {
 
       getTotalRevenueViaHotspot: async (params) => {
                 
-        const totalAmount = await models.Order.sum('amount',{
+        const totalAmount = await models.OrderDelivery.sum('hotspot_fee',{
             where:  {
-                status: [1,2, 3, 4],
                 hotspot_location_id:params.hotspot_id,
             }
         });
@@ -347,32 +343,26 @@ module.exports = {
         const StartMonth = 1 // 1:January
         const yearStartDate = moment([getYear,StartMonth-1, 1]).format('YYYY-MM-DD ')
         const yearEndDate = moment(yearStartDate).add(1, 'year').format('YYYY-MM-DD')
-        const TotalAmount = await models.Order.sum('amount',{
-          where:  {
-              status: [1,2, 3, 4],
-          }
+        const TotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
       });
-        const todayTotalAmount = await models.Order.sum('amount',{
+        const todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
           where:  {
-              status: [1,2, 3, 4],
               updated_at: {
                 [Op.between]: [todayStartDate, todayEndDate]
               },
           }
       });
 
-      const monthTotalAmount = await models.Order.sum('amount',{
+      const monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
         where:  {
-            status: [1,2, 3, 4],
             updated_at: {
               [Op.between]: [monthStartDate, monthEndDate]
             },
         }
       });
 
-      const yearTotalAmount = await models.Order.sum('amount',{
+      const yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
         where:  {
-            status: [1,2, 3, 4],
             updated_at: {
               [Op.between]: [yearStartDate, yearEndDate]
             },
