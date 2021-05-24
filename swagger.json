@@ -4462,13 +4462,7 @@
                 "required": true,
                 "type": "string"
               },
-              {
-                "name": "phone",
-                "in": "formData",
-                "description": "enter phone",
-                "required": true,
-                "type": "string"
-              },
+
               {
                 "name": "password",
                 "in": "formData",

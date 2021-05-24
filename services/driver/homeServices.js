@@ -51,8 +51,14 @@ module.exports = {
 
 
  Pickups: async(user)=>{
-  const todayStartDate = moment().format('YYYY-MM-DD ');
-  const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
+  //const todayStartDate = moment().format('YYYY-MM-DD ');
+  //const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
+  const todayStartDate = new Date();
+  todayStartDate.setHours(0,0,0,0);
+  console.log("aaa",todayStartDate)
+  const todayEndDate = new Date();
+  todayEndDate.setHours(23,59,59,999);
+  console.log("aaaaa",todayEndDate)
   let checkId = await models.OrderPickup.findAll({
       where: {
           driver_id:user.id,
@@ -81,8 +87,14 @@ module.exports = {
 
 
  totalCount: async(user)=>{
-  const todayStartDate = moment().format('YYYY-MM-DD ');
-  const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
+//  const todayStartDate = moment().format('YYYY-MM-DD ');
+//  const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
+  const todayStartDate = new Date();
+  todayStartDate.setHours(0,0,0,0);
+  console.log("aaa",todayStartDate)
+   const todayEndDate = new Date();
+  todayEndDate.setHours(23,59,59,999);
+  console.log("aaaaa",todayEndDate)
   const pickupData= await models.OrderPickup.findAndCountAll({
     where: {
         driver_id:user.id,
@@ -401,8 +413,14 @@ module.exports = {
      },*/
 
      Deliveries: async(user)=>{
-      const todayStartDate = moment().format('YYYY-MM-DD ');
-      const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
+//      const todayStartDate = moment().format('YYYY-MM-DD ');
+//      const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
+      const todayStartDate = new Date();
+      todayStartDate.setHours(0,0,0,0);
+      console.log("aaa",todayStartDate)
+      const todayEndDate = new Date();
+      todayEndDate.setHours(23,59,59,999);
+      console.log("aaaaa",todayEndDate)
       let checkId = await models.OrderDelivery.findAll({
           where: {
               driver_id:user.id,
