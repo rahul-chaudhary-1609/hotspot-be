@@ -5262,89 +5262,8 @@
 
 
 
-        "/customer/get-restaurant": {
-          "get": {
-            "tags": [
-              "Customer Restaurant"
-            ],
-            "description": "Api to get pickup restaurants out of hotspot",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [
-              {
-                "name": "latitude",
-                "in": "query",
-                "description": "enter latitude",
-                "required": false,
-                "type": "number"
-              },
-              {
-                "name": "longitude",
-                "in": "query",
-                "description": "enater longitude",
-                "required": false,
-                "type": "number"
-              }
-            ],
-            "responses": {}
-          }
-        },
+      
         
-        "/customer/get-hotspot-restaurant": {
-          "get": {
-            "tags": [
-              "Customer Restaurant"
-            ],
-            "description": "Api to get restaurants in a hotspot",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [
-              {
-                "name": "latitude",
-                "in": "query",
-                "description": "enter latitude",
-                "required": false,
-                "type": "number"
-              },
-              {
-                "name": "longitude",
-                "in": "query",
-                "description": "enater longitude",
-                "required": false,
-                "type": "number"
-              },
-              {
-                "name": "hotspot_location_id",
-                "in": "query",
-                "description": "enter hotspot location id",
-                "required": true,
-                "type": "number"
-              },
-              {
-                "name": "delivery_shift",
-                "in": "query",
-                "description": "enter delivery shift HH:MM:SS",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
         "/customer/set-favorite-restaurant": {
           "post": {
             "tags": [
@@ -5392,76 +5311,7 @@
           }
         },
         
-        "/customer/get-hotspot-restaurant-with-filter": {
-          "post": {
-            "tags": [
-              "Customer Restaurant"
-            ],
-            "description": "Api to get restaurants in a hotspot with filter",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [
-              {
-                "name": "hotspot_location_id",
-                "in": "formData",
-                "description": "enter hotspot location id",
-                "required": true,
-                "type": "number"
-              },
-              {
-                "name": "delivery_shift",
-                "in": "formData",
-                "description": "enter delivery shift HH:MM:SS",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "dish_category_id",
-                "in": "formData",
-                "description": "enter dish category id",
-                "required": false,
-                "type": "number"
-              },
-              {
-                "name": "sort_by",
-                "in": "formData",
-                "description": "price high to low | price low to high",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "name": "max_price",
-                "in": "formData",
-                "description": "enter max price (in $)",
-                "required": false,
-                "type": "number"
-              },
-              {
-                "name": "category",
-                "in": "formData",
-                "description": "Indian,Thai,Bakery,...",
-                "required": false,
-                "type": "string"               
-              },
-              {
-                "name": "searchPhrase",
-                "in": "formData",
-                "description": "enter the phrase for search",
-                "required": false,
-                "type": "string"
-              }
-              
-            ],
-            "responses": {}
-          }
-        },
+        
         "/customer/get-favorite-restaurant": {
           "get": {
             "tags": [
@@ -5524,47 +5374,7 @@
           }
         },
 
-        "/customer/get-search-result": {
-          "get": {
-            "tags": [
-              "Customer Restaurant"
-            ],
-            "description": "Api to get search result",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [
-              {
-                "name": "hotspot_location_id",
-                "in": "query",
-                "description": "enter hotspot location id",
-                "required": true,
-                "type": "number"
-              },
-              {
-                "name": "delivery_shift",
-                "in": "query",
-                "description": "enter delivery shift HH:MM:SS",
-                "required": true,
-                "type": "string"
-              },
-               {
-                "name": "searchPhrase",
-                "in": "query",
-                "description": "enter the phrase for search",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
+        
 
         "/customer/get-offer-banner": {
           "get": {
@@ -5586,76 +5396,6 @@
           }
         },
         
-        "/customer/get-hotspot-restaurant-pickup": {
-          "post": {
-            "tags": [
-              "Customer Restaurant"
-            ],
-            "description": "Api to get pickup type restaurants in a hotspot with filter",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [
-              {
-                "name": "hotspot_location_id",
-                "in": "formData",
-                "description": "enter hotspot location id",
-                "required": true,
-                "type": "number"
-              },
-              {
-                "name": "delivery_shift",
-                "in": "formData",
-                "description": "enter delivery shift HH:MM:SS",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "dish_category_id",
-                "in": "formData",
-                "description": "enter dish category id",
-                "required": false,
-                "type": "number"
-              },
-              {
-                "name": "sort_by",
-                "in": "formData",
-                "description": "price high to low | price low to high",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "name": "max_price",
-                "in": "formData",
-                "description": "enter max price (in $)",
-                "required": false,
-                "type": "number"
-              },
-             {
-                "name": "category",
-                "in": "formData",
-                "description": "Indian,Thai,Bakery,...",
-                "required": false,
-                "type": "string"               
-              },
-              {
-                "name": "searchPhrase",
-                "in": "formData",
-                "description": "enter the phrase for search",
-                "required": false,
-                "type": "string"
-              }
-              
-            ],
-            "responses": {}
-          }
-        },
         
         "/customer/get-hotspot-restaurant-delivery": {
           "post": {
@@ -5688,32 +5428,24 @@
                 "type": "string"
               },
               {
-                "name": "dish_category_id",
+                "name": "dish_category_ids",
                 "in": "formData",
                 "description": "enter dish category id",
                 "required": false,
-                "type": "number"
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
               },
               {
-                "name": "sort_by",
+                "name": "restaurant_category_ids",
                 "in": "formData",
-                "description": "price high to low | price low to high",
+                "description": "enter restaurant category ids",
                 "required": false,
-                "type": "string"
-              },
-              {
-                "name": "max_price",
-                "in": "formData",
-                "description": "enter max price (in $)",
-                "required": false,
-                "type": "number"
-              },
-              {
-                "name": "category",
-                "in": "formData",
-                "description": "Indian,Thai,Bakery,...",
-                "required": false,
-                "type": "string"               
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
               },
               {
                 "name": "searchPhrase",
@@ -5723,6 +5455,53 @@
                 "type": "string"
               }
               
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer/get-hotspot-restaurant-pickup": {
+          "post": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get delivery type restaurants in a hotspot with filter",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "dish_category_ids",
+                "in": "formData",
+                "description": "enter dish category id",
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              {
+                "name": "restaurant_category_ids",
+                "in": "formData",
+                "description": "enter restaurant category ids",
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              {
+                "name": "searchPhrase",
+                "in": "formData",
+                "description": "enter the phrase for search",
+                "required": false,
+                "type": "string"
+              }
             ],
             "responses": {}
           }
@@ -5748,48 +5527,7 @@
           }
         },
 
-        "/customer/get-hotspot-restaurant-with-quick-filter": {
-          "get": {
-            "tags": [
-              "Customer Restaurant"
-            ],
-            "description": "Api to get search result",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [
-              {
-                "name": "hotspot_location_id",
-                "in": "query",
-                "description": "enter hotspot location id",
-                "required": true,
-                "type": "number"
-              },
-              {
-                "name": "delivery_shift",
-                "in": "query",
-                "description": "enter delivery shift HH:MM:SS",
-                "required": true,
-                "type": "string"
-              },
-               {
-                "name": "dish_category_id",
-                "in": "query",
-                "description": "enter dish category id",
-                "required": true,
-                "type": "number"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
+        
         "/customer/get-restaurant-category": {
           "get": {
             "tags": [

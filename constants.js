@@ -101,7 +101,7 @@ defaultServerResponse : {
 otp_expiry_time : 60,
 OFFSET_LIMIT : 10,
 ORDER_DELIVERY_STATUS: {
-  not_payed: 0,
+  not_paid: 0,
   pending: 1,
   food_being_prepared: 2,
   food_ready_or_on_the_way: 3,

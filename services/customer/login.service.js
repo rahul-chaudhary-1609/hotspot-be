@@ -4,7 +4,6 @@ const validation = require('../../apiSchema/customerSchema');
 const { Op, where } = require("sequelize");
 const passwordHash = require('password-hash');
 const sendMail = require('../../utils/mail');
-const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const responseToken = require('../../utils/responseToken');
 const customerAWS = require('../../utils/aws');
 const { isBoolean } = require('lodash');
@@ -420,145 +419,89 @@ module.exports = {
 
     generatePhoneOTP: async (params ) => {
 
-            const phone_no = parseInt(params.phone);
-            const country_code = params.country_code;
+        const phone_no = parseInt(params.phone);
+        const country_code = params.country_code;
 
 
-            let customer = await utilityFunction.convertPromiseToObject( await models.Customer.findOne({
-                    where: {
-                        country_code,phone_no
-                    }
-                })
-            );
+        let customer = await utilityFunction.convertPromiseToObject( await models.Customer.findOne({
+                where: {
+                    country_code,phone_no
+                }
+            })
+        );
 
-            if (customer.is_phone_verified) {
-                throw new Error(constants.MESSAGES.phone_already_verified);
-            }
+        if (customer.is_phone_verified) {
+            throw new Error(constants.MESSAGES.phone_already_verified);
+        }
 
-            client
-                .verify
-                .services(process.env.TWILIO_SERVICE_ID)
-                .verifications
-                .create({
-                    to: `${customer.country_code}${phone_no}`,
-                    channel: 'sms'
-                })
-                .then((resp) => {
-                    models.Customer.update({
-                        phone_verification_otp_expiry: new Date(),
-                    }, {
-                        where: {
-                            phone_no
-                        },
-                        returning: true,
-                    });
-                    //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
-                })
-                .catch((error) => {
-                    if (error.status === 429) {
-                        //.status(429).json({ status: 429, message: `Too many requests` });
 
-                        models.Customer.update({
-                            phone_verification_otp_expiry: new Date(),
-                        }, {
-                            where: {
-                                phone_no
-                            },
-                            returning: true,
-                        });
-                        //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
-                    }
-                    else
-                    {
-                        throw new Error(constants.MESSAGES.verification_code_sent_error);                       
-                    }                    
-                })
+        let otpSentObj = {
+            country_code: customer.country_code,
+            phone_no
+        }
+
+        let otpResponse = await utilityFunction.sentOtp(otpSentObj);
         
-            return true;
-        
-    },
-
-    validatePhoneOTP: async (params ) => {
-
-            const phone_no = parseInt(params.phone);
-            const country_code = params.country_code;
-
-
-            let customer = await utilityFunction.convertPromiseToObject(  await models.Customer.findOne({
-                    where: {
-                        country_code, phone_no
-                    }
-                })
-            );
-
-
-            if (customer.is_phone_verified) {
-                throw new Error(constants.MESSAGES.phone_already_verified);
-            }
-
-            
-
-            const phone_verification_otp_expiry = customer.phone_verification_otp_expiry;
-            const now = new Date();
-
-            const timeDiff = Math.floor((now.getTime() - (new Date(phone_verification_otp_expiry)).getTime()) / 1000)
-            if (timeDiff > constants.otp_expiry_time) {
-                throw new Error(constants.MESSAGES.expire_otp);
-            }
-
-            if (params.code == "1234") {
-                models.Customer.update({
-                    is_phone_verified: true,
+        if (otpResponse) {
+            await models.Customer.update({
+                    phone_verification_otp_expiry: new Date(),
                 }, {
                     where: {
                         phone_no
                     },
                     returning: true,
                 });
+        }
+        else {
+            throw new Error(constants.MESSAGES.verification_code_sent_error);
+        }
+    
+        return true;
+        
+    },
 
-                
+    validatePhoneOTP: async (params ) => {
 
-                let user = {
-                    id:customer.id,
-                    name: customer.name,
-                    email:customer.email,
-                };
+        const phone_no = parseInt(params.phone);
+        const country_code = params.country_code;
 
-                let accessToken = responseToken.generateCustomerAccessToken(user);
 
-                return { accessToken: accessToken };
-            }
+        let customer = await utilityFunction.convertPromiseToObject(  await models.Customer.findOne({
+                where: {
+                    country_code, phone_no
+                }
+            })
+        );
 
-            client
-                .verify
-                .services(process.env.TWILIO_SERVICE_ID)
-                .verificationChecks
-                .create({
-                    to: `${customer.country_code}${phone_no}`,
-                    code: params.code
-                })
-                .then((resp) => {
-                    if (resp.status === "approved") {
-                        models.Customer.update({
-                            is_phone_verified: true,
-                        }, {
-                            where: {
-                                phone_no
-                            },
-                            returning: true,
-                        });
-                    }
-                    else {
-                            throw new Error(constants.MESSAGES.invalid_otp);
-                    }
-                }).catch((error) => {
-                    throw new Error(constants.MESSAGES.error_occurred);
-                })
-               
+
+        if (customer.is_phone_verified) {
+            throw new Error(constants.MESSAGES.phone_already_verified);
+        }
+
+        
+
+        const phone_verification_otp_expiry = customer.phone_verification_otp_expiry;
+        const now = new Date();
+
+        const timeDiff = Math.floor((now.getTime() - (new Date(phone_verification_otp_expiry)).getTime()) / 1000)
+        if (timeDiff > constants.otp_expiry_time) {
+            throw new Error(constants.MESSAGES.expire_otp);
+        }
+
+        if (params.code == "1234") {
+            models.Customer.update({
+                is_phone_verified: true,
+            }, {
+                where: {
+                    phone_no
+                },
+                returning: true,
+            });
+
             
 
             let user = {
-                id: customer.id,
+                id:customer.id,
                 name: customer.name,
                 email:customer.email,
             };
@@ -566,6 +509,40 @@ module.exports = {
             let accessToken = responseToken.generateCustomerAccessToken(user);
 
             return { accessToken: accessToken };
+        }
+
+        let otpVerifyObj = {
+            country_code: customer.country_code,
+            phone_no,
+            otp:params.code
+        }
+
+        let optVerificationResponse = await utilityFunction.verifyOtp(otpVerifyObj);
+
+        if (optVerificationResponse) {
+           await models.Customer.update({
+                        is_phone_verified: true,
+                    }, {
+                        where: {
+                            phone_no
+                        },
+                        returning: true,
+                    });
+        }
+        else {
+            throw new Error(constants.MESSAGES.invalid_otp);
+        }
+        
+
+        let user = {
+            id: customer.id,
+            name: customer.name,
+            email:customer.email,
+        };
+
+        let accessToken = responseToken.generateCustomerAccessToken(user);
+
+        return { accessToken: accessToken };
     },
  
 
@@ -761,31 +738,16 @@ module.exports = {
 
 
             if (is_phone) {
-                client
-                    .verify
-                    .services(process.env.TWILIO_SERVICE_ID)
-                    .verifications
-                    .create({
-                        to: `${customer.country_code}${phone_no}`,
-                        channel: 'sms'
-                    })
-                    .then((resp) => {
-                        models.Customer.update({
-                            phone_verification_otp_expiry: new Date(),
-                            reset_pass_expiry: new Date(),
-                        }, {
-                            where: {
-                                phone_no
-                            },
-                            returning: true,
-                        });
-                        //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
-                    })
-                    .catch((error) => {
-                        if (error.status === 429) {
-                            //.status(429).json({ status: 429, message: `Too many requests` });
 
-                            models.Customer.update({
+                let otpSentObj = {
+                    country_code: customer.country_code,
+                    phone_no
+                }
+
+                let otpResponse = await utilityFunction.sentOtp(otpSentObj);
+                
+                if (otpResponse) {
+                    await models.Customer.update({
                                 phone_verification_otp_expiry: new Date(),
                                 reset_pass_expiry: new Date(),
                             }, {
@@ -794,13 +756,10 @@ module.exports = {
                                 },
                                 returning: true,
                             });
-                            //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
-                        }
-                        else {
-                            throw new Error(constants.MESSAGES.verification_code_sent_error);
-                        }
-                        
-                    })
+                }
+                else {
+                    throw new Error(constants.MESSAGES.verification_code_sent_error);
+                }
                 
                 return true
             }
@@ -913,17 +872,17 @@ module.exports = {
                     return true
                 }
 
-                client
-                    .verify
-                    .services(process.env.TWILIO_SERVICE_ID)
-                    .verificationChecks
-                    .create({
-                        to: `${customer.country_code}${phone_no}`,
-                        code: params.code
-                    })
-                    .then((resp) => {
-                        if (resp.status === "approved") {
-                            models.Customer.update({
+
+                let otpVerifyObj = {
+                    country_code: customer.country_code,
+                    phone_no,
+                    otp:params.code
+                }
+
+                let optVerificationResponse = await utilityFunction.verifyOtp(otpVerifyObj);
+
+                if (optVerificationResponse) {
+                await models.Customer.update({
                                 is_phone_verified: true,
                             }, {
                                 where: {
@@ -931,16 +890,10 @@ module.exports = {
                                 },
                                 returning: true,
                             });
-
-                            //.status(200).json({ status: 200, message: `OTP is verified.` });
-                        }
-                        else {
-                            throw new Error(constants.MESSAGES.invalid_otp);
-                        }
-                    }).catch((error) => {
-                        throw new Error(constants.MESSAGES.invalid_otp);
-                        //.status(500).json({ status: 500, message: `Internal Server Error` });
-                    })
+                }
+                else {
+                    throw new Error(constants.MESSAGES.invalid_otp);
+                }
                 
                 return true
             }
@@ -1031,23 +984,6 @@ module.exports = {
 
             const params = customerAWS.setParams(pictureKey, pictureBuffer);
 
-            // customerAWS.s3.upload(params, async (error, data) => {
-            //     if (error) throw new Error(constants.MESSAGES.file_upload_error);
-
-            //     const profile_picture_url = data.Location;
-
-            //     await models.Customer.update({
-            //         profile_picture_url,
-            //     }, {
-            //         where: {
-            //             email: user.email,
-            //         },
-            //         returning: true,
-            //     },
-            //     )
-
-            //     return { profile_picture_url: profile_picture_url };
-            // })  
 
             const s3upload = customerAWS.s3.upload(params).promise();
             const profile_picture_url=await s3upload.then(function (data) {

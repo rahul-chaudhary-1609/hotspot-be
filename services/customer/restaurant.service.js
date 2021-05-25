@@ -1,34 +1,19 @@
 require('dotenv/config');
 const models = require('../../models');
 const validation = require('../../apiSchema/customerSchema');
-const { Op } = require("sequelize");
+const { Op, Utils } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
 const dummyData = require('./dummyData');
 const constants = require('../../constants');
+const utility = require('../../utils/utilityFunctions');
+const order = require('../../controllers/customer/order');
 
 const getRestaurantCard =  async (args) => {
-    
-        const dishCategory = await models.DishCategory.findAll();
-
-        const dish_category_ids = await dishCategory.map(val => val.id);
         
         const restaurants = [];
-        for (const val of args.restaurant) {
+        for (const val of args.restaurants) {
             let is_favorite = false;
-            const restaurantCategory = await models.RestaurantCategory.findOne({
-                where: {
-                    id: val.restaurant_category_id,
-                }
-            });
-
-            if (args.params && args.params.category && args.params.category.length!==0) {
-                const catFound = args.params.category.find((cat) => {
-                    return cat === restaurantCategory.name;
-                });
-
-                if (!catFound) continue;
-            }
 
             const favRestaurant = await models.FavRestaurant.findOne({
                 where: {
@@ -37,56 +22,46 @@ const getRestaurantCard =  async (args) => {
                 }
             });
 
-            const hotspotLocation = await models.HotspotLocation.findOne({
-                where: {
-                    id: args.hotspot_location_id,
+            let next_delivery_time = null;
+            let getCutOffTime = null;
+
+            if (args.hotspot_location_id) {
+
+                const hotspotLocation = await models.HotspotLocation.findOne({
+                    where: {
+                        id: args.hotspot_location_id,
+                    }
+                });
+
+                const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                    return args.delivery_shift === time;
+                });
+
+                next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
+
+
+
+                getCutOffTime = (time) => {
+                    let ndtHours = parseInt(time.split(':')[0]);
+                    let ndtMinutes = parseInt(time.split(':')[1]);
+
+                    let cotHours = Math.floor((val.cut_off_time) / 60);
+                    let cotMinutes = (val.cut_off_time) % 60;
+
+                    let displayHours = Math.abs(ndtHours - cotHours);
+                    let displayMinutes = Math.abs(ndtMinutes - cotMinutes);
+
+                    if ((ndtMinutes - cotMinutes) < 0) {
+                        --displayHours;
+                        displayMinutes = 60 + (ndtMinutes - cotMinutes)
+                    }
+
+                    if (displayMinutes < 10 && displayHours < 10) return `0${displayHours}:0${displayMinutes}:00`
+                    else if (displayMinutes < 10) return `${displayHours}:0${displayMinutes}:00`
+                    else if (displayHours < 10) return `0${displayHours}:${displayMinutes}:00`
+                    else return `${displayHours}:${displayMinutes}:00`
                 }
-            });
-
-            const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                //return parseInt(args.delivery_shift) === parseInt(time.replace(/:/g, ''));
-                return args.delivery_shift === time;
-            });
-
-            const next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
-
-
-
-            const getCutOffTime = (time) => {
-                let ndtHours = parseInt(time.split(':')[0]);
-                let ndtMinutes = parseInt(time.split(':')[1]);
-
-                // let cotHours = Math.floor((val.cut_off_time * 60) / 60);
-                // let cotMinutes = (val.cut_off_time * 60) % 60;
-
-                let cotHours = Math.floor((val.cut_off_time) / 60);
-                let cotMinutes = (val.cut_off_time) % 60;
-
-                let displayHours = Math.abs(ndtHours - cotHours);
-                let displayMinutes = Math.abs(ndtMinutes-cotMinutes);
-
-                if ((ndtMinutes - cotMinutes) < 0) {
-                    --displayHours;
-                    displayMinutes = 60+ (ndtMinutes - cotMinutes)
-                }
-
-                if (displayMinutes < 10 && displayHours < 10) return `0${displayHours}:0${displayMinutes}:00`
-                else if (displayMinutes < 10) return `${displayHours}:0${displayMinutes}:00`
-                else if (displayHours < 10) return `0${displayHours}:${displayMinutes}:00`
-                else return `${displayHours}:${displayMinutes}:00`
             }
-
-            // const dishes = dummyData.getDishes(val, dish_category_ids);
-
-            // const restaurantDish = await models.RestaurantDish.findAndCountAll({
-            //     where: {
-            //         restaurant_id: val.id,
-            //     }
-            // });
-            // if (restaurantDish.count === 0) {
-            //     await models.RestaurantDish.bulkCreate(dishes);
-            // }
-
 
             if (favRestaurant) is_favorite = true;
 
@@ -94,10 +69,9 @@ const getRestaurantCard =  async (args) => {
                 restaurant_id: val.id,
                 restaurant_name: val.restaurant_name,
                 restaurant_image_url: val.restaurant_image_url,
-                category: restaurantCategory.name,
-                avg_food_price: val.avg_food_price,
-                next_delivery_time,
-                cut_off_time: getCutOffTime(next_delivery_time),
+                restaurant_category_ids: val.restaurant_category_ids,
+                next_delivery_time:next_delivery_time?next_delivery_time:null,
+                cut_off_time: next_delivery_time?getCutOffTime(next_delivery_time):null,
                 is_favorite,
                 workingHourFrom:val.working_hours_from,
                 workingHourTo:val.working_hours_to,
@@ -107,8 +81,6 @@ const getRestaurantCard =  async (args) => {
         if (restaurants.length === 0) throw new Error(constants.MESSAGES.no_restaurant);
 
         return { restaurants };
-
-
      
 
 
@@ -180,244 +152,7 @@ const getFoodCard =  async (args) => {
 
 
 module.exports = {
-    getRestaurant: async (params,user) => {
-
-          const customer_id = user.id
-
-          let restaurantCategory = await models.RestaurantCategory.findAndCountAll();
-
-          if (restaurantCategory.count === 0) {
-              await models.RestaurantCategory.bulkCreate(
-                  [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" },{ name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
-              );
-          }
-
-          restaurantCategory = await models.RestaurantCategory.findAll({
-              attributes: [
-                  'id'
-              ],
-          });
-
-          const categories = await restaurantCategory.map((val) => val.id);
-
-
-          const order_types = [2];
-
-          let dishCategory = await models.DishCategory.findAndCountAll();
-
-        //     if (dishCategory.count === 0) {
-        //         await models.DishCategory.bulkCreate(
-        //             dummyData.dishCategories,
-        //             { returning: ['id'] },
-        //         );
-        //     }
-
-
-          let restaurant = await models.Restaurant.findAndCountAll({
-              where: {
-                  order_type:2,
-                  //customer_id
-              }
-          });
-
-        //   if (restaurant.count === 0) {
-
-        //   const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=10&ll=${params.latitude},${params.longitude}&query=coffee`
-
-        //   const response = await fetch(`${URL}`);
-
-        //   const jsonResponse = await response.json();
-
-        //       const newRestaurants = jsonResponse.response.groups[0].items.map((item) => {
-        //           const owner = dummyData.owners[Math.floor(Math.random() * dummyData.owners.length)];
-        //           const working_hour = dummyData.working_hours[Math.floor(Math.random() * dummyData.working_hours.length)];
-        //           return {
-        //               restaurant_name: item.venue.name,
-        //               restaurant_image_url: dummyData.restaurant_image_urls[Math.floor(Math.random() * dummyData.restaurant_image_urls.length)],
-        //               owner_name: owner.name,
-        //               country_code: owner.country_code,
-        //               owner_phone:owner.phone,
-        //               owner_email: owner.email,
-        //               address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
-        //               location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
-        //               deliveries_per_shift: 20,
-        //               cut_off_time: dummyData.cut_off_times[Math.floor(Math.random() * dummyData.cut_off_times.length)],
-        //               avg_food_price: dummyData.avg_food_prices[Math.floor(Math.random() * dummyData.avg_food_prices.length)],
-        //               working_hours_from: working_hour.from,
-        //               working_hours_to: working_hour.to,
-        //               order_type: order_types[Math.floor(Math.random() * order_types.length)],
-        //               restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
-        //               customer_id,
-        //           }
-        //       });
-          
-        //       await models.Restaurant.bulkCreate(newRestaurants);
-        //   }
-
-          restaurant = await models.Restaurant.findAll({
-              where: {
-                  order_type:[2,3],
-                  //customer_id
-                  status:constants.STATUS.active
-              }
-          });
-          
-        dishCategory = await models.DishCategory.findAll();
-
-        const dish_category_ids = await dishCategory.map(val => val.id);
-
-          const restaurants = [];
-          for (const val of restaurant) {
-
-            //   const dishes = dummyData.getDishes(val, dish_category_ids);
-
-            // const restaurantDish = await models.RestaurantDish.findAndCountAll({
-            //     where: {
-            //         restaurant_id: val.id,
-            //     }
-            // });
-            // if (restaurantDish.count === 0) {
-            //     await models.RestaurantDish.bulkCreate(dishes);
-            // }
-              
-
-            restaurants.push({
-                restaurant_id:val.id,
-                restaurant_name: val.restaurant_name,
-                address: val.address,
-                location:val.location,
-                distance: `${parseFloat(((Math.floor(randomLocation.distance({
-                    latitude: params.latitude,
-                    longitude: params.longitude
-                }, {
-                    latitude: val.location[0],
-                        longitude: val.location[1]
-                }))) * 0.00062137).toFixed(2))} miles`,
-                ready_in:"30 min"
-            })
-          }
-
-          return { restaurants};
-         
-    },
-
-    getHotspotRestaurant: async (params,user) => {
-
-            const customer_id = user.id;
-
-            const hotspot_location_id = params.hotspot_location_id;
-
-            if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
-
-            const hotspotLocation = await models.HotspotLocation.findOne({
-                where: {
-                    id: hotspot_location_id,
-                }
-            })
-
-            if (!hotspotLocation) throw new Error(constants.MESSAGES.no_hotspot);
-
-            const delivery_shift = params.delivery_shift || "12:00:00";
-            
-            let restaurantCategory = await models.RestaurantCategory.findAndCountAll();
-
-            if (restaurantCategory.count === 0) {
-                await models.RestaurantCategory.bulkCreate(
-                    [{ name: "American" }, { name: "Asian" }, { name: "Bakery" }, { name: "Continental" }, { name: "Indian" }, { name: "Thai" }, { name: "Italian" }], { returning: ['id'] },
-                );
-            }
-
-            restaurantCategory = await models.RestaurantCategory.findAll({
-                attributes: [
-                    'id'
-                ],
-            });
-
-            const categories = await restaurantCategory.map((val) => val.id);
-
-            const order_types = [1 , 3];
-
-            let dishCategory = await models.DishCategory.findAndCountAll();
-
-            // if (dishCategory.count === 0) {
-            //     await models.DishCategory.bulkCreate(
-            //        dummyData.dishCategories,
-            //         { returning: ['id'] },
-            //     );
-            // }
-
-
-            let restaurantHotspot = await models.RestaurantHotspot.findAndCountAll({
-                where: {
-                    hotspot_location_id
-                }
-            });
-
-            // if (restaurantHotspot.count === 0) {
-
-            //     const URL = `https://api.foursquare.com/v2/venues/explore?client_id=0F3NOATHX0JFXUCRB23F5SGBFR1RUKDOIT0I001DIHS1WASB&client_secret=BJ4JJ5QDKRL4N2ALNOVT2CY4FTSRS2YB5YTTQXC41BA3ETIS&v=20200204&limit=10&ll=${params.latitude},${params.longitude}&query=coffee`
-
-            //     const response = await fetch(`${URL}`);
-
-            //     const jsonResponse = await response.json();
-
-            //     const restaurants = jsonResponse.response.groups[0].items.map((item) => {
-            //         const owner = dummyData.owners[Math.floor(Math.random() * dummyData.owners.length)];
-            //         const working_hour = dummyData.working_hours[Math.floor(Math.random() * dummyData.working_hours.length)];
-            //         return {
-            //             restaurant_name: item.venue.name,
-            //             restaurant_image_url: dummyData.restaurant_image_urls[Math.floor(Math.random() * dummyData.restaurant_image_urls.length)],
-            //             owner_name: owner.name,
-            //             country_code: owner.country_code,
-            //             owner_phone: owner.phone,
-            //             owner_email: owner.email,
-            //             address: `${item.venue.location.address},${item.venue.location.city},${item.venue.location.state},${item.venue.location.country}`,
-            //             location: [parseFloat((item.venue.location.lat).toFixed(7)), parseFloat((item.venue.location.lng).toFixed(7))],
-            //             deliveries_per_shift: 20,
-            //             cut_off_time: dummyData.cut_off_times[Math.floor(Math.random() * dummyData.cut_off_times.length)],
-            //             avg_food_price: dummyData.avg_food_prices[Math.floor(Math.random() * dummyData.avg_food_prices.length)],
-            //             working_hours_from: working_hour.from,
-            //             working_hours_to: working_hour.to,
-            //             order_type: order_types[Math.floor(Math.random() * order_types.length)],
-            //             restaurant_category_id: categories[Math.floor(Math.random() * categories.length)],
-            //             customer_id,
-            //         }
-            //     });
-
-            //     const restaurantBulkCreate = await models.Restaurant.bulkCreate(restaurants);
-            //     const restaurantHotspotRows = restaurantBulkCreate.map((val) => {
-            //         return {
-            //             hotspot_location_id: hotspot_location_id,
-            //             restaurant_id: val.id,
-            //         }
-
-            //     })
-            //     await models.RestaurantHotspot.bulkCreate(restaurantHotspotRows);
-            // }
-
-            restaurantHotspot = await models.RestaurantHotspot.findAll({
-                attributes: [
-                    'restaurant_id'
-                ],
-                where: {
-                    hotspot_location_id
-                }
-            });
-
-            const restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
-
-            const restaurant = await models.Restaurant.findAll({
-                where: {
-                    id: restaurant_ids,
-                    status:constants.STATUS.active
-                }
-            });
-
-            return getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift });
-
-
-         
-    },
+    
     setFavoriteRestaurant: async(params,user) => {
         
             const customer_id = user.id;
@@ -512,7 +247,11 @@ module.exports = {
                 );
             }
 
-            restaurantCategory = await models.RestaurantCategory.findAll();
+        restaurantCategory = await models.RestaurantCategory.findAll({
+            where: {
+                    status:constants.STATUS.active
+                }
+            });
 
             const categories = await restaurantCategory.map((val) => {
                 return {
@@ -550,324 +289,75 @@ module.exports = {
          
     },
 
-    getHotspotRestaurantWithFilter: async (params,user) => {
-            const customer_id = user.id;
-
-            const hotspot_location_id = params.hotspot_location_id;
-
-            if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
-
-            const hotspotLocation = await models.HotspotLocation.findOne({
-                where: {
-                    id: hotspot_location_id,
-                }
-            })
-
-            if (!hotspotLocation) throw new Error(constants.MESSAGES.no_hotspot);
-
-            const delivery_shift = params.delivery_shift || "12:00:00";
-
-
-            if (params.category && !Array.isArray(params.category)) {
-
-                params.category=params.category.split(",")
-            }
-
-            const restaurantHotspot = await models.RestaurantHotspot.findAll({
-                attributes: [
-                    'restaurant_id'
-                ],
-                where: {
-                    hotspot_location_id
-                }
-            });
-
-            let restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
-
-            if (params.dish_category_id) {
-                const hotspot_restaurant_ids = restaurant_ids;
-                const restaurantDish = await models.RestaurantDish.findAll({
-                    where: {
-                        dish_category_id: params.dish_category_id,
-                    }
-                });
-
-                const dish_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
-
-                restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
-            }
-
-            if (params.searchPhrase) {
-                console.log("\n\nFilter searchPhrase", params.searchPhrase,"\n\n")
-                const searchPhrase = params.searchPhrase;
-                const hotspot_dish_restaurant_ids = restaurant_ids;
-
-                const restaurantCategory = await models.RestaurantCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]: `%${searchPhrase}%`,
-                        }
-                    }
-                });
-
-                const restaurant_category_ids = restaurantCategory.map(val => val.id);
-
-                // const dishCategory = await models.DishCategory.findAll({
-                //     where: {
-                //         name: {
-                //             [Op.iLike]: `%${searchPhrase}%`,
-                //         }
-                //     }
-                // });
-
-                // const dish_category_ids = dishCategory.map(val => val.id);
-
-                // const restaurantDish = await models.RestaurantDish.findAll({
-                //     where: {
-                //         dish_category_id: dish_category_ids,
-                //     }
-                // });
-
-                // const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
-
-                const searchPhrase_restaurant = await models.Restaurant.findAll({
-                    where: {
-                        [Op.or]: {
-                            //id: dish_category_restaurant_ids,
-                            restaurant_category_id: restaurant_category_ids,
-                            restaurant_name: {
-                                [Op.iLike]: `%${searchPhrase}%`,
-                            },
-                        },
-                        status:constants.STATUS.active
-
-                    }
-                });
-
-                const searchPhrase_restaurant_ids = await searchPhrase_restaurant.map(val => val.id);
-
-                restaurant_ids = hotspot_dish_restaurant_ids.filter(val => searchPhrase_restaurant_ids.includes(val));
-            }
-
-            let restaurant = [];
-
-            if (params.sort_by && params.max_price && params.sort_by === "price high to low" ) {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        avg_food_price: {
-                            [Op.lte]: params.max_price,
-                        },
-                        status:constants.STATUS.active
-                        
-                    },
-                    order: [
-                        ['avg_food_price', 'DESC'],
-                    ],
-                });
-            }
-            else if (params.sort_by && params.max_price && params.sort_by === "price low to high") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        avg_food_price: {
-                            [Op.lte]: params.max_price,
-                        },
-                        status:constants.STATUS.active
-                        
-                    },
-                    order: [
-                        ['avg_food_price', 'ASC'],
-                    ],
-                });
-            }
-            else if (params.max_price) {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        avg_food_price: {
-                            [Op.lte]: params.max_price,
-                        },
-                        status:constants.STATUS.active
-                    },
-                });
-            }
-            else if (params.sort_by  && params.sort_by === "price low to high") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        status:constants.STATUS.active
-                    },
-                    order: [
-                        ['avg_food_price', 'ASC'],
-                    ],
-                });
-            }
-            else if (params.sort_by && params.sort_by === "price high to low") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        status:constants.STATUS.active
-                    },
-                    order: [
-                        ['avg_food_price', 'DESC'],
-                    ],
-                });
-            }
-            
-            else {
-                 restaurant = await models.Restaurant.findAll({
-                where: {
-                    id: restaurant_ids,
-                    status:constants.STATUS.active
-                }
-            });
-            }             
-
-            return getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, params });
-
-            
-         
-    },
     getSearchSuggestion: async (params) => {
 
-            const searchPhrase = params.searchPhrase;
+        const searchPhrase = params.searchPhrase;
 
-            let searchSuggestion = null;
+        let searchSuggestion = {
+            restaurantCategories:[],
+        }
 
-            if (searchPhrase) {
-
-                const restaurant = await models.Restaurant.findAll({
-                    where: {
-                        restaurant_name: {
-                            [Op.iLike]: `%${searchPhrase}%`,
-                        },
-                        status:constants.STATUS.active
-                    }
-                });
-
-                const restaurantCategory = await models.RestaurantCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]: `%${searchPhrase}%`,
-                        }
-                    }
-                });
-
-                // const dishCategory = await models.DishCategory.findAll({
-                //     where: {
-                //         name: {
-                //             [Op.iLike]: `%${searchPhrase}%`,
-                //         }
-                //     }
-                // });
-
-                const restaurants = restaurant.map(val => val.restaurant_name);
-                const restaurantCategoriesSuggestions = restaurantCategory.map(val => val.name);
-                const foodCategories = [];//dishCategory.map(val => val.name);
-
-                const restaurantCategories = [...restaurants, ...restaurantCategoriesSuggestions, ...foodCategories]
-
-                searchSuggestion = {restaurantCategories};
+        const restaurants = await models.Restaurant.findAll({
+            where: {
+                restaurant_name: {
+                    [Op.iLike]: `%${searchPhrase}%`,
+                },
+                status:constants.STATUS.active
             }
-            else {
-                const restaurants = [];
-                const restaurantCategoriesSuggestions = [];
-                const foodCategories = [];
+        });
 
-                const restaurantCategories = [...restaurants, ...restaurantCategoriesSuggestions, ...foodCategories]
-
-                searchSuggestion = { restaurantCategories };
+        restaurants.forEach((val) => {
+            if (!searchSuggestion.restaurantCategories.includes(val.restaurant_name)) {
+                searchSuggestion.restaurantCategories.push(val.restaurant_name)
             }
+        })
 
-            return { searchSuggestion };
+        const restaurantCategories = await models.RestaurantCategory.findAll({
+            where: {
+                name: {
+                    [Op.iLike]: `%${searchPhrase}%`,
+                },
+                status:constants.STATUS.active
+            }
+        });
 
-         
-    },
-    getSearchResult: async (params,user) => {
+        restaurantCategories.forEach((val) => {
+            if (!searchSuggestion.restaurantCategories.includes(val.name)) {
+                searchSuggestion.restaurantCategories.push(val.name)
+            }
+        })
 
-            const customer_id = user.id;
-
-            const hotspot_location_id = params.hotspot_location_id;
-
-            if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
-
-            const hotspotLocation = await models.HotspotLocation.findOne({
-                where: {
-                    id: hotspot_location_id,
+        const dishCategories = await models.DishCategory.findAll({
+            where: {
+                name: {
+                    [Op.iLike]: `%${searchPhrase}%`,
                 }
-            })
+            }
+        });
 
-            if (!hotspotLocation) throw new Error(constants.MESSAGES.no_hotspot);
+        dishCategories.forEach((val) => {
+            if (!searchSuggestion.restaurantCategories.includes(val.name)) {
+                searchSuggestion.restaurantCategories.push(val.name)
+            }
+        })
 
-            const delivery_shift = params.delivery_shift || "12:00:00";
-            
-            const restaurantHotspot = await models.RestaurantHotspot.findAll({
-                attributes: [
-                    'restaurant_id'
-                ],
-                where: {
-                    hotspot_location_id
-                }
-            });
+        const restaurantDishes = await models.RestaurantDish.findAll({
+            where: {
+                name: {
+                    [Op.iLike]: `%${searchPhrase}%`,
+                },
+                status:constants.STATUS.active
+            }
+        });
 
-            let restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+        restaurantDishes.forEach((val) => {
+            if (!searchSuggestion.restaurantCategories.includes(val.name)) {
+                searchSuggestion.restaurantCategories.push(val.name)
+            }
+        })
+    
 
-            const searchPhrase = params.searchPhrase;
-
-            console.log("\n\nSearch searchPhrase", searchPhrase, "\n\n")
-
-            const restaurantCategory = await models.RestaurantCategory.findAll({
-                where: {
-                    name: {
-                        [Op.iLike]: `%${searchPhrase}%`,
-                    }
-                }
-            });
-
-            const restaurant_category_ids = restaurantCategory.map(val => val.id);
-
-            // const dishCategory = await models.DishCategory.findAll({
-            //     where: {
-            //         name: {
-            //             [Op.iLike]: `%${searchPhrase}%`,
-            //         }
-            //     }
-            // });
-
-            // const dish_category_ids = dishCategory.map(val => val.id);
-
-            // const restaurantDish = await models.RestaurantDish.findAll({
-            //     where: {
-            //         dish_category_id: dish_category_ids,
-            //     }
-            // });
-
-            // const restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
-
-            const restaurant = await models.Restaurant.findAll({
-                where: {
-                    id: restaurant_ids,
-                    [Op.or]: {
-                        
-                        restaurant_category_id: restaurant_category_ids,
-                        restaurant_name: {
-                            [Op.iLike]: `%${searchPhrase}%`,
-                        },
-                    },
-                    status:constants.STATUS.active
-                   
-                }
-            });
-
-         return getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift });
-
-
+        return { searchSuggestion };
 
          
     },
@@ -890,447 +380,354 @@ module.exports = {
          
     },
 
-    getHotspotRestaurantPickup: async (params,user) => {
+    getHotspotRestaurantDelivery: async (params, user) => {
 
-            const customer_id = user.id;
+        if (params.restaurant_category_ids && !Array.isArray(params.restaurant_category_ids)) {
+                params.restaurant_category_ids = params.restaurant_category_ids.split(',').map(restaurant_category_id => parseInt(restaurant_category_id));
+        }
 
-            const hotspot_location_id = params.hotspot_location_id;
+        if (params.dish_category_ids && !Array.isArray(params.dish_category_ids)) {
+                params.dish_category_ids = params.dish_category_ids.split(',').map(dish_category_id => parseInt(dish_category_id));
+        }
 
-            if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
 
-            const hotspotLocation = await models.HotspotLocation.findOne({
-                where: {
-                    id: hotspot_location_id,
+        let whereCondiition = {
+            id: [],
+            status: constants.STATUS.active,
+            order_type:[constants.ORDER_TYPE.delivery,constants.ORDER_TYPE.both]
+        };
+
+
+        if (params.dish_category_ids && params.dish_category_ids.length!=0) {
+            let restaurantDishes = await utility.convertPromiseToObject(
+                await models.RestaurantDish.findAll({
+                    attributes:['id','restaurant_id'],
+                    where: {
+                        dish_category_id: params.dish_category_ids,
+                        status:constants.STATUS.active,
+                    }
+                })
+            )
+            
+            restaurantDishes.forEach((restaurantDish) => {
+                if (!whereCondiition.id.includes(restaurantDish.restaurant_id)) {
+                    whereCondiition.id.push(restaurantDish.restaurant_id)
+                }                
+            })
+        }
+
+        if (params.restaurant_category_ids && params.restaurant_category_ids.length!=0) {
+            let restaurant_category_ids = [];
+
+            params.restaurant_category_ids.forEach((restaurant_category_id) => {
+                restaurant_category_ids.push({
+                    restaurant_category_ids: {
+                    [Op.contains]:[restaurant_category_id]
                 }
+                })
             })
 
-            if (!hotspotLocation) throw new Error(constants.MESSAGES.no_hotspot);
-
-            const delivery_shift = params.delivery_shift || "12:00:00";
-
-            if (params.category && !Array.isArray(params.category)) {
-
-                params.category=params.category.split(",")
+            whereCondiition = {
+                ...whereCondiition,
+                [Op.or]:restaurant_category_ids,              
             }
+        }
 
-            const restaurantHotspot = await models.RestaurantHotspot.findAll({
-                attributes: [
-                    'restaurant_id'
-                ],
-                where: {
-                    hotspot_location_id
-                }
-            });
-
-            let restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
-
-            if (params.dish_category_id) {
-                const hotspot_restaurant_ids = restaurant_ids;
-                const restaurantDish = await models.RestaurantDish.findAll({
-                    where: {
-                        dish_category_id: params.dish_category_id,
-                    }
-                });
-
-                const dish_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
-               
-                restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
-                console.log("restaurant_ids", restaurant_ids)
-            }
-
-            if (params.searchPhrase) {
-                console.log("\n\nPickup searchPhrase", params.searchPhrase, "\n\n")
-                const searchPhrase = params.searchPhrase;
-                const hotspot_dish_restaurant_ids = restaurant_ids;
-
-                const restaurantCategory = await models.RestaurantCategory.findAll({
+        
+        if (params.searchPhrase) {
+            let dishCategories = await utility.convertPromiseToObject(
+                await models.DishCategory.findAll({
                     where: {
                         name: {
-                            [Op.iLike]: `%${searchPhrase}%`,
+                            [Op.iLike]:`%${params.searchPhrase}%`
                         }
                     }
-                });
+                })
+            )
 
-                const restaurant_category_ids = restaurantCategory.map(val => val.id);
+            let dish_category_ids = dishCategories.map((dishCategory) => dishCategory.id);
 
-                // const dishCategory = await models.DishCategory.findAll({
-                //     where: {
-                //         name: {
-                //             [Op.iLike]: `%${searchPhrase}%`,
-                //         }
-                //     }
-                // });
-
-                // const dish_category_ids = dishCategory.map(val => val.id);
-
-                // const restaurantDish = await models.RestaurantDish.findAll({
-                //     where: {
-                //         dish_category_id: dish_category_ids,
-                //     }
-                // });
-
-                // const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
-
-                const searchPhrase_restaurant = await models.Restaurant.findAll({
+            let restaurantDishes = await utility.convertPromiseToObject(
+                await models.RestaurantDish.findAll({
+                    attributes:['id','restaurant_id'],
                     where: {
-                        [Op.or]: {
-                            //id: dish_category_restaurant_ids,
-                            restaurant_category_id: restaurant_category_ids,
-                            restaurant_name: {
-                                [Op.iLike]: `%${searchPhrase}%`,
+                        [Op.or]: [
+                            {
+                                name: {
+                                    [Op.iLike]:`%${params.searchPhrase}%`
+                                }
                             },
-                        },
+                            {
+                                dish_category_id:dish_category_ids,
+                            }
+                        ],
                         status:constants.STATUS.active
-
+                        
                     }
-                });
+                })
+            )
 
-                const searchPhrase_restaurant_ids = await searchPhrase_restaurant.map(val => val.id);
-
-                restaurant_ids = hotspot_dish_restaurant_ids.filter(val => searchPhrase_restaurant_ids.includes(val));
-            }
-
-            let restaurant = [];
-
-            if (params.sort_by && params.max_price && params.sort_by === "price high to low") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type:3,
-                        avg_food_price: {
-                            [Op.lte]: params.max_price,
-                        },
-                        status:constants.STATUS.active
-
-                    },
-                    order: [
-                        ['avg_food_price', 'DESC'],
-                    ],
-                });
-            }
-            else if (params.sort_by && params.max_price && params.sort_by === "price low to high") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type:3,
-                        avg_food_price: {
-                            [Op.lte]: params.max_price,
-                        },
-                        status:constants.STATUS.active
-
-                    },
-                    order: [
-                        ['avg_food_price', 'ASC'],
-                    ],
-                });
-            }
-            else if (params.max_price) {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type:3,
-                        avg_food_price: {
-                            [Op.lte]: params.max_price,
-                        },
-                        status:constants.STATUS.active
-                    },
-                });
-            }
-            else if (params.sort_by && params.sort_by === "price low to high") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type: 3,
-                        status:constants.STATUS.active
-                    },
-                    order: [
-                        ['avg_food_price', 'ASC'],
-                    ],
-                });
-            }
-            else if (params.sort_by && params.sort_by === "price high to low") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type: 3,
-                        status:constants.STATUS.active
-                    },
-                    order: [
-                        ['avg_food_price', 'DESC'],
-                    ],
-                });
-            }
-
-            else {
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type: 3,
-                        status:constants.STATUS.active
-
-                    }
-                });
-            }
-
-            return getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, params });
-
-
-
-         
-    },
-    getHotspotRestaurantDelivery: async (params,user) => {
             
-            const customer_id = user.id;
-
-            const hotspot_location_id = params.hotspot_location_id;
-
-            if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
-
-            const hotspotLocation = await models.HotspotLocation.findOne({
-                where: {
-                    id: hotspot_location_id,
-                }
+            restaurantDishes.forEach((restaurantDish) => {
+                if (!whereCondiition.id.includes(restaurantDish.restaurant_id)) {
+                    whereCondiition.id.push(restaurantDish.restaurant_id)
+                }                
             })
 
-            if (!hotspotLocation) throw new Error(constants.MESSAGES.no_hotspot);
-
-            const delivery_shift = params.delivery_shift || "12:00:00";
-
-            if (params.category && !Array.isArray(params.category)) {
-
-                params.category=params.category.split(",")
-            }
-
-            const restaurantHotspot = await models.RestaurantHotspot.findAll({
-                attributes: [
-                    'restaurant_id'
-                ],
-                where: {
-                    hotspot_location_id
-                }
-            });
-
-            let restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
-
-            if (params.dish_category_id) {
-                const hotspot_restaurant_ids = restaurant_ids;
-                const restaurantDish = await models.RestaurantDish.findAll({
-                    where: {
-                        dish_category_id: params.dish_category_id,
-                    }
-                });
-
-                const dish_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
-
-                restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
-                console.log("restaurant_ids", restaurant_ids)
-            }
-
-            if (params.searchPhrase) {
-                console.log("\n\nDelivery searchPhrase", params.searchPhrase, "\n\n")
-                const searchPhrase = params.searchPhrase;
-                const hotspot_dish_restaurant_ids = restaurant_ids;
-
-                const restaurantCategory = await models.RestaurantCategory.findAll({
+            let restaurantCategories = await utility.convertPromiseToObject(
+                await models.RestaurantCategory.findAll({
                     where: {
                         name: {
-                            [Op.iLike]: `%${searchPhrase}%`,
-                        }
+                            [Op.iLike]:`%${params.searchPhrase}%`
+                        },
+                        status:constants.STATUS.active
                     }
-                });
+                })
+            )
 
-                const restaurant_category_ids = restaurantCategory.map(val => val.id);
+            let restaurant_category_ids = [];
 
-                // const dishCategory = await models.DishCategory.findAll({
-                //     where: {
-                //         name: {
-                //             [Op.iLike]: `${searchPhrase}%`,
-                //         }
-                //     }
-                // });
-
-                // const dish_category_ids = dishCategory.map(val => val.id);
-
-                // const restaurantDish = await models.RestaurantDish.findAll({
-                //     where: {
-                //         dish_category_id: dish_category_ids,
-                //     }
-                // });
-
-                // const dish_category_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
-
-                const searchPhrase_restaurant = await models.Restaurant.findAll({
-                    where: {
-                        [Op.or]: {
-                            //id: dish_category_restaurant_ids,
-                            restaurant_category_id: restaurant_category_ids,
-                            restaurant_name: {
-                                [Op.iLike]: `%${searchPhrase}%`,
-                            },
-                        },
-                        status:constants.STATUS.active
-
-                    }
-                });
-
-                const searchPhrase_restaurant_ids = await searchPhrase_restaurant.map(val => val.id);
-
-                restaurant_ids = hotspot_dish_restaurant_ids.filter(val => searchPhrase_restaurant_ids.includes(val));
-            }
-
-            let restaurant = [];
-
-            if (params.sort_by && params.max_price && params.sort_by === "price high to low") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type: [1, 3],
-                        avg_food_price: {
-                            [Op.lte]: params.max_price,
-                        },
-                        status:constants.STATUS.active
-
-                    },
-                    order: [
-                        ['avg_food_price', 'DESC'],
-                    ],
-                });
-            }
-            else if (params.sort_by && params.max_price && params.sort_by === "price low to high") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type: [1, 3],
-                        avg_food_price: {
-                            [Op.lte]: params.max_price,
-                        },
-                        status:constants.STATUS.active
-
-                    },
-                    order: [
-                        ['avg_food_price', 'ASC'],
-                    ],
-                });
-            }
-            else if (params.max_price) {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type: [1, 3],
-                        avg_food_price: {
-                            [Op.lte]: params.max_price,
-                        },
-                        status:constants.STATUS.active
-                    },
-                });
-            }
-            else if (params.sort_by && params.sort_by === "price low to high") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type: [1, 3],
-                        status:constants.STATUS.active
-                    },
-                    order: [
-                        ['avg_food_price', 'ASC'],
-                    ],
-                });
-            }
-                
-            else if (params.sort_by && params.sort_by === "price high to low") {
-                console.log(params);
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type: [1, 3],
-                        status:constants.STATUS.active
-                    },
-                    order: [
-                        ['avg_food_price', 'DESC'],
-                    ],
-                });
-            }
-
-            else {
-                restaurant = await models.Restaurant.findAll({
-                    where: {
-                        id: restaurant_ids,
-                        order_type: [1, 3],
-                        status:constants.STATUS.active
-
-                    }
-                });
-            }
-
-            return getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift, params });
-
-
-
-         
-    },
-    getHotspotRestaurantWithQuickFilter: async (params,user) => {
-
-            const customer_id = user.id;
-
-            const hotspot_location_id = params.hotspot_location_id;
-
-            if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
-
-            const hotspotLocation = await models.HotspotLocation.findOne({
-                where: {
-                    id: hotspot_location_id,
+            restaurantCategories.forEach((restaurantCategory) => {
+                restaurant_category_ids.push({
+                    restaurant_category_ids: {
+                    [Op.contains]:[restaurantCategory.id]
                 }
+                })
             })
 
-            if (!hotspotLocation) throw new Error(constants.MESSAGES.no_hotspot);
+            let restaurants = await utility.convertPromiseToObject(
+                await models.Restaurant.findAll({
+                    attributes:['id'],
+                    where: {
+                        [Op.or]: [
+                            {
+                                restaurant_name: {
+                                    [Op.iLike]:`%${params.searchPhrase}%`
+                                }
+                            },
+                            {
+                                [Op.or]:restaurant_category_ids,
+                            }
+                        ],
+                        status:constants.STATUS.active
+                        
+                    }
+                })
+            )
 
-            const dish_category_id = params.dish_category_id;
+            restaurants.forEach((restaurant) => {
+                if (!whereCondiition.id.includes(restaurant.id)) {
+                    whereCondiition.id.push(restaurant.id)
+                }                
+            })
 
-            const delivery_shift = params.delivery_shift || "12:00:00";
+        }
 
-
-            const restaurantHotspot = await models.RestaurantHotspot.findAll({
-                attributes: [
-                    'restaurant_id'
-                ],
+        let hotspotRestaurants = await utility.convertPromiseToObject(
+            await models.RestaurantHotspot.findAll({
                 where: {
-                    hotspot_location_id
+                    hotspot_location_id: parseInt(params.hotspot_location_id),
                 }
-            });
+            })
+        )
+        
+        let include_restaurant_ids = hotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id);
 
-            const hotspot_restaurant_ids = await restaurantHotspot.map((val) => val.restaurant_id);
+        whereCondiition.id = whereCondiition.id.filter((restaurant_id) => include_restaurant_ids.includes(restaurant_id));
 
-            const restaurantDish = await models.RestaurantDish.findAll({
+
+        let exclude_restaurant_ids = []
+        
+
+        for (let restaurant_id of whereCondiition.id) {
+            let restaurant = await utility.convertPromiseToObject(
+                await models.Restaurant.findByPk(restaurant_id)
+            )
+
+            let delivery_datetime=new Date(utility.getOnlyDate(new Date())+" "+params.delivery_shift)
+
+            let order_count = await models.Order.count({
                 where: {
-                    dish_category_id,
+                    restaurant_id,
+                    delivery_datetime,
+                    status: {
+                        [Op.ne]:constants.ORDER_DELIVERY_STATUS.not_paid,
+                    }
                 }
-            });
+            })
+            
 
-            const dish_restaurant_ids = await restaurantDish.map(val => val.restaurant_id);
+            if (parseInt(restaurant.deliveries_per_shift) <= order_count) {
+                exclude_restaurant_ids.push(restaurant_id)
+            }
 
-            const restaurant_ids = hotspot_restaurant_ids.filter(val => dish_restaurant_ids.includes(val));
+        }
 
-            const restaurant = await models.Restaurant.findAll({
-                where: {
-                    id: restaurant_ids,
-                    status:constants.STATUS.active
+        whereCondiition.id = whereCondiition.id.filter((restaurant_id) => !(exclude_restaurant_ids.includes(restaurant_id)));
+
+        console.log("whereCondiition",whereCondiition)
+
+        let restaurants = await utility.convertPromiseToObject(
+            await models.Restaurant.findAll({
+                where:whereCondiition,
+            })
+        )
+
+        return getRestaurantCard({ restaurants, customer_id:user.id, hotspot_location_id:params.hotspot_location_id, delivery_shift:params.delivery_shift });
+
+
+    },
+
+    getHotspotRestaurantPickup: async (params, user) => {
+
+        if (params.restaurant_category_ids && !Array.isArray(params.restaurant_category_ids)) {
+                params.restaurant_category_ids = params.restaurant_category_ids.split(',').map(restaurant_category_id => parseInt(restaurant_category_id));
+        }
+
+        if (params.dish_category_ids && !Array.isArray(params.dish_category_ids)) {
+                params.dish_category_ids = params.dish_category_ids.split(',').map(dish_category_id => parseInt(dish_category_id));
+        }
+
+        let whereCondiition = {
+            status: constants.STATUS.active,
+            order_type:[constants.ORDER_TYPE.pickup,constants.ORDER_TYPE.both]
+        };
+
+
+        if (params.dish_category_ids && params.dish_category_ids.length!=0) {
+            let restaurantDishes = await utility.convertPromiseToObject(
+                await models.RestaurantDish.findAll({
+                    attributes:['id','restaurant_id'],
+                    where: {
+                        dish_category_id: params.dish_category_ids,
+                        status:constants.STATUS.active,
+                    }
+                })
+            )
+            
+            restaurantDishes.forEach((restaurantDish) => {
+                if (!whereCondiition.id.includes(restaurantDish.restaurant_id)) {
+                    whereCondiition.id.push(restaurantDish.restaurant_id)
+                }                
+            })
+        }
+
+        if (params.restaurant_category_ids && params.restaurant_category_ids.length!=0) {
+            let restaurant_category_ids = [];
+
+            params.restaurant_category_ids.forEach((restaurant_category_id) => {
+                restaurant_category_ids.push({
+                    restaurant_category_ids: {
+                    [Op.contains]:[restaurant_category_id]
                 }
-            });
+                })
+            })
 
-           return getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift });
+            whereCondiition = {
+                ...whereCondiition,
+                [Op.or]:restaurant_category_ids,              
+            }
+        }
+
+        if (params.searchPhrase) {
+            let dishCategories = await utility.convertPromiseToObject(
+                await models.DishCategory.findAll({
+                    where: {
+                        name: {
+                            [Op.iLike]:`%${params.searchPhrase}%`
+                        }
+                    }
+                })
+            )
+
+            let dish_category_ids = dishCategories.map((dishCategory) => dishCategory.id);
+
+            let restaurantDishes = await utility.convertPromiseToObject(
+                await models.RestaurantDish.findAll({
+                    attributes:['id','restaurant_id'],
+                    where: {
+                        [Op.or]: [
+                            {
+                                name: {
+                                    [Op.iLike]:`%${params.searchPhrase}%`
+                                }
+                            },
+                            {
+                                dish_category_id:dish_category_ids,
+                            }
+                        ],
+                        status:constants.STATUS.active,
+                        
+                    }
+                })
+            )
 
             
-         
+            restaurantDishes.forEach((restaurantDish) => {
+                if (!whereCondiition.id.includes(restaurantDish.restaurant_id)) {
+                    whereCondiition.id.push(restaurantDish.restaurant_id)
+                }                
+            })
+
+            let restaurantCategories = await utility.convertPromiseToObject(
+                await models.RestaurantCategory.findAll({
+                    where: {
+                        name: {
+                            [Op.iLike]:`%${params.searchPhrase}%`
+                        },
+                        status:constants.STATUS.active,
+                    }
+                })
+            )
+
+            let restaurant_category_ids = [];
+
+            restaurantCategories.forEach((restaurantCategory) => {
+                restaurant_category_ids.push({
+                    restaurant_category_ids: {
+                    [Op.contains]:[restaurantCategory.id]
+                }
+                })
+            })
+
+            let restaurants = await utility.convertPromiseToObject(
+                await models.Restaurant.findAll({
+                    attributes:['id'],
+                    where: {
+                        [Op.or]: [
+                            {
+                                restaurant_name: {
+                                    [Op.iLike]:`%${params.searchPhrase}%`
+                                }
+                            },
+                            {
+                                [Op.or]:restaurant_category_ids,
+                            }
+                        ],
+                        status:constants.STATUS.active,                        
+                    }
+                })
+            )
+
+            restaurants.forEach((restaurant) => {
+                if (!whereCondiition.id.includes(restaurant.id)) {
+                    whereCondiition.id.push(restaurant.id)
+                }                
+            })
+
+        }
+
+        let restaurants = await utility.convertPromiseToObject(
+            await models.Restaurant.findAll({
+                where:whereCondiition,
+            })
+        )
+
+        return getRestaurantCard({ restaurants, customer_id:user.id });
+
+
     },
+    
 
     getRestaurantDetails: async (params) => {
 
