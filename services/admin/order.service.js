@@ -308,7 +308,7 @@ module.exports = {
         
     },
 
-    assignDriver: async (params) => {
+    assignDriver: async (params,user) => {
        
 
         const orderId = params.orderId;
@@ -425,6 +425,29 @@ module.exports = {
                 returning: true,
             }
         );
+
+        let customer=await utility.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
+    
+    
+        // add notification for employee
+        let notificationObj = {
+            type_id: orderId,                
+            title: 'Order Confirmed by Restaurant',
+            description: `Order - ${orderId} is confirmed by restaurant`,
+            sender_id: user.id,
+            reciever_ids: [order.customer_id],
+            type: constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
+        }
+        await models.Notification.create(notificationObj);
+
+        if (customer.notification_status && customer.device_token) {
+            // send push notification
+            let notificationData = {
+                title: 'Order Confirmed by Restaurant',
+                body: `Order - ${orderId} is confirmed by restaurant`,
+            }
+            await utility.sendFcmNotification([customer.device_token], notificationData);
+        }
 
         return true;
 

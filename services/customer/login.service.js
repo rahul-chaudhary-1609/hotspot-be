@@ -1359,15 +1359,9 @@ module.exports = {
 
     toggleNotification: async (params, user) => {
 
-        let notification_status = params.notification_status;
-
-        if (!isBoolean(notification_status) && (notification_status === "true" || notification_status === "false")) {
-            if (notification_status === "true") notification_status = true;
-            else if(notification_status === "false") notification_status = false;
-        }
 
         await models.Customer.update({
-            notification_status,
+            notification_status:parseInt(params.notification_status),
         }, {
             where: {
                 email: user.email,
@@ -1379,6 +1373,7 @@ module.exports = {
 
         return true;
     },
+
     getNotificationStatus: async (user) => {
         const customer = await models.Customer.findOne({
             where: {

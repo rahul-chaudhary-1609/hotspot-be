@@ -3,94 +3,62 @@ const homeServices = require("../../services/driver/homeServices")
 const constants = require("../../constants");
 
 module.exports = {
-  async getPickups (req, res) {
-    try {
-      const pickupData = await homeServices.Pickups(req.user);
-      utilityFunction.successResponse(res, {pickupData}, constants.MESSAGES.success)
-    } catch (error) {
-      console.log(error)
-      utilityFunction.errorResponse(res, error, constants.code.error_code)
-    }
-  },
 
-  async getPickupDetails (req, res) {
-    try {
-      const pickupDetails = await homeServices.pickupDetails(req.user,req.params);
-      utilityFunction.successResponse(res, pickupDetails, constants.MESSAGES.success)
-    } catch (error) {
-      console.log(error)
-      utilityFunction.errorResponse(res, error, constants.code.error_code)
-    }
-  },
-
-  confirmOrderPickup: async (req, res) => {
+ getPickupCards: async (req, res) => {
         try {
-            const responseFromService = await homeServices.confirmOrderPickup(req.params);
+            const responseFromService = await homeServices.getPickupCards(req.query,req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
-  async confirmPickups (req, res) {
+  getPickupDetails : async (req, res) => {
+        try {
+            const responseFromService = await homeServices.getPickupDetails(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+  confirmPickup: async (req, res) => {
+        try {
+            const responseFromService = await homeServices.confirmPickup(req.params,req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+
+  getDeliveryCards: async (req, res) => {
+        try {
+            const responseFromService = await homeServices.getDeliveryCards(req.query,req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+  },
+
+  getDeliveryDetails : async (req, res) => {
+        try {
+            const responseFromService = await homeServices.getDeliveryDetails(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+  },
+
+  confirmDelivery: async (req, res) => {
     try {
-      const pickupDetails = await homeServices.confirmPickups(req.user,req.params);
-      console.log("aaaaaaaaaaaaaaaa",pickupDetails)
-      utilityFunction.successResponse(res, pickupDetails, constants.MESSAGES.success)
+        const responseFromService = await homeServices.confirmDelivery(req.params,req.user);
+        utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
     } catch (error) {
-      console.log(error)
-      utilityFunction.errorResponse(res, error, constants.code.error_code)
+        utilityFunction.errorResponse(res, error, constants.code.error_code);
     }
   },
 
+    
 
-    async getDeliveries (req, res) {
-        try {
-          const deliveryData = await homeServices.Deliveries(req.user);
-          utilityFunction.successResponse(res, {deliveryData}, constants.MESSAGES.success)
-        } catch (error) {
-          console.log(error)
-          utilityFunction.errorResponse(res, error, constants.code.error_code)
-        }
-      },
-
-      async getDeliveryDetails (req, res) {
-        try {
-          const deliveryDetails = await homeServices.DeliveryDetails(req.user,req.params);
-          utilityFunction.successResponse(res, deliveryDetails, constants.MESSAGES.success)
-        } catch (error) {
-          console.log(error)
-          utilityFunction.errorResponse(res, error, constants.code.error_code)
-        }
-      },
-
-      async sendDeliveryNotification (req, res) {
-        try {
-          const deliveryDetails = await homeServices.deliveryNotifications(req.user,req.params);
-          utilityFunction.successResponse(res, {deliveryDetails}, constants.MESSAGES.success)
-        } catch (error) {
-          console.log(error)
-          utilityFunction.errorResponse(res, error, constants.code.error_code)
-        }
-      },
-
-      async getTotalCount (req, res) {
-        try {
-          const totalCount = await homeServices.totalCount(req.user);
-          utilityFunction.successResponse(res, {totalCount}, constants.MESSAGES.success)
-        } catch (error) {
-          console.log(error)
-          utilityFunction.errorResponse(res, error, constants.code.error_code)
-        }
-      },
-
-      async deliveryImage (req, res) {
-        try {
-          const totalCount = await homeServices.addImageUrl(req.user,req.body);
-          utilityFunction.successResponse(res, totalCount, constants.MESSAGES.success)
-        } catch (error) {
-          console.log(error)
-          utilityFunction.errorResponse(res, error, constants.code.error_code)
-        }
-      },
 }

@@ -16,6 +16,7 @@ const earningController  = require('../controllers/driver/earningController');
 const accountController = require('../controllers/driver/account');
 const staticContentController = require('../controllers/driver/staticContent');
 const homeController = require('../controllers/driver/home');
+const driverSchema = require('../apiSchema/driverSchema');
 
 // on boarding API's
 router.post('/login',joiValidation.validateBody(apiSchema.login), onBoardingController.login);
@@ -46,16 +47,12 @@ router.get('/getSupportFaq/:topic_id', driverAuthentication.validateDriverToken,
 router.get('/getStaticContent/:id', driverAuthentication.validateDriverToken, staticContentController.getStaticContent);
 
 // home API's
-router.get('/getPickups', driverAuthentication.validateDriverToken, homeController.getPickups);
-router.get('/getDeliveries', driverAuthentication.validateDriverToken, homeController.getDeliveries);
-router.get('/getDeliveryDetail/:delivery_id', driverAuthentication.validateDriverToken, homeController.getDeliveryDetails);
-router.get('/getPickupDetails/:pickup_id', driverAuthentication.validateDriverToken, homeController.getPickupDetails);
-router.post('/sendNotification/:delivery_id',driverAuthentication.validateDriverToken, homeController.sendDeliveryNotification);
-router.get('/getTotalCount', driverAuthentication.validateDriverToken, homeController.getTotalCount);
-router.post('/deliveryImage', driverAuthentication.validateDriverToken,joiValidation.validateBody(apiSchema.deliveryImage), homeController.getTotalCount);
-router.put('/confirmPickups/:pickup_id', driverAuthentication.validateDriverToken, homeController.confirmPickups);
-router.put('/confirmOrderPickup/:order_pickup_id',joiValidation.validateParams(apiSchema.confirmOrderPickup), homeController.confirmOrderPickup);
-
+router.get('/getPickupCards', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(driverSchema.getPickupCards) ,homeController.getPickupCards);
+router.get('/getPickupDetails/:pickup_id', driverAuthentication.validateDriverToken,joiValidation.validateParams(driverSchema.getPickupDetails), homeController.getPickupDetails);
+router.put('/confirmPickup/:pickup_id',driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.confirmPickup), homeController.confirmPickup);
+router.get('/getDeliveryCards', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(driverSchema.getDeliveryCards) ,homeController.getDeliveryCards);
+router.get('/getDeliveryDetails/:delivery_id', driverAuthentication.validateDriverToken,joiValidation.validateParams(driverSchema.getDeliveryDetails), homeController.getDeliveryDetails);
+router.put('/confirmDelivery/:delivery_id',driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.confirmDelivery), homeController.confirmDelivery);
 
 // earning API's
 router.get('/getEarningList', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningList), earningController.getEarningList);

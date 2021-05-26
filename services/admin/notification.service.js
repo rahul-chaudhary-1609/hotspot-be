@@ -5,7 +5,7 @@ const utility = require('../../utils/utilityFunctions');
 
 module.exports = {
     addNotification: async (params, user) => {
-        params.sender_id = user.id;
+        let reciever_ids = [];
 
         var fcmNotificationData = {
             title: params.title,
@@ -14,21 +14,23 @@ module.exports = {
 
         // push notification for customers
         if (params.type == constants.NOTIFICATION_TYPE.all_user || params.type == constants.NOTIFICATION_TYPE.customer_only) {
-            let customer = await utility.convertPromiseToObject(
+            let customers = await utility.convertPromiseToObject(
                 await Customer.findAll({
                     where: {
-                        device_token: {
-                          [Op.ne]: null
-                        }
+                        status:constants.STATUS.active
                       },
-                    attributes: ['id','device_token']
+                    attributes: ['id','device_token','notification_status']
                 })
             );
 
-            if( Customer.length) {
-                let customerUser = customer.map(function(item) {
-                    return item['device_token'];
-                });
+            if( customers.length) {
+                let customerUser = [];
+
+                customers.forEach((customer) => {
+                    if (!reciever_ids.includes(customer.id)) reciever_ids.push(customer.id);
+                    
+                    if (customer.notification_status && customer.device_token) customerUser.push(customer.device_token);
+                })
     
                 utility.sendFcmNotification(customerUser,fcmNotificationData);
             }
@@ -37,21 +39,25 @@ module.exports = {
 
         // push notification for drivers
         if (params.type == constants.NOTIFICATION_TYPE.all_user || params.type == constants.NOTIFICATION_TYPE.driver_only) {
-            let driver = await utility.convertPromiseToObject(
+            let drivers = await utility.convertPromiseToObject(
                 await Driver.findAll({
                     where: {
-                        device_token: {
-                          [Op.ne]: null
-                        }
+                        status: constants.STATUS.active,
+                        approval_status:constants.DRIVER_APPROVAL_STATUS.approved,
                       },
                     attributes: ['id','device_token']
                 })
             );
 
-            if (driver.length){
-                let driverUser = driver.map(function(item) {
-                    return item['device_token'];
-                });
+            if (drivers.length) {
+                
+                let driverUser = [];
+
+                drivers.forEach((driver) => {
+                    if (!reciever_ids.includes(driver.id)) reciever_ids.push(driver.id);
+                    
+                    if (driver.device_token) driverUser.push(driver.device_token);
+                })
     
                 utility.sendFcmNotification(driverUser,fcmNotificationData);
             }
@@ -59,27 +65,38 @@ module.exports = {
 
         // push notification for restaurants
         if (params.type == constants.NOTIFICATION_TYPE.all_user || params.type == constants.NOTIFICATION_TYPE.restaurant_only) {
-            let restaurant = await utility.convertPromiseToObject(
-                await Restaurant.findAll({
-                    where: {
-                        device_token: {
-                          [Op.ne]: null
-                        }
-                      },
-                    attributes: ['id','device_token']
-                })
-            );
-            if (restaurant.length) {
-                let restaurantUser = restaurant.map(function(item) {
-                    return item['device_token'];
-                });
-                utility.sendFcmNotification(restaurantUser,fcmNotificationData);
-            }
+            // let restaurants = await utility.convertPromiseToObject(
+            //     await Restaurant.findAll({
+            //         where: {
+            //             status: constants.STATUS.active,
+            //           },
+            //         attributes: ['id','device_token']
+            //     })
+            // );
+            // if (restaurants.length) {
+            //     let restaurantUser = [];
+
+            //     restaurants.forEach((restaurant) => {
+            //         if (!reciever_ids.includes(restaurant.id)) reciever_ids.push(restaurant.id);
+                    
+            //         if (restaurant.device_token) restaurantUser.push(restaurant.device_token);
+            //     })
+        
+            //     utility.sendFcmNotification(restaurantUser,fcmNotificationData);
+            // }
             
         }
 
+        let notificationObj = {
+            title:params.title,
+            description:params.description,
+            sender_id:user.id,
+            reciever_ids,
+            type:params.type,
+        }
+
         // in app notification create
-        return await Notification.create(params,
+        return await Notification.create(notificationObj,
             {raw: true}
             );
     },

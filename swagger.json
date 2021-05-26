@@ -3825,9 +3825,9 @@
                 "type": "string"
               },
               {
-                "name": "reciever_id",
+                "name": "reciever_ids",
                 "in": "formData",
-                "description": "enter reciever_id",
+                "description": "enter reciever_ids : array of integers",
                 "required": false,
                 "type": "number"
               },
@@ -4967,9 +4967,10 @@
               {
                 "name": "notification_status",
                 "in": "formData",
-                "description": "true | false",
+                "description": "0=> off, 1=> on",
                 "required": true,
-                "type": "boolean"
+                "type": "number",
+                "enum":[0,1]
               }
             ],
             "responses": {}
@@ -7258,12 +7259,12 @@
 
 
 
-    "/driver/getPickups": {
+    "/driver/getPickupCards": {
       "get": {
         "tags": [
           "Driver Home Management"
         ],
-        "description": "Api to get pickups on home screen",
+        "description": "Api to get pickup cards",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -7272,6 +7273,13 @@
             "name": "Authorization",
             "in": "header",
             "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "description": "date- format: YYYY-DD-MM",
             "required": true,
             "type": "string"
           }
@@ -7286,7 +7294,7 @@
         "tags": [
           "Driver Home Management"
         ],
-        "description": "Api to get deliveries on home screen",
+        "description": "Api to get pickups ",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -7301,7 +7309,7 @@
           {
             "name": "pickup_id",
             "in": "path",
-            "description": "order id to get details",
+            "description": "order id",
             "required": true,
             "type": "string"
           }
@@ -7310,157 +7318,7 @@
       }
     },
 
-
-
-
-
-    "/driver/getDeliveries": {
-      "get": {
-        "tags": [
-          "Driver Home Management"
-        ],
-        "description": "Api to get deliveries on home screen",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Enter jwt token for authentication",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-
-    "/driver/getDeliveryDetail/{delivery_id}": {
-      "get": {
-        "tags": [
-          "Driver Home Management"
-        ],
-        "description": "Api to get deliveries on home screen",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Enter jwt token for authentication",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "delivery_id",
-            "in": "path",
-            "description": "order id to get details",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-
-    "/driver/sendNotification/{delivery_id}": {
-      "post": {
-        "tags": [
-          "Driver Home Management"
-        ],
-        "description": "Api to send notification to delivering customers",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Enter jwt token for authentication",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "delivery_id",
-            "in": "path",
-            "description": "order id to get details",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-
-    "/driver/getTotalCount": {
-      "get": {
-        "tags": [
-          "Driver Home Management"
-        ],
-        "description": "Api to get total counts of icku and deliveries on a day",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Enter jwt token for authentication",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-
-    "/driver/deliveryImage": {
-      "post": {
-        "tags": [
-          "Driver Home Management"
-        ],
-        "description": "Api to save delivery image url",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Enter jwt token for authentication",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "delivery_id",
-            "in": "formData",
-            "description": "delivery id for updating url",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "dropoff_id",
-            "in": "formData",
-            "description": "dropoff id for updating url",
-            "required": true,
-            "type": "number"
-          },
-          {
-            "name": "url",
-            "in": "formData",
-            "description": "url of image to be updated",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-
-
-    "/driver/confirmPickups/{pickup_id}": {
+    "/driver/confirmPickup/{pickup_id}": {
       "put": {
         "tags": [
           "Driver Home Management"
@@ -7479,35 +7337,6 @@
           },
           {
             "name": "pickup_id",
-            "in": "path",
-            "description": "pickup id of orders picked for delivery",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
-
-    "/driver/confirmOrderPickup/{order_pickup_id}": {
-      "put": {
-        "tags": [
-          "Driver Home Management"
-        ],
-        "description": "Api to confirm pickups",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Enter jwt token for authentication",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "order_pickup_id",
             "in": "path",
             "description": "order pickup id",
             "required": true,
@@ -7517,6 +7346,92 @@
         "responses": {}
       }
     },
+
+"/driver/getDeliveryCards": {
+  "get": {
+    "tags": [
+      "Driver Home Management"
+    ],
+    "description": "Api to get delivery cards",
+    "consumes": [
+      "application/x-www-form-urlencoded"
+    ],
+    "parameters": [
+      {
+        "name": "Authorization",
+        "in": "header",
+        "description": "Enter jwt token for authentication",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "date",
+        "in": "query",
+        "description": "date- format: YYYY-DD-MM",
+        "required": true,
+        "type": "string"
+      }
+    ],
+    "responses": {}
+  }
+},
+"/driver/getDeliveryDetails/{delivery_id}": {
+  "get": {
+    "tags": [
+      "Driver Home Management"
+    ],
+    "description": "Api to get delivery details",
+    "consumes": [
+      "application/x-www-form-urlencoded"
+    ],
+    "parameters": [
+      {
+        "name": "Authorization",
+        "in": "header",
+        "description": "Enter jwt token for authentication",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "delivery_id",
+        "in": "path",
+        "description": "delivery id",
+        "required": true,
+        "type": "string"
+      }
+    ],
+    "responses": {}
+  }
+},
+"/driver/confirmDelivery/{delivery_id}": {
+  "put": {
+    "tags": [
+      "Driver Home Management"
+    ],
+    "description": "Api to confirm delivery",
+    "consumes": [
+      "application/x-www-form-urlencoded"
+    ],
+    "parameters": [
+      {
+        "name": "Authorization",
+        "in": "header",
+        "description": "Enter jwt token for authentication",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "delivery_id",
+        "in": "path",
+        "description": "delivery id",
+        "required": true,
+        "type": "string"
+      }
+    ],
+    "responses": {}
+  }
+},
+    
 
 
 

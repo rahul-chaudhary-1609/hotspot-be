@@ -165,8 +165,28 @@ module.exports = {
         end_date: Joi.string().trim().optional()
     }),
 
-    confirmOrderPickup: Joi.object({
-        order_pickup_id: Joi.string().required()
+    getPickupCards:Joi.object({
+        date: Joi.string().required()
+    }),
+
+    getPickupDetails:Joi.object({
+        pickup_id: Joi.string().required()
+    }),
+
+    confirmPickup: Joi.object({
+        pickup_id: Joi.string().required()
+    }),
+
+    getDeliveryCards:Joi.object({
+        date: Joi.string().required()
+    }),
+
+    getDeliveryDetails:Joi.object({
+        delivery_id: Joi.string().required()
+    }),
+
+    confirmDelivery: Joi.object({
+        delivery_id: Joi.string().required()
     }),
 
 

@@ -103,9 +103,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
     notification_status: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: true
+      defaultValue: 1,
+      comment: '0=> off, 1=> on'
     },
     device_token: {
       type: DataTypes.STRING,

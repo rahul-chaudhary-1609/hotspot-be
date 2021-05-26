@@ -21,6 +21,12 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true
         },
 
+        type_id: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: "0"
+        },
+
         title: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -36,15 +42,15 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
-        reciever_id:{
-            type: DataTypes.INTEGER,
+        reciever_ids:{
+            type: DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: true,
         },
         
         type: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            comment: '1=> all users, 2=>drivers only, 3=> customers only, 4=> restaurant only'
+            comment: '0=>other,1=> all_users, 2=>drivers_only, 3=> customers_only, 4=> restaurant_only, 5=> order_confirmed, 6=> order_driver_asigned_or_confirmed_by_restaurant, 7=> order_on_the_way, 8=> order_delivered'
         },
 
 

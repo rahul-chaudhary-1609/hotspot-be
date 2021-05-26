@@ -164,7 +164,12 @@ CUSTOM_JOI_MESSAGE : {
     all_user: 1,
     driver_only: 2,
     customer_only: 3,
-    restaurant_only: 4
+    restaurant_only: 4,
+    order_confirmed: 5,
+    order_driver_allocated_or_confirmed_by_restaurant: 6,
+    order_on_the_way: 7,
+    order_delivered:8,  
+    
   },
 
   STATUS : {
@@ -176,6 +181,11 @@ CUSTOM_JOI_MESSAGE : {
   PAYMENT_STATUS : {
     not_paid: 0,
     paid: 1,
+  },
+
+  CUSTOMER_NOTIFICATION_STATUS : {
+    off: 0,
+    on: 1,
   },
   
   DRIVER_APPROVAL_STATUS : {

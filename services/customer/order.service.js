@@ -598,47 +598,69 @@ module.exports = {
          
     },
 
-    confirmOrderPayment: async (params) => {
+    confirmOrderPayment: async (params,user) => {
         
-            const order_id = params.orderId;
+        const order_id = params.orderId;
 
-            const order = await models.Order.findOne({
+        const order = await models.Order.findOne({
+            where: {
+                order_id
+            }
+        })
+
+        if (!order) throw new Error(constants.MESSAGES.no_order);
+
+        const orderPayment = await models.OrderPayment.findOne({
+            where: {
+                order_id:order.order_id,
+            }
+        })
+
+        if (!orderPayment || !orderPayment.payment_status) throw new Error(constants.MESSAGES.no_payment);
+
+        await models.Order.update({
+            status:1,
+        },
+            {
                 where: {
                     order_id
-                }
-            })
+                },
+                returning: true,
+            }
+        );
 
-            if (!order) throw new Error(constants.MESSAGES.no_order);
-
-            const orderPayment = await models.OrderPayment.findOne({
+        await models.Cart.destroy({
                 where: {
-                    order_id:order.order_id,
-                }
-            })
+                    customer_id: order.customer_id,
+                    restaurant_id:order.restaurant_id
+                },
+                force: true,
+        })
 
-            if (!orderPayment || !orderPayment.payment_status) throw new Error(constants.MESSAGES.no_payment);
+        let customer=await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(parseInt(user.id)))    
+    
+    
+        // add notification for employee
+        let notificationObj = {
+            type_id: order_id,                
+            title: 'Order Confirmed',
+            description: `Order - ${order_id} is confirmed`,
+            sender_id: user.id,
+            reciever_ids: [user.id],
+            type: constants.NOTIFICATION_TYPE.order_confirmed,
+        }
+        await models.Notification.create(notificationObj);
 
-            await models.Order.update({
-                status:1,
-            },
-                {
-                    where: {
-                        order_id
-                    },
-                    returning: true,
-                }
-            );
+        if (customer.notification_status && customer.device_token) {
+            // send push notification
+            let notificationData = {
+                title: 'Order Confirmed',
+                body: `Order - ${order_id} is confirmed`,
+            }
+            await utilityFunction.sendFcmNotification([customer.device_token], notificationData);
+        }
 
-            await models.Cart.destroy({
-                    where: {
-                        customer_id: order.customer_id,
-                        restaurant_id:order.restaurant_id
-                    },
-                    force: true,
-            })
- 
-
-            return true
+        return true
 
          
     },
