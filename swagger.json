@@ -3121,7 +3121,12 @@
                 "in": "formData",
                 "description": "latitude,longitude || [latitude,longitude]",
                 "required": true,
-                "type": "string"
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
               },
               {
                 "name": "location_detail",
@@ -3163,28 +3168,42 @@
                 "in": "formData",
                 "description": "dropoffs1,dropoffs2,dropoffs3,... || [dropoffs1,dropoffs2,dropoffs3,...]",
                 "required": true,
-                "type": "string"
+                "type": "array",
+                "items": {
+                  "type": "staring"
+                }
               },
               {
                 "name": "delivery_shifts",
                 "in": "formData",
                 "description": "HH:MM:SS,HH:MM:SS,HH:MM:SS || [HH:MM:SS,HH:MM:SS,HH:MM:SS]",
                 "required": true,
-                "type": "string"
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 3,
+                "maxItems": 3
               },
               {
                 "name": "restaurant_ids",
                 "in": "formData",
                 "description": "1,2,3,... || [1,2,3,...]",
-                "required": true,
-                "type": "string"
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
               },
               {
                 "name": "driver_ids",
                 "in": "formData",
                 "description": "1,2,3,... || [1,2,3,...]",
-                "required": true,
-                "type": "string"
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
               }
             ],
             "responses": {}
@@ -3226,7 +3245,12 @@
                 "in": "formData",
                 "description": "latitude,longitude || [latitude,longitude]",
                 "required": false,
-                "type": "string"
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
               },
               {
                 "name": "location_detail",
@@ -3268,28 +3292,42 @@
                 "in": "formData",
                 "description": "dropoffs1,dropoffs2,dropoffs3,... || [dropoffs1,dropoffs2,dropoffs3,...]",
                 "required": false,
-                "type": "string"
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               },
               {
                 "name": "delivery_shifts",
                 "in": "formData",
                 "description": "HH:MM:SS,HH:MM:SS,HH:MM:SS || [HH:MM:SS,HH:MM:SS,HH:MM:SS]",
                 "required": false,
-                "type": "string"
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 3,
+                "maxItems": 3
               },
               {
                 "name": "restaurant_ids",
                 "in": "formData",
                 "description": "1,2,3,... || [1,2,3,...]",
                 "required": false,
-                "type": "string"
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
               },
               {
                 "name": "driver_ids",
                 "in": "formData",
                 "description": "1,2,3,... || [1,2,3,...]",
                 "required": false,
-                "type": "string"
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
               }
             ],
             "responses": {}
@@ -5429,6 +5467,18 @@
                 "type": "string"
               },
               {
+                "name": "customer_location",
+                "in": "formData",
+                "description": "[latitude,longitude]",
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              {
                 "name": "dish_category_ids",
                 "in": "formData",
                 "description": "enter dish category id",
@@ -5476,6 +5526,18 @@
               }
             ],
             "parameters": [
+              {
+                "name": "customer_location",
+                "in": "formData",
+                "description": "[latitude,longitude]",
+                "required": false,
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems":2,
+                "maxItems":2
+              },
               {
                 "name": "dish_category_ids",
                 "in": "formData",

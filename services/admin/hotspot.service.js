@@ -6,26 +6,6 @@ const constants = require("../../constants");
 
 module.exports = {
     addHotspot: async (params) => {
-
-            if (params.location && !Array.isArray(params.location)) {
-                params.location=[params.location.split(',')[0],params.location.split(',')[1]]
-            }
-
-            if (params.dropoffs && !Array.isArray(params.dropoffs)) {
-                params.dropoffs = params.dropoffs.split(',').map(dropoff => dropoff);
-            }
-
-            if (params.delivery_shifts && !Array.isArray(params.delivery_shifts)) {
-                params.delivery_shifts = params.delivery_shifts.split(',').map(delivery_shift => delivery_shift);
-            }
-
-            if (params.restaurants_ids && !Array.isArray(params.restaurants_ids)) {
-                params.restaurants_ids = params.restaurants_ids.split(',').map(restaurant_id => parseInt(restaurant_id));
-            }
-
-            if (params.driver_ids && !Array.isArray(params.driver_ids)) {
-                params.driver_ids = params.driver_ids.split(',').map(driver_id => parseInt(driver_id));
-            }
                 
             const name = params.name;
             const location = params.location;
@@ -97,26 +77,6 @@ module.exports = {
             const hotspot = await models.HotspotLocation.findByPk(hotspotLocationId);
 
             if (!hotspot) throw new Error(constants.MESSAGES.no_hotspot);
-
-            if (params.location && !Array.isArray(params.location)) {
-                params.location = [params.location.split(',')[0], params.location.split(',')[1]]
-            }
-            
-            if (params.dropoffs && !Array.isArray(params.dropoffs)) {
-                params.dropoffs = params.dropoffs.split(',').map(dropoff => dropoff);
-            }
-
-            if (params.delivery_shifts && !Array.isArray(params.delivery_shifts)) {
-                params.delivery_shifts = params.delivery_shifts.split(',').map(delivery_shift => delivery_shift);
-            }
-
-            if (params.restaurants_ids && !Array.isArray(params.restaurants_ids)) {
-                params.restaurants_ids = params.restaurants_ids.split(',').map(restaurant_id => parseInt(restaurant_id));
-            }
-
-            if (params.driver_ids && !Array.isArray(params.driver_ids)) {
-                params.driver_ids = params.driver_ids.split(',').map(driver_id => parseInt(driver_id));
-            }
                 
             const name = params.name || hotspot.name;
             const location = params.location || hotspot.location;

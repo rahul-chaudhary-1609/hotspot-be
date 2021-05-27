@@ -1,6 +1,5 @@
 require('dotenv/config');
 const models = require('../../models');
-const validation = require('../../apiSchema/customerSchema');
 const { Op, Utils } = require("sequelize");
 const randomLocation = require('random-location');
 const fetch = require('node-fetch');
@@ -18,23 +17,23 @@ const getRestaurantCard =  async (args) => {
             const favRestaurant = await models.FavRestaurant.findOne({
                 where: {
                     restaurant_id: val.id,
-                    customer_id:args.customer_id,
+                    customer_id:args.user.id,
                 }
             });
 
             let next_delivery_time = null;
             let getCutOffTime = null;
 
-            if (args.hotspot_location_id) {
+            if (args.params.hotspot_location_id) {
 
                 const hotspotLocation = await models.HotspotLocation.findOne({
                     where: {
-                        id: args.hotspot_location_id,
+                        id: args.params.hotspot_location_id,
                     }
                 });
 
                 const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                    return args.delivery_shift === time;
+                    return args.params.delivery_shift === time;
                 });
 
                 next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
@@ -65,6 +64,18 @@ const getRestaurantCard =  async (args) => {
 
             if (favRestaurant) is_favorite = true;
 
+            let distance = null;
+
+            if (args.params.customer_location) {
+                distance = parseFloat((Math.floor(randomLocation.distance({
+                                latitude: args.params.customer_location[0],
+                                longitude: args.params.customer_location[1]
+                            }, {
+                                latitude: val.location[0],
+                                longitude: val.location[1]
+                            }))) * 0.00062137);
+            }
+
             restaurants.push({
                 restaurant_id: val.id,
                 restaurant_name: val.restaurant_name,
@@ -73,10 +84,15 @@ const getRestaurantCard =  async (args) => {
                 next_delivery_time:next_delivery_time?next_delivery_time:null,
                 cut_off_time: next_delivery_time?getCutOffTime(next_delivery_time):null,
                 is_favorite,
+                distance,
                 workingHourFrom:val.working_hours_from,
                 workingHourTo:val.working_hours_to,
             })
-        }
+    }
+    
+    if (args.params.customer_location) {
+        restaurants.sort((a, b) => a.distance - b.distance);
+    }
 
         if (restaurants.length === 0) throw new Error(constants.MESSAGES.no_restaurant);
 
@@ -382,14 +398,6 @@ module.exports = {
 
     getHotspotRestaurantDelivery: async (params, user) => {
 
-        if (params.restaurant_category_ids && !Array.isArray(params.restaurant_category_ids)) {
-                params.restaurant_category_ids = params.restaurant_category_ids.split(',').map(restaurant_category_id => parseInt(restaurant_category_id));
-        }
-
-        if (params.dish_category_ids && !Array.isArray(params.dish_category_ids)) {
-                params.dish_category_ids = params.dish_category_ids.split(',').map(dish_category_id => parseInt(dish_category_id));
-        }
-
 
         let whereCondiition = {
             id: [],
@@ -532,9 +540,14 @@ module.exports = {
         )
         
         let include_restaurant_ids = hotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id);
-
-        whereCondiition.id = whereCondiition.id.filter((restaurant_id) => include_restaurant_ids.includes(restaurant_id));
-
+        console.log("whereCondiition", whereCondiition, include_restaurant_ids)
+        if (whereCondiition.id.length == 0) {
+            whereCondiition.id=include_restaurant_ids
+        }
+        else {
+            whereCondiition.id = whereCondiition.id.filter((restaurant_id) => include_restaurant_ids.includes(restaurant_id));
+        }
+        
 
         let exclude_restaurant_ids = []
         
@@ -565,7 +578,7 @@ module.exports = {
 
         whereCondiition.id = whereCondiition.id.filter((restaurant_id) => !(exclude_restaurant_ids.includes(restaurant_id)));
 
-        console.log("whereCondiition",whereCondiition)
+        console.log("whereCondiition",whereCondiition,include_restaurant_ids)
 
         let restaurants = await utility.convertPromiseToObject(
             await models.Restaurant.findAll({
@@ -573,20 +586,12 @@ module.exports = {
             })
         )
 
-        return getRestaurantCard({ restaurants, customer_id:user.id, hotspot_location_id:params.hotspot_location_id, delivery_shift:params.delivery_shift });
+        return getRestaurantCard({ restaurants, user, params });
 
 
     },
 
     getHotspotRestaurantPickup: async (params, user) => {
-
-        if (params.restaurant_category_ids && !Array.isArray(params.restaurant_category_ids)) {
-                params.restaurant_category_ids = params.restaurant_category_ids.split(',').map(restaurant_category_id => parseInt(restaurant_category_id));
-        }
-
-        if (params.dish_category_ids && !Array.isArray(params.dish_category_ids)) {
-                params.dish_category_ids = params.dish_category_ids.split(',').map(dish_category_id => parseInt(dish_category_id));
-        }
 
         let whereCondiition = {
             status: constants.STATUS.active,
@@ -723,7 +728,7 @@ module.exports = {
             })
         )
 
-        return getRestaurantCard({ restaurants, customer_id:user.id });
+        return getRestaurantCard({ restaurants, user,params });
 
 
     },

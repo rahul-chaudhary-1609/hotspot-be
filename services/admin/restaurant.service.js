@@ -57,9 +57,6 @@ module.exports = {
                 // point.coordinates.push(params.lat);
                 //params.location = point;
                 
-                if (params.hotspot_location_ids && !Array.isArray(params.hotspot_location_ids)) {
-                    params.hotspot_location_ids = params.hotspot_location_ids.split(',').map(hotspot_location_id => parseInt(hotspot_location_id));
-                }
 
                 const hotspotLocationIds = params.hotspot_location_ids;
 
@@ -162,9 +159,7 @@ module.exports = {
 
             let query = {where:{id: params.restaurantId}};
             query.raw = true;
-            if (params.hotspot_location_ids && !Array.isArray(params.hotspot_location_ids)) {
-                    params.hotspot_location_ids = params.hotspot_location_ids.split(',').map(hotspot_location_id => parseInt(hotspot_location_id));
-            }
+            
 
             const hotspotLocationIds = params.hotspot_location_ids;
 

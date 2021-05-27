@@ -5,19 +5,14 @@ const apiSchema = require("../apiSchema/driverSchema");
 
 const driverAuthentication = require('../middlewares/jwt');
 const router=express.Router();
-const multer = require('../middlewares/multer');
-const {parseToJSON}=require('../middlewares/validators')
+const {parseStringToArray}=require('../middlewares/validators')
 
 const onBoardingController = require('../controllers/driver/onBoardingController');
 const earningController  = require('../controllers/driver/earningController');
 
-//const onBoardingController = new OnBoardingController(); 
-//const earningController = new EarningController(); 
-
 const accountController = require('../controllers/driver/account');
 const staticContentController = require('../controllers/driver/staticContent');
 const homeController = require('../controllers/driver/home');
-const driverSchema = require('../apiSchema/driverSchema');
 
 // on boarding API's
 router.post('/login',joiValidation.validateBody(apiSchema.login), onBoardingController.login);
@@ -55,7 +50,7 @@ router.put('/confirmPickup/:pickup_id',driverAuthentication.validateDriverToken,
 router.get('/getDeliveryCards', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(apiSchema.getDeliveryCards) ,homeController.getDeliveryCards);
 router.get('/getDeliveryDetails/:delivery_id', driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.getDeliveryDetails), homeController.getDeliveryDetails);
 router.get('/getOrdersByDropOffId',driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getOrdersByDropOffId) ,homeController.getOrdersByDropOffId);
-router.put('/confirmDelivery',driverAuthentication.validateDriverToken, parseToJSON ,joiValidation.validateBody(apiSchema.confirmDelivery), homeController.confirmDelivery);
+router.put('/confirmDelivery',driverAuthentication.validateDriverToken, parseStringToArray ,joiValidation.validateBody(apiSchema.confirmDelivery), homeController.confirmDelivery);
 
 // earning API's
 router.get('/getEarningList', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningList), earningController.getEarningList);

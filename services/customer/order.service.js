@@ -46,7 +46,7 @@ module.exports = {
             const restaurant_id = parseInt(params.restaurant_id);
             const restaurant_dish_id = parseInt(params.restaurant_dish_id);
             const cart_count = parseInt(params.cart_count);
-            const dish_add_on_ids = params.dish_add_on_ids?(Array.isArray(params.dish_add_on_ids)?params.dish_add_on_ids:params.dish_add_on_ids.split(",")):null;
+            const dish_add_on_ids = params.dish_add_on_ids;
 
             const currentCart = await models.Cart.findOne({
                 where: {
@@ -259,15 +259,13 @@ module.exports = {
              })
             
             if (order) {
-                // const hotspot_location_id = params.hotspot_location_id ? parseInt(params.hotspot_location_id) : order.order_details.hotspot.id;
-                // const hotspot_dropoff_id = params.hotspot_dropoff_id? parseInt(params.hotspot_dropoff_id):order.order_details.hotspot.dropoff.id;
                 const amount = params.amount? parseFloat(params.amount): parseFloat(order.amount);
                 const tip_amount = params.tip_amount? parseFloat(params.tip_amount): parseFloat(order.tip_amount);
                 const status = params.status?parseInt(params.status):order.status;
                 const type = params.order_type?parseInt(params.order_type):order.type;
                 const cooking_instructions = params.cooking_instructions || order.cooking_instructions;
                 const delivery_datetime = params.delivery_datetime ? new Date(params.delivery_datetime) : order.delivery_datetime;
-                const cart_ids = params.cart_ids?(Array.isArray(params.cart_ids)?params.cart_ids:params.cart_ids.split(",")):null;
+                const cart_ids = params.cart_ids;
 
                 const cart = await models.Cart.findAndCountAll({
                     where: {
@@ -396,15 +394,13 @@ module.exports = {
             }
             else {
                 const order_id = "ORD-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
-                // const hotspot_location_id = params.hotspot_location_id ? parseInt(params.hotspot_location_id) : null;
-                // const hotspot_dropoff_id = params.hotspot_dropoff_id? parseInt(params.hotspot_dropoff_id):null;
                 const amount = parseFloat(params.amount);
                 const tip_amount = parseFloat(params.tip_amount);
                 const status = 0;
                 const type = parseInt(params.order_type);
                 const cooking_instructions = params.cooking_instructions ? params.cooking_instructions : null;
                 const delivery_datetime = params.delivery_datetime ? new Date(params.delivery_datetime) : null;
-                const cart_ids = params.cart_ids?(Array.isArray(params.cart_ids)?params.cart_ids:params.cart_ids.split(",")):null;
+                const cart_ids = params.cart_ids;
 
                 const cart = await models.Cart.findAndCountAll({
                     where: {
