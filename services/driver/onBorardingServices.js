@@ -9,58 +9,66 @@ module.exports = {
         /*
     * function for login
     */
-   login:async (params) => {
-    let driverData = await utilityFunction.convertPromiseToObject( await Driver.findOne({
-        where: {
-            [Op.or]: [
-                {phone_no: params.phone_or_id},
-                { id: params.phone_or_id}
-            ]
+    login: async (params) => {
+
+        let driverData = await utilityFunction.convertPromiseToObject( await Driver.findOne({
+                where: {
+                        email: params.phone_or_email,
+                }
+            }));       
+        
+        if(!driverData && !(isNaN(params.phone_or_email))) {
+             driverData = await utilityFunction.convertPromiseToObject( await Driver.findOne({
+                where: {
+                        phone_no: params.phone_or_email,
+                }
+            })); 
         }
-    }));
+    
 
-    if(driverData) {
-        // check account is approved or not
-        if ((driverData.approval_status!=constants.DRIVER_APPROVAL_STATUS .approved)) {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.not_approved);
-        }
+        if(driverData) {
+            // check account is approved or not
+            if ((driverData.approval_status!=constants.DRIVER_APPROVAL_STATUS.approved)) {
+                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.not_approved);
+            }
 
-        // check account is deactivated or not
-        if (driverData.status==constants.STATUS.deleted) {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.deactivate_account);
-        }
+            // check account is deactivated or not
+            if (driverData.status==constants.STATUS.inactive) {
+                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.deactivate_account);
+            }
 
-        // check account is rejected or not
-        if (driverData.approval_status==constants.DRIVER_APPROVAL_STATUS .rejected) {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.rejected_account);
-        }
+            // check account is rejected or not
+            if (driverData.approval_status==constants.DRIVER_APPROVAL_STATUS.rejected) {
+                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.rejected_account);
+            }
 
 
-        let comparedPassword = await utilityFunction.comparePassword(params.password, driverData.password);
-        if (comparedPassword) {
-            const accessToken = await responseToken.generateDriverAccessToken({
-                admin: false,
-                id: driverData.id,
-                email: driverData.email,
-                first_name: driverData.first_name,
-                last_name: driverData.last_name
-            });
-            driverData.token = accessToken;
+            let comparedPassword = await utilityFunction.comparePassword(params.password, driverData.password);
+            console.log(comparedPassword)
+            if (comparedPassword) {
+                const accessToken = await responseToken.generateDriverAccessToken({
+                    admin: false,
+                    id: driverData.id,
+                    email: driverData.email,
+                    first_name: driverData.first_name,
+                    last_name: driverData.last_name
+                });
+                driverData.token = accessToken;
 
-            return driverData;
+                return driverData;
+            } else {
+                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_password);
+            }
+
         } else {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_password);
+            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_email_or_phone);
         }
-
-    } else {
-        throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_id_or_phone);
-    }
    },
 
        /*
     * function for forgot password
     */
-   forgot_password:async (params) => {
+   forgotPassword:async (params) => {
     let getDriverData = await Driver.findOne({
         where: {
             phone_no: params.phone
@@ -78,7 +86,7 @@ module.exports = {
         /*
     * function for verify_otp
     */
-   verify_otp:async (params) => {
+   verifyOTP:async (params) => {
     let getDriverData = await utilityFunction.convertPromiseToObject( await Driver.findOne({
         where: {
             phone_no: params.phone
@@ -111,14 +119,37 @@ module.exports = {
     } else {
         throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_phone);
     }
-  },
+    },
+   
+   /*
+* function for reset password
+*/
+   
+resetPassword:async (params) => {
+    const driverData = await Driver.findOne({
+            where: {
+                phone_no: params.phone
+            }
+    })
+       
+    if (driverData) {
+
+        driverData.password = await utilityFunction.bcryptPassword(params.new_password);
+        driverData.save();
+
+        return await utilityFunction.convertPromiseToObject(driverData)
+    }
+    else {
+        throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_phone);
+    }
+},
 
 
 
 /*
 * function for sign up
 */
-sign_up_step1 :async (params) => {
+signUpStep1 :async (params) => {
     let driverData = await Driver.findOne({
         where: { phone_no: params.phone_no}
     });
@@ -140,7 +171,7 @@ sign_up_step1 :async (params) => {
 /*
 * function for sign up details step 1
 */
-sign_up_details_step1:async (params, user) => {
+signUpDetailsStep1:async (params, user) => {
    return await Driver.update(params,{
        where: {
            id: user.id
@@ -151,7 +182,7 @@ sign_up_details_step1:async (params, user) => {
 /*
 * function for sign up details step 2
 */
-sign_up_details_step2:async (params, user) => {
+signUpDetailsStep2:async (params, user) => {
     params.driver_id = user.id;
     let driverBankDetails = {
         driver_id: params.driver_id,
@@ -171,10 +202,11 @@ sign_up_details_step2:async (params, user) => {
 /*
     * function for sign up details step 3
     */
-sign_up_details_step3:async (params, user) => {
+signUpDetailsStep3:async (params, user) => {
     params.driver_id = user.id;
     return await DriverVehicleDetail.create(params);
 },
+
 
 
 changePassword:async (params, driver) => {

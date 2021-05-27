@@ -45,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     phone_no: {
       type: DataTypes.BIGINT,
+      allowNull:false,
     },
     dob: {
       type: DataTypes.STRING(45),

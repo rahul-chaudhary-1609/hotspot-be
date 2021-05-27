@@ -20,13 +20,14 @@ const driverSchema = require('../apiSchema/driverSchema');
 
 // on boarding API's
 router.post('/login',joiValidation.validateBody(apiSchema.login), onBoardingController.login);
-router.post('/forgot_password',joiValidation.validateBody(apiSchema.forgot_password), onBoardingController.forgot_password);
-router.post('/verify_otp',joiValidation.validateBody(apiSchema.verify_otp), onBoardingController.verify_otp);
-router.post('/changePassword', driverAuthentication.validateDriverToken,  joiValidation.validateBody(apiSchema.changePassword), onBoardingController.changeDriverPassword);
-router.post('/sign_up_step1',  joiValidation.validateBody(apiSchema.sign_up_step1), onBoardingController.sign_up_step1);
-router.post('/sign_up_details_step1', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.sign_up_details_step1), onBoardingController.sign_up_details_step1);
-router.post('/sign_up_details_step2', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.sign_up_details_step2), onBoardingController.sign_up_details_step2);
-router.post('/sign_up_details_step3', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.sign_up_details_step3), onBoardingController.sign_up_details_step3);
+router.post('/forgotPassword',joiValidation.validateBody(apiSchema.forgot_password), onBoardingController.forgotPassword);
+router.post('/verifyOTP',joiValidation.validateBody(apiSchema.verifyOTP), onBoardingController.verifyOTP);
+router.post('/resetPassword', joiValidation.validateBody(apiSchema.resetPassword), onBoardingController.resetPassword);
+router.post('/changePassword', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.changePassword), onBoardingController.changePassword);
+router.post('/signUpStep1',  joiValidation.validateBody(apiSchema.signUpStep1), onBoardingController.signUpStep1);
+router.post('/signUpDetailsStep1', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.signUpDetailsStep1), onBoardingController.signUpDetailsStep1);
+router.post('/signUpDetailsStep2', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.signUpDetailsStep2), onBoardingController.signUpDetailsStep2);
+router.post('/signUpDetailsStep3', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.signUpDetailsStep3), onBoardingController.signUpDetailsStep3);
 router.get('/logout', driverAuthentication.validateDriverToken, onBoardingController.logout);
 
 
@@ -47,11 +48,11 @@ router.get('/getSupportFaq/:topic_id', driverAuthentication.validateDriverToken,
 router.get('/getStaticContent/:id', driverAuthentication.validateDriverToken, staticContentController.getStaticContent);
 
 // home API's
-router.get('/getPickupCards', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(driverSchema.getPickupCards) ,homeController.getPickupCards);
-router.get('/getPickupDetails/:pickup_id', driverAuthentication.validateDriverToken,joiValidation.validateParams(driverSchema.getPickupDetails), homeController.getPickupDetails);
+router.get('/getPickupCards', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(apiSchema.getPickupCards) ,homeController.getPickupCards);
+router.get('/getPickupDetails/:pickup_id', driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.getPickupDetails), homeController.getPickupDetails);
 router.put('/confirmPickup/:pickup_id',driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.confirmPickup), homeController.confirmPickup);
-router.get('/getDeliveryCards', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(driverSchema.getDeliveryCards) ,homeController.getDeliveryCards);
-router.get('/getDeliveryDetails/:delivery_id', driverAuthentication.validateDriverToken,joiValidation.validateParams(driverSchema.getDeliveryDetails), homeController.getDeliveryDetails);
+router.get('/getDeliveryCards', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(apiSchema.getDeliveryCards) ,homeController.getDeliveryCards);
+router.get('/getDeliveryDetails/:delivery_id', driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.getDeliveryDetails), homeController.getDeliveryDetails);
 router.put('/confirmDelivery/:delivery_id',driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.confirmDelivery), homeController.confirmDelivery);
 
 // earning API's

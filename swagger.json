@@ -6430,7 +6430,7 @@
             ],
             "parameters": [
               {
-                "name": "phone_or_id",
+                "name": "phone_or_email",
                 "in": "formData",
                 "description": "enter phone or driver id",
                 "default": "",
@@ -6472,7 +6472,7 @@
         }
       },
 
-      "/driver/forgot_password": {
+      "/driver/forgotPassword": {
         "post": {
           "tags": [
             "Driver Onboarding"
@@ -6495,7 +6495,7 @@
         }
     },
 
-    "/driver/verify_otp": {
+    "/driver/verifyOTP": {
       "post": {
         "tags": [
           "Driver Onboarding"
@@ -6518,6 +6518,35 @@
             "description": "enter otp",
             "required": true,
             "type": "number"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/resetPassword": {
+      "post": {
+        "tags": [
+          "Driver Onboarding"
+        ],
+        "description": "For driver login",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "formData",
+            "description": "enter phone",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "new_password",
+            "in": "formData",
+            "description": "new password",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {}
@@ -6560,12 +6589,12 @@
       }
     },
 
-    "/driver/sign_up_step1": {
+    "/driver/signUpStep1": {
       "post": {
         "tags": [
           "Driver Onboarding"
         ],
-        "description": "For driver login",
+        "description": "For driver sign Up Step 1",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -6603,12 +6632,12 @@
       }
     },
 
-    "/driver/sign_up_details_step1": {
+    "/driver/signUpDetailsStep1": {
       "post": {
         "tags": [
           "Driver Onboarding"
         ],
-        "description": "For driver login",
+        "description": "For driver sign Up Details Step 1",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -6688,12 +6717,12 @@
       }
     },
 
-    "/driver/sign_up_details_step2": {
+    "/driver/signUpDetailsStep2": {
       "post": {
         "tags": [
           "Driver Onboarding"
         ],
-        "description": "For driver login",
+        "description": "For driver sign Up Details Step 2",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -6766,12 +6795,12 @@
       }
     },
 
-    "/driver/sign_up_details_step3": {
+    "/driver/signUpDetailsStep3": {
       "post": {
         "tags": [
           "Driver Onboarding"
         ],
-        "description": "For driver login",
+        "description": "For driver sign Up Details Step 3",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],

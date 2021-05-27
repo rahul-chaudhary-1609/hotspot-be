@@ -22,9 +22,9 @@ module.exports = {
     * function for forgot_password
     * @req :  phone
     */
-   forgot_password:async (req, res) => {
+   forgotPassword:async (req, res) => {
     try {
-        const forgotPasswordRes = await onBoardingServices.forgot_password(req.body);
+        const forgotPasswordRes = await onBoardingServices.forgotPassword(req.body);
         utilityFunction.successResponse(res, forgotPasswordRes, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -35,22 +35,35 @@ module.exports = {
     * function for verify otp
     * @req :  phone, otp
     */
-   verify_otp:async (req, res) => {
+   verifyOTP:async (req, res) => {
     try {
-        const forgotPasswordRes = await onBoardingServices.verify_otp(req.body);
+        const forgotPasswordRes = await onBoardingServices.verifyOTP(req.body);
         utilityFunction.successResponse(res, forgotPasswordRes, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
     }
-   },
+    },
+   
+   /*
+    * function for reset password
+    * @req :  phone, new password
+    */
+   resetPassword:async (req, res) => {
+        try {
+            const responseFromService = await onBoardingServices.resetPassword(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.password_change_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 
        /*
     * function for sign up step 1
     * @req :  password
     */
-   sign_up_step1:async (req, res) => {
+   signUpStep1:async (req, res) => {
     try {
-        const forgotPasswordRes = await onBoardingServices.sign_up_step1(req.body);
+        const forgotPasswordRes = await onBoardingServices.signUpStep1(req.body);
         utilityFunction.successResponse(res, forgotPasswordRes, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -62,9 +75,9 @@ module.exports = {
     * function for sign up details step 1
     * @req :  password
     */
-   sign_up_details_step1:async (req, res) => {
+   signUpDetailsStep1:async (req, res) => {
     try {
-        const responseData = await onBoardingServices.sign_up_details_step1(req.body, req.user);
+        const responseData = await onBoardingServices.signUpDetailsStep1(req.body, req.user);
         utilityFunction.successResponse(res, responseData, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -75,9 +88,9 @@ module.exports = {
     * function for sign up details step 2
     * @req :  password
     */
-   sign_up_details_step2:async (req, res) => {
+   signUpDetailsStep2:async (req, res) => {
     try {
-        const responseData = await onBoardingServices.sign_up_details_step2(req.body, req.user);
+        const responseData = await onBoardingServices.signUpDetailsStep2(req.body, req.user);
         utilityFunction.successResponse(res, responseData, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -85,20 +98,20 @@ module.exports = {
    },
 
 
-       /*
-        * function for sign up details step 3
-        * @req :  password
-        */
-       sign_up_details_step3:async (req, res) => {
-        try {
-            const responseData = await onBoardingServices.sign_up_details_step3(req.body, req.user);
-            utilityFunction.successResponse(res, responseData, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
+    /*
+    * function for sign up details step 3
+    * @req :  password
+    */
+    signUpDetailsStep3:async (req, res) => {
+    try {
+        const responseData = await onBoardingServices.signUpDetailsStep3(req.body, req.user);
+        utilityFunction.successResponse(res, responseData, constants.MESSAGES.success);
+    } catch (error) {
+        utilityFunction.errorResponse(res, error, constants.code.error_code);
+    }
     },
 
-    changeDriverPassword:async (req, res) => {
+    changePassword:async (req, res) => {
         try {
             const responseFromService = await onBoardingServices.changePassword(req.body, req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.password_change_success);

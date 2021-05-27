@@ -5,7 +5,7 @@ const joi = require('../middlewares/joi');
 
 module.exports = {
     login : Joi.object({
-        phone_or_id: Joi.number().required(),
+        phone_or_email: Joi.string().required(),
         password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
             "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
             "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
@@ -16,13 +16,29 @@ module.exports = {
         }),
     }),
 
-    forgot_password: Joi.object({
+    forgotPassword: Joi.object({
         phone: Joi.number().required()
     }),
 
-    verify_otp: Joi.object({
+    verifyOTP: Joi.object({
         phone: Joi.number().required(),
         otp: Joi.number().required()
+    }),
+
+    resetPassword : Joi.object({
+        phone: Joi.number().required(),
+        new_password: Joi.string().min(8)
+        .max(15)
+        .regex(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})"))
+        .required()
+        .messages({
+            "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
+            "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
+            "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
+            "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+            "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.pattern
+        })
     }),
 
 
@@ -53,7 +69,7 @@ module.exports = {
         })
     }),
 
-    sign_up_step1: Joi.object({
+    signUpStep1: Joi.object({
         phone_no: Joi.number().required(),
         country_code: Joi.string().trim().required(),
         referral_code: Joi.string().trim().optional(),
@@ -67,7 +83,7 @@ module.exports = {
         }),
     }),
 
-    sign_up_details_step1: Joi.object({
+    signUpDetailsStep1: Joi.object({
         profile_picture_url: Joi.string().trim().optional(),
         first_name: Joi.string().trim().optional(),
         last_name: Joi.string().trim().optional(),
@@ -79,7 +95,7 @@ module.exports = {
         passport_number: Joi.string().trim().optional(),
     }),
 
-    sign_up_details_step2: Joi.object({
+    signUpDetailsStep2: Joi.object({
         address_line1: Joi.string().trim().optional(),
         street: Joi.string().trim().optional(),
         city: Joi.string().trim().optional(),
@@ -90,7 +106,7 @@ module.exports = {
         account_holder_name: Joi.string().trim().optional()
     }),
 
-    sign_up_details_step3: Joi.object({
+    signUpDetailsStep3: Joi.object({
         vehicle_type: Joi.number().optional(),
         image_url: Joi.string().trim().optional(),
         plate_number: Joi.string().trim().optional(),

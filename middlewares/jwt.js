@@ -54,14 +54,12 @@ module.exports =
 
         const customer = await Customer.findByPk(user.id);
         
-        console.log("customer.status",customer.status)
-        
-          if (customer.status == 0) {
+          if (customer.status == constants.STATUS.inactive) {
               response.status = 401;
               response.message = constants.MESSAGES.deactivate_account
               return res.status(response.status).send(response);
           }
-            else if (customer.is_deleted == true) {
+            else if (customer.status == constants.STATUS.deleted) {
               response.status = 401;
               response.message = constants.MESSAGES.delete_account
               return res.status(response.status).send(response);
