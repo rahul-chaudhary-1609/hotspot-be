@@ -105,6 +105,14 @@ module.exports = {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
         return await Notification.findAndCountAll({
+            where: {
+                type: [
+                    constants.NOTIFICATION_TYPE.all_user,
+                    constants.NOTIFICATION_TYPE.customer_only,
+                    constants.NOTIFICATION_TYPE.driver_only,
+                    constants.NOTIFICATION_TYPE.restaurant_only,
+                ]
+            },
             limit: limit,
             offset: offset,
             order: [['id', 'DESC']]

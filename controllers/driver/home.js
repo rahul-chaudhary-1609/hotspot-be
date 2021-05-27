@@ -48,11 +48,20 @@ module.exports = {
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
+    },
+  
+  getOrdersByDropOffId : async (req, res) => {
+        try {
+            const responseFromService = await homeServices.getOrdersByDropOffId(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
   },
 
   confirmDelivery: async (req, res) => {
     try {
-        const responseFromService = await homeServices.confirmDelivery(req.params,req.user);
+        const responseFromService = await homeServices.confirmDelivery(req.body,req.user);
         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);

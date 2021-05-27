@@ -7432,7 +7432,42 @@
     "responses": {}
   }
 },
-"/driver/confirmDelivery/{delivery_id}": {
+"/driver/getOrdersByDropOffId": {
+  "get": {
+    "tags": [
+      "Driver Home Management"
+    ],
+    "description": "get Orders By DropOff Id",
+    "consumes": [
+      "application/x-www-form-urlencoded"
+    ],
+    "parameters": [
+      {
+        "name": "Authorization",
+        "in": "header",
+        "description": "Enter jwt token for authentication",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "delivery_id",
+        "in": "query",
+        "description": "delivery id",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "dropoff_id",
+        "in": "query",
+        "description": "dropoff id",
+        "required": true,
+        "type": "number"
+      }
+    ],
+    "responses": {}
+  }
+},
+"/driver/confirmDelivery": {
   "put": {
     "tags": [
       "Driver Home Management"
@@ -7451,10 +7486,28 @@
       },
       {
         "name": "delivery_id",
-        "in": "path",
+        "in": "formData",
         "description": "delivery id",
         "required": true,
         "type": "string"
+      },
+      {
+        "name": "deliveries",
+        "in": "formData",
+        "description": "delivery id",
+        "required": true,
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties":{
+            "dropoff_id":{
+              "type":"string"
+            },
+            "image":{
+              "type":"string"
+            }
+          }
+        }
       }
     ],
     "responses": {}

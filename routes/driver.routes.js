@@ -6,6 +6,7 @@ const apiSchema = require("../apiSchema/driverSchema");
 const driverAuthentication = require('../middlewares/jwt');
 const router=express.Router();
 const multer = require('../middlewares/multer');
+const {parseToJSON}=require('../middlewares/validators')
 
 const onBoardingController = require('../controllers/driver/onBoardingController');
 const earningController  = require('../controllers/driver/earningController');
@@ -53,7 +54,8 @@ router.get('/getPickupDetails/:pickup_id', driverAuthentication.validateDriverTo
 router.put('/confirmPickup/:pickup_id',driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.confirmPickup), homeController.confirmPickup);
 router.get('/getDeliveryCards', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(apiSchema.getDeliveryCards) ,homeController.getDeliveryCards);
 router.get('/getDeliveryDetails/:delivery_id', driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.getDeliveryDetails), homeController.getDeliveryDetails);
-router.put('/confirmDelivery/:delivery_id',driverAuthentication.validateDriverToken,joiValidation.validateParams(apiSchema.confirmDelivery), homeController.confirmDelivery);
+router.get('/getOrdersByDropOffId',driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getOrdersByDropOffId) ,homeController.getOrdersByDropOffId);
+router.put('/confirmDelivery',driverAuthentication.validateDriverToken, parseToJSON ,joiValidation.validateBody(apiSchema.confirmDelivery), homeController.confirmDelivery);
 
 // earning API's
 router.get('/getEarningList', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningList), earningController.getEarningList);

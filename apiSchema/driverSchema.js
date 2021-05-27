@@ -202,7 +202,16 @@ module.exports = {
     }),
 
     confirmDelivery: Joi.object({
-        delivery_id: Joi.string().required()
+        delivery_id: Joi.string().required(),
+        deliveries:Joi.array().items(Joi.object().keys({
+            dropoff_id: Joi.string().required(),
+            image: Joi.string().required(),
+        })).required(),
+    }),
+
+    getOrdersByDropOffId: Joi.object({
+        delivery_id: Joi.string().required(),
+        dropoff_id:Joi.number().required(),
     }),
 
 

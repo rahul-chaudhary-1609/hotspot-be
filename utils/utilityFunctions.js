@@ -134,7 +134,8 @@ module.exports.sendFcmNotification = async (tokens, notification) => {
         registration_ids: tokens,
         notification: {
             title: notification.title,
-            body: notification.body
+            body: notification.body,
+            image: notification.image || null,
         },
         data: notification.data
     };

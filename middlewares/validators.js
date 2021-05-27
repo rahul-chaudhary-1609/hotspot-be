@@ -1,5 +1,5 @@
 
-export const trimmer = (req, res, next) => {
+module.exports.trimmer = (req, res, next) => {
     if (req.method === 'POST') {
         const temp = {};
         for (let [key, value] of Object.entries(req.body)) {
@@ -28,5 +28,12 @@ export const trimmer = (req, res, next) => {
         req.query = temp;
     }
     
-    next();
+    return next();
+}
+
+module.exports.parseToJSON = (req,res,next) => {
+    if (!Array.isArray(req.body.deliveries)) {
+        req.body.deliveries = JSON.parse(`[${req.body.deliveries}]`);        
+    }
+    return next();
 }

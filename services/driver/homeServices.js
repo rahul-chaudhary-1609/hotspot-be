@@ -1,5 +1,5 @@
 
-const { Op } = require("sequelize");
+const { Op, Model } = require("sequelize");
 const {sequelize}=require('../../models');
 const models = require("../../models");
 const moment = require('moment');
@@ -133,7 +133,8 @@ module.exports = {
 
     
     await models.Order.update({
-        order_delivery_id:delivery_id,
+      order_delivery_id: delivery_id,
+      status:constants.ORDER_DELIVERY_STATUS.food_ready_or_on_the_way,
       },
         {
           where:{
@@ -146,7 +147,7 @@ module.exports = {
     orderPickup.save()
 
     let orderDelivery = await utility.convertPromiseToObject(await models.OrderDelivery.create(orderDeliveryObj));
-
+    
     let orders = await utility.convertPromiseToObject(
       await models.Order.findAll({
         where: {
@@ -267,9 +268,80 @@ getDeliveryCards: async(params,user)=>{
     return {orderDelivery}
   },
 
+  getOrdersByDropOffId: async (params) => {
+    models.Order.hasOne(models.Customer, { foreignKey: 'id', sourceKey: 'customer_id', targetKey: 'id' });
+    let orders = await utility.convertPromiseToObject(
+      await models.Order.findAll({
+        attributes:['id','order_id','order_delivery_id','customer_id','hotspot_dropoff_id','driver_id'],
+        where: {
+          order_delivery_id: params.delivery_id,
+          hotspot_dropoff_id:params.dropoff_id,
+        },
+        include: [
+          {
+            model: models.Customer,
+            attributes: ['name', 'email', 'phone_no', 'address'],
+            required:true,
+          }
+        ]
+      })
+    )
 
+    return { orders };
+  },
 
   confirmDelivery: async (params, user) => {
+
+    for (let delivery of params.deliveries) {
+      let orders = await utility.convertPromiseToObject(
+        await models.Order.findAll({
+          where: {
+            order_delivery_id: params.delivery_id,
+            hotspot_dropoff_id:delivery.dropoff_id,
+          }
+      })
+      )
+
+      for (let order of orders) {
+        let update = {
+            delivery_image_urls: [delivery.image],
+            status:constants.ORDER_DELIVERY_STATUS.delivered,
+        }
+        
+        let condition={
+                order_id:order.order_id,
+        }
+        
+        await models.Order.update(update, {where:condition})
+        
+        let customer = await utility.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))
+    
+    
+        // add notification for employee
+        let notificationObj = {
+          type_id: order.order_id,
+          title: 'Order Delivered',
+          description: `Your order - ${order.order_id} is delivered`,
+          sender_id: user.id,
+          reciever_ids: [order.customer_id],
+          type: constants.NOTIFICATION_TYPE.order_delivered,
+        }
+        await models.Notification.create(notificationObj);
+        
+        if (customer.notification_status && customer.device_token) {
+          // send push notification
+        let notificationData = {
+            title: 'Order Delivered',
+            body: `Your order - ${order.order_id} is delivered`,
+            image:delivery.image,
+          }
+          await utility.sendFcmNotification([customer.device_token], notificationData);
+        }
+
+      }
+
+    }
+
     return true;
-   }
+  }
 }
