@@ -232,6 +232,23 @@ module.exports = {
         }),
     }),
 
+    getHotspotRestaurantDelivery:Joi.object({
+        hotspot_location_id:Joi.number().required(),
+        delivery_shift: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
+        }),
+        customer_location:Joi.array().optional(),
+        dish_category_ids:Joi.array().optional(),
+        restaurant_category_ids:Joi.array().optional(),
+        searchPhrase:Joi.string().trim().optional(),
+    }),
+
+    getHotspotRestaurantPickup:Joi.object({
+        customer_location:Joi.array().optional(),
+        dish_category_ids:Joi.array().optional(),
+        restaurant_category_ids:Joi.array().optional(),
+        searchPhrase:Joi.string().trim().optional(),
+    }),
 
     getHotspotRestaurantSchema: Joi.object({
         hotspot_location_id:Joi.number().required(),

@@ -4,6 +4,8 @@ const express = require('express');
 const joiValidation = require("../middlewares/joi");
 const apiSchema = require("../apiSchema/customerSchema");
 
+const {parseStringToArray}=require('../middlewares/validators')
+
 const customerAuthentication = require('../middlewares/jwt');
 const customerLoginController = require('../controllers/customer/login');
 const HotspotLocationController = require('../controllers/customer/hotspot');
@@ -134,9 +136,9 @@ router.get('/get-search-suggestion', customerAuthentication.validateCustomerToke
 
 // router.post('/get-hotspot-restaurant-with-filter', customerAuthentication.validateCustomerToken, RestaurantController.getHotspotRestaurantWithFilter);
 
-router.post('/get-hotspot-restaurant-pickup', customerAuthentication.validateCustomerToken, RestaurantController.getHotspotRestaurantPickup);
+router.post('/get-hotspot-restaurant-pickup', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.getHotspotRestaurantPickup), RestaurantController.getHotspotRestaurantPickup);
 
-router.post('/get-hotspot-restaurant-delivery', customerAuthentication.validateCustomerToken, RestaurantController.getHotspotRestaurantDelivery);
+router.post('/get-hotspot-restaurant-delivery', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.getHotspotRestaurantDelivery), RestaurantController.getHotspotRestaurantDelivery);
 
 // router.get('/get-hotspot-restaurant-with-quick-filter', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getQuickFilterSchema), RestaurantController.getHotspotRestaurantWithQuickFilter);
 
@@ -161,13 +163,13 @@ router.get('/get-recomended-slides', customerAuthentication.validateCustomerToke
 
 
 //Orders routes
-router.post('/add-to-cart', customerAuthentication.validateCustomerToken, OrderController.addToCart);
+router.post('/add-to-cart', customerAuthentication.validateCustomerToken,parseStringToArray, OrderController.addToCart);
 
 router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.validateCustomerToken,  OrderController.getCart)
 
 router.delete('/delete-from-cart/:restaurantDishId', customerAuthentication.validateCustomerToken,OrderController.deleteFromCart)
 
-router.post('/create-order', customerAuthentication.validateCustomerToken, OrderController.createOrder)
+router.post('/create-order', customerAuthentication.validateCustomerToken,parseStringToArray, OrderController.createOrder)
 
 router.get('/get-pre-order-info/:orderId', customerAuthentication.validateCustomerToken, OrderController.getPreOrderInfo)
 

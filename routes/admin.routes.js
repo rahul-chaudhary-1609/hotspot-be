@@ -4,6 +4,7 @@ const { check, body, query, param, oneOf, validationResult } = require('express-
 
 const joiValidation = require("../middlewares/joi");
 const apiSchema = require("../apiSchema/adminSchema");
+const {parseStringToArray}=require('../middlewares/validators')
 
 const adminLoginController = require('../controllers/admin/login');
 const adminRestaurantController = require('../controllers/admin/restaurant');
@@ -49,7 +50,7 @@ router.put('/uploadImage',adminAuthentication.validateAdminToken, adminMulter.up
 
 router.get('/restaurantCategoryList',adminAuthentication.validateAdminToken, adminRestaurantController.restaurantCategoryList);
 
-router.post('/addRestaurant',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.addRestaurant);
+router.post('/addRestaurant',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.addRestaurant);
 
 router.get('/listRestaurant',adminAuthentication.validateAdminToken, adminRestaurantController.listRestaurant);
 
@@ -57,7 +58,7 @@ router.put('/changeRestaurantStatus/:restaurantId',adminAuthentication.validateA
 
 router.get('/getRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.restaurantIdSchema),adminRestaurantController.getRestaurant);
 
-router.put('/editRestaurant/:restaurantId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.restaurantIdSchema),joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.editRestaurant);
+router.put('/editRestaurant/:restaurantId',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateParams(apiSchema.restaurantIdSchema),joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.editRestaurant);
 
 router.delete('/deleteRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.restaurantIdSchema),adminRestaurantController.deleteRestaurant);
 
@@ -192,9 +193,9 @@ router.get('/getFee/:feeId',adminAuthentication.validateAdminToken, adminFeeCont
 
 router.get('/listHotspots',adminAuthentication.validateAdminToken, adminHotspotController.listHotspots);
 
-router.post('/addHotspot',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.addHotspot);
+router.post('/addHotspot',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.addHotspot);
 
-router.put('/editHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.editHotspot);
+router.put('/editHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.editHotspot);
 
 router.get('/getHotspotDetails/:hotspotLocationId',adminAuthentication.validateAdminToken, adminHotspotController.getHotspotDetails);
 
