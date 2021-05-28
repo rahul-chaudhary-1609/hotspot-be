@@ -209,11 +209,21 @@ module.exports = {
         state: Joi.string().max(45),
     }),
 
-    feeSchema : Joi.object({
+    addDriverFee : Joi.object({
         order_range_from: Joi.number().required(),
-        order_range_to: Joi.number().required(),        
-        fee_type: Joi.string().trim().valid("driver","restaurant","hotspot").required(),
+        order_range_to: Joi.number().optional(),        
         fee: Joi.number().required(),        
+    }),
+
+    editDriverFee: Joi.object({
+        fee_id:Joi.number().required(),
+        order_range_from: Joi.number().optional(), 
+        order_range_to: Joi.number().optional(),        
+        fee: Joi.number().optional(),        
+    }),
+
+    getDriverFeeById: Joi.object({
+        fee_id:Joi.number().required(),       
     }),
 
     hotspotSchema: Joi.object({

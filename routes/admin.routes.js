@@ -180,13 +180,13 @@ router.get('/getDriverListByHotspot',adminAuthentication.validateAdminToken,joiV
 
 //Fee Settings
 
-router.post('/addFee',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.feeSchema) ,adminFeeController.addFee);
+router.post('/addDriverFee',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addDriverFee) ,adminFeeController.addDriverFee);
 
-router.put('/editFee/:feeId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.feeSchema) , adminFeeController.editFee);
+router.put('/editDriverFee',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editDriverFee) , adminFeeController.editDriverFee);
 
-router.get('/getFeeList/:feeType',adminAuthentication.validateAdminToken, adminFeeController.getFeeList);
+router.get('/getDriverFeeList',adminAuthentication.validateAdminToken, adminFeeController.getDriverFeeList);
 
-router.get('/getFee/:feeId',adminAuthentication.validateAdminToken, adminFeeController.getFee);
+router.get('/getDriverFeeById/:fee_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getDriverFeeById), adminFeeController.getDriverFeeById);
 
 
 //schedule Settings

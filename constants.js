@@ -194,6 +194,12 @@ CUSTOM_JOI_MESSAGE : {
     pending: 0,
     approved: 1,
     rejected:2,
+  },
+
+   FEE_TYPE : {
+    driver: 1,
+    restaurant: 2,
+    hotspot:3,
 }
 
 }

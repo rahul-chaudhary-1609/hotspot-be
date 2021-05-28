@@ -30,8 +30,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
         },
 
-        fee_type:{
-            type: DataTypes.STRING,
+        type:{
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '1=>driver,2=>restaurant,3=>hotspot'
         },
 
         fee:{

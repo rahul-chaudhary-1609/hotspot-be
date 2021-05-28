@@ -2878,12 +2878,12 @@
 
 
 
-        "/admin/addFee": {
+        "/admin/addDriverFee": {
           "post": {
             "tags": [
               "Admin Fee Settings"
             ],
-            "description": "Api to add fee",
+            "description": "Api to add driver fee",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -2906,15 +2906,8 @@
                 "name": "order_range_to",
                 "in": "formData",
                 "description": "enter order range to",
-                "required": true,
+                "required": false,
                 "type": "number"
-              },
-              {
-                "name": "fee_type",
-                "in": "formData",
-                "description": "driver | restaurant | hotspot",
-                "required": true,
-                "type": "string"
               },
               {
                 "name": "fee",
@@ -2928,12 +2921,12 @@
           }
         },
 
-        "/admin/editFee/{feeId}": {
+        "/admin/editDriverFee": {
           "put": {
             "tags": [
               "Admin Fee Settings"
             ],
-            "description": "Api to edit fee",
+            "description": "Api to edit driver fee",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -2946,8 +2939,8 @@
                 "type": "string"
               },
               {
-                "name": "feeId",
-                "in": "path",
+                "name": "fee_id",
+                "in": "formData",
                 "description": "enter fee id",
                 "required": true,
                 "type": "number"
@@ -2967,13 +2960,6 @@
                 "type": "number"
               },
               {
-                "name": "fee_type",
-                "in": "formData",
-                "description": "driver | restaurant | hotspot",
-                "required": false,
-                "type": "string"
-              },
-              {
                 "name": "fee",
                 "in": "formData",
                 "description": "enter fee",
@@ -2985,12 +2971,12 @@
           }
         },
 
-        "/admin/getFeeList/{feeType}": {
+        "/admin/getDriverFeeList": {
           "get": {
             "tags": [
               "Admin Fee Settings"
             ],
-            "description": "Api to edit fee",
+            "description": "Api to get driver fee list",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -2999,13 +2985,6 @@
                 "name": "Authorization",
                 "in": "header",
                 "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "feeType",
-                "in": "path",
-                "description": "driver | restaurant | hotspot",
                 "required": true,
                 "type": "string"
               }
@@ -3013,12 +2992,12 @@
             "responses": {}
           }
         },
-        "/admin/getFee/{feeId}": {
+        "/admin/getDriverFeeById/{fee_id}": {
           "get": {
             "tags": [
               "Admin Fee Settings"
             ],
-            "description": "Api to get fee ",
+            "description": "Api to get driver fee by id",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -3031,7 +3010,7 @@
                 "type": "string"
               },
               {
-                "name": "feeId",
+                "name": "fee_id",
                 "in": "path",
                 "description": "enter fee id",
                 "required": true,
