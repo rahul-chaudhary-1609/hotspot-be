@@ -16,6 +16,14 @@ module.exports = {
      },
 
     addBanner: async (params) => {
+        const orderNumber = await models.HotspotOffer.findOne({
+            where:{
+                order:params.order,
+                status: [0,1]
+            }
+        })
+
+        if(orderNumber) throw new Error(constants.MESSAGES.order_sequence_exist);
 
         const addBanner = await models.HotspotOffer.create({ name: params.name, image_url: params.image_url, order: params.order });
 
@@ -27,10 +35,22 @@ module.exports = {
 
     editBanner: async(params)=>{
         let checkBannerId = await models.HotspotOffer.findOne({
-            where: { id: params.banner_id}
+            where: { id: params.banner_id,
+                status: [0,1]
+            }
         })
         if (checkBannerId) {
-            const bannerData=await models.HotspotOffer.update({ name:params.name,image_url:params.image_url }, { where: {id:Number(params.banner_id)}});
+            if (params.order) {
+                const orderNumber = await models.HotspotOffer.findOne({
+                    where:{
+                        order:params.order,
+                        status: [0,1]
+                    }
+                })
+        
+                if(orderNumber) throw new Error(constants.MESSAGES.order_sequence_exist);
+            }
+            const bannerData=await models.HotspotOffer.update({ name:params.name,image_url:params.image_url,order:params.order}, { where: {id:Number(params.banner_id)}});
             return true
         } else {
             throw new Error(constants.MESSAGES.invalid_id);

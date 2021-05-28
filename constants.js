@@ -82,6 +82,7 @@ module.exports = {
     only_pickup_available: "Sorry! Only pickups available in your area.",
     invalid_id:'Invalid id.',
     invalid_id_or_phone: 'Invalid id or phone',
+    order_sequence_exist: 'A banner on same sequence already exist',
     invalid_email_or_phone: 'Invalid id or phone',
     not_approved: 'Your account is not approved by admin',
     rejected_account: 'Your account is rejected by admin.',
