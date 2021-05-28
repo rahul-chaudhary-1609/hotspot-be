@@ -28,12 +28,10 @@ module.exports = (sequelize, DataTypes) => {
 
         order_range_to: {
             type: DataTypes.INTEGER,
-            allowNull: false,
         },
 
         fee_type:{
             type: DataTypes.STRING,
-            allowNull: false,
         },
 
         fee:{

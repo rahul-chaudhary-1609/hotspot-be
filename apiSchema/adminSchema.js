@@ -349,10 +349,10 @@ module.exports = {
     }),
 
     getOrderDeliveries: Joi.object({
-        search_key: Joi.string().allow(null, '').optional(),
+        search_key: Joi.string().allow(null, '').trim().optional(),
         start_date: Joi.date().allow(null, '').optional(),
-        end_date: Joi.date().empty().optional(),
-        filter_key: Joi.string().empty().valid("Daily", "Weekly", "Monthly", "Yearly").optional(),
+        end_date: Joi.date().allow(null, '').optional(),
+        filter_key: Joi.string().empty().trim().valid("Daily", "Weekly", "Monthly", "Yearly").allow(null, '').optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
     }),

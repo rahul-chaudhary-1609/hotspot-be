@@ -87,13 +87,9 @@ module.exports = {
             where: {
                 order_range_from: {
                     [Op.lte]:parseFloat(currentOrderPickup.amount),
-                },
-                order_range_to: {
-                    [Op.gte]:parseFloat(currentOrderPickup.amount),
-                },
-                fee_type: 'driver',             
-                
-            }
+                },              
+            },
+            order:[['order_range_from','DESC']]
     })
 
     const restaurant_fee = currentOrderPickup.pickup_details.restaurants.reduce((result, restaurant) => result + parseFloat(restaurant.fee), 0);

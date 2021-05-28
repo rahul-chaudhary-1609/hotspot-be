@@ -11,12 +11,12 @@ const order = require('../../controllers/customer/order');
 const getRestaurantCard =  async (args) => {
         
         const restaurants = [];
-        for (const val of args.restaurants) {
+        for (const restaurant of args.restaurants) {
             let is_favorite = false;
 
             const favRestaurant = await models.FavRestaurant.findOne({
                 where: {
-                    restaurant_id: val.id,
+                    restaurant_id: restaurant.id,
                     customer_id:args.user.id,
                 }
             });
@@ -44,8 +44,8 @@ const getRestaurantCard =  async (args) => {
                     let ndtHours = parseInt(time.split(':')[0]);
                     let ndtMinutes = parseInt(time.split(':')[1]);
 
-                    let cotHours = Math.floor((val.cut_off_time) / 60);
-                    let cotMinutes = (val.cut_off_time) % 60;
+                    let cotHours = Math.floor((restaurant.cut_off_time) / 60);
+                    let cotMinutes = (restaurant.cut_off_time) % 60;
 
                     let displayHours = Math.abs(ndtHours - cotHours);
                     let displayMinutes = Math.abs(ndtMinutes - cotMinutes);
@@ -71,22 +71,23 @@ const getRestaurantCard =  async (args) => {
                                 latitude: args.params.customer_location[0],
                                 longitude: args.params.customer_location[1]
                             }, {
-                                latitude: val.location[0],
-                                longitude: val.location[1]
+                                latitude: restaurant.location[0],
+                                longitude: restaurant.location[1]
                             }))) * 0.00062137);
             }
 
             restaurants.push({
-                restaurant_id: val.id,
-                restaurant_name: val.restaurant_name,
-                restaurant_image_url: val.restaurant_image_url,
-                restaurant_category_ids: val.restaurant_category_ids,
+                restaurant_id: restaurant.id,
+                restaurant_name: restaurant.restaurant_name,
+                restaurant_image_url: restaurant.restaurant_image_url,
+                restaurant_category_ids: restaurant.restaurant_category_ids,
                 next_delivery_time:next_delivery_time?next_delivery_time:null,
                 cut_off_time: next_delivery_time?getCutOffTime(next_delivery_time):null,
                 is_favorite,
                 distance,
-                workingHourFrom:val.working_hours_from,
-                workingHourTo:val.working_hours_to,
+                location:restaurant.location,
+                workingHourFrom:restaurant.working_hours_from,
+                workingHourTo:restaurant.working_hours_to,
             })
     }
     
@@ -239,7 +240,7 @@ module.exports = {
               }
           });
 
-          const restaurant_ids = await favRestaurant.map(val => val.restaurant_id);
+          const restaurant_ids = await favRestaurant.map(restaurant => restaurant.restaurant_id);
 
           const restaurant = await models.Restaurant.findAll({
               where: {
@@ -255,24 +256,24 @@ module.exports = {
 
     getRestaurantCategory: async () => {
 
-            let restaurantCategory = await models.RestaurantCategory.findAndCountAll();
+            let restaurantCategories = await models.RestaurantCategory.findAndCountAll();
 
-            if (restaurantCategory.count === 0) {
+            if (restaurantCategories.count === 0) {
                 await models.RestaurantCategory.bulkCreate(
                     [{ name: "Sandwiches" }, { name: "Healthy" }, { name: "Vegan" }, { name: "Mexican" }, { name: "Asian" }, { name: "Deserts" }], { returning: ['id'] },
                 );
             }
 
-        restaurantCategory = await models.RestaurantCategory.findAll({
+        restaurantCategories = await models.RestaurantCategory.findAll({
             where: {
                     status:constants.STATUS.active
                 }
             });
 
-            const categories = await restaurantCategory.map((val) => {
+            const categories = await restaurantCategories.map((restaurantCategory) => {
                 return {
-                    restaurant_category_id: val.id,
-                    name:val.name,
+                    restaurant_category_id: restaurantCategory.id,
+                    name:restaurantCategory.name,
                 }
             });
 
@@ -282,22 +283,22 @@ module.exports = {
 
     getFoodCategory: async () => {
 
-            let dishCategory = await models.DishCategory.findAndCountAll();
+            let dishCategories = await models.DishCategory.findAndCountAll();
 
-            if (dishCategory.count === 0) {
+            if (dishCategories.count === 0) {
                 await models.DishCategory.bulkCreate(
                     dummyData.dishCategories,
                     { returning: ['id'] },
                 );
             }
 
-            dishCategory = await models.DishCategory.findAll();
+            dishCategories = await models.DishCategory.findAll();
 
-            const dish_categories = await dishCategory.map((val) => {
+            const dish_categories = await dishCategories.map((dishCategory) => {
                 return {
-                    dish_category_id:val.id,
-                    name: val.name,
-                    image_url:val.image_url,
+                    dish_category_id:dishCategory.id,
+                    name: dishCategory.name,
+                    image_url:dishCategory.image_url,
                 }
             });
 
@@ -322,9 +323,9 @@ module.exports = {
             }
         });
 
-        restaurants.forEach((val) => {
-            if (!searchSuggestion.restaurantCategories.includes(val.restaurant_name)) {
-                searchSuggestion.restaurantCategories.push(val.restaurant_name)
+        restaurants.forEach((restaurant) => {
+            if (!searchSuggestion.restaurantCategories.includes(restaurant.restaurant_name)) {
+                searchSuggestion.restaurantCategories.push(restaurant.restaurant_name)
             }
         })
 
@@ -337,9 +338,9 @@ module.exports = {
             }
         });
 
-        restaurantCategories.forEach((val) => {
-            if (!searchSuggestion.restaurantCategories.includes(val.name)) {
-                searchSuggestion.restaurantCategories.push(val.name)
+        restaurantCategories.forEach((restaurantCategory) => {
+            if (!searchSuggestion.restaurantCategories.includes(restaurantCategory.name)) {
+                searchSuggestion.restaurantCategories.push(restaurantCategory.name)
             }
         })
 
@@ -351,9 +352,9 @@ module.exports = {
             }
         });
 
-        dishCategories.forEach((val) => {
-            if (!searchSuggestion.restaurantCategories.includes(val.name)) {
-                searchSuggestion.restaurantCategories.push(val.name)
+        dishCategories.forEach((dishCategory) => {
+            if (!searchSuggestion.restaurantCategories.includes(dishCategory.name)) {
+                searchSuggestion.restaurantCategories.push(dishCategory.name)
             }
         })
 
@@ -366,9 +367,9 @@ module.exports = {
             }
         });
 
-        restaurantDishes.forEach((val) => {
-            if (!searchSuggestion.restaurantCategories.includes(val.name)) {
-                searchSuggestion.restaurantCategories.push(val.name)
+        restaurantDishes.forEach((restaurantDish) => {
+            if (!searchSuggestion.restaurantCategories.includes(restaurantDish.name)) {
+                searchSuggestion.restaurantCategories.push(restaurantDish.name)
             }
         })
     
@@ -389,7 +390,7 @@ module.exports = {
 
             hotspotOffer = await models.HotspotOffer.findAll();
 
-            const hotspot_offers = await hotspotOffer.map((val) => {return val.image_url });
+            const hotspot_offers = await hotspotOffer.map((hotspotOffer) => {return hotspotOffer.image_url });
 
             return { hotspot_offers };
 
@@ -912,13 +913,13 @@ module.exports = {
         
           const customer_id = user.id;
 
-          const favFood = await models.FavFood.findAll({
+          const favFoods = await models.FavFood.findAll({
               where: {
                   customer_id,
               }
           });
 
-          const restaurant_dish_ids = await favFood.map(val => val.restaurant_dish_id);
+          const restaurant_dish_ids = await favFoods.map(favFood => favFood.restaurant_dish_id);
 
           const restaurantDish = await models.RestaurantDish.findAll({
               where: {
