@@ -122,6 +122,8 @@ module.exports = {
         first_name: Joi.string().trim().optional(),
         last_name: Joi.string().trim().optional(),
         email: Joi.string().trim().optional(),
+        country_code: Joi.string().trim().optional(),
+        phone_no: Joi.string().trim().optional(),
         dob: Joi.string().trim().optional(),
         gender: Joi.string().trim().optional(),
         nationality: Joi.string().trim().optional(),

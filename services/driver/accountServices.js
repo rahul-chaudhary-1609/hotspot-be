@@ -8,6 +8,28 @@ module.exports = {
 editPersonalDetails: async (params, driver) => {
     //const driverDetails = await Driver.findByPk(driver.id);
    // console.log("driver details",driverDetails)
+   if(params.email){
+    const findEmail = await utility.convertPromiseToObject(
+      await Driver.findOne({
+        where: {
+          email:params.email,
+        }
+      })
+    )
+    if(findEmail) throw new Error(constants.MESSAGES.email_already_registered);
+   }
+
+   if(params.phone_no){
+    const findContact = await utility.convertPromiseToObject(
+      await Driver.findOne({
+        where: {
+          country_code:params.country_code,
+          phone_no:params.phone_no
+        }
+      })
+    )
+    if(findContact) throw new Error(constants.MESSAGES.phone_already_registered);
+   }
    const driverPersonalData=await Driver.update(params,{ where: {id:Number(driver.id)} });
    return true
  },

@@ -6920,6 +6920,20 @@
             "type": "string"
           },
           {
+            "name": "country_code",
+            "in": "formData",
+            "description": "enter country code",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "phone_no",
+            "in": "formData",
+            "description": "enter phone_no",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "dob",
             "in": "formData",
             "description": "enter dob",
