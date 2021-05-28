@@ -1,6 +1,9 @@
 const models = require('../../models');
-const { Op } = require("sequelize");
+const { Op} = require("sequelize")
+const {sequelize}=require('../../models');
 const constants = require('../../constants');
+const utility = require('../../utils/utilityFunctions');
+
 const moment = require('moment');
 
 module.exports = {
@@ -46,20 +49,14 @@ module.exports = {
     },
 
     getTotalOrders: async () => {
-      //const startDate = moment().format('YYYY-MM-DD ');
-      //const endDate = moment(startDate).add(1, 'days').format('YYYY-MM-DD ')
-      const startDate = new Date();
-      startDate.setHours(0,0,0,0);
-      console.log("aaa",startDate)
-      const endDate = new Date();
-      endDate.setHours(23,59,59,999);
-      console.log("aaa",endDate)
             const orders = await models.Order.findAndCountAll({
                 where: {
-                    status:[1,2,3,4],
-                    updated_at: {
-                      [Op.between]: [startDate, endDate]
-                    }
+                    [Op.and]: [
+                      {
+                        status:[1,2,3,4],
+                      },
+                      sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+                    ] 
                 }
             });
 
@@ -70,7 +67,7 @@ module.exports = {
 
     getTotalRevenue: async () => {
                 
-            const totalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+            const totalAmount = await models.Order.sum('amount',{
             });
            
             
@@ -108,21 +105,15 @@ module.exports = {
      },
 
      getProcessingOrders: async () => {
-      //const startDate = moment().format('YYYY-MM-DD ');
-      //const endDate = moment(startDate).add(1, 'days').format('YYYY-MM-DD ')
-      const startDate = new Date();
-      startDate.setHours(0,0,0,0);
-      console.log("aaa",startDate)
-      const endDate = new Date();
-      endDate.setHours(23,59,59,999);
-      console.log("aaa",endDate)
       const orders = await models.Order.findAndCountAll({
-          where: {
+        where: {
+          [Op.and]: [
+            {
               status:[1,2,3],
-              updated_at: {
-                  [Op.between]: [startDate, endDate]
-                }
-          }
+            },
+            sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+          ] 
+      }
       });
 
       return { numberOfProcessingOrders:orders.count };
@@ -131,40 +122,38 @@ module.exports = {
     },
 
     getCompletedOrders: async () => {
-      //const startDate = moment().format('YYYY-MM-DD ');
-      //const endDate = moment(startDate).add(1, 'days').format('YYYY-MM-DD ')
-      const startDate = new Date();
-      startDate.setHours(0,0,0,0);
-      console.log("aaa",startDate)
-      const endDate = new Date();
-      endDate.setHours(23,59,59,999);
-      console.log("aaa",endDate)
       const deliveryOrders = await models.Order.findAndCountAll({
         where: {
-            status:constants.ORDER_DELIVERY_STATUS.delivered,
-            type:constants.ORDER_TYPE.delivery,
-            updated_at: {
-                [Op.between]: [startDate, endDate]
-              }
-        }
+          [Op.and]: [
+            {
+              status:constants.ORDER_DELIVERY_STATUS.delivered,
+              type:constants.ORDER_TYPE.delivery,
+            },
+            sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+          ] 
+      }
      });
      const pickupOrders = await models.Order.findAndCountAll({
       where: {
-          status:constants.ORDER_DELIVERY_STATUS.food_being_prepared,
-          type:constants.ORDER_TYPE.pickup,
-          updated_at: {
-              [Op.between]: [startDate, endDate]
-            }
-      }
+        [Op.and]: [
+          {
+            status:constants.ORDER_DELIVERY_STATUS.food_being_prepared,
+            type:constants.ORDER_TYPE.pickup,
+          },
+          sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+        ] 
+    }
      });
       const pickupdeliveryOrders = await models.Order.findAndCountAll({
-        where: {
-        status:[constants.ORDER_DELIVERY_STATUS.food_being_prepared,constants.ORDER_DELIVERY_STATUS.delivered],
-        type:constants.ORDER_TYPE.both,
-        updated_at: {
-            [Op.between]: [startDate, endDate]
-          }
-      }
+      where: {
+        [Op.and]: [
+          {
+            status:[constants.ORDER_DELIVERY_STATUS.food_being_prepared,constants.ORDER_DELIVERY_STATUS.delivered],
+            type:constants.ORDER_TYPE.both,
+          },
+          sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+        ] 
+    }
    });
     const totalOrders = deliveryOrders.count+pickupOrders.count+pickupdeliveryOrders.count
     return { numberOfCompletedOrders:totalOrders };
@@ -207,22 +196,16 @@ module.exports = {
 
 
      getOrdersViaHotspot: async (params) => {
-        //const startDate = moment().format('YYYY-MM-DD ');
-        //const endDate = moment(startDate).add(1, 'days').format('YYYY-MM-DD ')
-        const startDate = new Date();
-        startDate.setHours(0,0,0,0);
-        console.log("aaa",startDate)
-        const endDate = new Date();
-        endDate.setHours(23,59,59,999);
-        console.log("aaa",endDate)
         const orders = await models.Order.findAndCountAll({
             where: {
-                status:[1,2,3,4],
-                hotspot_location_id:params.hotspot_id,
-                updated_at: {
-                    [Op.between]: [startDate, endDate]
-                  }
-            }
+              [Op.and]: [
+                {
+                  status:[1,2,3,4],
+                  hotspot_location_id:params.hotspot_id,
+                },
+                sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+              ] 
+          }
         });
 
         return { numberOfOrders:orders.count };
@@ -231,22 +214,17 @@ module.exports = {
       },
 
       getProcessingOrdersViaHotspot: async (params) => {
-       // const startDate = moment().format('YYYY-MM-DD ');
-        //const endDate = moment(startDate).add(1, 'days').format('YYYY-MM-DD ')
-        const startDate = new Date();
-        startDate.setHours(0,0,0,0);
-        console.log("aaa",startDate)
-        const endDate = new Date();
-        endDate.setHours(23,59,59,999);
-        console.log("aaa",endDate)
         const orders = await models.Order.findAndCountAll({
             where: {
-                status:[1,2,3],
-                hotspot_location_id:params.hotspot_id,
-                updated_at: {
-                    [Op.between]: [startDate, endDate]
-                  }
-            }
+              [Op.and]: [
+                {
+                  status:[1,2,3],
+                  hotspot_location_id:params.hotspot_id,
+                },
+                sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+              ] 
+          }
+      
         });
 
         return { numberOfProcessingOrders:orders.count };
@@ -255,43 +233,41 @@ module.exports = {
       },
 
       getCompletedOrdersViaHotspot: async (params) => {
-        // const startDate = moment().format('YYYY-MM-DD ');
-        // const endDate = moment(startDate).add(1, 'days').format('YYYY-MM-DD ')
-        const startDate = new Date();
-        startDate.setHours(0,0,0,0);
-        console.log("aaa",startDate)
-        const endDate = new Date();
-        endDate.setHours(23,59,59,999);
-        console.log("aaa",endDate)
         const deliveryOrders = await models.Order.findAndCountAll({
             where: {
-                status:constants.ORDER_DELIVERY_STATUS.delivered,
-                type:constants.ORDER_TYPE.delivery,
-                hotspot_location_id:params.hotspot_id,
-                updated_at: {
-                    [Op.between]: [startDate, endDate]
-                  }
-            }
+              [Op.and]: [
+                {
+                  status:constants.ORDER_DELIVERY_STATUS.delivered,
+                  type:constants.ORDER_TYPE.delivery,
+                  hotspot_location_id:params.hotspot_id,
+                },
+                sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+              ] 
+          }
         });
         const pickupOrders = await models.Order.findAndCountAll({
           where: {
-              status:constants.ORDER_DELIVERY_STATUS.food_being_prepared,
-              type:constants.ORDER_TYPE.pickup,
-              hotspot_location_id:params.hotspot_id,
-              updated_at: {
-                  [Op.between]: [startDate, endDate]
-                }
-          }
+            [Op.and]: [
+              {
+                status:constants.ORDER_DELIVERY_STATUS.food_being_prepared,
+                type:constants.ORDER_TYPE.pickup,
+                hotspot_location_id:params.hotspot_id,
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+            ] 
+        }
       });
       const pickupdeliveryOrders = await models.Order.findAndCountAll({
         where: {
-            status:[constants.ORDER_DELIVERY_STATUS.food_being_prepared,constants.ORDER_DELIVERY_STATUS.delivered],
-            type:constants.ORDER_TYPE.both,
-            hotspot_location_id:params.hotspot_id,
-            updated_at: {
-                [Op.between]: [startDate, endDate]
-              }
-        }
+          [Op.and]: [
+            {
+              status:[constants.ORDER_DELIVERY_STATUS.food_being_prepared,constants.ORDER_DELIVERY_STATUS.delivered],
+              type:constants.ORDER_TYPE.both,
+              hotspot_location_id:params.hotspot_id,
+            },
+            sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+          ] 
+      }
     });
         const totalOrders = deliveryOrders.count+pickupOrders.count+pickupdeliveryOrders.count
         return { numberOfCompletedOrders:totalOrders };
@@ -301,31 +277,11 @@ module.exports = {
 
 
       getOrderStats: async () => {
-/*        const getMonth = moment().format('M');
-        const getYear = moment().format('Y');
-        const todayStartDate = moment().format('YYYY-MM-DD ');
-        const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
-        const monthStartDate = moment([getYear,getMonth - 1, 1]).format('YYYY-MM-DD ')
-        const daysInMonth = moment(monthStartDate).daysInMonth()
-        const monthEndDate = moment(monthStartDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
-        const StartMonth = 1 // 1:January
-        const yearStartDate = moment([getYear,StartMonth-1, 1]).format('YYYY-MM-DD ')
-        const yearEndDate = moment(yearStartDate).add(1, 'year').format('YYYY-MM-DD')*/
+        const monthStartDate = new Date(new Date().setMonth(new Date().getMonth()-1));
+        const monthEndDate = new Date();
+        const yearStartDate = new Date(new Date().setFullYear(new Date().getFullYear()-1));
+        const yearEndDate = new Date();
 
-        const todayStartDate = new Date();
-        todayStartDate.setHours(0,0,0,0);
-        console.log("aaa",todayStartDate)
-        const todayEndDate = new Date();
-        todayEndDate.setHours(23,59,59,999);
-        console.log("aaa",todayEndDate)
-        const monthStartDate = new Date(new Date().getFullYear(),new Date().getMonth(), 1);
-        const monthEndDate = new Date(new Date().getFullYear(),new Date().getMonth() + 1, 0);
-        console.log("month first day",monthStartDate)
-        console.log("month last day",monthEndDate)
-        const yearStartDate = new Date(new Date().getFullYear(), 0, 1);
-        console.log("year first day",yearStartDate)
-        const yearEndDate = new Date(new Date().getFullYear() + 1, 0, 1);
-        console.log("year last day",yearEndDate)
         const totalOrders = await models.Order.findAndCountAll({
           where: {
               status:[1,2,3,4]
@@ -341,11 +297,13 @@ module.exports = {
 
         const todayOrders = await models.Order.findAndCountAll({
             where: {
-              status:[1,2,3,4],
-              updated_at: {
-                [Op.between]: [todayStartDate, todayEndDate]
-              },
-            }
+              [Op.and]: [
+                {
+                  status:[1,2,3,4],
+                },
+                sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+              ] 
+          }
         });
         const monthOrders = await models.Order.findAndCountAll({
           where:{
@@ -370,7 +328,7 @@ module.exports = {
 
       getTotalRevenueViaHotspot: async (params) => {
                 
-        const totalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+        const totalAmount = await models.Order.sum('amount',{
             where:  {
                 hotspot_location_id:params.hotspot_id,
             }
@@ -383,61 +341,38 @@ module.exports = {
       },
 
       getRevenueStats: async () => {
-/*        const getMonth = moment().format('M');
-        const getYear = moment().format('Y');
-        const todayStartDate = moment().format('YYYY-MM-DD ');
-        const todayEndDate = moment(todayStartDate).add(1, 'days').format('YYYY-MM-DD ')
-        const monthStartDate = moment([getYear,getMonth - 1, 1]).format('YYYY-MM-DD ')
-        const daysInMonth = moment(monthStartDate).daysInMonth()
-        const monthEndDate = moment(monthStartDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
-        const StartMonth = 1 // 1:January
-        const yearStartDate = moment([getYear,StartMonth-1, 1]).format('YYYY-MM-DD ')
-        const yearEndDate = moment(yearStartDate).add(1, 'year').format('YYYY-MM-DD')*/
-        const todayStartDate = new Date();
-        todayStartDate.setHours(0,0,0,0);
-        console.log("aaa",todayStartDate)
-        const todayEndDate = new Date();
-        todayEndDate.setHours(23,59,59,999);
-        console.log("aaa",todayEndDate)
-        const monthStartDate = new Date(new Date().getFullYear(),new Date().getMonth(), 1);
-        const monthEndDate = new Date(new Date().getFullYear(),new Date().getMonth() + 1, 0);
-        console.log("month first day",monthStartDate)
-        console.log("month last day",monthEndDate)
-        const yearStartDate = new Date(new Date().getFullYear(), 0, 1);
-        console.log("year first day",yearStartDate)
-        const yearEndDate = new Date(new Date().getFullYear() + 1, 0, 1);
-        console.log("year last day",yearEndDate)
-        const TotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-      });
-        const todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-          where:  {
-              updated_at: {
-                [Op.between]: [todayStartDate, todayEndDate]
+        const monthStartDate = new Date(new Date().setMonth(new Date().getMonth()-1));
+        const monthEndDate = new Date();
+        const yearStartDate = new Date(new Date().setFullYear(new Date().getFullYear()-1));
+        const yearEndDate = new Date();
+        
+                const TotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+              });
+                const todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+                  where: sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+              });
+        
+              const monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+                where:  {
+                    updated_at: {
+                      [Op.between]: [monthStartDate, monthEndDate]
+                    },
+                }
+              });
+        
+              const yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+                where:  {
+                    updated_at: {
+                      [Op.between]: [yearStartDate, yearEndDate]
+                    },
+                }
+              });
+                return { totalRevenue:TotalAmount,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
+        
+             
               },
-          }
-      });
 
-      const monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-        where:  {
-            updated_at: {
-              [Op.between]: [monthStartDate, monthEndDate]
-            },
-        }
-      });
-
-      const yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-        where:  {
-            updated_at: {
-              [Op.between]: [yearStartDate, yearEndDate]
-            },
-        }
-      });
-        return { totalRevenue:TotalAmount,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
-
-     
-      },
-
-
-
+              
+        
     /***************************recent code for admin dashboard***************************/
 }
