@@ -34,7 +34,13 @@ module.exports = {
             order:[['order_range_from']]
         })
 
-        if(driverFeeList.count===0) throw new Error(constants.MESSAGES.no_fee);
+        if (driverFeeList.count === 0) throw new Error(constants.MESSAGES.no_fee);
+        
+        for (let driverFee of driverFeeList.rows) {
+            if (!driverFee.order_range_to) {
+                driverFee.order_range_from = `${driverFee.order_range_from} +`;
+            }
+        }
 
         return {driverFeeList};
       
