@@ -188,6 +188,8 @@ router.get('/getDriverFeeList',adminAuthentication.validateAdminToken, adminFeeC
 
 router.get('/getDriverFeeById/:fee_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getDriverFeeById), adminFeeController.getDriverFeeById);
 
+router.put('/editRestaurantFee',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editRestaurantFee) , adminFeeController.editRestaurantFee);
+
 
 //schedule Settings
 

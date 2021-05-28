@@ -3021,6 +3021,41 @@
           }
         },
 
+        "/admin/editRestaurantFee": {
+          "put": {
+            "tags": [
+              "Admin Fee Settings"
+            ],
+            "description": "Api to edit Restaurant Fee",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "percentage_fee",
+                "in": "formData",
+                "description": "percentage fee (%)",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 

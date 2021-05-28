@@ -48,4 +48,14 @@ module.exports = {
             return {fee };     
     },
 
+    editRestaurantFee: async (params) => {
+        let restaurant = await models.Restaurant.findByPk(parseInt(params.restaurant_id));
+
+        if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
+
+        restaurant.percentage_fee = params.percentage_fee;
+
+        return {restaurant}
+    }
+
 }

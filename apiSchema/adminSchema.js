@@ -226,6 +226,11 @@ module.exports = {
         fee_id:Joi.number().required(),       
     }),
 
+    editRestaurantFee: Joi.object({
+        restaurant_id: Joi.number().required(),
+        percentage_fee:Joi.number().required(),
+    }),
+
     hotspotSchema: Joi.object({
         name: Joi.string().trim().required(),
         //     regex(/^[a-zA-Z\s]+$/).max(45).messages({
