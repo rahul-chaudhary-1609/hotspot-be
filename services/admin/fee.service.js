@@ -54,6 +54,16 @@ module.exports = {
             return {fee };     
     },
 
+    deleteDriverFee: async (params) => {
+        const fee = await models.Fee.findByPk(parseInt(params.fee_id));
+
+        if (!fee) throw new Error(constants.MESSAGES.no_fee);
+
+        fee.destroy();
+
+        return true;   
+    },
+
     editRestaurantFee: async (params) => {
         let restaurant = await models.Restaurant.findByPk(parseInt(params.restaurant_id));
 

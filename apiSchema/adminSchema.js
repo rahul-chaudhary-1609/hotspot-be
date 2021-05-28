@@ -226,6 +226,10 @@ module.exports = {
         fee_id:Joi.number().required(),       
     }),
 
+    deleteDriverFee: Joi.object({
+        fee_id:Joi.number().required(),       
+    }),
+
     editRestaurantFee: Joi.object({
         restaurant_id: Joi.number().required(),
         percentage_fee:Joi.number().required(),

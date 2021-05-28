@@ -190,6 +190,8 @@ router.get('/getDriverFeeById/:fee_id',adminAuthentication.validateAdminToken,jo
 
 router.put('/editRestaurantFee',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editRestaurantFee) , adminFeeController.editRestaurantFee);
 
+router.delete('/deleteDriverFee/:fee_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.deleteDriverFee), adminFeeController.deleteDriverFee);
+
 
 //schedule Settings
 

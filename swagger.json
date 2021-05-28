@@ -3021,6 +3021,35 @@
           }
         },
 
+        "/admin/deleteDriverFee/{fee_id}": {
+          "delete": {
+            "tags": [
+              "Admin Fee Settings"
+            ],
+            "description": "Api to delete driver fee",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "fee_id",
+                "in": "path",
+                "description": "enter fee id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
         "/admin/editRestaurantFee": {
           "put": {
             "tags": [

@@ -39,6 +39,15 @@ module.exports = {
         }
     },
 
+     deleteDriverFee: async (req, res) => {
+       try {
+            const responseFromService = await feeService.deleteDriverFee(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     editRestaurantFee: async (req, res) => {
        try {
             const responseFromService = await feeService.editRestaurantFee(req.body);
