@@ -70,6 +70,7 @@ module.exports = {
         if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
 
         restaurant.percentage_fee = params.percentage_fee;
+        restaurant.save()
 
         return {restaurant}
     }
