@@ -56,154 +56,162 @@ module.exports = {
     getActiveOrders: async (params) => {
     
 
-            let [offset, limit] = await utility.pagination(params.page, params.page_size);
-            params.status = parseInt(params.status_filter);
-            let query = {};
-            let status = null;
-            if (params.status || params.status==0) {
-                if (!([0, 1, 2].includes(params.status))) throw new Error(constants.MESSAGES.invalid_status);
-                status = params.status;
-            }
-            else {
-                status = [1, 2, 3];
-            }
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+        params.status = parseInt(params.status_filter);
+        let query = {};
+        let status = null;
+        if (params.status || params.status==0) {
+            if (!([0, 1, 2].includes(params.status))) throw new Error(constants.MESSAGES.invalid_status);
+            status = params.status;
+        }
+        else {
+            status = [1, 2, 3];
+        }
 
-            let tomorrow = new Date(`${(new Date()).getFullYear()}-${(new Date()).getMonth() + 1}-${(new Date()).getDate() + 1}`);
-            query.where = {
-                delivery_datetime: {
-                    [Op.lt]:tomorrow,
+        query.where = {}
+        query.where = {
+            [Op.and]: [
+                {
+                    ...query.where,
                 },
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date())),
+            
+            ]
+        }
+        if (params.searchKey) {
+            let searchKey = params.searchKey;
+            query.where = {
+                ...query.where,
+                [Op.or]: [
+                    { order_id: { [Op.iLike]: `%${searchKey}%` } },
+                    sequelize.where(sequelize.json('order_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` }),
+                    sequelize.where(sequelize.json('order_details.customer.name'), { [Op.iLike]: `%${searchKey}%` }),
+                    sequelize.where(sequelize.json('order_details.restaurant.restaurant_name'), { [Op.iLike]: `%${searchKey}%` }),
+                ]
             };
-            if (params.searchKey) {
-                let searchKey = params.searchKey;
+        }
+
+        if (status) {
+            if (status == 1) {
                 query.where = {
                     ...query.where,
-                    [Op.or]: [
-                        { order_id: { [Op.iLike]: `%${searchKey}%` } },
-                        sequelize.where(sequelize.json('order_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` }),
-                        sequelize.where(sequelize.json('order_details.customer.name'), { [Op.iLike]: `%${searchKey}%` }),
-                        sequelize.where(sequelize.json('order_details.restaurant.restaurant_name'), { [Op.iLike]: `%${searchKey}%` }),
-                    ]
+                    status,
+                    type: { [Op.not]: constants.ORDER_TYPE.pickup },
                 };
-            }
-
-            if (status) {
-                if (status == 1) {
-                    query.where = {
-                        ...query.where,
-                        status,
-                        type: { [Op.not]: constants.ORDER_TYPE.pickup },
-                    };
-                        
-                }
-                else {
-                    query.where = {
-                        ...query.where,
-                        status,
-                    };
-                }
-                 
+                    
             }
             else {
                 query.where = {
                     ...query.where,
-                    type: constants.ORDER_TYPE.pickup,
-                    status:1,
+                    status,
                 };
             }
+                
+        }
+        else {
+            query.where = {
+                ...query.where,
+                type: constants.ORDER_TYPE.pickup,
+                status:1,
+            };
+        }
 
 
-            query.order = [
-                ['id', 'DESC']
-            ];
-            query.limit = limit;
-            query.offset = offset;
-            query.raw = true;
+        query.order = [
+            ['id', 'DESC']
+        ];
+        query.limit = limit;
+        query.offset = offset;
+        query.raw = true;
 
-            let orderList = await models.Order.findAndCountAll(query);
-            
-            if (orderList.count === 0) throw new Error(constants.MESSAGES.no_order);
-
-            return getOrderRow({orderList})
-            
+        let orderList = await models.Order.findAndCountAll(query);
         
+        if (orderList.count === 0) throw new Error(constants.MESSAGES.no_order);
+
+        return getOrderRow({orderList})
+        
+    
     },
 
     getScheduledOrders: async (params) => {
        
 
-            let [offset, limit] = await utility.pagination(params.page, params.page_size);
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
-            params.status = parseInt(params.status_filter);
+        params.status = parseInt(params.status_filter);
 
-            let query = {};
-            
-            let status = null;
-            if (params.status || params.status==0) {
-                if (!([0, 1, 2, 3].includes(params.status))) throw new Error(constants.MESSAGES.invalid_status);
-                status = params.status;
-            }
-            else {
-                status = [1, 2, 3];
-            }
+        let query = {};
+        
+        let status = null;
+        if (params.status || params.status==0) {
+            if (!([0, 1, 2, 3].includes(params.status))) throw new Error(constants.MESSAGES.invalid_status);
+            status = params.status;
+        }
+        else {
+            status = [1, 2, 3];
+        }
 
-            let tomorrow = new Date(`${(new Date()).getFullYear()}-${(new Date()).getMonth() + 1}-${(new Date()).getDate() + 1}`);
-            query.where = {
-                delivery_datetime: {
-                    [Op.gte]:tomorrow,
+        query.where = {};
+        query.where = {
+            [Op.and]: [
+                {
+                    ...query.where,
                 },
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>', utility.getOnlyDate(new Date())),
+            
+            ]
+        }
+        if (params.searchKey) {
+            let searchKey = params.searchKey;
+            query.where = {
+                ...query.where,
+                [Op.or]: [
+                    { order_id: { [Op.iLike]: `%${searchKey}%` } },
+                    sequelize.where(sequelize.json('order_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` }),
+                    sequelize.where(sequelize.json('order_details.customer.name'), { [Op.iLike]: `%${searchKey}%` }),
+                    sequelize.where(sequelize.json('order_details.restaurant.restaurant_name'), { [Op.iLike]: `%${searchKey}%` }),
+                ]
             };
-            if (params.searchKey) {
-                let searchKey = params.searchKey;
+        }
+
+        if (status) {
+            if (status == 1) {
                 query.where = {
                     ...query.where,
-                    [Op.or]: [
-                        { order_id: { [Op.iLike]: `%${searchKey}%` } },
-                        sequelize.where(sequelize.json('order_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` }),
-                        sequelize.where(sequelize.json('order_details.customer.name'), { [Op.iLike]: `%${searchKey}%` }),
-                        sequelize.where(sequelize.json('order_details.restaurant.restaurant_name'), { [Op.iLike]: `%${searchKey}%` }),
-                    ]
+                    status,
+                    type: { [Op.not]: constants.ORDER_TYPE.pickup },
                 };
-            }
-
-            if (status) {
-                if (status == 1) {
-                    query.where = {
-                        ...query.where,
-                        status,
-                        type: { [Op.not]: constants.ORDER_TYPE.pickup },
-                    };
-                        
-                }
-                else {
-                    query.where = {
-                        ...query.where,
-                        status,
-                    };
-                }
-                 
+                    
             }
             else {
                 query.where = {
                     ...query.where,
-                    type: constants.ORDER_TYPE.pickup,
-                    status:1,
+                    status,
                 };
             }
+                
+        }
+        else {
+            query.where = {
+                ...query.where,
+                type: constants.ORDER_TYPE.pickup,
+                status:1,
+            };
+        }
 
-            query.order = [
-                ['id', 'DESC']
-            ];
-            query.limit = limit;
-            query.offset = offset;
-            query.raw = true;
+        query.order = [
+            ['id', 'DESC']
+        ];
+        query.limit = limit;
+        query.offset = offset;
+        query.raw = true;
 
-            let orderList = await models.Order.findAndCountAll(query);
-            
-            if (orderList.count === 0) throw new Error(constants.MESSAGES.no_order);
+        let orderList = await models.Order.findAndCountAll(query);
+        
+        if (orderList.count === 0) throw new Error(constants.MESSAGES.no_order);
 
-            return getOrderRow({orderList})
-            
+        return getOrderRow({orderList})
+        
         
     },
 
