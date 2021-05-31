@@ -7664,6 +7664,20 @@
             "enum":[0,1]
           },
           {
+            "name": "customer_location_latitude",
+            "in": "query",
+            "description": "enter latitude coordinate",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "customer_location_longitude",
+            "in": "query",
+            "description": "enter longitude coordinate",
+            "required": false,
+            "type": "number"
+          },
+          {
             "name": "start_date",
             "in": "query",
             "description": "enter start_date, YYYY-MM-DD",
@@ -7736,6 +7750,56 @@
             "description": "enter end_date, YYYY-MM-DD",
             "required": false,
             "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
+    "/driver/getDeliveryHistory": {
+      "get": {
+        "tags": [
+          "Driver Earning Management"
+        ],
+        "description": "Api to get delivery history",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "description": "enter start_date, YYYY-MM-DD",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "description": "enter end_date, YYYY-MM-DD",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "current page count to access",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "no of items per page",
+            "required": true,
+            "type": "number"
           }
         ],
         "responses": {}

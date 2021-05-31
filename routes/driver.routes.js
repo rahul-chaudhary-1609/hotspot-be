@@ -56,4 +56,5 @@ router.put('/confirmDelivery',driverAuthentication.validateDriverToken, parseStr
 router.get('/getEarningList', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningList), earningController.getEarningList);
 //router.get('/getEarningDetails', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningDetails), earningController.getEarningDetails);
 router.get('/getTotalEarnings', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getTotalEarnings), earningController.getTotalEarnings);
+router.get('/getDeliveryHistory', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getDeliveryHistory), earningController.getDeliveryHistory);
 module.exports = router;

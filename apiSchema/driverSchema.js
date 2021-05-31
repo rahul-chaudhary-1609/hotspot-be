@@ -166,6 +166,8 @@ module.exports = {
     
     getEarningList: Joi.object({
         type: Joi.number().min(0).max(1).required(),
+        customer_location_latitude:Joi.number().optional(),
+        customer_location_longitude:Joi.number().optional(),
         start_date: Joi.string().trim().optional(),
         end_date: Joi.string().trim().optional(),
         page: Joi.number().required(),
@@ -181,6 +183,13 @@ module.exports = {
         type: Joi.number().min(0).max(1).required(),
         start_date: Joi.string().trim().optional(),
         end_date: Joi.string().trim().optional()
+    }),
+
+    getDeliveryHistory: Joi.object({
+        start_date: Joi.string().trim().optional(),
+        end_date: Joi.string().trim().optional(),
+        page: Joi.number().required(),
+        page_size: Joi.number().required()
     }),
 
     getPickupCards:Joi.object({
