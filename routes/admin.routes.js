@@ -18,6 +18,7 @@ const notificationController = require('../controllers/admin/notification');
 const staticContentController = require('../controllers/admin/static_content');
 const bannerController = require('../controllers/admin/banner');
 const earningController = require('../controllers/admin/earning');
+const paymentController = require('../controllers/admin/payment');
 
 const adminAuthentication = require('../middlewares/jwt');
 const adminMulter = require('../middlewares/multer');
@@ -243,3 +244,7 @@ router.get('/getRestaurantEarnings',adminAuthentication.validateAdminToken,joiVa
 router.get('/getOrdersByRestaurantIdAndDateRange',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrdersByRestaurantIdAndDateRange), earningController.getOrdersByRestaurantIdAndDateRange);
 router.get('/getDriverEarnings',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getDriverEarnings), earningController.getDriverEarnings);
 router.get('/getOrdersByDriverIdAndDateRange',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrdersByDriverIdAndDateRange), earningController.getOrdersByDriverIdAndDateRange);
+
+//payment management
+router.get('/sendDriverPaymentEmail', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.sendDriverPaymentEmail), paymentController.sendDriverPaymentEmail);
+router.get('/sendRestaurantPaymentEmail', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.sendRestaurantPaymentEmail), paymentController.sendRestaurantPaymentEmail);

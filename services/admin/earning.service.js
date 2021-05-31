@@ -3,8 +3,6 @@ const {sequelize}=require('../../models');
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const constants = require("../../constants");
-const moment = require("moment");
-const order = require('../../controllers/customer/order');
 
 const getStartAndEndDate = (params) => {
     let startDate = utility.getMonday(new Date(params.now))
@@ -271,12 +269,16 @@ module.exports = {
                 ],
                 where: {
                     status: constants.ORDER_DELIVERY_STATUS.delivered,
-                    delivery_datetime: {
-                        [Op.and]: [
-                            { [Op.gte]: utility.getOnlyDate(date.startDate) },
-                            {[Op.lte]:utility.getOnlyDate(date.endDate)}
-                        ]
-                    }
+                    [Op.and]: [
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
+                    ]
+                    // delivery_datetime: {
+                    //     [Op.and]: [
+                    //         { [Op.gte]: utility.getOnlyDate(date.startDate) },
+                    //         {[Op.lte]:utility.getOnlyDate(date.endDate)}
+                    //     ]
+                    // }
                 },
                 group:['"restaurant_id"']
             })
@@ -532,12 +534,16 @@ module.exports = {
                     [sequelize.fn("sum", sequelize.col("tip_amount")), "tip_amount"],
                 ],
                 where: {
-                    delivery_datetime: {
-                        [Op.and]: [
-                            { [Op.gte]: utility.getOnlyDate(date.startDate) },
-                            {[Op.lte]:utility.getOnlyDate(date.endDate)}
-                        ]
-                    }
+                    [Op.and]: [
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
+                    ]
+                    // delivery_datetime: {
+                    //     [Op.and]: [
+                    //         { [Op.gte]: utility.getOnlyDate(date.startDate) },
+                    //         {[Op.lte]:utility.getOnlyDate(date.endDate)}
+                    //     ]
+                    // }
                 },
                 group:['"driver_id"']
             })

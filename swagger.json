@@ -73,7 +73,11 @@
 
       {
         "name": "Admin Earning Management",
-        "description": "admin schedule settings Api's"
+        "description": "admin payment settings Api's"
+      },
+      {
+        "name": "Admin Payment Management",
+        "description": "admin payment settings Api's"
       },
 
       {
@@ -3872,6 +3876,65 @@
 
 
 
+
+      "/admin/sendDriverPaymentEmail": {
+        "get": {
+          "tags": [
+            "Admin Payment Management"
+          ],
+          "description": "Api to send Driver Payment Email",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "payment_id",
+              "in": "query",
+              "description": "payment id",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+      },
+
+
+      "/admin/sendRestaurantPaymentEmail": {
+        "get": {
+          "tags": [
+            "Admin Payment Management"
+          ],
+          "description": "Api to send restaurant Payment Email",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "payment_id",
+              "in": "query",
+              "description": "payment id",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+      },
 
 
         "/admin/addNotification": {
