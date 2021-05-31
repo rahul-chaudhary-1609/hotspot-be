@@ -211,14 +211,14 @@ module.exports = {
 
     addDriverFee : Joi.object({
         order_range_from: Joi.number().required(),
-        order_range_to: Joi.number().optional(),        
+        order_range_to: Joi.number().allow(null, '').optional(),        
         fee: Joi.number().required(),        
     }),
 
     editDriverFee: Joi.object({
         fee_id:Joi.number().required(),
         order_range_from: Joi.number().optional(), 
-        order_range_to: Joi.number().optional(),        
+        order_range_to: Joi.number().allow(null, '').optional(),        
         fee: Joi.number().optional(),        
     }),
 
