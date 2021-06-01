@@ -15,6 +15,11 @@ module.exports = {
             })
 
             if (fee) throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
+
+            let maxFeeRange = await models.Fee.max('order_range_to');
+
+            if (maxFeeRange>=params.order_range_from) throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
+
         }
 
         if (params.order_range_to && (parseFloat(params.order_range_to) <= parseFloat(params.order_range_from))) {
@@ -39,6 +44,11 @@ module.exports = {
             })
 
             if (fee) throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
+            
+            let maxFeeRange = await models.Fee.max('order_range_to');
+
+            if (maxFeeRange>=params.order_range_from) throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
+
         }
 
         if (params.order_range_to && (parseFloat(params.order_range_to) <= parseFloat(params.order_range_from))) {
