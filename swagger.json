@@ -3877,12 +3877,12 @@
 
 
 
-      "/admin/sendDriverPaymentEmail": {
-        "get": {
+      "/admin/paymentDriver": {
+        "post": {
           "tags": [
             "Admin Payment Management"
           ],
-          "description": "Api to send Driver Payment Email",
+          "description": "Api to payment Driver",
           "consumes": [
             "application/x-www-form-urlencoded"
           ],
@@ -3896,10 +3896,18 @@
             },
             {
               "name": "payment_id",
-              "in": "query",
+              "in": "formData",
               "description": "payment id",
               "required": true,
               "type": "string"
+            },
+            {
+              "name": "payment_mode",
+              "in": "formData",
+              "description": "1=>Online/NEFT, 2=>Online/IMPS, 3=>Online/Other, 4=>Offline/Check, 5=>Offline/Cash, 6=>Offline/Other",
+              "required": true,
+              "type": "number",
+              "enum":[1,2,3,4,5,6]
             }
           ],
           "responses": {}
@@ -3907,12 +3915,12 @@
       },
 
 
-      "/admin/sendRestaurantPaymentEmail": {
-        "get": {
+      "/admin/paymentRestaurant": {
+        "post": {
           "tags": [
             "Admin Payment Management"
           ],
-          "description": "Api to send restaurant Payment Email",
+          "description": "Api to payment Restaurant",
           "consumes": [
             "application/x-www-form-urlencoded"
           ],
@@ -3926,10 +3934,18 @@
             },
             {
               "name": "payment_id",
-              "in": "query",
+              "in": "formData",
               "description": "payment id",
               "required": true,
               "type": "string"
+            },
+            {
+              "name": "payment_mode",
+              "in": "formData",
+              "description": "1=>Online/NEFT, 2=>Online/IMPS, 3=>Online/Other, 4=>Offline/Check, 5=>Offline/Cash, 6=>Offline/Other",
+              "required": true,
+              "type": "number",
+              "enum":[1,2,3,4,5,6]
             }
           ],
           "responses": {}
@@ -3978,7 +3994,7 @@
               {
                 "name": "type",
                 "in": "formData",
-                "description": "enter type, 1=> all users, 2=>drivers only, 3=> customers only, 4=> restaurant only",
+                "description": "enter type: 1=> all users, 2=>drivers only, 3=> customers only, 4=> restaurant only",
                 "required": true,
                 "type": "number",
                 "enum":[1,2,3,4]

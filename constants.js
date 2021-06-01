@@ -196,11 +196,20 @@ CUSTOM_JOI_MESSAGE : {
     rejected:2,
   },
 
-   FEE_TYPE : {
+  FEE_TYPE : {
     driver: 1,
     restaurant: 2,
     hotspot:3,
-}
+  },
+  
+  PAYMENT_MODE : {
+    "Online/NEFT": 1,
+    "Online/IMPS": 2,
+    "Online/Other": 3,
+    "Offline/Check": 4,
+    "Offline/Cash": 5,
+    "Offline/Other":6,
+  },
 
 }
 

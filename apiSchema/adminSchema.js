@@ -424,12 +424,14 @@ module.exports = {
         hotspot_location_id: Joi.number().required(),
     }),
 
-    sendDriverPaymentEmail: Joi.object({
+    paymentDriver: Joi.object({
         payment_id: Joi.string().trim().required(),
+        payment_mode:Joi.number().valid(1,2,3,4,5,6).required(),
     }),
 
-    sendRestaurantPaymentEmail: Joi.object({
+    paymentRestaurant: Joi.object({
         payment_id: Joi.string().trim().required(),
+        payment_mode:Joi.number().valid(1,2,3,4,5,6).required(),
     })
    
     

@@ -246,5 +246,5 @@ router.get('/getDriverEarnings',adminAuthentication.validateAdminToken,joiValida
 router.get('/getOrdersByDriverIdAndDateRange',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrdersByDriverIdAndDateRange), earningController.getOrdersByDriverIdAndDateRange);
 
 //payment management
-router.get('/sendDriverPaymentEmail', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.sendDriverPaymentEmail), paymentController.sendDriverPaymentEmail);
-router.get('/sendRestaurantPaymentEmail', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.sendRestaurantPaymentEmail), paymentController.sendRestaurantPaymentEmail);
+router.post('/paymentDriver', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.paymentDriver), paymentController.paymentDriver);
+router.post('/paymentRestaurant', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.paymentRestaurant), paymentController.paymentRestaurant);
