@@ -87,6 +87,8 @@ module.exports = {
     not_approved: 'Your account is not approved by admin',
     rejected_account: 'Your account is rejected by admin.',
     invalid_number_or_country_code: 'Invalid number or country code.',
+    only_one_to_order_value_can_be_null: `Only one 'to order' range value can be empty at a time`,
+    from_order_less_than_to_order: `From order should be less than to order`,
     hotspot_can_not_delete:"This hotspot can not be deleted until atleast one restaurant is associated with this hotspot",
   },
 

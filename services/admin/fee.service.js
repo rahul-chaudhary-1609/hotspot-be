@@ -6,6 +6,21 @@ const utility = require('../../utils/utilityFunctions');
 module.exports = {
     addDriverFee: async (params) => {
 
+        if (!params.order_range_to) {
+
+            let fee = await models.Fee.findOne({
+                where: {
+                    order_range_to:null,
+                }
+            })
+
+            if (fee) throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
+        }
+
+        if (params.order_range_to && (parseFloat(params.order_range_to) <= parseFloat(params.order_range_from))) {
+            throw new Error(constants.MESSAGES.from_order_less_than_to_order)
+        }
+
         let fee = await utility.convertPromiseToObject(await models.Fee.create(params));
 
         return { fee }
@@ -16,10 +31,24 @@ module.exports = {
 
         const fee = await models.Fee.findByPk(parseInt(params.fee_id));
 
+         if (!params.order_range_to) {
+            let fee = await models.Fee.findOne({
+                where: {
+                    order_range_to:null,
+                }
+            })
+
+            if (fee) throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
+        }
+
+        if (params.order_range_to && (parseFloat(params.order_range_to) <= parseFloat(params.order_range_from))) {
+            throw new Error(constants.MESSAGES.from_order_less_than_to_order)
+        }
+
         if (!fee) throw new Error(constants.MESSAGES.no_fee);
 
         fee.order_range_from = params.order_range_from || fee.order_range_from;
-        fee.order_range_to = params.order_range_to || fee.order_range_to;
+        fee.order_range_to = params.order_range_to || null
         fee.fee = params.fee || fee.fee;
 
         fee.save();
