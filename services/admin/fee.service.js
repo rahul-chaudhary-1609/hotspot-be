@@ -4,13 +4,14 @@ const constants = require("../../constants");
 const utility = require('../../utils/utilityFunctions');
 
 const validateFee = async (params) => {
-    if (!params.order_range_to) {
 
-        let fee = await models.Fee.findOne({
+    let fee = await models.Fee.findOne({
             where: {
                 order_range_to:null,
             }
-        })
+    })
+    
+    if (!params.order_range_to) {
 
         if (fee) throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
 
@@ -22,6 +23,10 @@ const validateFee = async (params) => {
 
     if (params.order_range_to && (parseFloat(params.order_range_to) <= parseFloat(params.order_range_from))) {
         throw new Error(constants.MESSAGES.from_order_less_than_to_order)
+    }
+
+    if ((parseFloat(fee.fee) <= parseFloat(params.order_range_from)) || (parseFloat(fee.fee) <= parseFloat(params.order_range_to))) {
+        throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
     }
 
     let isFeeConflict =await models.Fee.findOne({
