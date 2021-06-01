@@ -25,9 +25,12 @@ const validateFee = async (params) => {
         throw new Error(constants.MESSAGES.from_order_less_than_to_order)
     }
 
-    if ((parseFloat(fee.fee) <= parseFloat(params.order_range_from)) || (parseFloat(fee.fee) <= parseFloat(params.order_range_to))) {
-        throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
+    if (!params.fee_id || (params.fee_id && params.fee_id != fee.id)) {
+        if ((parseFloat(fee.order_range_from) <= parseFloat(params.order_range_from)) || (parseFloat(fee.order_range_from) <= parseFloat(params.order_range_to))) {
+            throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
+        }
     }
+    
 
     let isFeeConflict =await models.Fee.findOne({
         where: {
@@ -75,8 +78,9 @@ const validateFee = async (params) => {
         }
     })
 
-    if (isFeeExist) throw new Error(constants.MESSAGES.fee_already_exist)
-
+    if (!params.fee_id || (params.fee_id && params.fee_id != isFeeExist.id)) {
+        if (isFeeExist) throw new Error(constants.MESSAGES.fee_already_exist)
+    }
 }
 
 module.exports = {
