@@ -91,7 +91,8 @@ module.exports = {
     empty_to_order_value_should_be_the_highest_range: `if 'to order' is empty then it's 'from order' value should be the highest range value`,
     from_order_less_than_to_order: `From order should be less than to order`,
     from_order_or_to_order_should_not_conflict: `'From order' value or 'to order' value should not belongs to any existing range`,
-    hotspot_can_not_delete:"This hotspot can not be deleted until atleast one restaurant is associated with this hotspot",
+    hotspot_can_not_delete: "This hotspot can not be deleted until atleast one restaurant is associated with this hotspot",
+    fee_already_exist: `Driver fee already exist`,
   },
 
   code: {

@@ -6,63 +6,71 @@ const utility = require('../../utils/utilityFunctions');
 const validateFee = async (params) => {
     if (!params.order_range_to) {
 
-            let fee = await models.Fee.findOne({
-                where: {
-                    order_range_to:null,
-                }
-            })
-
-            if (fee) throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
-
-            let maxFeeRange = await models.Fee.max('order_range_to');
-
-            if (maxFeeRange>=params.order_range_from) throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
-
-        }
-
-        if (params.order_range_to && (parseFloat(params.order_range_to) <= parseFloat(params.order_range_from))) {
-            throw new Error(constants.MESSAGES.from_order_less_than_to_order)
-        }
-
-        let isFeeConflict =await models.Fee.findOne({
+        let fee = await models.Fee.findOne({
             where: {
-                [Op.or]: [
-                    {
-                        [Op.and]: [
-                            {
-                                order_range_from: {
-                                    [Op.lte]: params.order_range_from,
-                                },
-                            },
-                            {
-                                order_range_to: {
-                                    [Op.gte]: params.order_range_from,
-                                }
-                            }
-                          
-                        ]     
-                    },
-                    {
-                        [Op.and]: [
-                            {
-                                order_range_from: {
-                                    [Op.lte]: params.order_range_to,
-                                },
-                            },
-                            {
-                                order_range_to: {
-                                    [Op.gte]: params.order_range_to,
-                                }
-                            }
-                          
-                        ]     
-                    },
-                    
-                ] 
+                order_range_to:null,
             }
         })
 
-        if (isFeeConflict) throw new Error(constants.MESSAGES.from_order_or_to_order_should_not_conflict)
+        if (fee) throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
+
+        let maxFeeRange = await models.Fee.max('order_range_to');
+
+        if (maxFeeRange>=params.order_range_from) throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
+
+    }
+
+    if (params.order_range_to && (parseFloat(params.order_range_to) <= parseFloat(params.order_range_from))) {
+        throw new Error(constants.MESSAGES.from_order_less_than_to_order)
+    }
+
+    let isFeeConflict =await models.Fee.findOne({
+        where: {
+            [Op.or]: [
+                {
+                    [Op.and]: [
+                        {
+                            order_range_from: {
+                                [Op.lte]: params.order_range_from,
+                            },
+                        },
+                        {
+                            order_range_to: {
+                                [Op.gte]: params.order_range_from,
+                            }
+                        }
+                        
+                    ]     
+                },
+                {
+                    [Op.and]: [
+                        {
+                            order_range_from: {
+                                [Op.lte]: params.order_range_to,
+                            },
+                        },
+                        {
+                            order_range_to: {
+                                [Op.gte]: params.order_range_to,
+                            }
+                        }
+                        
+                    ]     
+                },
+                
+            ] 
+        }
+    })
+
+    if (isFeeConflict) throw new Error(constants.MESSAGES.from_order_or_to_order_should_not_conflict)
+    
+    let isFeeExist = await models.Fee.findOne({
+        where: {
+            fee:parseFloat(params.fee),
+        }
+    })
+
+    if (isFeeExist) throw new Error(constants.MESSAGES.fee_already_exist)
 
 }
 
