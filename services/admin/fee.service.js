@@ -73,7 +73,7 @@ const validateFee = async (params) => {
     })
 
     if (isFeeConflict) {
-        if (!params.fee_id || (params.fee_id && params.fee_id != isFeeExist.id)) throw new Error(constants.MESSAGES.from_order_or_to_order_should_not_conflict)
+        if (!params.fee_id || (params.fee_id && params.fee_id != isFeeConflict.id)) throw new Error(constants.MESSAGES.from_order_or_to_order_should_not_conflict)
     }
     
     let isFeeExist = await models.Fee.findOne({
