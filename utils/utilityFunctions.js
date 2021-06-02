@@ -218,3 +218,9 @@ module.exports.getMonday = (params) => {
 module.exports.getOnlyDate = (params) => {
     return params.toJSON().replace(/[:]|[.]|[Z]/g, '').slice(0,10)
 }
+
+module.exports.getDateInUSFormat = (params) => {
+    let now = new Date(params);
+    now = now.toJSON()
+    return `${now.slice(5,7)}-${now.slice(8,10)}-${now.slice(0,4)}`;
+}

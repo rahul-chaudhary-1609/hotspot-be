@@ -55,15 +55,19 @@ const sendDriverPaymentEmail= async (params) => {
         })
     )
 
+    let totalDriverFee = orderDeliveries.rows.reduce((result, orderDelivery) =>result+parseFloat(orderDelivery.driver_fee), 0);
+
     let driver = await utility.convertPromiseToObject(await models.Driver.findByPk(currentDriverPayment.driver_id));
 
     let headerHTML = `<div
         style="
             position: relative;
         ">
+        Hello, Transfer of payment has been submitted to your account. Payment may take up to 1-3 business
+    days to show in your account. Thank you!<br><br>
     `;
 
-    let bottomHTML = `</div><br><br><i style="margin-left: 20px;">Thank You</i>
+    let bottomHTML = `</div><br><br>
     <div
         style="
             position: absolute;
@@ -77,16 +81,23 @@ const sendDriverPaymentEmail= async (params) => {
                 "/>
     </div><br>`;
 
-    let bodyHTML = `Hi ${driver.first_name},<br><br>`;
-
-    bodyHTML += `<strong>Here is the details of this payment</strong><br>`
-
-    bodyHTML += `<table border='1', style="margin-top:10px;"><tr>
-        <th style="text-align:center;">SN</th>
+    let bodyHTML = `<div style="margin-top:10px;">
+        <table>
+            <tr><td><strong>Account Name</strong></td><td>:</td><td>${currentDriverPayment.payment_details.driver.DriverBankDetail.account_holder_name}</td></tr>
+            <tr><td><strong>Bank Name</strong></td><td>:</td><td>${currentDriverPayment.payment_details.driver.DriverBankDetail.bank_name}</td></tr>
+            <tr><td><strong>Account Number</strong></td><td>:</td><td>XXXX${currentDriverPayment.payment_details.driver.DriverBankDetail.account_number.slice(-4)}</td></tr>
+            <tr><td><strong>Payment Type</strong></td><td>:</td><td>Transfer</td></tr>
+            <tr><td><strong>Payment Dates</strong></td><td>:</td><td>${currentDriverPayment.from_date.slice(5,7)}/${currentDriverPayment.from_date.slice(8,10)} - ${currentDriverPayment.to_date.slice(5,7)}/${currentDriverPayment.to_date.slice(8,10)}</td></tr>
+        </table>
+    </div><br><br>`;
+    
+    bodyHTML +=`<p><strong>Total No. of Deliveries</strong>: ${orderDeliveries.count}</p>`
+        
+    bodyHTML += `<table cellspacing=20 style="margin-top:10px;"><tr>
+        <th style="text-align:center;">Delivery#</th>
         <th style="text-align:center;">Delivery ID</th>
         <th style="text-align:center;">Hotspot Name</th>
-        <th style="text-align:center;">Order Count</th>
-        <th style="text-align:center;">Delivery Datetime</th>
+        <th style="text-align:center;">Date</th>
         <th style="text-align:center;">Driver Fee</th>
     </tr>`
 
@@ -96,37 +107,20 @@ const sendDriverPaymentEmail= async (params) => {
             <td style="text-align:center;">${snCounter++}</td>
             <td style="text-align:center;">${orderDelivery.delivery_id}</td>
             <td style="text-align:center;">${orderDelivery.hotspot_name}</td>
-            <td style="text-align:center;">${orderDelivery.order_count}</td>
-            <td style="text-align:center;">${orderDelivery.delivery_datetime}</td>
+            <td style="text-align:center;">${utility.getDateInUSFormat(orderDelivery.delivery_datetime)}</td>
             <td style="text-align:center;">${orderDelivery.driver_fee}</td>
         </tr>`
     }
 
-    let totalDriverFee = orderDeliveries.rows.reduce((result, orderDelivery) =>result+parseFloat(orderDelivery.driver_fee), 0);
-
     bodyHTML += `<tr>
-        <td style="text-align:center;" colspan="5"><strong>Total</strong></td>
-        <td style="text-align:center;"><strong>${parseFloat(totalDriverFee)}</strong></td>
+        <td style="text-align:center;" colspan="4"><strong></strong></td>
+        <td style="text-align:center;border-top:5px double black;"><strong>${Math.round(parseFloat(totalDriverFee)*100)/100}</strong></td>
     </tr></table>`
-    bodyHTML += `<div style="margin-top:10px;">
-    <table>
-        <tr><td><strong>Total No. of Deliveries</strong></td><td>:</td><td>${orderDeliveries.count}</td></tr>
-        <tr><td><strong>Total amount paid</strong></td><td>:</td><td>${totalDriverFee}</td></tr>
-        <tr><td style="vertical-align:top;"><strong>Payment Details</strong></td><td  style="vertical-align:top;">:</td><td>
-            <table>
-                <tr><td><strong>Bank Name</strong></td><td>:</td><td>${currentDriverPayment.payment_details.driver.DriverBankDetail.bank_name}</td></tr>
-                <tr><td><strong>Account Number</strong></td><td>:</td><td>${currentDriverPayment.payment_details.driver.DriverBankDetail.account_number}</td></tr>
-                <tr><td><strong>Account Hotder Name</strong></td><td>:</td><td>${currentDriverPayment.payment_details.driver.DriverBankDetail.account_holder_name}</td></tr>
-                <tr><td><strong>Mode</strong></td><td>:</td><td>${paymentModes[params.payment_mode]}</td></tr>
-            </table>
-    </td></tr>
-    </table>
-    </div><br>`;
 
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: driver.email,
-        subject: `Hotspot Driver Payment: from ${currentDriverPayment.from_date} to ${currentDriverPayment.to_date} `,
+        subject: `HOTSPOT PAYMENT ${currentDriverPayment.from_date.slice(5,7)}/${currentDriverPayment.from_date.slice(8,10)} - ${currentDriverPayment.to_date.slice(5,7)}/${currentDriverPayment.to_date.slice(8,10)}`,
         html: headerHTML + bodyHTML + bottomHTML,
     };
 
@@ -164,6 +158,9 @@ const sendRestaurantPaymentEmail= async (params) => {
             }
         })
     )
+    
+    
+    let totalRestaurantFee = orders.rows.reduce((result, order) =>result+parseFloat(order.restaurant_fee), 0);
 
     let restaurant = await utility.convertPromiseToObject(await models.Restaurant.findByPk(currentRestaurantPayment.restaurant_id));
 
@@ -171,9 +168,11 @@ const sendRestaurantPaymentEmail= async (params) => {
         style="
             position: relative;
         ">
+        Hello, Transfer of payment has been submitted to your account. Payment may take up to 1-3 business
+    days to show in your account. Thank you!<br><br>
     `;
 
-    let bottomHTML = `</div><br><br><i style="margin-left: 20px;">Thank You</i>
+    let bottomHTML = `</div><br><br>
     <div
         style="
             position: absolute;
@@ -187,17 +186,23 @@ const sendRestaurantPaymentEmail= async (params) => {
                 "/>
     </div><br>`;
 
-    let bodyHTML = `Hi ${restaurant.owner_name},<br><br>`;
-
-    bodyHTML += `<strong>Here is the details of this payment</strong><br>`
-
-    bodyHTML += `<table border='1', style="margin-top:10px;"><tr>
-        <th style="text-align:center;">SN</th>
+    let bodyHTML = `<p>${restaurant.restaurant_name}</p>`;
+        
+    bodyHTML += `<div style="margin-top:10px;">
+        <table>
+            <tr><td><strong>Bank Name</strong></td><td>:</td><td>Bank of America</td></tr>
+            <tr><td><strong>Account Number</strong></td><td>:</td><td>XXXX7803</td></tr>
+            <tr><td><strong>Payment Type</strong></td><td>:</td><td>Transfer</td></tr>
+            <tr><td><strong>Payment Dates</strong></td><td>:</td><td>${currentRestaurantPayment.from_date.slice(5,7)}/${currentRestaurantPayment.from_date.slice(8,10)} - ${currentRestaurantPayment.to_date.slice(5,7)}/${currentRestaurantPayment.to_date.slice(8,10)}</td></tr>
+        </table>
+    </div><br><br>`;
+    
+    bodyHTML += `<table cellspacing=20 style="margin-top:10px;"><tr>
+        <th style="text-align:center;">Order#</th>
         <th style="text-align:center;">Order ID</th>
-        <th style="text-align:center;">Hotspot Name</th>
         <th style="text-align:center;">Customer Name</th>
         <th style="text-align:center;">Order Type</th>
-        <th style="text-align:center;">Delivery/Pickup Datetime</th>        
+        <th style="text-align:center;">Date</th>        
         <th style="text-align:center;">Restaurant Fee</th>
     </tr>`
 
@@ -206,40 +211,24 @@ const sendRestaurantPaymentEmail= async (params) => {
         bodyHTML += `<tr>
             <td style="text-align:center;">${snCounter++}</td>
             <td style="text-align:center;">${order.order_id}</td>
-            <td style="text-align:center;">${order.hotspot_name}</td>
             <td style="text-align:center;">${order.customer_name}</td>
             <td style="text-align:center;">${order.type==1?'Delivery':'Pickup'}</td>
-            <td style="text-align:center;">${order.delivery_datetime}</td>
+            <td style="text-align:center;">${utility.getDateInUSFormat(order.delivery_datetime)}</td>
             <td style="text-align:center;">${order.restaurant_fee}</td>
         </tr>`
     }
 
-    let totalRestaurantFee = orders.rows.reduce((result, order) =>result+parseFloat(order.restaurant_fee), 0);
 
     bodyHTML += `<tr>
-        <td style="text-align:center;" colspan="6"><strong>Total</strong></td>
-        <td style="text-align:center;"><strong>${parseFloat(totalRestaurantFee)}</strong></td>
+        <td style="text-align:center;" colspan="5"><strong></strong></td>
+        <td style="text-align:center;border-top:5px double black;"><strong>${Math.round(parseFloat(totalRestaurantFee)*100)/100}</strong></td>
     </tr></table>`
 
-    bodyHTML += `<div style="margin-top:10px;">
-    <table>
-        <tr><td><strong>Total No. of Orders</strong></td><td>:</td><td>${orders.count}</td></tr>
-        <tr><td><strong>Total amount paid</strong></td><td>:</td><td>${totalRestaurantFee}</td></tr>
-        <tr><td style="vertical-align:top;"><strong>Payment Details</strong></td><td  style="vertical-align:top;">:</td><td>
-            <table>
-                <tr><td><strong>Bank Name</strong></td><td>:</td><td>Bank of America</td></tr>
-                <tr><td><strong>Account Number</strong></td><td>:</td><td>120000586347803</td></tr>
-                <tr><td><strong>Account Hotder Name</strong></td><td>:</td><td>${restaurant.owner_name}</td></tr>
-                <tr><td><strong>Mode</strong></td><td>:</td><td>${paymentModes[params.payment_mode]}</td></tr>
-            </table>
-    </td></tr>
-    </table>
-    </div><br>`;
 
-        let mailOptions = {
+    let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: restaurant.owner_email,
-        subject: `Hotspot Restaurant Payment: from ${currentRestaurantPayment.from_date} to ${currentRestaurantPayment.to_date} `,
+        subject: `HOTSPOT PAYMENT ${currentRestaurantPayment.from_date.slice(5,7)}/${currentRestaurantPayment.from_date.slice(8,10)} - ${currentRestaurantPayment.to_date.slice(5,7)}/${currentRestaurantPayment.to_date.slice(8,10)}`,
         html: headerHTML+bodyHTML+bottomHTML,
     };        
     

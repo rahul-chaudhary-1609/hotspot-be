@@ -352,7 +352,7 @@ module.exports = {
 
                 if (restaurant_id) {
                     restaurant = await utilityFunction.convertPromiseToObject(await models.Restaurant.findOne({
-                        attributes: ['id', 'restaurant_name','location','address','restaurant_image_url','working_hours_from','working_hours_to'],
+                        attributes: ['id', 'restaurant_name','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
                             where: {
                                 id: restaurant_id
                             }
@@ -365,7 +365,10 @@ module.exports = {
                 let order_details = {
                     customer,
                     hotspot,
-                    restaurant,
+                    restaurant: {
+                        ...restaurant,
+                        fee:Math.round((((amount - tip_amount) * parseFloat(restaurant.percentage_fee)) / 100)*100)/100,
+                    },
                     driver:null,
                     ordered_items
                 }
@@ -496,7 +499,7 @@ module.exports = {
                     hotspot,
                     restaurant: {
                         ...restaurant,
-                        fee:((amount - tip_amount) * parseFloat(restaurant.percentage_fee)) / 100,
+                        fee:Math.round((((amount - tip_amount) * parseFloat(restaurant.percentage_fee)) / 100)*100)/100,
                     },
                     driver: null,
                     ordered_items
