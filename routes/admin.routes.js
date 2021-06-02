@@ -218,14 +218,15 @@ router.get('/getStaticContents',adminAuthentication.validateAdminToken, staticCo
 router.get('/getStaticContentDetails',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getStaticContentDetails), staticContentController.getStaticContentDetails);
 router.post('/updateStaticContent',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.updateStaticContent), staticContentController.updateStaticContent);
 
-router.get('/getFaqs',adminAuthentication.validateAdminToken, staticContentController.getFaqs);
-router.get('/getFaqQuestions',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getFaqQuestions), staticContentController.getFaqQuestions);
 router.post('/addFaq',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addFaq), staticContentController.addFaq);
-router.post('/deleteFaq',adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.deleteFaq),staticContentController.deleteFaq)
-router.put('/editFaq/:topic_id',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editFaq), staticContentController.editFaq)
-router.get('/getFaq/:id',adminAuthentication.validateAdminToken, staticContentController.getFaq);
-router.get('/getFaqTopics',adminAuthentication.validateAdminToken, staticContentController.getFaqTopics);
-
+router.get('/getFaqTopics', adminAuthentication.validateAdminToken, staticContentController.getFaqTopics);
+router.get('/getFaqTopicById/:topic_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getFaqTopicById), staticContentController.getFaqTopicById);
+router.put('/editFaqTopic', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.editFaqTopic), staticContentController.editFaqTopic);
+router.delete('/deleteFaqTopic/:topic_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.deleteFaqTopic), staticContentController.deleteFaqTopic);
+router.get('/getFaqQuestions', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getFaqQuestions), staticContentController.getFaqQuestions);
+router.get('/getFaqQuestionById/:id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getFaqQuestionById), staticContentController.getFaqQuestionById);
+router.put('/editFaqQuestion', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.editFaqQuestion), staticContentController.editFaqQuestion);
+router.delete('/deleteFaqQuestion/:id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.deleteFaqQuestion), staticContentController.deleteFaqQuestion);
 
 // Banner api's
 router.get('/listBanners',adminAuthentication.validateAdminToken, bannerController.listBanners);

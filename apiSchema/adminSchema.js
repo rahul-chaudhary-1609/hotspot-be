@@ -323,7 +323,7 @@ module.exports = {
     updateStaticContent: Joi.object({
         id: Joi.string().required(),
         page_url: Joi.string().optional(),
-        video_url: Joi.number().optional()
+        video_url: Joi.string().optional()
     }),
 
     addFaq: Joi.object({
@@ -333,21 +333,39 @@ module.exports = {
         answer: Joi.string().required()
     }),
 
+    getFaqTopicById: Joi.object({
+        topic_id: Joi.number().required(),
+    }),
+
+    editFaqTopic: Joi.object({
+        topic_id: Joi.number().required(),
+        topic_name: Joi.string().required(),
+    }),
+
+    deleteFaqTopic: Joi.object({
+        topic_id: Joi.number().required(),
+    }),
+
     getFaqQuestions: Joi.object({
         id: Joi.string().required() ,
         page: Joi.number().optional(),        
         page_size: Joi.number().optional()     
     }),
-    deleteFaq: Joi.object().keys({
-        //faq_ids: Joi.array().items(Joi.string()).unique()
-        topic_id: Joi.number().required()
-      }),
 
-      editFaq: Joi.object().keys({
-        topic: Joi.string().optional() ,
-        question: Joi.string().optional() ,
-        answer: Joi.string().optional() 
-      }),
+    getFaqQuestionById: Joi.object({
+        id: Joi.string().required() ,   
+    }),
+
+    editFaqQuestion: Joi.object({
+        id: Joi.string().required(),
+        topic_id: Joi.number().required(),
+        question: Joi.string().required(),
+        answer: Joi.string().required()
+    }),
+
+    deleteFaqQuestion: Joi.object({
+        id: Joi.string().required() ,   
+    }),
 
       addBanner: Joi.object({
         name: Joi.string().required(),

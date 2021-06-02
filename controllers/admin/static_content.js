@@ -23,15 +23,6 @@ module.exports = {
         }
     },
 
-    getFaqTopics: async (req, res) => {
-        try {
-            const getFaqTopicsData = await staticContent.getFaqTopics();
-            utilityFunction.successResponse(res, {getFaqTopicsData}, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
-
     getStaticContentDetails: async (req, res) => {
         try {
             const responseFromService = await staticContent.getStaticContentDetails(req.query);
@@ -49,10 +40,48 @@ module.exports = {
         }
     },
 
-    getFaqs: async (req, res) => {
+    addFaq: async (req, res) => {
         try {
-            const getfaqData = await staticContent.getFaqs();
-            utilityFunction.successResponse(res, {getfaqData}, constants.MESSAGES.success);
+            const responseFromService = await staticContent.addFaq(req.body,req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getFaqTopics: async (req, res) => {
+        try {
+            const responseFromService = await staticContent.getFaqTopics();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getFaqTopicById: async (req, res) => {
+        try {
+            const responseFromService = await staticContent.getFaqTopicById(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+
+    editFaqTopic: async (req, res) => {
+        try {
+            const responseFromService = await staticContent.editFaqTopic(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+
+    deleteFaqTopic: async (req, res) => {
+        try {
+            const responseFromService = await staticContent.deleteFaqTopic(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
@@ -60,52 +89,39 @@ module.exports = {
 
     getFaqQuestions: async (req, res) => {
         try {
-            const faqQuestions = await staticContent.getFaqQuestions(req.query);
-            utilityFunction.successResponse(res, {faqQuestions}, constants.MESSAGES.success);
+            const responseFromService = await staticContent.getFaqQuestions(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
-    addFaq: async (req, res) => {
+    getFaqQuestionById: async (req, res) => {
         try {
-            const responseFromService = await staticContent.addFaq(req.body, req.user);
-            utilityFunction.successResponse(res, responseFromService.dataValues, constants.MESSAGES.success);
+            const responseFromService = await staticContent.getFaqQuestionById(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
-    async deleteFaq (req, res) {
-        try {
-          console.log(typeof(req.user.id))
-          const faqData = await staticContent.deleteFaq(req.body, req.user);
-          console.log("data is",faqData)
-          
-          utilityFunction.successResponse(res, faqData, constants.MESSAGES.success)
-        } catch (error) {
-          console.log(error)
-          utilityFunction.errorResponse(res, error, constants.code.error_code)
-        }
-      },
-      async getFaq (req, res) {
-        try {
-          const faqData = await staticContent.getFaq(req.user,req.params);
-          console.log(faqData)
-          utilityFunction.successResponse(res, faqData.dataValues, constants.MESSAGES.success)
-        } catch (error) {
-          console.log(error)
-          utilityFunction.errorResponse(res, error, constants.code.error_code)
-        }
-      },
 
-      async editFaq (req, res) {
+
+    editFaqQuestion: async (req, res) => {
         try {
-          const faqData = await staticContent.editFaq({ ...req.params,...req.body },req.user);
-          console.log(faqData)
-          utilityFunction.successResponse(res, faqData, constants.MESSAGES.success)
+            const responseFromService = await staticContent.editFaqQuestion(req.body,req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
-          console.log(error)
-          utilityFunction.errorResponse(res, error, constants.code.error_code)
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
-      }
+    },
+
+
+    deleteFaqQuestion: async (req, res) => {
+        try {
+            const responseFromService = await staticContent.deleteFaqQuestion(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 }
