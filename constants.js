@@ -96,6 +96,8 @@ module.exports = {
     from_order_or_to_order_should_not_conflict: `'From order' value or 'to order' value should not belongs to any existing range`,
     hotspot_can_not_delete: "This hotspot can not be deleted until atleast one restaurant is associated with this hotspot",
     fee_already_exist: `Driver fee already exist`,
+    driver_fee_first_range_should_start_from_zero: `First range should start from zero`,
+    driver_fee_atleast_one_range_should_start_from_zero:`Atleast one range should be there which start from zero`,
   },
 
   code: {

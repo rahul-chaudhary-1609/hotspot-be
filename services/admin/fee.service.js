@@ -5,6 +5,14 @@ const utility = require('../../utils/utilityFunctions');
 
 const validateFee = async (params) => {
 
+    let feeCount = await models.Fee.count();
+    if (!params.fee_id && feeCount == 0) {
+        if (params.order_range_from != 0) throw new Error(constants.MESSAGES.driver_fee_first_range_should_start_from_zero);
+    }
+    else if (params.fee_id && feeCount == 1) {
+        if (params.order_range_from != 0) throw new Error(constants.MESSAGES.driver_fee_atleast_one_range_should_start_from_zero);
+    }
+
     let fee = await models.Fee.findOne({
             where: {
                 order_range_to:null,
@@ -15,9 +23,16 @@ const validateFee = async (params) => {
 
         if (fee) throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
 
-        let maxFeeRange = await models.Fee.max('order_range_to');
+        let maxFeeRange = await utility.convertPromiseToObject(await models.Fee.findOne({
+                order:[['order_range_to','DESC']]
+            })
+        )
 
-        if (maxFeeRange>=params.order_range_from) throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
+        if (maxFeeRange.order_range_to >= params.order_range_from) {
+            if (!params.fee_id || (params.fee_id && params.fee_id != maxFeeRange.id)) {
+                throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
+            }
+        }
 
     }
 
@@ -144,6 +159,12 @@ module.exports = {
 
     deleteDriverFee: async (params) => {
         const fee = await models.Fee.findByPk(parseInt(params.fee_id));
+
+        
+        if (fee.order_range_from == 0) {
+            let feeCount = await models.Fee.count();        
+            if (feeCount > 1) throw new Error(constants.MESSAGES.driver_fee_atleast_one_range_should_start_from_zero);
+        }
 
         if (!fee) throw new Error(constants.MESSAGES.no_fee);
 
