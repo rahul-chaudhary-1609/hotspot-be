@@ -21,7 +21,11 @@ const validateFee = async (params) => {
     
     if (!params.order_range_to) {
 
-        if (fee) throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
+        if (fee) {
+            if (!params.fee_id || (params.fee_id && params.fee_id != fee.id)) {
+                throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
+            }
+        }
 
         let maxFeeRange = await utility.convertPromiseToObject(await models.Fee.findOne({
                 order:[['order_range_to','DESC']]
