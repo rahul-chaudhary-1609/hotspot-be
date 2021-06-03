@@ -9,8 +9,8 @@ const validateFee = async (params) => {
     if (!params.fee_id && feeCount == 0) {
         if (params.order_range_from != 0) throw new Error(constants.MESSAGES.driver_fee_first_range_should_start_from_zero);
     }
-    else if (params.fee_id && feeCount == 1) {
-        if (params.order_range_from != 0) throw new Error(constants.MESSAGES.driver_fee_atleast_one_range_should_start_from_zero);
+    else if (params.fee_id) {
+        if (params.order_range_from != 0 && params.currentfee.order_range_from==0) throw new Error(constants.MESSAGES.driver_fee_atleast_one_range_should_start_from_zero);
     }
 
     let fee = await models.Fee.findOne({
@@ -119,6 +119,7 @@ module.exports = {
 
         if (!fee) throw new Error(constants.MESSAGES.no_fee);
 
+        params.currentfee = await utility.convertPromiseToObject(fee);
         await validateFee(params);
 
         fee.order_range_from = params.order_range_from || fee.order_range_from;
