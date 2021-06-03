@@ -347,24 +347,24 @@ module.exports = {
     }),
 
     getFaqQuestions: Joi.object({
-        id: Joi.string().required() ,
+        id: Joi.number().required() ,
         page: Joi.number().optional(),        
         page_size: Joi.number().optional()     
     }),
 
     getFaqQuestionById: Joi.object({
-        id: Joi.string().required() ,   
+        id: Joi.number().required() ,   
     }),
 
     editFaqQuestion: Joi.object({
-        id: Joi.string().required(),
+        id: Joi.number().required(),
         topic_id: Joi.number().required(),
         question: Joi.string().required(),
         answer: Joi.string().required()
     }),
 
     deleteFaqQuestion: Joi.object({
-        id: Joi.string().required() ,   
+        id: Joi.number().required() ,   
     }),
 
       addBanner: Joi.object({
