@@ -161,13 +161,12 @@ module.exports = {
     deleteDriverFee: async (params) => {
         const fee = await models.Fee.findByPk(parseInt(params.fee_id));
 
+        if (!fee) throw new Error(constants.MESSAGES.no_fee);
         
         if (fee.order_range_from == 0) {
             let feeCount = await models.Fee.count();        
             if (feeCount > 1) throw new Error(constants.MESSAGES.driver_fee_atleast_one_range_should_start_from_zero);
-        }
-
-        if (!fee) throw new Error(constants.MESSAGES.no_fee);
+        }       
 
         fee.destroy();
 
