@@ -8,88 +8,88 @@ const geolib = require('geolib');
 
 const getRestaurantCard =  async (args) => {
         
-        const restaurants = [];
-        for (const restaurant of args.restaurants) {
-            let is_favorite = false;
+    const restaurants = [];
+    for (const restaurant of args.restaurants) {
+        let is_favorite = false;
 
-            const favRestaurant = await models.FavRestaurant.findOne({
+        const favRestaurant = await models.FavRestaurant.findOne({
+            where: {
+                restaurant_id: restaurant.id,
+                customer_id:args.user.id,
+            }
+        });
+
+        let next_delivery_time = null;
+        let getCutOffTime = null;
+
+        if (args.params.hotspot_location_id) {
+
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
-                    restaurant_id: restaurant.id,
-                    customer_id:args.user.id,
+                    id: args.params.hotspot_location_id,
                 }
             });
 
-            let next_delivery_time = null;
-            let getCutOffTime = null;
+            const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                return args.params.delivery_shift === time;
+            });
 
-            if (args.params.hotspot_location_id) {
+            console.log(hotspotLocation);
 
-                const hotspotLocation = await models.HotspotLocation.findOne({
-                    where: {
-                        id: args.params.hotspot_location_id,
-                    }
-                });
-
-                const nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                    return args.params.delivery_shift === time;
-                });
-
-                console.log(hotspotLocation);
-
-                next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
+            next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
 
 
 
-                getCutOffTime = (time) => {
-                    let ndtHours = parseInt(time.split(':')[0]);
-                    let ndtMinutes = parseInt(time.split(':')[1]);
+            getCutOffTime = (time) => {
+                let ndtHours = parseInt(time.split(':')[0]);
+                let ndtMinutes = parseInt(time.split(':')[1]);
 
-                    let cotHours = Math.floor((restaurant.cut_off_time) / 60);
-                    let cotMinutes = (restaurant.cut_off_time) % 60;
+                let cotHours = Math.floor((restaurant.cut_off_time) / 60);
+                let cotMinutes = (restaurant.cut_off_time) % 60;
 
-                    let displayHours = Math.abs(ndtHours - cotHours);
-                    let displayMinutes = Math.abs(ndtMinutes - cotMinutes);
+                let displayHours = Math.abs(ndtHours - cotHours);
+                let displayMinutes = Math.abs(ndtMinutes - cotMinutes);
 
-                    if ((ndtMinutes - cotMinutes) < 0) {
-                        --displayHours;
-                        displayMinutes = 60 + (ndtMinutes - cotMinutes)
-                    }
-
-                    if (displayMinutes < 10 && displayHours < 10) return `0${displayHours}:0${displayMinutes}:00`
-                    else if (displayMinutes < 10) return `${displayHours}:0${displayMinutes}:00`
-                    else if (displayHours < 10) return `0${displayHours}:${displayMinutes}:00`
-                    else return `${displayHours}:${displayMinutes}:00`
+                if ((ndtMinutes - cotMinutes) < 0) {
+                    --displayHours;
+                    displayMinutes = 60 + (ndtMinutes - cotMinutes)
                 }
-            }
 
-            if (favRestaurant) is_favorite = true;
-            
-            let distanceCalculationParams = {
-                sourceCoordinates: {
-                    latitude: geolib.toDecimal(args.params.customer_location[0]),
-                    longitude: geolib.toDecimal(args.params.customer_location[1])
-                },
-                destinationCoordinates: {
-                    latitude: restaurant.location[0],
-                    longitude: restaurant.location[1]
-                },
-                accuracy:1,
+                if (displayMinutes < 10 && displayHours < 10) return `0${displayHours}:0${displayMinutes}:00`
+                else if (displayMinutes < 10) return `${displayHours}:0${displayMinutes}:00`
+                else if (displayHours < 10) return `0${displayHours}:${displayMinutes}:00`
+                else return `${displayHours}:${displayMinutes}:00`
             }
-            
+        }
 
-            restaurants.push({
-                restaurant_id: restaurant.id,
-                restaurant_name: restaurant.restaurant_name,
-                restaurant_image_url: restaurant.restaurant_image_url,
-                restaurant_category_ids: restaurant.restaurant_category_ids,
-                next_delivery_time:next_delivery_time?next_delivery_time:null,
-                cut_off_time: next_delivery_time?getCutOffTime(next_delivery_time):null,
-                is_favorite,
-                distance: utility.getDistanceBetweenTwoGeoLocations(distanceCalculationParams, 'miles'),
-                location:restaurant.location,
-                workingHourFrom:restaurant.working_hours_from,
-                workingHourTo:restaurant.working_hours_to,
-            })
+        if (favRestaurant) is_favorite = true;
+        
+        let distanceCalculationParams = {
+            sourceCoordinates: {
+                latitude: geolib.toDecimal(args.params.customer_location[0]),
+                longitude: geolib.toDecimal(args.params.customer_location[1])
+            },
+            destinationCoordinates: {
+                latitude: restaurant.location[0],
+                longitude: restaurant.location[1]
+            },
+            accuracy:1,
+        }
+        
+
+        restaurants.push({
+            restaurant_id: restaurant.id,
+            restaurant_name: restaurant.restaurant_name,
+            restaurant_image_url: restaurant.restaurant_image_url,
+            restaurant_category_ids: restaurant.restaurant_category_ids,
+            next_delivery_time:next_delivery_time?next_delivery_time:null,
+            cut_off_time: next_delivery_time?getCutOffTime(next_delivery_time):null,
+            is_favorite,
+            distance: utility.getDistanceBetweenTwoGeoLocations(distanceCalculationParams, 'miles'),
+            location:restaurant.location,
+            workingHourFrom:restaurant.working_hours_from,
+            workingHourTo:restaurant.working_hours_to,
+        })
     }
     
     restaurants.sort((a, b) => a.distance - b.distance);
@@ -388,6 +388,11 @@ module.exports = {
 
     getHotspotRestaurantDelivery: async (params, user) => {
 
+        let customer = await models.Customer.findByPk(parseInt(user.id));
+
+        customer.location = [geolib.toDecimal(params.customer_location[0]), geolib.toDecimal(params.customer_location[1])]
+        
+        customer.save();
 
         let whereCondiition = {
             id: [],
@@ -582,6 +587,12 @@ module.exports = {
     },
 
     getHotspotRestaurantPickup: async (params, user) => {
+
+        let customer = await models.Customer.findByPk(parseInt(user.id));
+
+        customer.location = [geolib.toDecimal(params.customer_location[0]), geolib.toDecimal(params.customer_location[1])]
+        
+        customer.save();
 
         let whereCondiition = {
             status: constants.STATUS.active,
