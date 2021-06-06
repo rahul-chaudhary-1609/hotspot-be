@@ -7,10 +7,10 @@ const validateFee = async (params) => {
 
     let feeCount = await models.Fee.count();
     if (!params.fee_id && feeCount == 0) {
-        if (params.order_range_from != 0) throw new Error(constants.MESSAGES.driver_fee_first_range_should_start_from_zero);
+        if (params.order_range_from != 0) throw new Error(constants.MESSAGES.driver_fee_error_6);
     }
     else if (params.fee_id) {
-        if (params.order_range_from != 0 && params.currentfee.order_range_from==0) throw new Error(constants.MESSAGES.driver_fee_atleast_one_range_should_start_from_zero);
+        if (params.order_range_from != 0 && params.currentfee.order_range_from==0) throw new Error(constants.MESSAGES.driver_fee_error_7);
     }
 
     let fee = await models.Fee.findOne({
@@ -23,7 +23,7 @@ const validateFee = async (params) => {
 
         if (fee) {
             if (!params.fee_id || (params.fee_id && params.fee_id != fee.id)) {
-                throw new Error(constants.MESSAGES.only_one_to_order_value_can_be_null)
+                throw new Error(constants.MESSAGES.driver_fee_error_1)
             }
         }
 
@@ -34,20 +34,20 @@ const validateFee = async (params) => {
 
         if (maxFeeRange.order_range_to >= params.order_range_from) {
             if (!params.fee_id || (params.fee_id && params.fee_id != maxFeeRange.id)) {
-                throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
+                throw new Error(constants.MESSAGES.driver_fee_error_2)
             }
         }
 
     }
 
     if (params.order_range_to && (parseFloat(params.order_range_to) <= parseFloat(params.order_range_from))) {
-        throw new Error(constants.MESSAGES.from_order_less_than_to_order)
+        throw new Error(constants.MESSAGES.driver_fee_error_3)
     }
 
     if (fee) {
         if (!params.fee_id || (params.fee_id && params.fee_id != fee.id)) {
             if ((parseFloat(fee.order_range_from) <= parseFloat(params.order_range_from)) || (parseFloat(fee.order_range_from) <= parseFloat(params.order_range_to))) {
-                throw new Error(constants.MESSAGES.empty_to_order_value_should_be_the_highest_range)
+                throw new Error(constants.MESSAGES.driver_fee_error_2)
             }
         }
     }
@@ -92,7 +92,7 @@ const validateFee = async (params) => {
     })
 
     if (isFeeConflict) {
-        if (!params.fee_id || (params.fee_id && params.fee_id != isFeeConflict.id)) throw new Error(constants.MESSAGES.from_order_or_to_order_should_not_conflict)
+        if (!params.fee_id || (params.fee_id && params.fee_id != isFeeConflict.id)) throw new Error(constants.MESSAGES.driver_fee_error_4)
     }
     
     let isFeeExist = await models.Fee.findOne({
@@ -102,7 +102,7 @@ const validateFee = async (params) => {
     })
 
     if (isFeeExist) {
-        if (!params.fee_id || (params.fee_id && params.fee_id != isFeeExist.id)) throw new Error(constants.MESSAGES.fee_already_exist)
+        if (!params.fee_id || (params.fee_id && params.fee_id != isFeeExist.id)) throw new Error(constants.MESSAGES.driver_fee_error_5)
     }
 }
 
@@ -169,7 +169,7 @@ module.exports = {
         
         if (fee.order_range_from == 0) {
             let feeCount = await models.Fee.count();        
-            if (feeCount > 1) throw new Error(constants.MESSAGES.driver_fee_atleast_one_range_should_start_from_zero);
+            if (feeCount > 1) throw new Error(constants.MESSAGES.driver_fee_error_7);
         }       
 
         fee.destroy();
