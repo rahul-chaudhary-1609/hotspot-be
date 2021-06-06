@@ -2,7 +2,6 @@ const models = require('../../models');
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const constants = require('../../constants');
-const moment = require('moment');
 
 module.exports = {
     listBanners: async (params) => {

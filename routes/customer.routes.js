@@ -101,15 +101,13 @@ router.delete('/customer-logout', customerLoginController.logoutCustomer);
 //Hotspot Locations Routes
 
 
-router.get('/get-hotspot-location', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getHotspotSchema), HotspotLocationController.getHotspotLocation);
+router.get('/get-hotspot-location', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getHotspotLocation), HotspotLocationController.getHotspotLocation);
 
-router.get('/check-hotspot-location', customerAuthentication.validateCustomerToken,HotspotLocationController.checkHotspotLocation);
+router.get('/get-hotspot-dropoff', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getHotspotDropoff),HotspotLocationController.getHotspotDropoff);
 
-router.get('/get-hotspot-dropoff', customerAuthentication.validateCustomerToken,HotspotLocationController.getHotspotDropoff);
+router.get('/get-address-dropoff', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getAddressDropoff), HotspotLocationController.getAddressDropoff);
 
-router.get('/get-address-dropoff', customerAuthentication.validateCustomerToken, HotspotLocationController.getAddressDropoff);
-
-router.get('/set-default-dropoff', customerAuthentication.validateCustomerToken,HotspotLocationController.setDefaultDropoff);
+router.get('/set-default-dropoff', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.setDefaultDropoff),HotspotLocationController.setDefaultDropoff);
 
 router.get('/get-default-hotspot', customerAuthentication.validateCustomerToken, HotspotLocationController.getDefaultHotspot);
 
@@ -118,48 +116,38 @@ router.get('/get-default-hotspot', customerAuthentication.validateCustomerToken,
 
 //Restaurants Routes
 
-// router.get('/get-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getRestaurantSchema), RestaurantController.getRestaurant);
+router.post('/set-favorite-restaurant', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.setFavoriteRestaurant),  RestaurantController.setFavoriteRestaurant);
 
-// router.get('/get-hotspot-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getHotspotRestaurantSchema),RestaurantController.getHotspotRestaurant);
-
-router.post('/set-favorite-restaurant', customerAuthentication.validateCustomerToken,  RestaurantController.setFavoriteRestaurant);
-
-router.get('/get-favorite-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getFavoriteRestaurantSchema), RestaurantController.getFavoriteRestaurant);
+router.get('/get-favorite-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getFavoriteRestaurant), RestaurantController.getFavoriteRestaurant);
 
 router.get('/get-food-category', customerAuthentication.validateCustomerToken, RestaurantController.getFoodCategory);
 
 router.get('/get-restaurant-category', customerAuthentication.validateCustomerToken, RestaurantController.getRestaurantCategory);
 
-router.get('/get-search-suggestion', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getSearchSuggestionSchema), RestaurantController.getSearchSuggestion);
-
-// router.get('/get-search-result', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getSearchResultSchema), RestaurantController.getSearchResult);
-
-// router.post('/get-hotspot-restaurant-with-filter', customerAuthentication.validateCustomerToken, RestaurantController.getHotspotRestaurantWithFilter);
+router.get('/get-search-suggestion', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getSearchSuggestion), RestaurantController.getSearchSuggestion);
 
 router.post('/get-hotspot-restaurant-pickup', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.getHotspotRestaurantPickup), RestaurantController.getHotspotRestaurantPickup);
 
 router.post('/get-hotspot-restaurant-delivery', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.getHotspotRestaurantDelivery), RestaurantController.getHotspotRestaurantDelivery);
 
-// router.get('/get-hotspot-restaurant-with-quick-filter', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getQuickFilterSchema), RestaurantController.getHotspotRestaurantWithQuickFilter);
-
 router.get('/get-offer-banner', customerAuthentication.validateCustomerToken, RestaurantController.getOfferBanner);
 
-router.get('/get-restaurant-details', customerAuthentication.validateCustomerToken, RestaurantController.getRestaurantDetails);
+router.get('/get-restaurant-details', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getRestaurantDetails), RestaurantController.getRestaurantDetails);
 
-router.get('/get-restaurant-schedule', customerAuthentication.validateCustomerToken, RestaurantController.getRestaurantSchedule);
+router.get('/get-restaurant-schedule', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getRestaurantSchedule), RestaurantController.getRestaurantSchedule);
 
 
 //Foods Routes
 
-router.get('/get-food-card-details', customerAuthentication.validateCustomerToken, RestaurantController.getFoodCardDetails);
+router.get('/get-food-card-details', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getFoodCardDetails), RestaurantController.getFoodCardDetails);
 
-router.put('/set-favorite-food', customerAuthentication.validateCustomerToken, RestaurantController.setFavoriteFood);
+router.put('/set-favorite-food', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.setFavoriteFood), RestaurantController.setFavoriteFood);
 
 router.get('/get-favorite-food', customerAuthentication.validateCustomerToken, RestaurantController.getFavoriteFood);
 
-router.get('/get-food-details/:restaurant_dish_id', customerAuthentication.validateCustomerToken, RestaurantController.getFoodDetails);
+router.get('/get-food-details/:restaurant_dish_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.getFoodDetails), RestaurantController.getFoodDetails);
 
-router.get('/get-recomended-slides', customerAuthentication.validateCustomerToken, RestaurantController.getRecomendedSlide);
+router.get('/get-recomended-slides', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getRecomendedSlide), RestaurantController.getRecomendedSlide);
 
 
 //Orders routes

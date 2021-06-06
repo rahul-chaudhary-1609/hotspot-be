@@ -16,15 +16,6 @@ module.exports = {
 
     },
 
-    checkHotspotLocation: async (req, res) => {
-        try {
-            const responseFromService = await hotspotService.checkHotspotLocation(req.user);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
-
     getHotspotDropoff: async (req, res) => {
       try {
             const responseFromService = await hotspotService.getHotspotDropoff(req.query,req.user);

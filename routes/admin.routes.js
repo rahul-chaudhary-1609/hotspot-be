@@ -1,6 +1,5 @@
 const express = require('express');
 const router=express.Router();
-const { check, body, query, param, oneOf, validationResult } = require('express-validator');
 
 const joiValidation = require("../middlewares/joi");
 const apiSchema = require("../apiSchema/adminSchema");

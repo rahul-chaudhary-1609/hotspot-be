@@ -108,6 +108,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 1,
       comment: '0=> off, 1=> on'
     },
+    location: {
+            type: DataTypes.ARRAY(DataTypes.FLOAT),
+    },
     device_token: {
       type: DataTypes.STRING,
       allowNull: true

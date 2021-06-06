@@ -2,7 +2,6 @@
 const { Op, Model } = require("sequelize");
 const {sequelize}=require('../../models');
 const models = require("../../models");
-const moment = require('moment');
 const Sequelize  = require("sequelize");
 const constants = require("../../constants");
 const utility = require('../../utils/utilityFunctions');

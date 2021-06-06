@@ -5,25 +5,6 @@ const constants = require("../../constants");
 
 
 module.exports = {
-    // getRestaurant: async (req, res) => {
-    //    try {
-    //         const responseFromService = await restaurantService.getRestaurant(req.query,req.user);
-    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-    //     } catch (error) {
-    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
-    //     }
-
-    // },
-
-    // getHotspotRestaurant: async (req, res) => {
-    //      try {
-    //         const responseFromService = await restaurantService.getHotspotRestaurant(req.query,req.user);
-    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-    //     } catch (error) {
-    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
-    //     }
-
-    // },
     setFavoriteRestaurant: async(req, res) => {
          try {
             const responseFromService = await restaurantService.setFavoriteRestaurant(req.body,req.user);
@@ -64,15 +45,6 @@ module.exports = {
 
     },
 
-    // getHotspotRestaurantWithFilter: async (req, res) => {
-    //      try {
-    //         const responseFromService = await restaurantService.getHotspotRestaurantWithFilter(req.body,req.user);
-    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-    //     } catch (error) {
-    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
-    //     }
-
-    // },
     getSearchSuggestion: async (req, res) => {
          try {
             const responseFromService = await restaurantService.getSearchSuggestion(req.query);
@@ -82,15 +54,6 @@ module.exports = {
         }
 
     },
-    // getSearchResult: async (req, res) => {
-    //      try {
-    //         const responseFromService = await restaurantService.getSearchResult(req.query,req.user);
-    //         utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-    //     } catch (error) {
-    //         utilityFunction.errorResponse(res, error, constants.code.error_code);
-    //     }
-
-    // },
     getOfferBanner: async (req, res) => {
          try {
             const responseFromService = await restaurantService.getOfferBanner();
@@ -118,14 +81,6 @@ module.exports = {
                 utilityFunction.errorResponse(res, error, constants.code.error_code);
             }
     },
-    // getHotspotRestaurantWithQuickFilter: async (req, res) => {
-    // try {
-    //             const responseFromService = await restaurantService.getHotspotRestaurantWithQuickFilter(req.query,req.user);
-    //             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-    //         } catch (error) {
-    //             utilityFunction.errorResponse(res, error, constants.code.error_code);
-    //         }
-    // },
 
     getRestaurantDetails: async (req, res) => {
          try {

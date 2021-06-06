@@ -5,6 +5,7 @@ const _ = require('lodash');
 const FCM = require('fcm-node');
 const fcm = new FCM(process.env.FCM_SERVER_KEY); //put your server key here
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const geolib = require('geolib');
 
 
 /* function for sending the error response */
@@ -223,4 +224,19 @@ module.exports.getDateInUSFormat = (params) => {
     let now = new Date(params);
     now = now.toJSON()
     return `${now.slice(5,7)}-${now.slice(8,10)}-${now.slice(0,4)}`;
+}
+
+module.exports.getDistanceBetweenTwoGeoLocations = (params,unit='miles') => {
+    let distanceInMeters = geolib.getDistance(params.sourceCoordinates, params.destinationCoordinates, params.accuracy = 1);
+
+    if (unit == 'meter') return distanceInMeters;
+    else if (unit == 'kilometers') return geolib.convertDistance(distanceInMeters, 'km');
+    else if (unit == 'centimeters') return geolib.convertDistance(distanceInMeters, 'cm');
+    else if (unit == 'millimeters') return geolib.convertDistance(distanceInMeters, 'mm');
+    else if (unit == 'miles') return geolib.convertDistance(distanceInMeters, 'mi');
+    else if (unit == 'seamiles') return geolib.convertDistance(distanceInMeters, 'sm');
+    else if (unit == 'feet') return geolib.convertDistance(distanceInMeters, 'ft');
+    else if (unit == 'inches') return geolib.convertDistance(distanceInMeters, 'in');
+    else if (unit == 'yards') return geolib.convertDistance(distanceInMeters, 'yd');
+    
 }

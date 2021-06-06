@@ -182,20 +182,6 @@ module.exports = {
         }),
     }),
 
-    // customerUpdateProfileSchema : Joi.object({
-    //     name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
-    //         'string.pattern.base': `Please enter a valid customer name`,
-    //     }),
-
-    //     country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).messages({
-    //         'string.pattern.base': `Please enter a valid country code`,
-    //     }),
-    //     phone: Joi.string().trim().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).min(10).max(10).messages({
-    //         'string.pattern.base': `Please enter a valid phone no`,
-    //     }),
-        
-    // }),
-
     customerAddressSchema : Joi.object({    
         address: Joi.string().required(),
         city: Joi.string().max(45).required(),
@@ -215,17 +201,29 @@ module.exports = {
         }),
     }),
 
-    getHotspotSchema: Joi.object({
+    getHotspotLocation: Joi.object({
         latitude: Joi.number().required(),
         longitude: Joi.number().required(),
     }),
 
-    getRestaurantSchema: Joi.object({
-        latitude: Joi.number().required(),
-        longitude: Joi.number().required(),
+    getHotspotDropoff: Joi.object({
+        hotspot_location_id:Joi.number().required(),
     }),
 
-    getFavoriteRestaurantSchema: Joi.object({
+    getAddressDropoff: Joi.object({
+        hotspot_location_id:Joi.number().required(),
+    }),
+
+    setDefaultDropoff: Joi.object({
+        hotspot_location_id: Joi.number().required(),
+        hotspot_dropoff_id:Joi.number().required(),
+    }),
+
+    setFavoriteRestaurant:Joi.object({
+        restaurant_id: Joi.number().required(),
+    }),
+
+    getFavoriteRestaurant: Joi.object({
         hotspot_location_id:Joi.number().required(),
         delivery_shift: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
@@ -237,46 +235,45 @@ module.exports = {
         delivery_shift: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
         }),
-        customer_location:Joi.array().optional(),
+        customer_location:Joi.array().required(),
         dish_category_ids:Joi.array().optional(),
         restaurant_category_ids:Joi.array().optional(),
         searchPhrase:Joi.string().trim().optional(),
     }),
 
     getHotspotRestaurantPickup:Joi.object({
-        customer_location:Joi.array().optional(),
+        customer_location:Joi.array().required(),
         dish_category_ids:Joi.array().optional(),
         restaurant_category_ids:Joi.array().optional(),
         searchPhrase:Joi.string().trim().optional(),
     }),
 
-    getHotspotRestaurantSchema: Joi.object({
-        hotspot_location_id:Joi.number().required(),
-        delivery_shift: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
-        }),
-        latitude: Joi.number(),
-        longitude: Joi.number(),
+    getRestaurantDetails:Joi.object({
+        restaurant_id: Joi.number().required(),
     }),
 
-    getSearchSuggestionSchema: Joi.object({
+    getRestaurantSchedule:Joi.object({
+        restaurant_id: Joi.number().required(),
+    }),
+
+    getSearchSuggestion: Joi.object({
         searchPhrase: Joi.string().trim().required(),
     }),
 
-    getSearchResultSchema: Joi.object({
-        hotspot_location_id:Joi.number().required(),
-        delivery_shift: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
-        }),
-        searchPhrase: Joi.string().trim().required(),
+    getFoodCardDetails:Joi.object({
+        restaurantId: Joi.number().required(),
     }),
 
-    getQuickFilterSchema:Joi.object({
-        hotspot_location_id:Joi.number().required(),
-        delivery_shift: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
-            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
-        }),
-        dish_category_id: Joi.number().required(),
+    setFavoriteFood:Joi.object({
+        restaurant_dish_id: Joi.number().required(),
+    }),
+
+    getFoodDetails:Joi.object({
+        restaurant_dish_id: Joi.number().required(),
+    }),
+
+    getRecomendedSlide:Joi.object({
+        restaurantId: Joi.number().required(),
     }),
 
     paymentCardSchema : Joi.object({

@@ -4,7 +4,6 @@ const {sequelize}=require('../../models');
 const constants = require('../../constants');
 const utility = require('../../utils/utilityFunctions');
 
-const moment = require('moment');
 
 module.exports = {
     getTotalCustomers: async () => {

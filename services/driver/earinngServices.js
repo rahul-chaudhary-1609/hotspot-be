@@ -5,9 +5,6 @@ const constants = require('../../constants');
 const utilityFunction = require("../../utils/utilityFunctions")
 const Sequelize  = require("sequelize");
 const { Op } = require("sequelize");
-const moment = require('moment');
-const randomLocation = require('random-location');
-const { ModelBuildInstance } = require('twilio/lib/rest/autopilot/v1/assistant/modelBuild');
 
 module.exports = {
         /*
@@ -79,17 +76,15 @@ module.exports = {
              offset: offset
          })
          getEarningDetails.forEach(element => {
-                 console.log("hs loc1",element.delivery_details.hotspot.location[0])
-                 console.log("hs loc 2",element.delivery_details.hotspot.location[1])
-                 if (params.customer_location_latitude && params.customer_location_longitude) {
-                    result.distance_travelled = parseFloat((Math.floor(randomLocation.distance({
-                                    latitude: params.customer_location_latitude,
-                                    longitude: params.customer_location_longitude,
-                                }, {
-                                    latitude: element.delivery_details.hotspot.location[0],
-                                    longitude: element.delivery_details.hotspot.location[1]
-                                }))) * 0.00062137);
-                }
+                //  if (params.customer_location_latitude && params.customer_location_longitude) {
+                //     result.distance_travelled = parseFloat((Math.floor(randomLocation.distance({
+                //                     latitude: params.customer_location_latitude,
+                //                     longitude: params.customer_location_longitude,
+                //                 }, {
+                //                     latitude: element.delivery_details.hotspot.location[0],
+                //                     longitude: element.delivery_details.hotspot.location[1]
+                //                 }))) * 0.00062137);
+                // }
                  result.deliveryId=element.delivery_id,
                  result.delivery_datetime=element.delivery_datetime
             if(element.delivery_datetime <= new Date()) {

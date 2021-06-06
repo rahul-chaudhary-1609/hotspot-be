@@ -5337,36 +5337,17 @@
                 "name": "latitude",
                 "in": "query",
                 "description": "enter latitude",
-                "required": false,
+                "required": true,
                 "type": "number"
               },
               {
                 "name": "longitude",
                 "in": "query",
                 "description": "enater longitude",
-                "required": false,
+                "required": true,
                 "type": "number"
               }
             ],
-            "responses": {}
-          }
-        },
-        "/customer/check-hotspot-location": {
-          "get": {
-            "tags": [
-              "Customer Hotspot"
-            ],
-            "description": "Api to check hotspot locations exists or not",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [],
             "responses": {}
           }
         },
@@ -5661,7 +5642,7 @@
                 "name": "customer_location",
                 "in": "formData",
                 "description": "[latitude,longitude]",
-                "required": false,
+                "required": true,
                 "type": "array",
                 "items": {
                   "type": "number"
@@ -5721,7 +5702,7 @@
                 "name": "customer_location",
                 "in": "formData",
                 "description": "[latitude,longitude]",
-                "required": false,
+                "required": true,
                 "type": "array",
                 "items": {
                   "type": "number"
@@ -7810,20 +7791,6 @@
             "required": true,
             "type": "number",
             "enum":[0,1]
-          },
-          {
-            "name": "customer_location_latitude",
-            "in": "query",
-            "description": "enter latitude coordinate",
-            "required": false,
-            "type": "number"
-          },
-          {
-            "name": "customer_location_longitude",
-            "in": "query",
-            "description": "enter longitude coordinate",
-            "required": false,
-            "type": "number"
           },
           {
             "name": "start_date",

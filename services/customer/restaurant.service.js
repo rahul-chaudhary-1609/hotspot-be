@@ -1,12 +1,10 @@
 require('dotenv/config');
 const models = require('../../models');
-const { Op, Utils } = require("sequelize");
-const randomLocation = require('random-location');
-const fetch = require('node-fetch');
+const { Op } = require("sequelize");
 const dummyData = require('./dummyData');
 const constants = require('../../constants');
 const utility = require('../../utils/utilityFunctions');
-const order = require('../../controllers/customer/order');
+const geolib = require('geolib');
 
 const getRestaurantCard =  async (args) => {
         
@@ -36,6 +34,8 @@ const getRestaurantCard =  async (args) => {
                     return args.params.delivery_shift === time;
                 });
 
+                console.log(hotspotLocation);
+
                 next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
 
 
@@ -63,18 +63,19 @@ const getRestaurantCard =  async (args) => {
             }
 
             if (favRestaurant) is_favorite = true;
-
-            let distance = null;
-
-            if (args.params.customer_location) {
-                distance = parseFloat((Math.floor(randomLocation.distance({
-                                latitude: args.params.customer_location[0],
-                                longitude: args.params.customer_location[1]
-                            }, {
-                                latitude: restaurant.location[0],
-                                longitude: restaurant.location[1]
-                            }))) * 0.00062137);
+            
+            let distanceCalculationParams = {
+                sourceCoordinates: {
+                    latitude: geolib.toDecimal(args.params.customer_location[0]),
+                    longitude: geolib.toDecimal(args.params.customer_location[1])
+                },
+                destinationCoordinates: {
+                    latitude: restaurant.location[0],
+                    longitude: restaurant.location[1]
+                },
+                accuracy:1,
             }
+            
 
             restaurants.push({
                 restaurant_id: restaurant.id,
@@ -84,20 +85,18 @@ const getRestaurantCard =  async (args) => {
                 next_delivery_time:next_delivery_time?next_delivery_time:null,
                 cut_off_time: next_delivery_time?getCutOffTime(next_delivery_time):null,
                 is_favorite,
-                distance,
+                distance: utility.getDistanceBetweenTwoGeoLocations(distanceCalculationParams, 'miles'),
                 location:restaurant.location,
                 workingHourFrom:restaurant.working_hours_from,
                 workingHourTo:restaurant.working_hours_to,
             })
     }
     
-    if (args.params.customer_location) {
-        restaurants.sort((a, b) => a.distance - b.distance);
-    }
+    restaurants.sort((a, b) => a.distance - b.distance);
 
-        if (restaurants.length === 0) throw new Error(constants.MESSAGES.no_restaurant);
+    if (restaurants.length === 0) throw new Error(constants.MESSAGES.no_restaurant);
 
-        return { restaurants };
+    return { restaurants };
      
 
 
@@ -159,10 +158,7 @@ const getFoodCard =  async (args) => {
         
         if (foodCards.length === 0)  throw new Error(constants.MESSAGES.no_dish);
 
-        return { foodCards };
-
-
-     
+        return { foodCards };    
 
 
 };
@@ -174,8 +170,6 @@ module.exports = {
         
             const customer_id = user.id;
             const restaurant_id = params.restaurant_id;
-
-            if (!restaurant_id || isNaN(restaurant_id)) throw new Error(constants.MESSAGES.bad_request);
 
             const restaurant = await models.Restaurant.findOne({
                 where: {
@@ -218,38 +212,35 @@ module.exports = {
     },
 
     getFavoriteRestaurant: async (params,user) => {
-          const customer_id = user.id;
 
-          const hotspot_location_id = params.hotspot_location_id;
+        let customer = await models.Customer.findByPk(user.id);
 
-          if (!hotspot_location_id || isNaN(hotspot_location_id)) throw new Error(constants.MESSAGES.bad_request);
+        params.customer_location = customer.location;
 
-          const hotspotLocation = await models.HotspotLocation.findOne({
-              where: {
-                  id: hotspot_location_id,
-              }
-          })
+        const hotspotLocation = await models.HotspotLocation.findOne({
+            where: {
+                id: params.hotspot_location_id,
+            }
+        })
 
-          if (!hotspotLocation) throw new Error(constants.MESSAGES.no_hotspot);
+        if (!hotspotLocation) throw new Error(constants.MESSAGES.no_hotspot);
 
-          const delivery_shift = params.delivery_shift || "12:00:00";
+        const favRestaurant = await models.FavRestaurant.findAll({
+            where: {
+                customer_id:user.id,
+            }
+        });
 
-          const favRestaurant = await models.FavRestaurant.findAll({
-              where: {
-                  customer_id,
-              }
-          });
+        const restaurant_ids = await favRestaurant.map(restaurant => restaurant.restaurant_id);
 
-          const restaurant_ids = await favRestaurant.map(restaurant => restaurant.restaurant_id);
+        const restaurants = await models.Restaurant.findAll({
+            where: {
+                id: restaurant_ids,
+                status:constants.STATUS.active
+            }
+        });
 
-          const restaurant = await models.Restaurant.findAll({
-              where: {
-                  id: restaurant_ids,
-                  status:constants.STATUS.active
-              }
-          });
-
-        return  getRestaurantCard({ restaurant, customer_id, hotspot_location_id, delivery_shift });
+        return  getRestaurantCard({ restaurants, user, params });
 
           
     },
@@ -392,9 +383,7 @@ module.exports = {
 
             const hotspot_offers = await hotspotOffer.map((hotspotOffer) => {return hotspotOffer.image_url });
 
-            return { hotspot_offers };
-
-         
+            return { hotspot_offers };         
     },
 
     getHotspotRestaurantDelivery: async (params, user) => {
@@ -737,104 +726,65 @@ module.exports = {
 
     getRestaurantDetails: async (params) => {
 
-            const restaurant_id = params.restaurant_id;
+        const restaurantHotspot = await models.RestaurantHotspot.findOne({
+            where: {
+                restaurant_id:params.restaurant_id,
+            }
+        });
+    
+        let nextDeliveryTime = null;
 
-            if (!restaurant_id || isNaN(restaurant_id)) throw new Error(constants.MESSAGES.bad_request);
+        if (restaurantHotspot) {
 
-            const restaurantHotspot = await models.RestaurantHotspot.findOne({
+            const hotspotLocation = await models.HotspotLocation.findOne({
                 where: {
-                    restaurant_id
+                    id: restaurantHotspot.hotspot_location_id
                 }
             });
 
-            if (restaurantHotspot) {
+            nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                return parseInt(((new Date()).toTimeString().slice(0, 8)).replace(/:/g, '')) <= parseInt(time.replace(/:/g, ''));
+            });
 
-                const hotspotLocation = await models.HotspotLocation.findOne({
-                    where: {
-                        id: restaurantHotspot.hotspot_location_id
-                    }
-                });
+            if (!nextDeliveryTime) nextDeliveryTime = hotspotLocation.delivery_shifts[0];
 
-                let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                    return parseInt(((new Date()).toTimeString().slice(0, 8)).replace(/:/g, '')) <= parseInt(time.replace(/:/g, ''));
-                    //return args.delivery_shift === time;
-                });
+        }
 
-                if (!nextDeliveryTime) nextDeliveryTime = hotspotLocation.delivery_shifts[0];
-
-            
-                const restaurant = await models.Restaurant.findOne({
-                    where: {
-                        id: restaurant_id,
-                        order_type: [1, 3],
-                        status:constants.STATUS.active
-                    }
-                });
-
-                const restaurantDetails = {
-                    id: restaurant.id,
-                    name: restaurant.restaurant_name,
-                    image: restaurant.restaurant_image_url,
-                    ownerName: restaurant.owner_name,
-                    ownerEmail: restaurant.owner_email,
-                    address: restaurant.address,
-                    location: restaurant.location,
-                    deliveriesPerShift: restaurant.deliveries_per_shift,
-                    cutOffTime: restaurant.cut_off_time,
-                    workingHourFrom: restaurant.working_hours_from,
-                    workingHourTo: restaurant.working_hours_to,
-                    orderType: restaurant.order_type,
-                    nextDeliveryTime,
-                }
-
-                if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
-
-                return { restaurantDetails};
-
+        const restaurant = await models.Restaurant.findOne({
+            where: {
+                id: params.restaurant_id,
+                status: constants.STATUS.active
             }
-            else {
-                const restaurant = await models.Restaurant.findOne({
-                    where: {
-                        id: restaurant_id,
-                        order_type: [2],
-                        status:constants.STATUS.active
-                    }
-                });
+        });
 
-                const restaurantDetails = {
-                    id: restaurant.id,
-                    name: restaurant.restaurant_name,
-                    image: restaurant.restaurant_image_url,
-                    ownerName: restaurant.owner_name,
-                    ownerEmail: restaurant.owner_email,
-                    address: restaurant.address,
-                    location: restaurant.location,
-                    deliveriesPerShift: null,
-                    cutOffTime: null,
-                    workingHourFrom: restaurant.working_hours_from,
-                    workingHourTo: restaurant.working_hours_to,
-                    orderType: restaurant.order_type,
-                    nextDeliveryTime:null,
-                }
+        const restaurantDetails = {
+            id: restaurant.id,
+            name: restaurant.restaurant_name,
+            image: restaurant.restaurant_image_url,
+            ownerName: restaurant.owner_name,
+            ownerEmail: restaurant.owner_email,
+            address: restaurant.address,
+            location: restaurant.location,
+            deliveriesPerShift: restaurant.deliveries_per_shift,
+            cutOffTime: restaurant.cut_off_time,
+            workingHourFrom: restaurant.working_hours_from,
+            workingHourTo: restaurant.working_hours_to,
+            orderType: restaurant.order_type,
+            nextDeliveryTime,
+        }
 
-                if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
+        if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
 
-                return { restaurantDetails};
-            }
-            
-        
+        return { restaurantDetails};      
+    
 
     },
 
     getRestaurantSchedule: async (params) => {
-            
-            const restaurant_id = params.restaurant_id;
-
-            if (!restaurant_id || isNaN(restaurant_id)) throw new Error(constants.MESSAGES.bad_request);
 
             const restaurantHotspot = await models.RestaurantHotspot.findOne({
                 where: {
-                    restaurant_id
+                    restaurant_id:params.restaurant_id,
                 }
             });
 
@@ -868,8 +818,6 @@ module.exports = {
     setFavoriteFood: async (params, user) => {
         
             const restaurant_dish_id = params.restaurant_dish_id;
-            
-            if (!restaurant_dish_id || isNaN(restaurant_dish_id))  throw new Error(constants.MESSAGES.bad_request);
 
             const restaurantDish = await models.RestaurantDish.findOne({
                 where: {
@@ -910,97 +858,91 @@ module.exports = {
     },
 
     getFavoriteFood: async (user) => {
-        
-          const customer_id = user.id;
 
-          const favFoods = await models.FavFood.findAll({
-              where: {
-                  customer_id,
-              }
-          });
+        const favFoods = await models.FavFood.findAll({
+            where: {
+                customer_id:user.id,
+            }
+        });
 
-          const restaurant_dish_ids = await favFoods.map(favFood => favFood.restaurant_dish_id);
+        const restaurant_dish_ids = await favFoods.map(favFood => favFood.restaurant_dish_id);
 
-          const restaurantDish = await models.RestaurantDish.findAll({
-              where: {
-                  id: restaurant_dish_ids,
-              }
-          });
+        const restaurantDish = await models.RestaurantDish.findAll({
+            where: {
+                id: restaurant_dish_ids,
+            }
+        });
 
-         return getFoodCard({ restaurantDish,customer_id });
+        return getFoodCard({ restaurantDish,customer_id:user.id, });
 
           
     },
 
     getFoodDetails: async (params,user) => {
 
-            const restaurant_dish_id = params.restaurant_dish_id;
-            
-            if (!restaurant_dish_id || isNaN(restaurant_dish_id))  throw new Error(constants.MESSAGES.bad_request);
-
-            const restaurantDish = await models.RestaurantDish.findOne({
-                where: {
-                    id: restaurant_dish_id,
-                }
-            })
-
-            if (!(restaurantDish) || (restaurantDish.status==constants.STATUS.deleted))  throw new Error(constants.MESSAGES.no_dish);
-
-            const dishAddOn = await models.DishAddOn.findAll({
-                where: {
-                    restaurant_dish_id,
-                }
-            })
-
-            const restaurant = await models.Restaurant.findOne({
-                attributes: [
-                  'id','restaurant_name'
-              ],
-                where: {
-                    id: restaurantDish.restaurant_id,
-                    status:constants.STATUS.active
-                }
-            })
-
-            let isFavorite = false;
-
-            const favFood = await models.FavFood.findOne({
-                where: {
-                    restaurant_dish_id,
-                    customer_id:user.id,
-                }
-            });
-            if (favFood) isFavorite = true;
-
-            const dishdetails = {
-                restaurant,
-                dish: restaurantDish,
-                isFavorite,
-                dishAddOn: dishAddOn ? dishAddOn.map(addOn=>addOn): "no add-ons available for this food",
+        const restaurantDish = await models.RestaurantDish.findOne({
+            where: {
+                id: params.restaurant_dish_id,
             }
+        })
 
-            return { dishdetails};
-            
+        if (!(restaurantDish) || (restaurantDish.status==constants.STATUS.deleted))  throw new Error(constants.MESSAGES.no_dish);
+
+        const dishAddOn = await models.DishAddOn.findAll({
+            where: {
+                restaurant_dish_id:params.restaurant_dish_id,
+            }
+        })
+
+        const restaurant = await models.Restaurant.findOne({
+            attributes: [
+                'id','restaurant_name'
+            ],
+            where: {
+                id: restaurantDish.restaurant_id,
+                status:constants.STATUS.active
+            }
+        })
+
+        let isFavorite = false;
+
+        const favFood = await models.FavFood.findOne({
+            where: {
+                restaurant_dish_id:params.restaurant_dish_id,
+                customer_id:user.id,
+            }
+        });
+        if (favFood) isFavorite = true;
+
+        const dishdetails = {
+            restaurant,
+            dish: restaurantDish,
+            isFavorite,
+            dishAddOn: dishAddOn ? dishAddOn.map(addOn=>addOn): "no add-ons available for this food",
+        }
+
+        return { dishdetails};
         
+    
     },
 
     getRecomendedSlide: async (params,user) => {
            
-            const limitOptions = [3,4,5];
+        const limitOptions = [3,4,5];
 
-            const limit = limitOptions[Math.floor(Math.random() * limitOptions.length)];
+        const limit = limitOptions[Math.floor(Math.random() * limitOptions.length)];
 
-            const offset = limit - 2;
+        const offset = limit - 2;
 
-            const restaurantDish = await models.RestaurantDish.findAll({
-                where: {
-                    restaurant_id: params.restaurantId
-                },
-                limit,
-                offset,
-            });
+        const restaurantDish = await models.RestaurantDish.findAll({
+            where: {
+                restaurant_id: params.restaurantId
+            },
+            limit,
+            offset,
+        });
 
-           return getFoodCard({ restaurantDish,customer_id:user.id });
+        return getFoodCard({ restaurantDish,customer_id:user.id });
         
     }
 
