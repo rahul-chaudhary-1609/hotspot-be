@@ -217,21 +217,26 @@ module.exports = {
 
         params.customer_location = customer.location;
 
-        const hotspotLocation = await models.HotspotLocation.findOne({
-            where: {
-                id: params.hotspot_location_id,
-            }
-        })
-
-        if (!hotspotLocation) throw new Error(constants.MESSAGES.no_hotspot);
-
         const favRestaurant = await models.FavRestaurant.findAll({
             where: {
                 customer_id:user.id,
             }
         });
 
-        const restaurant_ids = await favRestaurant.map(restaurant => restaurant.restaurant_id);
+        let restaurant_ids = await favRestaurant.map(restaurant => restaurant.restaurant_id);
+
+        if (params.hotspot_location_id) {
+            let hotspotRestaurants = await utility.convertPromiseToObject(
+                await models.RestaurantHotspot.findAll({
+                    where: {
+                        hotspot_location_id: parseInt(params.hotspot_location_id),
+                    }
+                })
+            )
+            
+            let hotspot_restaurant_ids = hotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id);
+            restaurant_ids = restaurant_ids.filter((restaurant_id) => hotspot_restaurant_ids.includes(restaurant_id));
+        }
 
         const restaurants = await models.Restaurant.findAll({
             where: {
@@ -595,6 +600,7 @@ module.exports = {
         customer.save();
 
         let whereCondiition = {
+            id: [],
             status: constants.STATUS.active,
             order_type:[constants.ORDER_TYPE.pickup,constants.ORDER_TYPE.both]
         };
@@ -721,6 +727,10 @@ module.exports = {
                 }                
             })
 
+        }
+
+        if (whereCondiition.id.length == 0) {
+            delete whereCondiition.id;
         }
 
         let restaurants = await utility.convertPromiseToObject(
