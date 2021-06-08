@@ -8014,7 +8014,7 @@
     },
 
     "/website/getStaticContent/{id}": {
-      "post": {
+      "get": {
         "tags": [
           "Website Management"
         ],
