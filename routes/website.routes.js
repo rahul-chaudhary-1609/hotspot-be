@@ -3,14 +3,13 @@ const express = require('express');
 const joiValidation = require("../middlewares/joi");
 const apiSchema = require("../apiSchema/websiteSchema");
 
-const driverAuthentication = require('../middlewares/jwt');
 const router=express.Router();
-const multer = require('../middlewares/multer');
 
-const staticContentController = require('../controllers/website/staticContent');
+const staticContentController = require('../controllers/website/static_content');
 
+
+router.get('/getStaticContent/:type', joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
 router.get('/getFaqTopics', staticContentController.getFaqTopics);
-router.get('/getFaqDetails',joiValidation.validateQueryParams(apiSchema.getFaqDetails), staticContentController.getFaqDetails);
-router.get('/getStaticContent/:id', staticContentController.getStaticContent);
+router.get('/getFaqs',joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
 
 module.exports = router;

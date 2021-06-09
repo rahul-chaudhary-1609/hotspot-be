@@ -1,14 +1,17 @@
 const Joi = require("joi");
-const constants = require("../constants");
 
 
 module.exports = {
 
 
-    getFaqDetails: Joi.object({
-        id: Joi.string().required() ,
-        page: Joi.number().optional(),        
-        page_size: Joi.number().optional()     
+    getStaticContent: Joi.object({
+        type: Joi.number().required()   
+    }),
+
+    getFaqs: Joi.object({
+        topic_id: Joi.number().required() ,
+        page: Joi.number().allow(null, '').optional(),        
+        page_size: Joi.number().allow(null, '').optional()     
     }),
 
 }

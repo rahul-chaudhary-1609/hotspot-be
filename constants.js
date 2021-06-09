@@ -69,7 +69,8 @@ module.exports = {
     no_dropoff: "No dropoff found",
     no_address: "No address found",
     no_item: "No item found",
-    no_payment: "no payment details found",
+    no_payment: "No payment details found",
+    no_static_content:"No static content found",
     confirm_payment: "Payment confirmed",
     no_payment_card: "No payment card found",
     no_record: "No record found",
@@ -91,14 +92,6 @@ module.exports = {
     rejected_account: 'Your account is rejected by admin.',
     invalid_number_or_country_code: 'Invalid number or country code.',
     hotspot_can_not_delete: "This hotspot can not be deleted until atleast one restaurant is associated with this hotspot",
-    // driver_fee_error_1: `Only one 'end range' value can be empty at a time`,
-    // driver_fee_error_2: `If existing or new 'end range' value is empty then it's 'start range' value should be the highest range value`,
-    // driver_fee_error_3: `'Start range' value should be less than 'end range' value`,
-    // driver_fee_error_4: `'Start range' value or 'end range' value should not belong to any existing range`,
-    // driver_fee_error_5: `Driver fee already exist`,
-    // driver_fee_error_6: `First range should have 0 as 'start range' value`,
-    // driver_fee_error_7: `Atleast one range should be there which 'start range' value is 0`,
-
     driver_fee_error_1:`Only one 'Last Range' value can be empty at a time`,
     driver_fee_error_2: `If the existing or new 'End Range' value is empty then its 'Start Range' value must be the highest range value`,
     driver_fee_error_3: `'Start Range' value must be less than 'End Range' value`,
@@ -227,6 +220,15 @@ CUSTOM_JOI_MESSAGE : {
     "Offline/Check": 4,
     "Offline/Cash": 5,
     "Offline/Other":6,
+  },
+
+  STATIC_CONTENT_TYPE : {
+    terms_and_conditions: 1,
+    privacy_policy: 2,
+    customer_how_it_works: 3,
+    driver_how_it_works: 4,
+    about_us: 5,
+    faq:6,
   },
 
 }
