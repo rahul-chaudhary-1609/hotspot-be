@@ -11,9 +11,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      CustomerFavLocation.belongsTo(models.Customer);
-      CustomerFavLocation.belongsTo(models.HotspotLocation);
-      CustomerFavLocation.belongsTo(models.HotspotDropoff);
     }
   };
   CustomerFavLocation.init({

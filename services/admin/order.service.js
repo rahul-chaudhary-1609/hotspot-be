@@ -420,7 +420,7 @@ module.exports = {
         //delete order.order_details.restaurant.order_count;
 
         await models.Order.update({
-            status: constants.ORDER_DELIVERY_STATUS.food_being_prepared,            
+            status: constants.ORDER_STATUS.food_being_prepared,            
             order_pickup_id,
             order_details:{ ...order.order_details,driver },
             driver_id: driver.id,

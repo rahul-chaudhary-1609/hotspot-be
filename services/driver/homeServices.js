@@ -129,7 +129,7 @@ module.exports = {
     
     await models.Order.update({
       order_delivery_id: delivery_id,
-      status:constants.ORDER_DELIVERY_STATUS.food_ready_or_on_the_way,
+      status:constants.ORDER_STATUS.food_ready_or_on_the_way,
       },
         {
           where:{
@@ -300,7 +300,7 @@ getDeliveryCards: async(params,user)=>{
       for (let order of orders) {
         let update = {
             delivery_image_urls: [delivery.image],
-            status:constants.ORDER_DELIVERY_STATUS.delivered,
+            status:constants.ORDER_STATUS.delivered,
         }
         
         let condition={

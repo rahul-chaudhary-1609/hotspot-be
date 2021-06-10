@@ -11,8 +11,6 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            RestaurantDish.belongsTo(models.Restaurant);
-            RestaurantDish.belongsTo(models.DishCategory);
         }
     }
     RestaurantDish.init({
@@ -47,6 +45,19 @@ module.exports = (sequelize, DataTypes) => {
         image_url: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+
+        is_recommended: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=> no, 1=> yes'
+        },
+        is_quick_filter: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=> no, 1=> yes'
         },
 
         status: {

@@ -11,11 +11,6 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Order.belongsTo(models.Customer);
-            Order.belongsTo(models.Restaurant);
-            Order.belongsTo(models.HotspotLocation)
-            Order.belongsTo(models.HotspotDropoff)
-            Order.belongsTo(models.Driver);
         }
     }
     Order.init({
@@ -62,6 +57,8 @@ module.exports = (sequelize, DataTypes) => {
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            defaultValue: 0,
+            comment: '0=> not_paid, 1=> pending, 2=> food_being_prepared, 3=> food_ready_or_on_the_way, 4=> delivered'
         },
 
         type: {

@@ -124,13 +124,47 @@ module.exports = {
         profile_picture_url: Joi.string().trim().optional(),
     }),
 
-    dishSchema : Joi.object({
+    AddDish : Joi.object({
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
         description: Joi.string().required(),
         restaurant_id: Joi.number().required(),
-        dish_category_id: Joi.number().required(),
-        image_url: Joi.string().uri().required()
+        dish_category_id: Joi.number().optional(),
+        image_url: Joi.string().uri().required(),
+        is_recommended: Joi.number().optional(),
+        is_quick_filter: Joi.number().optional(),
+    }),
+
+    listDishes: Joi.object({
+        restaurantId: Joi.number().required(),
+    }),
+
+    getDish: Joi.object({
+        dishId: Joi.number().required(),
+    }),
+
+    editDish : Joi.object({
+        name: Joi.string().trim().required(),
+        price: Joi.number().required(),
+        description: Joi.string().required(),
+        restaurant_id: Joi.number().required(),
+        dish_category_id: Joi.number().optional(),
+        image_url: Joi.string().uri().required(),
+        is_recommended: Joi.number().optional(),
+        is_quick_filter: Joi.number().optional(),
+    }),
+
+
+    deleteDish : Joi.object({
+        dishId: Joi.number().required(),
+    }),
+
+    toggleDishAsRecommended : Joi.object({
+        dishId: Joi.number().required(),
+    }),
+
+    toggleDishAsQuickFilter : Joi.object({
+        dishId: Joi.number().required(),
     }),
 
     driverSchema : Joi.object({

@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      DriverBankDetail.belongsTo(models.Driver);
     }
   };
   DriverBankDetail.init({

@@ -125,7 +125,7 @@ module.exports = {
         where: {
           [Op.and]: [
             {
-              status:constants.ORDER_DELIVERY_STATUS.delivered,
+              status:constants.ORDER_STATUS.delivered,
               type:constants.ORDER_TYPE.delivery,
             },
             sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
@@ -136,7 +136,7 @@ module.exports = {
       where: {
         [Op.and]: [
           {
-            status:constants.ORDER_DELIVERY_STATUS.food_being_prepared,
+            status:constants.ORDER_STATUS.food_being_prepared,
             type:constants.ORDER_TYPE.pickup,
           },
           sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
@@ -147,7 +147,7 @@ module.exports = {
       where: {
         [Op.and]: [
           {
-            status:[constants.ORDER_DELIVERY_STATUS.food_being_prepared,constants.ORDER_DELIVERY_STATUS.delivered],
+            status:[constants.ORDER_STATUS.food_being_prepared,constants.ORDER_STATUS.delivered],
             type:constants.ORDER_TYPE.both,
           },
           sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
@@ -236,7 +236,7 @@ module.exports = {
             where: {
               [Op.and]: [
                 {
-                  status:constants.ORDER_DELIVERY_STATUS.delivered,
+                  status:constants.ORDER_STATUS.delivered,
                   type:constants.ORDER_TYPE.delivery,
                   hotspot_location_id:params.hotspot_id,
                 },
@@ -248,7 +248,7 @@ module.exports = {
           where: {
             [Op.and]: [
               {
-                status:constants.ORDER_DELIVERY_STATUS.food_being_prepared,
+                status:constants.ORDER_STATUS.food_being_prepared,
                 type:constants.ORDER_TYPE.pickup,
                 hotspot_location_id:params.hotspot_id,
               },
@@ -260,7 +260,7 @@ module.exports = {
         where: {
           [Op.and]: [
             {
-              status:[constants.ORDER_DELIVERY_STATUS.food_being_prepared,constants.ORDER_DELIVERY_STATUS.delivered],
+              status:[constants.ORDER_STATUS.food_being_prepared,constants.ORDER_STATUS.delivered],
               type:constants.ORDER_TYPE.both,
               hotspot_location_id:params.hotspot_id,
             },
@@ -289,7 +289,7 @@ module.exports = {
 
          const completedOrders = await models.Order.findAndCountAll({
           where: {
-              status:constants.ORDER_DELIVERY_STATUS.delivered,
+              status:constants.ORDER_STATUS.delivered,
           }
          });
          const completedPercent = Math.floor((completedOrders.count / totalOrders.count) * 100)

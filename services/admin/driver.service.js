@@ -36,7 +36,7 @@ module.exports = {
             {
                 model: models.Order,
                 required: false,
-                where: {status: constants.ORDER_DELIVERY_STATUS.delivered}
+                where: {status: constants.ORDER_STATUS.delivered}
             }
         ]
         query.order = [
@@ -122,7 +122,7 @@ module.exports = {
                         {
                             model: models.Order,
                             required: false,
-                            where: {status: constants.ORDER_DELIVERY_STATUS.delivered}
+                            where: {status: constants.ORDER_STATUS.delivered}
                         }
                     ]
                 })

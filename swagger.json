@@ -1916,7 +1916,7 @@
                 "name": "dish_category_id",
                 "in": "formData",
                 "description": "enter dish category id",
-                "required": true,
+                "required": false,
                 "type": "number"
               },
               {
@@ -1925,6 +1925,28 @@
                 "description": "enter dish image url",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "is_recommended",
+                "in": "formData",
+                "description": "0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "name": "is_quick_filter",
+                "in": "formData",
+                "description": "0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "enum": [
+                  0,
+                  1
+                ]
               }
             ],
             "responses": {}
@@ -2065,7 +2087,7 @@
                 "name": "dish_category_id",
                 "in": "formData",
                 "description": "enter dish category id",
-                "required": true,
+                "required": false,
                 "type": "number"
               },
               {
@@ -2074,6 +2096,25 @@
                 "description": "enter dish image url",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "is_recommended",
+                "in": "formData",
+                "description": "0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "enum":[0,1]
+              },
+              {
+                "name": "is_quick_filter",
+                "in": "formData",
+                "description": "0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "enum": [
+                  0,
+                  1
+                ]
               }
             ],
             "responses": {}
@@ -2099,6 +2140,62 @@
               {
                 "name": "dishId",
                 "in": "path",
+                "description": "dish Id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/toggleDishAsRecommended": {
+          "put": {
+            "tags": [
+              "Admin Menu Management"
+            ],
+            "description": "Api to toggle Dish As Recommended",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dishId",
+                "in": "formData",
+                "description": "dish Id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/toggleDishAsQuickFilter": {
+          "put": {
+            "tags": [
+              "Admin Menu Management"
+            ],
+            "description": "Api to toggle Dish As Quick Filter",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dishId",
+                "in": "formData",
                 "description": "dish Id",
                 "required": true,
                 "type": "number"

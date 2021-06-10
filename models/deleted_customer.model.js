@@ -11,8 +11,6 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            DeletedCustomer.belongsTo(models.Customer)
-            DeletedCustomer.belongsTo(models.Admin)
         }
     }
     DeletedCustomer.init({

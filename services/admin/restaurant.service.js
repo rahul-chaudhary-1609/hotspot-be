@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 const adminAWS = require('../../utils/aws');
 const constants = require("../../constants");
 const dummyData = require("../../services/customer/dummyData");
+const { param } = require('../../routes/customer.routes');
 
 module.exports = {
     listRestaurant: async(params) => {
@@ -230,28 +231,6 @@ module.exports = {
         
     },
 
-    // uploadRestaurantImage: async (fileParams) => {
-        
-
-    //         let now = (new Date()).getTime();
-
-    //         const pictureName = fileParams.originalname.split('.');
-    //         const pictureType = pictureName[pictureName.length - 1];
-    //         const pictureKey = `restaurant/${now}.${pictureType}`;
-    //         const pictureBuffer = fileParams.buffer;
-
-    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
-
-    //         adminAWS.s3.upload(params, async (error, data) => {
-    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
-
-    //             const image_url = data.Location;
-                
-
-    //             return { image_url };
-    //         })
-       
-    // },
 
     restaurantCategoryList: async () => {
 
@@ -319,8 +298,6 @@ module.exports = {
 
                 const dishCategoryIds = dishCategory.map(val => val.id);
 
-                console.log("dishCategoryIds", dishCategoryIds)
-
                 query.where = {
                     ...query.where,
                     [Op.or]: [
@@ -346,80 +323,60 @@ module.exports = {
     },
     getDish: async (params) => {
 
-            let dishId = params.dishId;
-
-            const dish = await RestaurantDish.findByPk(dishId);
+            const dish = await RestaurantDish.findByPk(parseInt(params.dishId));
 
             if (!dish) throw new Error(constants.MESSAGES.no_dish);
 
-
             return { dish };
-
-        
-
     },
 
     editDish: async (params) => {
 
-            let dishId = params.dishId;
+        let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
 
-            const dish = await RestaurantDish.findByPk(dishId);
-
-            if (!dish) throw new Error(constants.MESSAGES.no_dish);
-
-            await RestaurantDish.update(
-                params
-            ,
-                {
-                    where: {
-                        id: dishId,
-                    },
-                    returning: true,
-                });
-            
-        return true;
-
+        if (!dish) throw new Error(constants.MESSAGES.no_dish);
         
+        dish.name = params.name;
+        dish.price = params.price;
+        dish.description = params.description;
+        dish.restaurant_id = params.restaurant_id;
+        dish.dish_category_id = params.dish_category_id;
+        dish.image_url = params.image_url;
+        dish.is_recommended = params.is_recommended || dish.is_recommended;
+        dish.is_quick_filter = params.is_quick_filter || dish.is_quick_filter;
+        
+        dish.save();
+            
+        return true;       
 
     },
 
     deleteDish: async (params) => {
         
-
-            let dishId = params.dishId;
-
-            await RestaurantDish.update({
-                status:constants.STATUS.deleted,
-            },
-                {
-                    where: {
-                        id: dishId,
-                    },
-                    returning: true,
-                })
+        let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
+        if (!dish) throw new Error(constants.MESSAGES.no_dish);
+        dish.destroy();
         return true;
         
     },
 
-    // uploadDishImage: async (fileParams) => {
-    //                 let now = (new Date()).getTime();
+    toggleDishAsRecommended: async (params) => {
+        let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
+        if (!dish) throw new Error(constants.MESSAGES.no_dish);
 
-    //         const pictureName = fileParams.originalname.split('.');
-    //         const pictureType = pictureName[pictureName.length - 1];
-    //         const pictureKey = `dish/${now}.${pictureType}`;
-    //         const pictureBuffer = fileParams.buffer;
-
-    //         const params = adminAWS.setParams(pictureKey, pictureBuffer);
-
-    //         adminAWS.s3.upload(params, async (error, data) => {
-    //             if (error) throw new Error(constants.MESSAGES.picture_upload_error);
-
-    //             const image_url = data.Location;
-
-
-    //             return { image_url };
-    //         })
+        dish.is_recommended =dish.is_recommended ? 0 : 1;
         
-    // },
+        dish.save();
+        return true;
+    },
 
+    toggleDishAsQuickFilter: async (params) => {
+        let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
+        if (!dish) throw new Error(constants.MESSAGES.no_dish);
+
+        dish.is_quick_filter = dish.is_quick_filter ? 0 :  1;
+        
+        dish.save();
+        return true;
+    }
 }

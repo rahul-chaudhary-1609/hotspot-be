@@ -150,7 +150,7 @@ module.exports = {
 
         
         let whereCondition = {
-            status: constants.ORDER_DELIVERY_STATUS.delivered,
+            status: constants.ORDER_STATUS.delivered,
             type: constants.ORDER_TYPE.pickup
         };
         if (params.search_key) {
@@ -268,7 +268,7 @@ module.exports = {
                     [sequelize.fn("sum", sequelize.col("tip_amount")), "tip_amount"],
                 ],
                 where: {
-                    status: constants.ORDER_DELIVERY_STATUS.delivered,
+                    status: constants.ORDER_STATUS.delivered,
                     [Op.and]: [
                         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
                         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
@@ -469,7 +469,7 @@ module.exports = {
             await models.Order.findAndCountAll({
                 where: {
                     restaurant_id: params.restaurant_id,
-                    status: constants.ORDER_DELIVERY_STATUS.delivered,
+                    status: constants.ORDER_STATUS.delivered,
                     delivery_datetime: {
                         [Op.and]: [
                             { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
@@ -742,7 +742,7 @@ module.exports = {
             await models.Order.findAndCountAll({
                 where: {
                     driver_id: params.driver_id,
-                    status: constants.ORDER_DELIVERY_STATUS.delivered,
+                    status: constants.ORDER_STATUS.delivered,
                     delivery_datetime: {
                         [Op.and]: [
                             { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },

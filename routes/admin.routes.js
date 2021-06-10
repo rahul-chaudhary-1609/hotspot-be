@@ -62,24 +62,25 @@ router.put('/editRestaurant/:restaurantId',adminAuthentication.validateAdminToke
 
 router.delete('/deleteRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.restaurantIdSchema),adminRestaurantController.deleteRestaurant);
 
-//router.put('/uploadRestaurantImage',adminAuthentication.validateAdminToken,adminMulter.upload, adminRestaurantController.uploadRestaurantImage);
 
 
 //Menu Management
 
 router.get('/dishCategoryList',adminAuthentication.validateAdminToken, adminRestaurantController.dishCategoryList);
 
-router.post('/addDish',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.dishSchema), adminRestaurantController.addDish);
+router.post('/addDish',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addDish), adminRestaurantController.addDish);
 
-router.get('/getDish/:dishId',adminAuthentication.validateAdminToken, adminRestaurantController.getDish);
+router.get('/getDish/:dishId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getDish),adminRestaurantController.getDish);
 
-router.get('/listDishes/:restaurantId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.restaurantIdSchema), adminRestaurantController.listDishes);
+router.get('/listDishes/:restaurantId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.listDishes), adminRestaurantController.listDishes);
 
-router.put('/editDish/:dishId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.dishSchema), adminRestaurantController.editDish);
+router.put('/editDish/:dishId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getDish),joiValidation.validateBody(apiSchema.editDish), adminRestaurantController.editDish);
 
-router.delete('/deleteDish/:dishId',adminAuthentication.validateAdminToken, adminRestaurantController.deleteDish);
+router.delete('/deleteDish/:dishId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.deleteDish), adminRestaurantController.deleteDish);
 
-//router.put('/uploadDishImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminRestaurantController.uploadDishImage);
+router.put('/toggleDishAsRecommended',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.toggleDishAsRecommended), adminRestaurantController.toggleDishAsRecommended);
+
+router.put('/toggleDishAsQuickFilter',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.toggleDishAsQuickFilter), adminRestaurantController.toggleDishAsQuickFilter);
 
 
 
@@ -93,8 +94,6 @@ router.get('/viewCustomerProfile/:customerId',adminAuthentication.validateAdminT
 router.put('/changeCustomerStatus/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.changeCustomerStatus);
 
 router.put('/editCustomer/:customerId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.customerSchema), adminCustomerController.editCustomer);
-
-//router.put('/uploadCustomerImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminCustomerController.uploadCustomerImage);
 
 router.delete('/deleteCustomer/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.deleteCustomer);
 

@@ -564,7 +564,7 @@ module.exports = {
                     restaurant_id,
                     delivery_datetime,
                     status: {
-                        [Op.ne]:constants.ORDER_DELIVERY_STATUS.not_paid,
+                        [Op.ne]:constants.ORDER_STATUS.not_paid,
                     }
                 }
             })
