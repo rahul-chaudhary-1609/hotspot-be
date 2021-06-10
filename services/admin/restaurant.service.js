@@ -1,10 +1,11 @@
-const { Restaurant, RestaurantCategory,RestaurantHotspot,DishCategory,RestaurantDish,HotspotLocation } = require('../../models');
+const { Restaurant, RestaurantCategory,RestaurantHotspot,DishCategory,RestaurantDish,HotspotLocation,DishAddOn } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
 const adminAWS = require('../../utils/aws');
 const constants = require("../../constants");
 const dummyData = require("../../services/customer/dummyData");
 const { param } = require('../../routes/customer.routes');
+const { ModelBuildInstance } = require('twilio/lib/rest/autopilot/v1/assistant/modelBuild');
 
 module.exports = {
     listRestaurant: async(params) => {
@@ -337,7 +338,7 @@ module.exports = {
         if (!dish) throw new Error(constants.MESSAGES.no_dish);
         
         dish.name = params.name;
-        dish.price = params.price;
+        dish.price = parseFloat(params.price);
         dish.description = params.description;
         dish.restaurant_id = params.restaurant_id;
         dish.dish_category_id = params.dish_category_id;
@@ -378,5 +379,60 @@ module.exports = {
         
         dish.save();
         return true;
-    }
+    },
+
+    addDishAddon: async (params) => {
+        let dishAddon = await utilityFunction.convertPromiseToObject(
+            await DishAddOn.create(params)
+        );
+
+        return { dishAddon }
+    },
+
+    listDishAddon: async (params) => {
+        let dishAddons = await utilityFunction.convertPromiseToObject(
+            await DishAddOn.findAndCountAll({
+                where: {
+                    restaurant_dish_id: parseInt(params.restaurant_dish_id),
+                    status:constants.STATUS.active,
+                }
+            })
+        );
+
+        if (dishAddons.count==0) throw new Error(constants.MESSAGES.no_dish_addon);
+
+        return {dishAddons}
+    },
+
+    getDishAddonById: async (params) => {
+        let dishAddon = await utilityFunction.convertPromiseToObject(await DishAddOn.findByPk(parseInt(params.dish_addon_id)));
+        if (!dishAddon) throw new Error(constants.MESSAGES.no_dish_addon);
+
+        return {dishAddon}
+    },
+
+    editDishAddon: async (params) => {
+        let dishAddon = await DishAddOn.findByPk(parseInt(params.dish_addon_id));
+        if (!dishAddon) throw new Error(constants.MESSAGES.no_dish_addon);
+
+        dishAddon.name = params.name || dishAddon.name;
+        dishAddon.price =parseFloat(params.price) || parseFloat(dishAddon.price);
+        dishAddon.image_url = params.image_url|| dishAddon.image_url;
+        dishAddon.restaurant_dish_id = params.restaurant_dish_id || dishAddon.restaurant_dish_id;
+
+        dishAddon.save();
+
+        return {dishAddon}
+    },
+
+    deleteDishAddon: async (params) => {
+        let dishAddon = await DishAddOn.findByPk(parseInt(params.dish_addon_id));
+        if (!dishAddon) throw new Error(constants.MESSAGES.no_dish_addon);
+
+        dishAddon.destroy();
+
+        return true
+    },
+
+
 }

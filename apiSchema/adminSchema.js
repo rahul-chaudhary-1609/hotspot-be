@@ -124,7 +124,7 @@ module.exports = {
         profile_picture_url: Joi.string().trim().optional(),
     }),
 
-    AddDish : Joi.object({
+    addDish : Joi.object({
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
         description: Joi.string().required(),
@@ -166,6 +166,35 @@ module.exports = {
     toggleDishAsQuickFilter : Joi.object({
         dishId: Joi.number().required(),
     }),
+
+    addDishAddon : Joi.object({
+        name: Joi.string().trim().required(),
+        price: Joi.number().required(),
+        image_url: Joi.string().uri().required(),
+        restaurant_dish_id: Joi.number().required(),
+    }),
+
+    listDishAddon: Joi.object({
+        restaurant_dish_id: Joi.number().required(),
+    }),
+
+    getDishAddonById: Joi.object({
+        dish_addon_id: Joi.number().required(),
+    }),
+
+    editDishAddon: Joi.object({
+        dish_addon_id: Joi.number().required(),
+        name: Joi.string().trim().optional(),
+        price: Joi.number().optional(),
+        image_url: Joi.string().uri().optional(),
+        restaurant_dish_id: Joi.number().optional(),
+    }),
+
+
+    deleteDishAddon : Joi.object({
+        dish_addon_id: Joi.number().required(),
+    }),
+
 
     driverSchema : Joi.object({
         first_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).messages({

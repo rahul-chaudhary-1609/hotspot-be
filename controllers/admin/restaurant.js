@@ -141,5 +141,51 @@ module.exports = {
         }
     },
 
+    
+    addDishAddon: async (req, res) => {
+        try {
+            const responseFromService = await restaurantService.addDishAddon(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+    
+    listDishAddon: async (req, res) => {
+        try {
+            const responseFromService = await restaurantService.listDishAddon(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+    getDishAddonById: async (req, res) => {
+        try {
+            const responseFromService = await restaurantService.getDishAddonById(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+
+    },
+
+    editDishAddon: async (req, res) => {
+        try {
+            const responseFromService = await restaurantService.editDishAddon(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.update_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+
+    },
+
+    deleteDishAddon: async (req, res) => {
+       try {
+            const responseFromService = await restaurantService.deleteDishAddon(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 
 }
