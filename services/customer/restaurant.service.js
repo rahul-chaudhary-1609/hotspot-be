@@ -948,19 +948,13 @@ module.exports = {
     },
 
     getRecomendedSlide: async (params,user) => {
-           
-        const limitOptions = [3,4,5];
-
-        const limit = limitOptions[Math.floor(Math.random() * limitOptions.length)];
-
-        const offset = limit - 2;
 
         const restaurantDish = await models.RestaurantDish.findAll({
             where: {
-                restaurant_id: params.restaurantId
-            },
-            limit,
-            offset,
+                restaurant_id: params.restaurantId,
+                status:constants.STATUS.active,
+                is_recommended:1,
+            }
         });
 
         return getFoodCard({ restaurantDish,customer_id:user.id });
