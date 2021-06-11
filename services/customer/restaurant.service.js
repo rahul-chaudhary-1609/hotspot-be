@@ -355,19 +355,19 @@ module.exports = {
             }
         })
 
-        const dishCategories = await models.DishCategory.findAll({
-            where: {
-                name: {
-                    [Op.iLike]: `%${searchPhrase}%`,
-                }
-            }
-        });
+        // const dishCategories = await models.DishCategory.findAll({
+        //     where: {
+        //         name: {
+        //             [Op.iLike]: `%${searchPhrase}%`,
+        //         }
+        //     }
+        // });
 
-        dishCategories.forEach((dishCategory) => {
-            if (!searchSuggestion.restaurantCategories.includes(dishCategory.name)) {
-                searchSuggestion.restaurantCategories.push(dishCategory.name)
-            }
-        })
+        // dishCategories.forEach((dishCategory) => {
+        //     if (!searchSuggestion.restaurantCategories.includes(dishCategory.name)) {
+        //         searchSuggestion.restaurantCategories.push(dishCategory.name)
+        //     }
+        // })
 
         const restaurantDishes = await models.RestaurantDish.findAll({
             where: {
@@ -458,32 +458,35 @@ module.exports = {
 
         
         if (params.searchPhrase) {
-            let dishCategories = await utility.convertPromiseToObject(
-                await models.DishCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]:`%${params.searchPhrase}%`
-                        }
-                    }
-                })
-            )
+            // let dishCategories = await utility.convertPromiseToObject(
+            //     await models.DishCategory.findAll({
+            //         where: {
+            //             name: {
+            //                 [Op.iLike]:`%${params.searchPhrase}%`
+            //             }
+            //         }
+            //     })
+            // )
 
-            let dish_category_ids = dishCategories.map((dishCategory) => dishCategory.id);
+            // let dish_category_ids = dishCategories.map((dishCategory) => dishCategory.id);
 
             let restaurantDishes = await utility.convertPromiseToObject(
                 await models.RestaurantDish.findAll({
                     attributes:['id','restaurant_id'],
                     where: {
-                        [Op.or]: [
-                            {
-                                name: {
+                        name: {
                                     [Op.iLike]:`%${params.searchPhrase}%`
-                                }
                             },
-                            {
-                                dish_category_id:dish_category_ids,
-                            }
-                        ],
+                        // [Op.or]: [
+                        //     {
+                        //         name: {
+                        //             [Op.iLike]:`%${params.searchPhrase}%`
+                        //         }
+                        //     },
+                        //     {
+                        //         dish_category_id:dish_category_ids,
+                        //     }
+                        // ],
                         status:constants.STATUS.active
                         
                     }
@@ -657,32 +660,35 @@ module.exports = {
         }
 
         if (params.searchPhrase) {
-            let dishCategories = await utility.convertPromiseToObject(
-                await models.DishCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]:`%${params.searchPhrase}%`
-                        }
-                    }
-                })
-            )
+            // let dishCategories = await utility.convertPromiseToObject(
+            //     await models.DishCategory.findAll({
+            //         where: {
+            //             name: {
+            //                 [Op.iLike]:`%${params.searchPhrase}%`
+            //             }
+            //         }
+            //     })
+            // )
 
-            let dish_category_ids = dishCategories.map((dishCategory) => dishCategory.id);
+            // let dish_category_ids = dishCategories.map((dishCategory) => dishCategory.id);
 
             let restaurantDishes = await utility.convertPromiseToObject(
                 await models.RestaurantDish.findAll({
                     attributes:['id','restaurant_id'],
                     where: {
-                        [Op.or]: [
-                            {
-                                name: {
+                        name: {
                                     [Op.iLike]:`%${params.searchPhrase}%`
-                                }
                             },
-                            {
-                                dish_category_id:dish_category_ids,
-                            }
-                        ],
+                        // [Op.or]: [
+                        //     {
+                        //         name: {
+                        //             [Op.iLike]:`%${params.searchPhrase}%`
+                        //         }
+                        //     },
+                        //     {
+                        //         dish_category_id:dish_category_ids,
+                        //     }
+                        // ],
                         status:constants.STATUS.active,
                         
                     }
