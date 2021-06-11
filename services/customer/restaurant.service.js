@@ -297,7 +297,7 @@ module.exports = {
             
             where = {
                 ...where,
-                id:hotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id),
+                restaurant_id:hotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id),
             }            
         }
 
