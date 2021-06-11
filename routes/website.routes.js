@@ -10,6 +10,8 @@ const staticContentController = require('../controllers/website/static_content')
 
 router.get('/getStaticContent/:type', joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
 router.get('/getFaqTopics', staticContentController.getFaqTopics);
-router.get('/getFaqs',joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
+router.get('/getFaqs', joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
+router.get('/htmlFileUrlToTextConvert', staticContentController.htmlFileUrlToTextConvert);
+
 
 module.exports = router;

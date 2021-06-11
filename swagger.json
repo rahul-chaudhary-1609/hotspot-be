@@ -8332,6 +8332,27 @@
         ],
         "responses": {}
       }
+    },
+    "/website/htmlFileUrlToTextConvert": {
+      "get": {
+        "tags": [
+          "Admin Onboarding"
+        ],
+        "description": "Api to get admin profile",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "file_url",
+            "in": "query",
+            "description": "file_url",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
     }
 
     }

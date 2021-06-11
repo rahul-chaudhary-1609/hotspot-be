@@ -28,6 +28,19 @@ module.exports = {
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
-  },
+    },
+  
+  htmlFileUrlToTextConvert: async (req, res) => {
+        try {
+            const htmlCode = await loginService.htmlFileUrlToTextConvert(req.query);
+
+            // sent response in html
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.write(htmlCode);
+            res.end();
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
   
 }

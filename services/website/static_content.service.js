@@ -60,4 +60,13 @@ module.exports = {
         return {faqQuestions}
     },
 
+    htmlFileUrlToTextConvert: async (params) => {
+        return new Promise(((resolve, reject) => {
+            fetch(
+                params.file_url
+              )
+              .then((res) => res.text())
+              .then((body) => resolve(body));
+        }));
+    },
 }
