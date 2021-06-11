@@ -277,28 +277,39 @@ module.exports = {
           
     },
 
-    getFoodCategory: async () => {
+    getQuickFilterList: async (params) => {
 
-            let dishCategories = await models.DishCategory.findAndCountAll();
+        let where = {
+            status:constants.STATUS.active,
+            is_quick_filter:1,
+        }
 
-            if (dishCategories.count === 0) {
-                await models.DishCategory.bulkCreate(
-                    dummyData.dishCategories,
-                    { returning: ['id'] },
-                );
+        if (params.hotspot_location_id) {
+            let hotspotRestaurants = await utility.convertPromiseToObject(
+                await models.RestaurantHotspot.findAll({
+                    where: {
+                        hotspot_location_id: parseInt(params.hotspot_location_id),
+                    }
+                })
+            )
+            
+            where = {
+                ...where,
+                id:hotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id),
+            }            
+        }
+
+        const restaurantDishes = await models.RestaurantDish.findAll({where});
+
+        const quickFilterList = await restaurantDishes.map((dish) => {
+            return {
+                id:dish.id,
+                name: dish.name,
+                image_url:dish.image_url,
             }
+        });
 
-            dishCategories = await models.DishCategory.findAll();
-
-            const dish_categories = await dishCategories.map((dishCategory) => {
-                return {
-                    dish_category_id:dishCategory.id,
-                    name: dishCategory.name,
-                    image_url:dishCategory.image_url,
-                }
-            });
-
-            return {  dish_categories };
+        return {  quickFilterList };
          
     },
 
@@ -406,12 +417,12 @@ module.exports = {
         };
 
 
-        if (params.dish_category_ids && params.dish_category_ids.length!=0) {
+        if (params.quick_filter_ids && params.quick_filter_ids.length!=0) {
             let restaurantDishes = await utility.convertPromiseToObject(
                 await models.RestaurantDish.findAll({
                     attributes:['id','restaurant_id'],
                     where: {
-                        dish_category_id: params.dish_category_ids,
+                        id: params.quick_filter_ids,
                         status:constants.STATUS.active,
                     }
                 })
@@ -606,12 +617,12 @@ module.exports = {
         };
 
 
-        if (params.dish_category_ids && params.dish_category_ids.length!=0) {
+        if (params.quick_filter_ids && params.quick_filter_ids.length!=0) {
             let restaurantDishes = await utility.convertPromiseToObject(
                 await models.RestaurantDish.findAll({
                     attributes:['id','restaurant_id'],
                     where: {
-                        dish_category_id: params.dish_category_ids,
+                        id: params.quick_filter_ids,
                         status:constants.STATUS.active,
                     }
                 })

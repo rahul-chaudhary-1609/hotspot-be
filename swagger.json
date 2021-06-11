@@ -5801,12 +5801,12 @@
             "responses": {}
           }
         },
-        "/customer/get-food-category": {
+        "/customer/get_quick_filter_list": {
           "get": {
             "tags": [
               "Customer Restaurant"
             ],
-            "description": "Api to get all food categories",
+            "description": "Api to get quick filter food list",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -5816,7 +5816,15 @@
               }
             ],
             
-            "parameters": [],
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": false,
+                "type": "number"
+              }
+            ],
             "responses": {}
           }
         },
@@ -5950,9 +5958,9 @@
                 "maxItems": 2
               },
               {
-                "name": "dish_category_ids",
+                "name": "quick_filter_ids",
                 "in": "formData",
-                "description": "enter dish category id",
+                "description": "enter quick filter ids",
                 "required": false,
                 "type": "array",
                 "items": {
@@ -6010,9 +6018,9 @@
                 "maxItems":2
               },
               {
-                "name": "dish_category_ids",
+                "name": "quick_filter_ids",
                 "in": "formData",
-                "description": "enter dish category id",
+                "description": "enter quick filter ids",
                 "required": false,
                 "type": "array",
                 "items": {

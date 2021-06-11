@@ -38,8 +38,8 @@ module.exports.parseStringToArray = (req, res, next) => {
             req.body.deliveries = JSON.parse(`[${req.body.deliveries}]`);
         }
 
-        if (req.body.dish_category_ids && !Array.isArray(req.body.dish_category_ids)) {
-            req.body.dish_category_ids = JSON.parse(`[${req.body.dish_category_ids}]`);
+        if (req.body.quick_filter_ids && !Array.isArray(req.body.quick_filter_ids)) {
+            req.body.quick_filter_ids = JSON.parse(`[${req.body.quick_filter_ids}]`);
         }
 
         if (req.body.restaurant_category_ids && !Array.isArray(req.body.restaurant_category_ids)) {

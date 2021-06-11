@@ -120,7 +120,7 @@ router.post('/set-favorite-restaurant', customerAuthentication.validateCustomerT
 
 router.get('/get-favorite-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getFavoriteRestaurant), RestaurantController.getFavoriteRestaurant);
 
-router.get('/get-food-category', customerAuthentication.validateCustomerToken, RestaurantController.getFoodCategory);
+router.get('/get_quick_filter_list', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getQuickFilterList),  RestaurantController.getQuickFilterList);
 
 router.get('/get-restaurant-category', customerAuthentication.validateCustomerToken, RestaurantController.getRestaurantCategory);
 

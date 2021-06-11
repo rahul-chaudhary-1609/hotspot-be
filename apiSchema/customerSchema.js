@@ -236,16 +236,20 @@ module.exports = {
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
         }),
         customer_location:Joi.array().required(),
-        dish_category_ids:Joi.array().allow(null, '').optional(),
+        quick_filter_ids:Joi.array().allow(null, '').optional(),
         restaurant_category_ids:Joi.array().allow(null, '').optional(),
         searchPhrase:Joi.string().trim().allow(null, '').optional(),
     }),
 
     getHotspotRestaurantPickup:Joi.object({
         customer_location:Joi.array().required(),
-        dish_category_ids:Joi.array().allow(null, '').optional(),
+        quick_filter_ids:Joi.array().allow(null, '').optional(),
         restaurant_category_ids:Joi.array().allow(null, '').optional(),
         searchPhrase:Joi.string().trim().allow(null, '').optional(),
+    }),
+
+    getQuickFilterList: Joi.object({
+        hotspot_location_id: Joi.number().allow(null, '').optional(),
     }),
 
     getRestaurantDetails:Joi.object({

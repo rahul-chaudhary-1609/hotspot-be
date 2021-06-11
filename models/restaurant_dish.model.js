@@ -40,7 +40,6 @@ module.exports = (sequelize, DataTypes) => {
 
         dish_category_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
         },
         image_url: {
             type: DataTypes.STRING,
@@ -56,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
         is_quick_filter: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            defaultValue: 0,
+            defaultValue: 1,
             comment: '0=> no, 1=> yes'
         },
 
