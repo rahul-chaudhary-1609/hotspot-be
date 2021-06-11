@@ -1,6 +1,7 @@
 const { StaticContent, FaqTopics, Faq} = require('../../models');
 const constants = require("../../constants");
 const utility = require('../../utils/utilityFunctions');
+const fetch = require('node-fetch');
 
 module.exports = {
 

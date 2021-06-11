@@ -32,7 +32,7 @@ module.exports = {
   
   htmlFileUrlToTextConvert: async (req, res) => {
         try {
-            const htmlCode = await loginService.htmlFileUrlToTextConvert(req.query);
+            const htmlCode = await staticContent.htmlFileUrlToTextConvert(req.query);
 
             // sent response in html
             res.writeHead(200, { 'Content-Type': 'text/html' });

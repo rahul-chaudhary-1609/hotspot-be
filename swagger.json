@@ -8336,7 +8336,7 @@
     "/website/htmlFileUrlToTextConvert": {
       "get": {
         "tags": [
-          "Admin Onboarding"
+          "Website Management"
         ],
         "description": "Api to get admin profile",
         "consumes": [
