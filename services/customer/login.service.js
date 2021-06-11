@@ -1218,46 +1218,55 @@ module.exports = {
 
     getCustomerAddress: async (user) => {
 
-            const customerFavLocation = await models.CustomerFavLocation.findAll({
-                where: {
-                    customer_id: user.id
-                }
-            })
+        let customer =await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(user.id));
 
-            if (customerFavLocation.length === 0) throw new Error(constants.MESSAGES.no_address);
-
-            let customerAddress = [];
-
-
-            for (const val of customerFavLocation){
-                const dropoff = await models.HotspotDropoff.findOne({ where: { id: val.hotspot_dropoff_id } });
-                
-                const hotspotLocation = await models.HotspotLocation.findOne({
-                    where: {
-                        id: val.hotspot_location_id,
-                        //customer_id: user.id
-                    }
-                });
-                
-                customerAddress.push(
-                    {
-                        address: {
-                            id: hotspotLocation.id,
-                            name:hotspotLocation.name,
-                            address: hotspotLocation.location_detail,
-                            city: hotspotLocation.city,
-                            state: hotspotLocation.state,
-                            postal_code: hotspotLocation.postal_code,
-                            country: hotspotLocation.country,
-                            location_geometry: hotspotLocation.location
-                        },
-                        default_dropoff: dropoff.dropoff_detail,
-                        isDefault: val.is_default
-                    }
-                )
+        const customerFavLocation = await models.CustomerFavLocation.findAll({
+            where: {
+                customer_id: user.id
             }
+        })
 
-            return { customerAddress: customerAddress };
+        if (customerFavLocation.length === 0) throw new Error(constants.MESSAGES.no_address);
+
+        let customerAddress = [];
+
+
+        for (const val of customerFavLocation){
+            const dropoff = await models.HotspotDropoff.findOne({ where: { id: val.hotspot_dropoff_id } });
+            
+            const hotspotLocation = await models.HotspotLocation.findOne({
+                where: {
+                    id: val.hotspot_location_id,
+                    //customer_id: user.id
+                }
+            });
+
+            let distanceCalculationParams = {
+                sourceCoordinates: { latitude: geolib.toDecimal(customer.location[0]), longitude: geolib.toDecimal(customer.location[1])},
+                destinationCoordinates: { latitude: hotspotLocation.location[0], longitude: hotspotLocation.location[1] },
+                accuracy:1,
+            }
+            
+            customerAddress.push(
+                {
+                    address: {
+                        id: hotspotLocation.id,
+                        name:hotspotLocation.name,
+                        address: hotspotLocation.location_detail,
+                        city: hotspotLocation.city,
+                        state: hotspotLocation.state,
+                        postal_code: hotspotLocation.postal_code,
+                        country: hotspotLocation.country,
+                        location_geometry: hotspotLocation.location,
+                        distance: utilityFunction.getDistanceBetweenTwoGeoLocations(distanceCalculationParams, 'miles'),
+                    },
+                    default_dropoff: dropoff.dropoff_detail,
+                    isDefault: val.is_default
+                }
+            )
+        }
+
+        return { customerAddress: customerAddress };
 
         
     },
