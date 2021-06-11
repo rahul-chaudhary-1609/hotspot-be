@@ -279,6 +279,8 @@ module.exports = {
 
     getQuickFilterList: async (params) => {
 
+        console.log(params);
+
         let where = {
             status:constants.STATUS.active,
             is_quick_filter:1,
@@ -308,6 +310,8 @@ module.exports = {
                 image_url:dish.image_url,
             }
         });
+
+        if(quickFilterList.length==0) throw new Error(constants.MESSAGES.no_quick_filter)
 
         return {  quickFilterList };
          
