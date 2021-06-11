@@ -1242,7 +1242,7 @@ module.exports = {
             });
 
             let distanceCalculationParams = {
-                sourceCoordinates: { latitude: geolib.toDecimal(customer.location[0]), longitude: geolib.toDecimal(customer.location[1])},
+                sourceCoordinates: { latitude: customer.location[0], longitude: customer.location[1]},
                 destinationCoordinates: { latitude: hotspotLocation.location[0], longitude: hotspotLocation.location[1] },
                 accuracy:1,
             }
