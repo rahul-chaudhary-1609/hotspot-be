@@ -1,11 +1,8 @@
-const { Restaurant, RestaurantCategory,RestaurantHotspot,DishCategory,RestaurantDish,HotspotLocation,DishAddOn } = require('../../models');
+const { Restaurant, RestaurantCategory,HotspotRestaurant,DishCategory,RestaurantDish,HotspotLocation,DishAddOn } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
-const adminAWS = require('../../utils/aws');
 const constants = require("../../constants");
 const dummyData = require("../../services/customer/dummyData");
-const { param } = require('../../routes/customer.routes');
-const { ModelBuildInstance } = require('twilio/lib/rest/autopilot/v1/assistant/modelBuild');
 
 module.exports = {
     listRestaurant: async(params) => {
@@ -81,7 +78,7 @@ module.exports = {
                         })
                         
                         for (let row of restaurantHotspotRows) {
-                            await RestaurantHotspot.findOrCreate({
+                            await HotspotRestaurant.findOrCreate({
                                 where: row,
                                 defaults:row
                             })       
@@ -135,7 +132,7 @@ module.exports = {
             let coveringHotspots = [];
 
             
-            const restaurantHotspot = await RestaurantHotspot.findAndCountAll({
+            const restaurantHotspot = await HotspotRestaurant.findAndCountAll({
                 where: {
                     restaurant_id:restaurantId,
                 }
@@ -181,7 +178,7 @@ module.exports = {
                 await Restaurant.update(updates, query);
 
                 if (hotspotLocationIds) {
-                    await RestaurantHotspot.destroy({
+                    await HotspotRestaurant.destroy({
                         where: {
                             restaurant_id:parseInt(params.restaurantId),
                         },
@@ -195,7 +192,7 @@ module.exports = {
                         }
                     })
     
-                    await RestaurantHotspot.bulkCreate(restaurantHotspotRows);
+                    await HotspotRestaurant.bulkCreate(restaurantHotspotRows);
                 }
                 
                 return true;
@@ -223,7 +220,7 @@ module.exports = {
                     returning: true,
                 })
 
-        await RestaurantHotspot.destroy({
+        await HotspotRestaurant.destroy({
             where: {
                     restaurant_id:restaurantId,
                 }

@@ -51,14 +51,6 @@ module.exports = (sequelize, DataTypes) => {
         delivery_shifts: {
             type: DataTypes.ARRAY(DataTypes.TIME),
         },
-        customer_id: {
-            type: DataTypes.INTEGER,
-        },
-        is_added: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-            defaultValue: false
-        },
     }, {
         sequelize,
         underscored: true,

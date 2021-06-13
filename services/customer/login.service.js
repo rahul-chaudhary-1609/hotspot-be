@@ -1201,15 +1201,15 @@ module.exports = {
                 }
             });
 
-            await models.HotspotLocation.update({
-                is_added: true
-            }, {
-                where: {
-                    id:hotspot_location_id,
-                    //customer_id
-                },
-                returning: true,
-            });
+            // await models.HotspotLocation.update({
+            //     is_added: true
+            // }, {
+            //     where: {
+            //         id:hotspot_location_id,
+            //         //customer_id
+            //     },
+            //     returning: true,
+            // });
 
             if (customerFavLocation || created) return true
 

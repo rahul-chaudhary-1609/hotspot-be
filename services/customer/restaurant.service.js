@@ -227,7 +227,7 @@ module.exports = {
 
         if (params.hotspot_location_id) {
             let hotspotRestaurants = await utility.convertPromiseToObject(
-                await models.RestaurantHotspot.findAll({
+                await models.HotspotRestaurant.findAll({
                     where: {
                         hotspot_location_id: parseInt(params.hotspot_location_id),
                     }
@@ -288,7 +288,7 @@ module.exports = {
 
         if (params.hotspot_location_id) {
             let hotspotRestaurants = await utility.convertPromiseToObject(
-                await models.RestaurantHotspot.findAll({
+                await models.HotspotRestaurant.findAll({
                     where: {
                         hotspot_location_id: parseInt(params.hotspot_location_id),
                     }
@@ -550,7 +550,7 @@ module.exports = {
         }
 
         let hotspotRestaurants = await utility.convertPromiseToObject(
-            await models.RestaurantHotspot.findAll({
+            await models.HotspotRestaurant.findAll({
                 where: {
                     hotspot_location_id: parseInt(params.hotspot_location_id),
                 }
@@ -768,7 +768,7 @@ module.exports = {
 
     getRestaurantDetails: async (params) => {
 
-        const restaurantHotspot = await models.RestaurantHotspot.findOne({
+        const restaurantHotspot = await models.HotspotRestaurant.findOne({
             where: {
                 restaurant_id:params.restaurant_id,
             }
@@ -824,7 +824,7 @@ module.exports = {
 
     getRestaurantSchedule: async (params) => {
 
-            const restaurantHotspot = await models.RestaurantHotspot.findOne({
+            const restaurantHotspot = await models.HotspotRestaurant.findOne({
                 where: {
                     restaurant_id:params.restaurant_id,
                 }

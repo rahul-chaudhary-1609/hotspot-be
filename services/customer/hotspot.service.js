@@ -15,6 +15,14 @@ module.exports = {
         
         customer.save();
 
+        let customerFavLocations = await utility.convertPromiseToObject( await models.CustomerFavLocation.findAll({
+                where: {
+                    customer_id: parseInt(user.id),
+                }
+        }));
+
+        let customerFavLocationIds = customerFavLocations.map((customerFavLocation) => customerFavLocation.hotspot_location_id);
+
         const hotspotLocations = await models.HotspotLocation.findAll();
 
         const locations = hotspotLocations.map((hotspotLocation) => {
@@ -34,7 +42,7 @@ module.exports = {
                     postal_code: hotspotLocation.postal_code
                 },
                 location_geometry: { latitude: hotspotLocation.location[0], longitude: hotspotLocation.location[1] },
-                is_added: hotspotLocation.is_added,
+                is_added: customerFavLocationIds.includes(hotspotLocation.id),
                 distance: utility.getDistanceBetweenTwoGeoLocations(distanceCalculationParams, 'miles'),
             }
         });
@@ -83,15 +91,15 @@ module.exports = {
               }
           });
 
-          await models.HotspotLocation.update({
-              is_added: true
-          }, {
-              where: {
-                  id:hotspot_location_id,
-                  //customer_id
-              },
-              returning: true,
-          });
+        //   await models.HotspotLocation.update({
+        //       is_added: true
+        //   }, {
+        //       where: {
+        //           id:hotspot_location_id,
+        //           //customer_id
+        //       },
+        //       returning: true,
+        //   });
 
           await models.CustomerFavLocation.update({
               is_default: false

@@ -45,7 +45,7 @@ module.exports = {
                 })
 
                 for (let row of restaurantHotspotRows) {
-                    await models.RestaurantHotspot.findOrCreate({
+                    await models.HotspotRestaurant.findOrCreate({
                         where: row,
                         defaults: row
                     })       
@@ -159,7 +159,7 @@ module.exports = {
 
             if (restaurantIds) {
 
-                await models.RestaurantHotspot.destroy({
+                await models.HotspotRestaurant.destroy({
                     where: {
                         hotspot_location_id:hotspotLocationId,
                     },
@@ -173,7 +173,7 @@ module.exports = {
                     }
                 })
 
-                await models.RestaurantHotspot.bulkCreate(restaurantHotspotRows);
+                await models.HotspotRestaurant.bulkCreate(restaurantHotspotRows);
 
             }
 
@@ -280,7 +280,7 @@ module.exports = {
             let restaurants = [];
 
             
-            const restaurantHotspot = await models.RestaurantHotspot.findAndCountAll({
+            const restaurantHotspot = await models.HotspotRestaurant.findAndCountAll({
                 where: {
                     hotspot_location_id:hotspotLocationId,
                 }
@@ -350,7 +350,7 @@ module.exports = {
 
         if (!hotspot) throw new Error(constants.MESSAGES.no_hotspot);
     
-        // let hotspotRestaurant = await models.RestaurantHotspot.findOne({
+        // let hotspotRestaurant = await models.HotspotRestaurant.findOne({
         //     where: {
         //             hotspot_location_id:hotspotLocationId,
         //         }
@@ -367,7 +367,7 @@ module.exports = {
         
 
         
-        await models.RestaurantHotspot.destroy({
+        await models.HotspotRestaurant.destroy({
             where: {
                 hotspot_location_id:hotspotLocationId,
             },

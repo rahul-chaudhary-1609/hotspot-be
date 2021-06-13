@@ -76,9 +76,6 @@ module.exports = (sequelize, DataTypes) => {
         restaurant_category_ids: {
             type: DataTypes.ARRAY(DataTypes.INTEGER),
         },
-        customer_id: {
-            type: DataTypes.INTEGER,
-        },
         percentage_fee: {
             type: DataTypes.DECIMAL(5,2),
             allowNull: false,

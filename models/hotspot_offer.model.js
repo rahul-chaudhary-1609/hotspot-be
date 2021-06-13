@@ -30,12 +30,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         order: {
             type: DataTypes.INTEGER,
-            allowNull:false,
+            allowNull:true,
         },
         status: {
             type: DataTypes.INTEGER,
-            defaultValue: 1
-          },
+            allowNull: false,
+            defaultValue: 1,
+            comment: '0=>inactive,1=>active,2=>deleted'
+        },
 
 
     }, {
