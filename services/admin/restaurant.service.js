@@ -274,11 +274,13 @@ module.exports = {
         
     },
 
-    addDish: async (params) => {            
+    addDish: async (params) => {
+        
+        delete params.dish_category_id;
 
-            const restaurantDish=await RestaurantDish.create(params);
+        const restaurantDish=await RestaurantDish.create(params);
 
-            return { dish:restaurantDish };
+        return { dish:restaurantDish };
         
     },
     
@@ -291,21 +293,22 @@ module.exports = {
             if (params.searchKey) {
                 let searchKey = params.searchKey;
 
-                const dishCategory = await DishCategory.findAll({
-                    where: {
-                        name: { [Op.iLike]: `%${searchKey}%` }
-                    }
-                });
+                // const dishCategory = await DishCategory.findAll({
+                //     where: {
+                //         name: { [Op.iLike]: `%${searchKey}%` }
+                //     }
+                // });
 
-                const dishCategoryIds = dishCategory.map(val => val.id);
+                //const dishCategoryIds = dishCategory.map(val => val.id);
 
                 query.where = {
                     ...query.where,
-                    [Op.or]: [
-                        { name: { [Op.iLike]: `%${searchKey}%` } },
-                        { dish_category_id: dishCategoryIds}
+                    name: { [Op.iLike]: `%${searchKey}%` },
+                    // [Op.or]: [
+                    //     { name: { [Op.iLike]: `%${searchKey}%` } },
+                    //     { dish_category_id: dishCategoryIds}
                         
-                    ]
+                    // ]
                 };
             }
             query.order = [
@@ -341,7 +344,7 @@ module.exports = {
         dish.price = parseFloat(params.price);
         dish.description = params.description;
         dish.restaurant_id = params.restaurant_id;
-        dish.dish_category_id = params.dish_category_id;
+        //dish.dish_category_id = params.dish_category_id;
         dish.image_url = params.image_url;
         dish.is_recommended = params.is_recommended || dish.is_recommended;
         dish.is_quick_filter = params.is_quick_filter || dish.is_quick_filter;
