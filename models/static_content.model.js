@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
 
         video_url: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
 
         page_url:{

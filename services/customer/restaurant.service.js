@@ -225,6 +225,10 @@ module.exports = {
 
         let restaurant_ids = await favRestaurant.map(restaurant => restaurant.restaurant_id);
 
+        let where = {
+                id: restaurant_ids,
+                status:constants.STATUS.active
+            }
         if (params.hotspot_location_id) {
             let hotspotRestaurants = await utility.convertPromiseToObject(
                 await models.HotspotRestaurant.findAll({
@@ -235,14 +239,17 @@ module.exports = {
             )
             
             let hotspot_restaurant_ids = hotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id);
-            restaurant_ids = restaurant_ids.filter((restaurant_id) => hotspot_restaurant_ids.includes(restaurant_id));
+            where.id = where.id.filter((restaurant_id) => hotspot_restaurant_ids.includes(restaurant_id));
+        }
+        else {
+            where = {
+                ...where,
+                order_type:[constants.ORDER_TYPE.pickup,constants.ORDER_TYPE.both]
+            }
         }
 
         const restaurants = await models.Restaurant.findAll({
-            where: {
-                id: restaurant_ids,
-                status:constants.STATUS.active
-            }
+            where
         });
 
         return  getRestaurantCard({ restaurants, user, params });
