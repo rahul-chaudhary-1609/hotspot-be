@@ -71,7 +71,7 @@ module.exports = {
 
     signUpStep1: Joi.object({
         phone_no: Joi.number().required(),
-        country_code: Joi.string().trim().required(),
+        country_code: Joi.string().trim().optional(),
         referral_code: Joi.string().trim().optional(),
         password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
             "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,

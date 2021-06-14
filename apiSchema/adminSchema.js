@@ -209,7 +209,7 @@ module.exports = {
         
         country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).messages({
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.country_code_msg.pattern,
-        }),
+        }).optional(),
 
         phone_no: Joi.string().trim().regex(/^\(?\d{10}$/).min(10).max(10).messages({
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
@@ -264,7 +264,7 @@ module.exports = {
         email: Joi.string().trim().max(45).email(),
         country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).messages({
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.country_code_msg.pattern,
-        }),
+        }).optional(),
         phone_no: Joi.string().trim().regex(/^\(?\d{10}$/).min(10).max(10).messages({
             "string.pattern.base":constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
         }),

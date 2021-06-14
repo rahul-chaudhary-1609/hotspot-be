@@ -23,7 +23,7 @@ editPersonalDetails: async (params, driver) => {
     const findContact = await utility.convertPromiseToObject(
       await Driver.findOne({
         where: {
-          country_code:params.country_code,
+          //country_code:params.country_code,
           phone_no:params.phone_no
         }
       })

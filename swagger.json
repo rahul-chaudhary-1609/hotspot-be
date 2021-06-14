@@ -4735,7 +4735,7 @@
                 "name": "country_code",
                 "in": "formData",
                 "description": "enter country code",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
@@ -4770,7 +4770,7 @@
                 "name": "country_code",
                 "in": "formData",
                 "description": "enter country code",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
@@ -4799,7 +4799,7 @@
                 "name": "country_code",
                 "in": "formData",
                 "description": "enter country code",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
@@ -4987,6 +4987,13 @@
                 "name": "country_code",
                 "in": "formData",
                 "description": "enter country code",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "phone",
+                "in": "formData",
+                "description": "enter phone no",
                 "required": true,
                 "type": "string"
               },
@@ -5574,7 +5581,7 @@
                 "name": "country_code",
                 "in": "formData",
                 "description": "enter country code",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
@@ -7151,7 +7158,7 @@
             "name": "country_code",
             "in": "formData",
             "description": "enter country_code",
-            "required": true,
+            "required": false,
             "type": "string"
           },
           {

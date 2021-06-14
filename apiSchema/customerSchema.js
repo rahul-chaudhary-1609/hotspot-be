@@ -25,7 +25,7 @@ module.exports = {
     phoneLogin : Joi.object({
         country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.country_code_msg.pattern,
-        }),
+        }).optional(),
         phone: Joi.string().trim().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).min(10).max(10).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
         }),
@@ -117,7 +117,7 @@ module.exports = {
         address:Joi.string().max(45),
         country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.country_code_msg.pattern,
-        }),
+        }).optional(),
         phone: Joi.string().trim().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).min(10).max(10).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
         }),
@@ -148,7 +148,7 @@ module.exports = {
     phoneSchema : Joi.object({
         country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.country_code_msg.pattern,
-        }),
+        }).optional(),
         phone: Joi.string().trim().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).min(10).max(10).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
         }),
@@ -156,7 +156,7 @@ module.exports = {
     }),
 
     resetPhoneSchema : Joi.object({
-        country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).required(),
+        country_code: Joi.string().trim().regex(/^(\+?\d{1,3}|\d{1,4})$/,).required().optional(),
         phone: Joi.string().trim().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).min(10).max(10).required(),
         code:Joi.string().trim().max(45),
     }),

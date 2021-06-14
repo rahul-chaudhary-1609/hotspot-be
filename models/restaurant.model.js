@@ -46,6 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         country_code: {
             type: DataTypes.STRING(10),
             allowNull: true,
+            defaultValue:"+91",
         },
         location: {
             type: DataTypes.ARRAY(DataTypes.FLOAT),

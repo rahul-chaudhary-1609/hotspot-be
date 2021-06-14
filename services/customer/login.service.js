@@ -58,12 +58,12 @@ module.exports = {
     loginWithPhone: async (params) => {
 
             const phone_no = parseInt(params.phone);
-            const country_code = params.country_code;
+            //const country_code = params.country_code;
             const password = params.password;
 
             const customer = await utilityFunction.convertPromiseToObject( await models.Customer.findOne({
                     where: {
-                        phone_no, country_code
+                        phone_no, //country_code
                     }
                 })
             );
@@ -103,7 +103,7 @@ module.exports = {
 
     signupCustomer: async (params ) => {
 
-            const { name, country_code, facebook_id, google_id, apple_id } = params;
+            const { name, facebook_id, google_id, apple_id } = params;
 
 
             const password = passwordHash.generate(params.password);
@@ -148,7 +148,7 @@ module.exports = {
                     }
                 },
                 defaults: {
-                    name, email, is_email_verified, email_verification_otp, email_verification_otp_expiry, country_code, phone_no, password, facebook_id, google_id, apple_id
+                    name, email, is_email_verified, email_verification_otp, email_verification_otp_expiry, phone_no, password, facebook_id, google_id, apple_id
                 }
             });
 
@@ -420,12 +420,12 @@ module.exports = {
     generatePhoneOTP: async (params ) => {
 
         const phone_no = parseInt(params.phone);
-        const country_code = params.country_code;
+        //const country_code = params.country_code;
 
 
         let customer = await utilityFunction.convertPromiseToObject( await models.Customer.findOne({
                 where: {
-                    country_code,phone_no
+                    phone_no
                 }
             })
         );
@@ -463,12 +463,12 @@ module.exports = {
     validatePhoneOTP: async (params ) => {
 
         const phone_no = parseInt(params.phone);
-        const country_code = params.country_code;
+        //const country_code = params.country_code;
 
 
         let customer = await utilityFunction.convertPromiseToObject(  await models.Customer.findOne({
                 where: {
-                    country_code, phone_no
+                     phone_no
                 }
             })
         );
@@ -691,14 +691,14 @@ module.exports = {
             let is_phone = false;
             let is_email = false;
 
-            const phoneResult = validation.resetPhoneSchema.validate({ country_code: params.country_code, phone: params.emailOrPhone });
+            const phoneResult = validation.resetPhoneSchema.validate({ phone: params.emailOrPhone });
 
             if (!phoneResult.error) {
                 is_phone = true;               
             }
 
             const phone_no = parseInt(phoneResult.value.phone);
-            const country_code = phoneResult.value.country_code;
+            //const country_code = phoneResult.value.country_code;
 
             const emailResult = validation.emailSchema.validate({ email: params.emailOrPhone });
 
@@ -724,7 +724,7 @@ module.exports = {
             else {
                 customer = await models.Customer.findOne({
                     where: {                        
-                            country_code, phone_no,
+                           phone_no,
                     }
                 });
             }
@@ -806,14 +806,14 @@ module.exports = {
             let is_phone = false;
             let is_email = false;
 
-            const phoneResult = validation.resetPhoneSchema.validate({ country_code: params.country_code, phone: params.emailOrPhone });
+            const phoneResult = validation.resetPhoneSchema.validate({  phone: params.emailOrPhone });
 
             if (!phoneResult.error) {
                 is_phone = true;
             }
 
             const phone_no = parseInt(phoneResult.value.phone);
-            const country_code = phoneResult.value.country_code;
+            //const country_code = phoneResult.value.country_code;
 
             const emailResult = validation.emailSchema.validate({ email: params.emailOrPhone });
 
@@ -839,7 +839,7 @@ module.exports = {
             else {
                 customer = await models.Customer.findOne({
                     where: {
-                        country_code, phone_no,
+                        phone_no,
                     }
                 });
             }
@@ -923,7 +923,7 @@ module.exports = {
 
             const phone_no = parseInt(params.emailOrPhone);
             const email = (params.emailOrPhone).toLowerCase();
-            const country_code = params.country_code
+            //const country_code = params.country_code
 
             console.log(phone_no,email,country_code)
 
@@ -939,7 +939,7 @@ module.exports = {
             else {
                 customer = await models.Customer.findOne({
                     where: {
-                            country_code, phone_no,
+                            phone_no,
                     }
                 });
             }
@@ -1142,7 +1142,7 @@ module.exports = {
     updateCustomerphone: async (params,user) => {
 
             const phone_no = parseInt(params.phone);
-            const country_code = params.country_code;
+            //const country_code = params.country_code;
 
             const customer_phone = await models.Customer.findOne({
                 where: {
@@ -1156,7 +1156,7 @@ module.exports = {
 
 
             await models.Customer.update({
-                 country_code, phone_no, is_phone_verified
+                 phone_no, is_phone_verified
             }, {
                 where: {
                     email: (user.email).toLowerCase()
