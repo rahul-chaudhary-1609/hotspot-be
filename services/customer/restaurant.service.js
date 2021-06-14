@@ -240,6 +240,11 @@ module.exports = {
             
             let hotspot_restaurant_ids = hotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id);
             where.id = where.id.filter((restaurant_id) => hotspot_restaurant_ids.includes(restaurant_id));
+
+            where = {
+                ...where,
+                order_type:[constants.ORDER_TYPE.delivery,constants.ORDER_TYPE.both]
+            }
         }
         else {
             where = {
