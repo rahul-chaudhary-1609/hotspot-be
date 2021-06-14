@@ -233,5 +233,11 @@ CUSTOM_JOI_MESSAGE : {
     faq:6,
   },
 
+  STRIPE_PAYMENT_TYPE : {
+    customer: 1,
+    admin_driver: 2,
+    admin_restaurant:3,
+  },
+
 }
 

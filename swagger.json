@@ -4276,6 +4276,70 @@
               "required": true,
               "type": "number",
               "enum":[1,2,3,4,5,6]
+            },
+            {
+              "name": "card_number",
+              "in": "formData",
+              "description": "enter card number (length: 12-19 )",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "card_exp_month",
+              "in": "formData",
+              "description": "enter card expiry month eg: 01",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "card_exp_year",
+              "in": "formData",
+              "description": "enter card expiry year eg: 2030",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "card_cvc",
+              "in": "formData",
+              "description": "enter card cvc",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "amount",
+              "in": "formData",
+              "description": "enter amount",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+      },
+
+      "/admin/driverPaymentSuccess": {
+        "post": {
+          "tags": [
+            "Admin Payment Management"
+          ],
+          "description": "Api to driver Payment Success",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "payment_id",
+              "in": "formData",
+              "description": "payment id",
+              "required": true,
+              "type": "string"
             }
           ],
           "responses": {}
@@ -4314,6 +4378,69 @@
               "required": true,
               "type": "number",
               "enum":[1,2,3,4,5,6]
+            },
+            {
+              "name": "card_number",
+              "in": "formData",
+              "description": "enter card number (length: 12-19 )",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "card_exp_month",
+              "in": "formData",
+              "description": "enter card expiry month eg: 01",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "card_exp_year",
+              "in": "formData",
+              "description": "enter card expiry year eg: 2030",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "card_cvc",
+              "in": "formData",
+              "description": "enter card cvc",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "amount",
+              "in": "formData",
+              "description": "enter amount",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+      },
+      "/admin/restaurantPaymentSuccess": {
+        "post": {
+          "tags": [
+            "Admin Payment Management"
+          ],
+          "description": "Api to restaurant Payment Success",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "payment_id",
+              "in": "formData",
+              "description": "payment id",
+              "required": true,
+              "type": "string"
             }
           ],
           "responses": {}
@@ -7337,6 +7464,20 @@
             "description": "enter account_holder_name",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "stripe_pubishable_key",
+            "in": "formData",
+            "description": "enter stripe pubishable key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "stripe_secret_key",
+            "in": "formData",
+            "description": "enter stripe secret key",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {}
@@ -7759,6 +7900,20 @@
             "in": "formData",
             "description": "enter account_holder_name",
             "required": false,
+            "type": "string"
+          },
+          {
+            "name": "stripe_pubishable_key",
+            "in": "formData",
+            "description": "enter stripe pubishable key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "stripe_secret_key",
+            "in": "formData",
+            "description": "enter stripe secret key",
+            "required": true,
             "type": "string"
           }
         ],

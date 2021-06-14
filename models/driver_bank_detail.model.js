@@ -37,6 +37,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(45),
       allowNull: false,
     },
+    stripe_publishable_key: {
+      type: DataTypes.TEXT,
+      allowNull:false
+    },
+    stripe_secret_key: {
+      type: DataTypes.TEXT,
+      allowNull:false
+    }
     
   }, {
       sequelize,

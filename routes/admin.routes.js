@@ -257,4 +257,6 @@ router.get('/getOrdersByDriverIdAndDateRange',adminAuthentication.validateAdminT
 
 //payment management
 router.post('/paymentDriver', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.paymentDriver), paymentController.paymentDriver);
+router.post('/driverPaymentSuccess', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.driverPaymentSuccess), paymentController.driverPaymentSuccess);
 router.post('/paymentRestaurant', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.paymentRestaurant), paymentController.paymentRestaurant);
+router.post('/restaurantPaymentSuccess', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.restaurantPaymentSuccess), paymentController.restaurantPaymentSuccess);

@@ -311,10 +311,7 @@ module.exports = {
             });
 
             return {stripePaymentMethod, stripePaymentIntent };
-
-            
-            
-         
+        
     },
    
     savePaymentInfo: async (params) => {

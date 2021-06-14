@@ -30,13 +30,6 @@ let paymentModes = {
 
 
 const sendDriverPaymentEmail= async (params) => {
-    let driverPayment = await models.DriverPayment.findOne({
-        where: {
-            payment_id:params.payment_id,
-        }
-    })
-
-    let currentDriverPayment = await utility.convertPromiseToObject(driverPayment);
 
     let orderDeliveries = await utility.convertPromiseToObject(
         await models.OrderDelivery.findAndCountAll({
@@ -45,10 +38,10 @@ const sendDriverPaymentEmail= async (params) => {
                 [sequelize.json('delivery_details.hotspot.name'),'hotspot_name'],
             ],
             where: {
-                driver_id:currentDriverPayment.driver_id,
+                driver_id:params.driver_id,
                 [Op.and]: [
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', currentDriverPayment.from_date),
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')),'<=',currentDriverPayment.to_date)
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', params.from_date),
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')),'<=',params.to_date)
                 ]
                 
             }
@@ -57,7 +50,7 @@ const sendDriverPaymentEmail= async (params) => {
 
     let totalDriverFee = orderDeliveries.rows.reduce((result, orderDelivery) =>result+parseFloat(orderDelivery.driver_fee), 0);
 
-    let driver = await utility.convertPromiseToObject(await models.Driver.findByPk(currentDriverPayment.driver_id));
+    let driver = await utility.convertPromiseToObject(await models.Driver.findByPk(params.driver_id));
 
     let headerHTML = `<div
         style="
@@ -83,11 +76,11 @@ const sendDriverPaymentEmail= async (params) => {
 
     let bodyHTML = `<div style="margin-top:10px;">
         <table>
-            <tr><td><strong>Account Name</strong></td><td>:</td><td>${currentDriverPayment.payment_details.driver.DriverBankDetail.account_holder_name}</td></tr>
-            <tr><td><strong>Bank Name</strong></td><td>:</td><td>${currentDriverPayment.payment_details.driver.DriverBankDetail.bank_name}</td></tr>
-            <tr><td><strong>Account Number</strong></td><td>:</td><td>XXXX${currentDriverPayment.payment_details.driver.DriverBankDetail.account_number.slice(-4)}</td></tr>
+            <tr><td><strong>Account Name</strong></td><td>:</td><td>${params.payment_details.driver.DriverBankDetail.account_holder_name}</td></tr>
+            <tr><td><strong>Bank Name</strong></td><td>:</td><td>${params.payment_details.driver.DriverBankDetail.bank_name}</td></tr>
+            <tr><td><strong>Account Number</strong></td><td>:</td><td>XXXX${params.payment_details.driver.DriverBankDetail.account_number.slice(-4)}</td></tr>
             <tr><td><strong>Payment Type</strong></td><td>:</td><td>Transfer</td></tr>
-            <tr><td><strong>Payment Dates</strong></td><td>:</td><td>${currentDriverPayment.from_date.slice(5,7)}/${currentDriverPayment.from_date.slice(8,10)} - ${currentDriverPayment.to_date.slice(5,7)}/${currentDriverPayment.to_date.slice(8,10)}</td></tr>
+            <tr><td><strong>Payment Dates</strong></td><td>:</td><td>${params.from_date.slice(5,7)}/${params.from_date.slice(8,10)} - ${params.to_date.slice(5,7)}/${params.to_date.slice(8,10)}</td></tr>
         </table>
     </div><br><br>`;
     
@@ -120,7 +113,7 @@ const sendDriverPaymentEmail= async (params) => {
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: driver.email,
-        subject: `HOTSPOT PAYMENT ${currentDriverPayment.from_date.slice(5,7)}/${currentDriverPayment.from_date.slice(8,10)} - ${currentDriverPayment.to_date.slice(5,7)}/${currentDriverPayment.to_date.slice(8,10)}`,
+        subject: `HOTSPOT PAYMENT ${params.from_date.slice(5,7)}/${params.from_date.slice(8,10)} - ${params.to_date.slice(5,7)}/${params.to_date.slice(8,10)}`,
         html: headerHTML + bodyHTML + bottomHTML,
     };
 
@@ -131,13 +124,6 @@ const sendDriverPaymentEmail= async (params) => {
 }
     
 const sendRestaurantPaymentEmail= async (params) => {
-    let restaurantPayment = await models.RestaurantPayment.findOne({
-        where: {
-            payment_id:params.payment_id,
-        }
-    })
-
-    let currentRestaurantPayment = await utility.convertPromiseToObject(restaurantPayment);
 
     let orders = await utility.convertPromiseToObject(
         await models.Order.findAndCountAll({
@@ -149,10 +135,10 @@ const sendRestaurantPaymentEmail= async (params) => {
             ],
             where: {
                 type:constants.ORDER_TYPE.delivery,
-                restaurant_id:currentRestaurantPayment.restaurant_id,
+                restaurant_id:params.restaurant_id,
                 [Op.and]: [
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', currentRestaurantPayment.from_date),
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')),'<=',currentRestaurantPayment.to_date)
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', params.from_date),
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')),'<=',params.to_date)
                 ]
                 
             }
@@ -162,7 +148,7 @@ const sendRestaurantPaymentEmail= async (params) => {
     
     let totalRestaurantFee = orders.rows.reduce((result, order) =>result+parseFloat(order.restaurant_fee), 0);
 
-    let restaurant = await utility.convertPromiseToObject(await models.Restaurant.findByPk(currentRestaurantPayment.restaurant_id));
+    let restaurant = await utility.convertPromiseToObject(await models.Restaurant.findByPk(params.restaurant_id));
 
     let headerHTML = `<div
         style="
@@ -193,7 +179,7 @@ const sendRestaurantPaymentEmail= async (params) => {
             <tr><td><strong>Bank Name</strong></td><td>:</td><td>Bank of America</td></tr>
             <tr><td><strong>Account Number</strong></td><td>:</td><td>XXXX7803</td></tr>
             <tr><td><strong>Payment Type</strong></td><td>:</td><td>Transfer</td></tr>
-            <tr><td><strong>Payment Dates</strong></td><td>:</td><td>${currentRestaurantPayment.from_date.slice(5,7)}/${currentRestaurantPayment.from_date.slice(8,10)} - ${currentRestaurantPayment.to_date.slice(5,7)}/${currentRestaurantPayment.to_date.slice(8,10)}</td></tr>
+            <tr><td><strong>Payment Dates</strong></td><td>:</td><td>${params.from_date.slice(5,7)}/${params.from_date.slice(8,10)} - ${params.to_date.slice(5,7)}/${params.to_date.slice(8,10)}</td></tr>
         </table>
     </div><br><br>`;
     
@@ -228,45 +214,199 @@ const sendRestaurantPaymentEmail= async (params) => {
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: restaurant.owner_email,
-        subject: `HOTSPOT PAYMENT ${currentRestaurantPayment.from_date.slice(5,7)}/${currentRestaurantPayment.from_date.slice(8,10)} - ${currentRestaurantPayment.to_date.slice(5,7)}/${currentRestaurantPayment.to_date.slice(8,10)}`,
+        subject: `HOTSPOT PAYMENT ${params.from_date.slice(5,7)}/${params.from_date.slice(8,10)} - ${params.to_date.slice(5,7)}/${params.to_date.slice(8,10)}`,
         html: headerHTML+bodyHTML+bottomHTML,
     };        
     
     sendMail.send(mailOptions)
     
     return true;
+}
+    
+
+const getDriverStripeCredentials = async(params) => {
+    let driverBankDetail = await utility.convertPromiseToObject(
+        await models.DriverBankDetail.findOne({
+            where: {
+                driver_id: params.driver_id,
+            }
+        })
+    )
+
+    let stripe = require('stripe')(utility.decrypt(driverBankDetail.stripe_secret_key));
+    
+    return {
+        stripe,
+        stripe_publishable_key: utility.decrypt(driverBankDetail.stripe_publishable_key),
     }
+}
+
 
 module.exports = {
     
-    paymentDriver: async (params) => {
+    paymentDriver: async (params,user) => {
+
+        let driverPayment = await models.DriverPayment.findOne({
+            where: {
+                payment_id:params.payment_id,
+            }
+        })
+
+        let currentDriverPayment = await utility.convertPromiseToObject(driverPayment);
     
         if (offlineModes.includes(parseInt(params.payment_mode)))
         {            
-            sendDriverPaymentEmail(params);
+            sendDriverPaymentEmail(currentDriverPayment);
         }
         else if (onlineModes.includes(parseInt(params.payment_mode)))
         {
-            //payment code... 
-            sendDriverPaymentEmail(params);
+            let stripeObj = await getDriverStripeCredentials(currentDriverPayment);
+            let stripe = stripeObj.stripe;
+
+            const stripePaymentMethod = await stripe.paymentMethods.create({
+              type: "card",
+              card: {
+                number: params.card_number,
+                exp_month: params.card_exp_month,
+                exp_year: params.card_exp_year,
+                cvc: params.card_cvc,
+              },
+            });
+
+            let admin = await utility.convertPromiseToObject(
+                await models.Admin.findByPk(parseInt(user.id))
+            )
+           
+
+           const stripePayment = await models.StripePayment.findOne({
+             where: {
+                   user_id: user.id,
+                   is_live: true,
+                   type:constants.STRIPE_PAYMENT_TYPE.admin_driver,
+             },
+           });
+
+           let stripeCustomer = null;
+
+           if (stripePayment && stripePayment.stripe_customer_id) {
+             stripeCustomer = await stripe.customers.update(
+               stripePayment.stripe_customer_id,
+               {
+                 email: admin.email,
+                 name: admin.name,
+                 phone: admin.phone
+                   ? `${admin.country_code} ${admin.phone}`
+                   : null,
+               }
+             );
+           } else {
+             stripeCustomer = await stripe.customers.create({
+               email: admin.email,
+               name: admin.name,
+               phone: admin.phone
+                 ? `${admin.country_code} ${admin.phone}`
+                 : null,
+             });
+
+             await models.StripePayment.create({
+               user_id: user.id,
+                stripe_customer_id: stripeCustomer.id,
+                 is_live: true,
+               type:constants.STRIPE_PAYMENT_TYPE.admin_driver,
+             });
+           }
+
+           const paymentMethods = await stripe.paymentMethods.list({
+             customer: stripeCustomer.id,
+             type: "card",
+           });
+           
+
+           let is_payment_method_exist = false;
+               
+           for (let card of paymentMethods.data) {
+               if (card.card.last4 == params.card_number.slice(-4) ) {
+                   if (card.card.exp_month == parseInt(params.card_exp_month)) {
+                       if (card.card.exp_year == parseInt(params.card_exp_year)) {
+                           is_payment_method_exist = true;
+                           break;
+                        }
+                    }
+                } 
+           }
+
+           if (!is_payment_method_exist) {
+            await stripe.paymentMethods.attach(stripePaymentMethod.id, {
+              customer: stripeCustomer.id,
+            });   
+           }
+             
+
+            const stripePaymentIntent = await stripe.paymentIntents.create({
+              amount: params.amount*100,
+              currency: "INR",
+              customer: stripeCustomer.id,
+            });
+
+            return {
+                paymentResponse: {
+                    stripePaymentMethod,
+                    stripePaymentIntent,
+                    stripePublishableKey: stripeObj.stripe_publishable_key,
+                    paymentId: params.payment_id
+                }
+            }
         }
         
     },
 
-    paymentRestaurant: async (params) => {
+    driverPaymentSuccess: async (params) => {
+        let driverPayment = await models.DriverPayment.findOne({
+            where: {
+                payment_id:params.payment_id,
+            }
+        })
 
-        console.log(params)
+        let currentDriverPayment = await utility.convertPromiseToObject(driverPayment);
+
+        await sendDriverPaymentEmail(currentDriverPayment);
+
+        return {params}
+    },
+
+    paymentRestaurant: async (params,user) => {
+        
+        let restaurantPayment = await models.RestaurantPayment.findOne({
+            where: {
+                payment_id:params.payment_id,
+            }
+        })
+
+        let currentRestaurantPayment = await utility.convertPromiseToObject(restaurantPayment);
 
         if (offlineModes.includes(parseInt(params.payment_mode)))
         {            
-            sendRestaurantPaymentEmail(params);
+            sendRestaurantPaymentEmail(currentRestaurantPayment);
         }
         else if (onlineModes.includes(parseInt(params.payment_mode)))
         {
             //payment code... 
-            sendRestaurantPaymentEmail(params);
         }
        
-    }
+    },
+
+    restaurantPaymentSuccess: async (params) => {
+        let restaurantPayment = await models.RestaurantPayment.findOne({
+            where: {
+                payment_id:params.payment_id,
+            }
+        })
+
+        let currentRestaurantPayment = await utility.convertPromiseToObject(restaurantPayment);
+
+        sendRestaurantPaymentEmail(currentRestaurantPayment);
+
+        return {params}
+    },
 
 }

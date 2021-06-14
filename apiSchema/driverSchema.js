@@ -1,6 +1,5 @@
 const Joi = require('joi');
 const constants = require("../constants");
-const joi = require('../middlewares/joi');
 
 
 module.exports = {

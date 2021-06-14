@@ -1,3 +1,4 @@
+require("dotenv").config()
 const randomstring = require('randomstring');
 const bcrypt = require('bcrypt');
 const constants = require('../constants')
@@ -6,6 +7,8 @@ const FCM = require('fcm-node');
 const fcm = new FCM(process.env.FCM_SERVER_KEY); //put your server key here
 const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const geolib = require('geolib');
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(process.env.CRYPTR_KEY);
 
 
 /* function for sending the error response */
@@ -239,4 +242,12 @@ module.exports.getDistanceBetweenTwoGeoLocations = (params,unit='miles') => {
     else if (unit == 'inches') return geolib.convertDistance(distanceInMeters, 'in');
     else if (unit == 'yards') return geolib.convertDistance(distanceInMeters, 'yd');
     
+}
+
+module.exports.encrypt=(params)=> {
+    return cryptr.encrypt(params);
+}
+
+module.exports.decrypt=(params)=> {
+    return cryptr.decrypt(params);
 }

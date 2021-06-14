@@ -188,7 +188,9 @@ signUpDetailsStep2:async (params, user) => {
         driver_id: params.driver_id,
         bank_name: params.bank_name,
         account_number: params.account_number,
-        account_holder_name: params.account_holder_name
+        account_holder_name: params.account_holder_name,
+        stripe_publishable_key: utilityFunction.encrypt(params.stripe_publishable_key),
+        stripe_secret_key:utilityFunction.encrypt(params.stripe_secret_key),
     }
     delete params.bank_name;
     delete params.account_number;

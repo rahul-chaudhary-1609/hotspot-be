@@ -69,7 +69,9 @@ editPersonalDetails: async (params, driver) => {
    return driverVehicleData
  },
 
- editBankDetails: async (params, driver) => {
+  editBankDetails: async (params, driver) => {
+    params.stripe_publishable_key = utility.encrypt(params.stripe_publishable_key);
+    params.stripe_secret_key = utility.encrypt(params.stripe_secret_key);
   const driverBankData=await DriverBankDetail.update(params,{ where: {driver_id:Number(driver.id)} });
   return true
  },
