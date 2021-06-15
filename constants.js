@@ -215,14 +215,6 @@ CUSTOM_JOI_MESSAGE : {
     hotspot:3,
   },
   
-  PAYMENT_MODE : {
-    "Online/NEFT": 1,
-    "Online/IMPS": 2,
-    "Online/Other": 3,
-    "Offline/Check": 4,
-    "Offline/Cash": 5,
-    "Offline/Other":6,
-  },
 
   STATIC_CONTENT_TYPE : {
     terms_and_conditions: 1,

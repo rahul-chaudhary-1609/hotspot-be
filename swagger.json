@@ -4270,14 +4270,6 @@
               "type": "string"
             },
             {
-              "name": "payment_mode",
-              "in": "formData",
-              "description": "1=>Online/NEFT, 2=>Online/IMPS, 3=>Online/Other, 4=>Offline/Check, 5=>Offline/Cash, 6=>Offline/Other",
-              "required": true,
-              "type": "number",
-              "enum":[1,2,3,4,5,6]
-            },
-            {
               "name": "card_number",
               "in": "formData",
               "description": "enter card number (length: 12-19 )",
@@ -4370,14 +4362,6 @@
               "description": "payment id",
               "required": true,
               "type": "string"
-            },
-            {
-              "name": "payment_mode",
-              "in": "formData",
-              "description": "1=>Online/NEFT, 2=>Online/IMPS, 3=>Online/Other, 4=>Offline/Check, 5=>Offline/Cash, 6=>Offline/Other",
-              "required": true,
-              "type": "number",
-              "enum":[1,2,3,4,5,6]
             },
             {
               "name": "card_number",

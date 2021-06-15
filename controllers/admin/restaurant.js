@@ -126,7 +126,7 @@ module.exports = {
     toggleDishAsRecommended: async (req, res) => {
        try {
             const responseFromService = await restaurantService.toggleDishAsRecommended(req.body);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
@@ -135,7 +135,7 @@ module.exports = {
     toggleDishAsQuickFilter: async (req, res) => {
        try {
             const responseFromService = await restaurantService.toggleDishAsQuickFilter(req.body);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }

@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
         payment_details: {
             type: DataTypes.JSON,
         },
-        transaction_id: {
+        transaction_reference_id: {
             type: DataTypes.STRING,
         },
         payment_date: {
@@ -68,11 +68,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 0,
             comment: '0=>not_paid,1=>paid'
-        },
-        payment_mode: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
-            comment: '1=>Online/NEFT, 2=>Online/IMPS, 3=>Online/Other, 4=>Offline/Check, 5=>Offline/Cash, 6=>Offline/Other'
         },
 
     }, {

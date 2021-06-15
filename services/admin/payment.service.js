@@ -5,30 +5,6 @@ const utility = require('../../utils/utilityFunctions');
 const sendMail = require('../../utils/mail');
 const constants = require("../../constants");
 
-let offlineModes = [
-            constants.PAYMENT_MODE['Offline/Check'],
-            constants.PAYMENT_MODE['Offline/Cash'],
-            constants.PAYMENT_MODE['Offline/Other']
-]
-
-let onlineModes = [
-    constants.PAYMENT_MODE['Online/NEFT'],
-    constants.PAYMENT_MODE['Online/IMPS'],
-    constants.PAYMENT_MODE['Online/Other']
-]
-
-let paymentModes = {
-    1: 'Online/NEFT',
-    2: 'Online/IMPS',
-    3: 'Online/Other',
-    4: 'Offline/Check',
-    5: 'Offline/Cash',
-    6: 'Offline/Other',
-}
-
-
-
-
 const sendDriverPaymentEmail= async (params) => {
 
     let orderDeliveries = await utility.convertPromiseToObject(
@@ -254,107 +230,102 @@ module.exports = {
 
         let currentDriverPayment = await utility.convertPromiseToObject(driverPayment);
     
-        if (offlineModes.includes(parseInt(params.payment_mode)))
-        {            
-            sendDriverPaymentEmail(currentDriverPayment);
+    
+    
+        let stripeObj = await getDriverStripeCredentials(currentDriverPayment);
+        let stripe = stripeObj.stripe;
+
+        const stripePaymentMethod = await stripe.paymentMethods.create({
+            type: "card",
+            card: {
+            number: params.card_number,
+            exp_month: params.card_exp_month,
+            exp_year: params.card_exp_year,
+            cvc: params.card_cvc,
+            },
+        });
+
+        let admin = await utility.convertPromiseToObject(
+            await models.Admin.findByPk(parseInt(user.id))
+        )
+        
+
+        const stripePayment = await models.StripePayment.findOne({
+            where: {
+                user_id: user.id,
+                is_live: true,
+                type:constants.STRIPE_PAYMENT_TYPE.admin_driver,
+            },
+        });
+
+        let stripeCustomer = null;
+
+        if (stripePayment && stripePayment.stripe_customer_id) {
+            stripeCustomer = await stripe.customers.update(
+            stripePayment.stripe_customer_id,
+            {
+                email: admin.email,
+                name: admin.name,
+                phone: admin.phone
+                ? `${admin.country_code} ${admin.phone}`
+                : null,
+            }
+            );
+        } else {
+            stripeCustomer = await stripe.customers.create({
+            email: admin.email,
+            name: admin.name,
+            phone: admin.phone
+                ? `${admin.country_code} ${admin.phone}`
+                : null,
+            });
+
+            await models.StripePayment.create({
+            user_id: user.id,
+            stripe_customer_id: stripeCustomer.id,
+                is_live: true,
+            type:constants.STRIPE_PAYMENT_TYPE.admin_driver,
+            });
         }
-        else if (onlineModes.includes(parseInt(params.payment_mode)))
-        {
-            let stripeObj = await getDriverStripeCredentials(currentDriverPayment);
-            let stripe = stripeObj.stripe;
 
-            const stripePaymentMethod = await stripe.paymentMethods.create({
-              type: "card",
-              card: {
-                number: params.card_number,
-                exp_month: params.card_exp_month,
-                exp_year: params.card_exp_year,
-                cvc: params.card_cvc,
-              },
-            });
+        const paymentMethods = await stripe.paymentMethods.list({
+            customer: stripeCustomer.id,
+            type: "card",
+        });
+        
 
-            let admin = await utility.convertPromiseToObject(
-                await models.Admin.findByPk(parseInt(user.id))
-            )
-           
-
-           const stripePayment = await models.StripePayment.findOne({
-             where: {
-                   user_id: user.id,
-                   is_live: true,
-                   type:constants.STRIPE_PAYMENT_TYPE.admin_driver,
-             },
-           });
-
-           let stripeCustomer = null;
-
-           if (stripePayment && stripePayment.stripe_customer_id) {
-             stripeCustomer = await stripe.customers.update(
-               stripePayment.stripe_customer_id,
-               {
-                 email: admin.email,
-                 name: admin.name,
-                 phone: admin.phone
-                   ? `${admin.country_code} ${admin.phone}`
-                   : null,
-               }
-             );
-           } else {
-             stripeCustomer = await stripe.customers.create({
-               email: admin.email,
-               name: admin.name,
-               phone: admin.phone
-                 ? `${admin.country_code} ${admin.phone}`
-                 : null,
-             });
-
-             await models.StripePayment.create({
-               user_id: user.id,
-                stripe_customer_id: stripeCustomer.id,
-                 is_live: true,
-               type:constants.STRIPE_PAYMENT_TYPE.admin_driver,
-             });
-           }
-
-           const paymentMethods = await stripe.paymentMethods.list({
-             customer: stripeCustomer.id,
-             type: "card",
-           });
-           
-
-           let is_payment_method_exist = false;
-               
-           for (let card of paymentMethods.data) {
-               if (card.card.last4 == params.card_number.slice(-4) ) {
-                   if (card.card.exp_month == parseInt(params.card_exp_month)) {
-                       if (card.card.exp_year == parseInt(params.card_exp_year)) {
-                           is_payment_method_exist = true;
-                           break;
-                        }
+        let is_payment_method_exist = false;
+            
+        for (let card of paymentMethods.data) {
+            if (card.card.last4 == params.card_number.slice(-4) ) {
+                if (card.card.exp_month == parseInt(params.card_exp_month)) {
+                    if (card.card.exp_year == parseInt(params.card_exp_year)) {
+                        is_payment_method_exist = true;
+                        break;
                     }
-                } 
-           }
-
-           if (!is_payment_method_exist) {
-            await stripe.paymentMethods.attach(stripePaymentMethod.id, {
-              customer: stripeCustomer.id,
-            });   
-           }
-             
-
-            const stripePaymentIntent = await stripe.paymentIntents.create({
-              amount: params.amount*100,
-              currency: "INR",
-              customer: stripeCustomer.id,
-            });
-
-            return {
-                paymentResponse: {
-                    stripePaymentMethod,
-                    stripePaymentIntent,
-                    stripePublishableKey: stripeObj.stripe_publishable_key,
-                    paymentId: params.payment_id
                 }
+            } 
+        }
+
+        if (!is_payment_method_exist) {
+        await stripe.paymentMethods.attach(stripePaymentMethod.id, {
+            customer: stripeCustomer.id,
+        });   
+        }
+            
+
+        const stripePaymentIntent = await stripe.paymentIntents.create({
+            amount: params.amount*100,
+            currency: "INR",
+            customer: stripeCustomer.id,
+        });
+
+        return {
+            paymentResponse: {
+                stripePaymentMethod,
+                stripePaymentIntent,
+                stripePublishableKey: stripeObj.stripe_publishable_key,
+                paymentId: params.payment_id
             }
         }
         
@@ -371,6 +342,8 @@ module.exports = {
 
         await sendDriverPaymentEmail(currentDriverPayment);
 
+        console.log(currentDriverPayment)
+
         return {params}
     },
 
@@ -384,14 +357,8 @@ module.exports = {
 
         let currentRestaurantPayment = await utility.convertPromiseToObject(restaurantPayment);
 
-        if (offlineModes.includes(parseInt(params.payment_mode)))
-        {            
-            sendRestaurantPaymentEmail(currentRestaurantPayment);
-        }
-        else if (onlineModes.includes(parseInt(params.payment_mode)))
-        {
+        
             //payment code... 
-        }
        
     },
 
@@ -404,7 +371,7 @@ module.exports = {
 
         let currentRestaurantPayment = await utility.convertPromiseToObject(restaurantPayment);
 
-        sendRestaurantPaymentEmail(currentRestaurantPayment);
+        await sendRestaurantPaymentEmail(currentRestaurantPayment);
 
         return {params}
     },

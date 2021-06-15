@@ -507,7 +507,6 @@ module.exports = {
 
     paymentDriver: Joi.object({
         payment_id: Joi.string().trim().required(),
-        payment_mode: Joi.number().valid(1, 2, 3, 4, 5, 6).required(),
         card_number: Joi.string().trim().min(12).max(19).regex(/^\d{12,19}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_no_msg.pattern,
         }),
@@ -525,7 +524,6 @@ module.exports = {
 
     paymentRestaurant: Joi.object({
         payment_id: Joi.string().trim().required(),
-        payment_mode: Joi.number().valid(1, 2, 3, 4, 5, 6).required(),
         card_number: Joi.string().trim().min(12).max(19).regex(/^\d{12,19}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_no_msg.pattern,
         }),
@@ -543,10 +541,12 @@ module.exports = {
    
     driverPaymentSuccess: Joi.object({
         payment_id: Joi.string().trim().required(),
+        payment_intent:Joi.object().optional(),
     }),
 
     restaurantPaymentSuccess: Joi.object({
         payment_id: Joi.string().trim().required(),
+        payment_intent:Joi.object().optional(),
     }),
     
 }
