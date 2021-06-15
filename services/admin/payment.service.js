@@ -217,6 +217,23 @@ const getDriverStripeCredentials = async(params) => {
     }
 }
 
+const getRestaurantStripeCredentials = async(params) => {
+    let restaurant = await utility.convertPromiseToObject(
+        await models.Restaurant.findOne({
+            where: {
+                id: params.restaurant_id,
+            }
+        })
+    )
+
+    let stripe = require('stripe')(utility.decrypt(restaurant.stripe_secret_key));
+    
+    return {
+        stripe,
+        stripe_publishable_key: utility.decrypt(restaurant.stripe_publishable_key),
+    }
+}
+
 
 module.exports = {
     
@@ -230,7 +247,9 @@ module.exports = {
 
         let currentDriverPayment = await utility.convertPromiseToObject(driverPayment);
     
-    
+        if (currentDriverPayment.status) {
+            throw new Error(constants.MESSAGES.payment_already_done)
+        }
     
         let stripeObj = await getDriverStripeCredentials(currentDriverPayment);
         let stripe = stripeObj.stripe;
@@ -338,13 +357,23 @@ module.exports = {
             }
         })
 
+        
         let currentDriverPayment = await utility.convertPromiseToObject(driverPayment);
+
+        delete params.payment_id;
+
+        driverPayment.transaction_reference_id = params.payment_intent.id;
+        driverPayment.payment_details = {
+            ...currentDriverPayment.payment_details,
+            stripePaymentDetails: params
+        };
+        driverPayment.status = constants.PAYMENT_STATUS.paid;
+
+        driverPayment.save();
 
         await sendDriverPaymentEmail(currentDriverPayment);
 
-        console.log(currentDriverPayment)
-
-        return {params}
+        return {driverPayment:await utility.convertPromiseToObject(driverPayment)}
     },
 
     paymentRestaurant: async (params,user) => {
@@ -357,8 +386,107 @@ module.exports = {
 
         let currentRestaurantPayment = await utility.convertPromiseToObject(restaurantPayment);
 
+        if (currentRestaurantPayment.status) {
+            throw new Error(constants.MESSAGES.payment_already_done)
+        }
         
-            //payment code... 
+        let stripeObj = await getRestaurantStripeCredentials(currentRestaurantPayment);
+
+        let stripe = stripeObj.stripe;
+
+        const stripePaymentMethod = await stripe.paymentMethods.create({
+            type: "card",
+            card: {
+            number: params.card_number,
+            exp_month: params.card_exp_month,
+            exp_year: params.card_exp_year,
+            cvc: params.card_cvc,
+            },
+        });
+
+        let admin = await utility.convertPromiseToObject(
+            await models.Admin.findByPk(parseInt(user.id))
+        )
+        
+
+        const stripePayment = await models.StripePayment.findOne({
+            where: {
+                user_id: user.id,
+                is_live: true,
+                type:constants.STRIPE_PAYMENT_TYPE.admin_restaurant,
+            },
+        });
+
+        let stripeCustomer = null;
+
+        if (stripePayment && stripePayment.stripe_customer_id) {
+            stripeCustomer = await stripe.customers.update(
+            stripePayment.stripe_customer_id,
+            {
+                email: admin.email,
+                name: admin.name,
+                phone: admin.phone
+                ? `${admin.country_code} ${admin.phone}`
+                : null,
+            }
+            );
+        } else {
+            stripeCustomer = await stripe.customers.create({
+            email: admin.email,
+            name: admin.name,
+            phone: admin.phone
+                ? `${admin.country_code} ${admin.phone}`
+                : null,
+            });
+
+            await models.StripePayment.create({
+            user_id: user.id,
+            stripe_customer_id: stripeCustomer.id,
+                is_live: true,
+            type:constants.STRIPE_PAYMENT_TYPE.admin_driver,
+            });
+        }
+
+        const paymentMethods = await stripe.paymentMethods.list({
+            customer: stripeCustomer.id,
+            type: "card",
+        });
+        
+
+        let is_payment_method_exist = false;
+            
+        for (let card of paymentMethods.data) {
+            if (card.card.last4 == params.card_number.slice(-4) ) {
+                if (card.card.exp_month == parseInt(params.card_exp_month)) {
+                    if (card.card.exp_year == parseInt(params.card_exp_year)) {
+                        is_payment_method_exist = true;
+                        break;
+                    }
+                }
+            } 
+        }
+
+        if (!is_payment_method_exist) {
+        await stripe.paymentMethods.attach(stripePaymentMethod.id, {
+            customer: stripeCustomer.id,
+        });   
+        }
+            
+
+        const stripePaymentIntent = await stripe.paymentIntents.create({
+            amount: params.amount*100,
+            currency: "INR",
+            customer: stripeCustomer.id,
+        });
+
+        return {
+            paymentResponse: {
+                stripePaymentMethod,
+                stripePaymentIntent,
+                stripePublishableKey: stripeObj.stripe_publishable_key,
+                paymentId: params.payment_id
+            }
+        }
        
     },
 
@@ -371,9 +499,20 @@ module.exports = {
 
         let currentRestaurantPayment = await utility.convertPromiseToObject(restaurantPayment);
 
+        delete params.payment_id;
+
+        restaurantPayment.transaction_reference_id = params.payment_intent.id;
+        restaurantPayment.payment_details = {
+            ...currentRestaurantPayment.payment_details,
+            stripePaymentDetails: params
+        };
+        restaurantPayment.status = constants.PAYMENT_STATUS.paid;
+
+        restaurantPayment.save();
+
         await sendRestaurantPaymentEmail(currentRestaurantPayment);
 
-        return {params}
+        return {restaurantPayment:await utility.convertPromiseToObject(restaurantPayment)}
     },
 
 }
