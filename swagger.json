@@ -6865,7 +6865,7 @@
           }
         },
 
-        "/customer/update-payment-card/{payment_card_id}": {
+        "/customer/update-payment-card": {
           "put": {
             "tags": [
               "Customer Payment"
@@ -6883,7 +6883,7 @@
             "parameters": [
               {
                 "name": "payment_card_id",
-                "in": "path",
+                "in": "formData",
                 "description": "enter payment card id",
                 "required": true,
                 "type": "number"
