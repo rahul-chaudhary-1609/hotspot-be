@@ -161,8 +161,8 @@ module.exports = {
             params.country_code=process.env.COUNTRY_CODE
             let otpData = await utilityFunction.sentOtp(params);
             if (otpData) {
-                if (driver) return await utilityFunction.convertPromiseToObject(driver);
-                return await utilityFunction.convertPromiseToObject(Driver.create(params));
+                if (driver) return { driver: await utilityFunction.convertPromiseToObject(driver) };
+                return {driver: await utilityFunction.convertPromiseToObject(await Driver.create(params))};
             } else {
                 throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.driver_invalid_phone);
             }
@@ -197,7 +197,7 @@ module.exports = {
         driver.save();
 
         return {
-            driver: await utilityFunction.convertPromiseToObject(driver),
+            driver_id:user.id, 
             driverBankDetails: await utilityFunction.convertPromiseToObject(
                 DriverBankDetail.findOne({
                     where: {
@@ -248,21 +248,7 @@ module.exports = {
         ])
 
         return {
-            driver: await utilityFunction.convertPromiseToObject(driver),
-            driverBankDetails: await utilityFunction.convertPromiseToObject(
-                DriverBankDetail.findOne({
-                    where: {
-                        driver_id:user.id,
-                    }
-                })
-            ),
-            driverAddressDetails: await utilityFunction.convertPromiseToObject(
-                DriverAddress.findOne({
-                    where: {
-                        driver_id:user.id,
-                    }
-                })
-            ),
+            driver_id:user.id, 
             driverVehicleDetails: await utilityFunction.convertPromiseToObject(
                 DriverVehicleDetail.findOne({
                     where: {
