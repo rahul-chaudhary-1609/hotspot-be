@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
     country_code: {
       type: DataTypes.STRING(45),
       allowNull: false,
-      defaultValue:"+91",
+      defaultValue:"+1",
     },
     phone_no: {
       type: DataTypes.BIGINT,
@@ -85,6 +85,12 @@ module.exports = (sequelize, DataTypes) => {
     referral_code: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+    is_signup_completed: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+      comment: '0=>no, 1=>yes'
     },
   }, {
       sequelize,

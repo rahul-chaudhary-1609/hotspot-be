@@ -45,7 +45,7 @@ module.exports = {
     logout_success: "You have successfully logged out",
     fetch_success: "List has been fetched successfully",
     data_success: "Data has been fetched successfully",
-    acc_already_exists: "An account already exists with these credentials",
+    driver_phone_already_exists: "Driver with the same phone already exists",
     password_miss_match: "Password & confirm password are not the same",
     invalid_passkey: "Invalid access passkey",
     enter_email: "Please enter your emailId",
@@ -92,7 +92,7 @@ module.exports = {
     invalid_email_or_phone: 'Invalid id or phone',
     not_approved: 'Your account is not approved by admin',
     rejected_account: 'Your account is rejected by admin.',
-    invalid_number_or_country_code: 'Invalid number or country code.',
+    driver_invalid_phone: 'Invalid phone number.',
     hotspot_can_not_delete: "This hotspot can not be deleted until atleast one restaurant is associated with this hotspot",
     driver_fee_error_1:`Only one 'Last Range' value can be empty at a time`,
     driver_fee_error_2: `If the existing or new 'End Range' value is empty then its 'Start Range' value must be the highest range value`,
@@ -231,6 +231,11 @@ CUSTOM_JOI_MESSAGE : {
     customer: 1,
     admin_driver: 2,
     admin_restaurant:3,
+  },
+
+  DRIVER_SIGNUP_COMPLETE_STATUS : {
+    no: 0,
+    yes: 1
   },
 
 }

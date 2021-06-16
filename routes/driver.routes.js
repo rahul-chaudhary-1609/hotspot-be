@@ -7,7 +7,7 @@ const driverAuthentication = require('../middlewares/jwt');
 const router=express.Router();
 const {parseStringToArray}=require('../middlewares/validators')
 
-const onBoardingController = require('../controllers/driver/onBoardingController');
+const onBoardingController = require('../controllers/driver/login');
 const earningController  = require('../controllers/driver/earningController');
 
 const accountController = require('../controllers/driver/account');
@@ -20,7 +20,7 @@ router.post('/forgotPassword',joiValidation.validateBody(apiSchema.forgotPasswor
 router.post('/verifyOTP',joiValidation.validateBody(apiSchema.verifyOTP), onBoardingController.verifyOTP);
 router.post('/resetPassword', joiValidation.validateBody(apiSchema.resetPassword), onBoardingController.resetPassword);
 router.post('/changePassword', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.changePassword), onBoardingController.changePassword);
-router.post('/signUpStep1',  joiValidation.validateBody(apiSchema.signUpStep1), onBoardingController.signUpStep1);
+router.post('/signUp',  joiValidation.validateBody(apiSchema.signUp), onBoardingController.signUp);
 router.post('/signUpDetailsStep1', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.signUpDetailsStep1), onBoardingController.signUpDetailsStep1);
 router.post('/signUpDetailsStep2', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.signUpDetailsStep2), onBoardingController.signUpDetailsStep2);
 router.post('/signUpDetailsStep3', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.signUpDetailsStep3), onBoardingController.signUpDetailsStep3);

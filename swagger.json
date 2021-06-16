@@ -7248,12 +7248,12 @@
       }
     },
 
-    "/driver/signUpStep1": {
+    "/driver/signUp": {
       "post": {
         "tags": [
           "Driver Onboarding"
         ],
-        "description": "For driver sign Up Step 1",
+        "description": "For driver sign Up with phone",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -7266,23 +7266,9 @@
             "type": "number"
           },
           {
-            "name": "country_code",
-            "in": "formData",
-            "description": "enter country_code",
-            "required": false,
-            "type": "string"
-          },
-          {
             "name": "referral_code",
             "in": "formData",
             "description": "enter referral_code",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "in": "formData",
-            "description": "enter password",
             "required": false,
             "type": "string"
           }

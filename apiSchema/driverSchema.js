@@ -68,30 +68,21 @@ module.exports = {
         })
     }),
 
-    signUpStep1: Joi.object({
+    signUp: Joi.object({
         phone_no: Joi.number().required(),
-        country_code: Joi.string().trim().optional(),
         referral_code: Joi.string().trim().optional(),
-        password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
-            "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
-            "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
-            "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
-            "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
-            "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
-            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
-        }),
     }),
 
     signUpDetailsStep1: Joi.object({
-        profile_picture_url: Joi.string().trim().optional(),
-        first_name: Joi.string().trim().optional(),
-        last_name: Joi.string().trim().optional(),
-        email: Joi.string().trim().optional(),
-        dob: Joi.string().trim().optional(),
-        gender: Joi.string().trim().optional(),
-        nationality: Joi.string().trim().optional(),
-        passport_picture_url: Joi.string().trim().optional(),
-        passport_number: Joi.string().trim().optional(),
+        profile_picture_url: Joi.string().trim().required(),
+        first_name: Joi.string().trim().required(),
+        last_name: Joi.string().trim().required(),
+        email: Joi.string().trim().required(),
+        dob: Joi.string().trim().required(),
+        gender: Joi.string().trim().required(),
+        nationality: Joi.string().trim().required(),
+        passport_picture_url: Joi.string().trim().required(),
+        passport_number: Joi.string().trim().required(),
     }),
 
     signUpDetailsStep2: Joi.object({

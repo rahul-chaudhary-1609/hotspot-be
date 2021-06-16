@@ -1,7 +1,7 @@
 const utilityFunction = require('../../utils/utilityFunctions');
 const constants = require("../../constants");
 const { ErrorHandler, handleError, sendResponse } = require('../../utils/handler');
-const onBoardingServices  = require("../../services/driver/onBorardingServices");
+const onBoardingServices  = require("../../services/driver/login.service");
 
 module.exports = {
         /*
@@ -61,9 +61,9 @@ module.exports = {
     * function for sign up step 1
     * @req :  password
     */
-   signUpStep1:async (req, res) => {
+   signUp:async (req, res) => {
     try {
-        const forgotPasswordRes = await onBoardingServices.signUpStep1(req.body);
+        const forgotPasswordRes = await onBoardingServices.signUp(req.body);
         utilityFunction.successResponse(res, forgotPasswordRes, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
