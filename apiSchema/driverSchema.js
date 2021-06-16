@@ -88,26 +88,28 @@ module.exports = {
 
     signUpDetailsStep2: Joi.object({
         driver_id:Joi.number().required(),
-        address_line1: Joi.string().trim().optional(),
-        street: Joi.string().trim().optional(),
-        city: Joi.string().trim().optional(),
-        state: Joi.string().trim().optional(),
-        postal_code: Joi.string().trim().optional(),
-        bank_name: Joi.string().trim().optional(),
-        account_number: Joi.string().trim().optional(),
-        account_holder_name: Joi.string().trim().optional()
+        address_line1: Joi.string().trim().required(),
+        street: Joi.string().trim().required(),
+        city: Joi.string().trim().required(),
+        state: Joi.string().trim().required(),
+        postal_code: Joi.string().trim().required(),
+        bank_name: Joi.string().trim().required(),
+        account_number: Joi.string().trim().required(),
+        account_holder_name: Joi.string().trim().required(),
+        stripe_pubishable_key:Joi.string().trim().required(),
+        stripe_secret_key:Joi.string().trim().required(),
     }),
 
     signUpDetailsStep3: Joi.object({
         driver_id:Joi.number().required(),
-        vehicle_type: Joi.number().optional(),
-        image_url: Joi.string().trim().optional(),
-        plate_number: Joi.string().trim().optional(),
-        vehicle_model: Joi.string().trim().optional(),
-        license_number: Joi.string().trim().optional(),
-        license_image_url: Joi.string().trim().optional(),
-        insurance_number: Joi.string().trim().optional(),
-        insurance_image_url: Joi.string().trim().optional()
+        vehicle_type: Joi.number().required(),
+        image_url: Joi.string().trim().required(),
+        plate_number: Joi.string().trim().required(),
+        vehicle_model: Joi.string().trim().required(),
+        license_number: Joi.string().trim().required(),
+        license_image_url: Joi.string().trim().required(),
+        insurance_number: Joi.string().trim().required(),
+        insurance_image_url: Joi.string().trim().required(),
     }),
 
     driverPersonalDetails: Joi.object({
