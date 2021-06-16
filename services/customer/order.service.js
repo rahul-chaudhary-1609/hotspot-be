@@ -220,7 +220,11 @@ module.exports = {
                 
                 const addOns = dishAddOn.map((addOn) => {
                     addOnPrice = addOnPrice + parseFloat(addOn.price)
-                    return addOn.name
+                    return {
+                            id: addOn.id,
+                            name: addOn.name,
+                            price:addOn.price
+                        }
                 })
 
                 cartItems.push({
@@ -301,7 +305,11 @@ module.exports = {
                     
                         const addOns = dishAddOn.map((addOn) => {
                             addOnPrice = addOnPrice + parseFloat(addOn.price)
-                            return addOn.name
+                            return {
+                                id: addOn.id,
+                                name: addOn.name,
+                                price:addOn.price
+                            }
                         })
 
                         ordered_items.push({
@@ -434,7 +442,11 @@ module.exports = {
                     
                     const addOns = dishAddOn.map((addOn) => {
                         addOnPrice = addOnPrice + parseFloat(addOn.price)
-                        return addOn.name
+                        return {
+                            id: addOn.id,
+                            name: addOn.name,
+                            price:addOn.price
+                        }
                     })
 
                     ordered_items.push({

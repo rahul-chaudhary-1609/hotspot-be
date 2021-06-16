@@ -101,40 +101,30 @@ module.exports = {
 
     setDefaultPaymentCard: async (params,user) => {
 
-            const id = params.payment_card_id;
+      let card = await models.CustomerCard.findOne({
+        where: {
+          id: params.payment_card_id,
+          status:constants.STATUS.active,
+        }
+      })
 
-            let card = await models.CustomerCard.findByPk(id);
-            
-            if (!card || (card.status==constants.STATUS.active)) {
-                throw new Error(constants.MESSAGES.no_payment_card);
-            }
+      if (!card || (card.status!=constants.STATUS.active)) {
+          throw new Error(constants.MESSAGES.no_payment_card);
+      }
 
-            await models.CustomerCard.update({                
-                is_default:false
-            },
-                {
-                    where: {
-                        customer_id: user.id,  
-                    },
-                    returning: true,
-                }
-            );
+      if (card.customer_id != user.id ) {
+          throw new Error(constants.MESSAGES.card_not_belongs_to_you);
+      }
 
-            await models.CustomerCard.update({                
-                is_default:true,
-            },
-                {
-                    where: {
-                        id,  
-                    },
-                    returning: true,
-                }
-            );
-            
-            return true
-            
+      if (card.is_default) {
+        card.is_default = false;
+      } else {
+        card.is_default = true;
+      }
 
-            
+      card.save();
+
+      return true          
          
     },
 
