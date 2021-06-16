@@ -23,6 +23,7 @@ router.post('/signUp',  joiValidation.validateBody(apiSchema.signUp), loginContr
 router.post('/signUpDetailsStep1', joiValidation.validateBody(apiSchema.signUpDetailsStep1), loginController.signUpDetailsStep1);
 router.post('/signUpDetailsStep2', joiValidation.validateBody(apiSchema.signUpDetailsStep2), loginController.signUpDetailsStep2);
 router.post('/signUpDetailsStep3', joiValidation.validateBody(apiSchema.signUpDetailsStep3), loginController.signUpDetailsStep3);
+router.put('/updateDeviceToken',driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.updateDeviceToken), loginController.updateDeviceToken);
 router.get('/logout', driverAuthentication.validateDriverToken, loginController.logout);
 
 

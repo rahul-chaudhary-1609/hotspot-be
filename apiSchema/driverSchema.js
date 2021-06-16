@@ -149,6 +149,11 @@ module.exports = {
         insurance_image_url: Joi.string().trim().optional(),
     }),
 
+    updateDeviceToken:Joi.object({
+        device_token: Joi.string().required()   
+    }),
+
+
     toggleNotification:Joi.object({
         notification_status: Joi.number().required()   
     }),

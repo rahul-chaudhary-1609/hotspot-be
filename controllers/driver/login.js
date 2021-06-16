@@ -156,6 +156,15 @@ module.exports = {
         }
     },
 
+    updateDeviceToken:async (req, res) => {
+        try {
+            const responseFromService = await loginService.updateDeviceToken(req.body,req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.logout_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     logout:async (req, res) => {
         try {
             const responseFromService = await loginService.logout(req.user);

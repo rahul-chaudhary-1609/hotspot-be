@@ -1,6 +1,5 @@
 const { Driver, DriverAddress, DriverVehicleDetail, DriverBankDetail } = require('../../models');
 const constants = require('../../constants');
-const { ErrorHandler } = require('../../utils/handler');
 const utilityFunction = require("../../utils/utilityFunctions")
 const { Op } = require("sequelize");
 const responseToken = require("../../utils/responseToken");
@@ -106,7 +105,7 @@ module.exports = {
     */
     
     resetPassword:async (params) => {
-        const driver = await Driver.findOne({
+        let driver = await Driver.findOne({
                 where: {
                     phone_no: params.phone_no
                 }
@@ -446,11 +445,11 @@ module.exports = {
     },
 
 
-    changePassword:async (params, driver) => {
+    changePassword:async (params, user) => {
         const driver = await utilityFunction.convertPromiseToObject( 
             await Driver.findOne({
                 where: {
-                    id: driver.id
+                    id: user.id
                 }
             })
         );
@@ -461,7 +460,7 @@ module.exports = {
                 password: await utilityFunction.bcryptPassword(params.new_password)
             }
             
-            return await Driver.update(update,{ where: {id: driver.id} });
+            return await Driver.update(update,{ where: {id: user.id} });
         } else {
             throw new Error(constants.MESSAGES.invalid_old_password);
         } 
@@ -481,18 +480,28 @@ module.exports = {
         return true;
     },
 
-    logout:async (driver) => {
+    logout:async (user) => {
 
         let update = {
             'device_token': null,
         };
         let condition = {
-            id: driver.id
+            id: user.id
         }
         await Driver.update(update,{ where: condition });
         return true;
         
-    }
+    },
+
+    updateDeviceToken: async (params, user) => {      
+        await Driver.update( params, 
+            {
+                where: { id: user.id }
+            }
+        )
+
+        return true
+    },
 }
 
 

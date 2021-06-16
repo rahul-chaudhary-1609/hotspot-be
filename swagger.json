@@ -7109,6 +7109,35 @@
           }
       },
 
+      "/driver/updateDeviceToken": {
+        "put": {
+          "tags": [
+            "Driver Onboarding"
+          ],
+          "description": "to update driver device token",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "device_token",
+              "in": "formData",
+              "description": "enter device_token",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+      },
+
       "/driver/logout": {
         "get": {
           "tags": [
