@@ -1,7 +1,7 @@
 const utilityFunction = require('../../utils/utilityFunctions');
 const constants = require("../../constants");
 const { sendResponse } = require('../../utils/handler');
-const earningServices  = require("../../services/driver/earinngServices");
+const earningServices  = require("../../services/driver/earinng.service");
 
 module.exports = {
         /*

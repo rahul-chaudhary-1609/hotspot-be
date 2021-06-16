@@ -46,6 +46,7 @@ module.exports = {
     fetch_success: "List has been fetched successfully",
     data_success: "Data has been fetched successfully",
     driver_phone_already_exists: "Driver with the same phone already exists",
+    driver_email_already_exists: "Driver with the same email already exists",
     password_miss_match: "Password & confirm password are not the same",
     invalid_passkey: "Invalid access passkey",
     enter_email: "Please enter your emailId",

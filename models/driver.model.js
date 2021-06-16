@@ -86,6 +86,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
+    notification_status: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+      comment: '0=> off, 1=> on'
+    },
     is_signup_completed: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -4,7 +4,6 @@ const { ErrorHandler } = require('../../utils/handler');
 const utilityFunction = require("../../utils/utilityFunctions")
 const { Op } = require("sequelize");
 const responseToken = require("../../utils/responseToken");
-const { driverBankDetails } = require('../../apiSchema/driverSchema');
 
 module.exports = {
         /*
@@ -12,14 +11,14 @@ module.exports = {
     */
     login: async (params) => {
 
-        let driverData = await utilityFunction.convertPromiseToObject( await Driver.findOne({
+        let driver = await utilityFunction.convertPromiseToObject( await Driver.findOne({
                 where: {
                         email: params.phone_or_email,
                 }
             }));       
         
-        if(!driverData && !(isNaN(params.phone_or_email))) {
-             driverData = await utilityFunction.convertPromiseToObject( await Driver.findOne({
+        if(!driver && !(isNaN(params.phone_or_email))) {
+             driver = await utilityFunction.convertPromiseToObject( await Driver.findOne({
                 where: {
                         phone_no: params.phone_or_email,
                 }
@@ -27,42 +26,42 @@ module.exports = {
         }
     
 
-        if(driverData) {
+        if(driver) {
             // check account is approved or not
-            if ((driverData.approval_status!=constants.DRIVER_APPROVAL_STATUS.approved)) {
-                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.not_approved);
+            if ((driver.approval_status!=constants.DRIVER_APPROVAL_STATUS.approved)) {
+                throw new Error(constants.MESSAGES.not_approved);
             }
 
             // check account is deactivated or not
-            if (driverData.status==constants.STATUS.inactive) {
-                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.deactivate_account);
+            if (driver.status==constants.STATUS.inactive) {
+                throw new Error( constants.MESSAGES.deactivate_account);
             }
 
             // check account is rejected or not
-            if (driverData.approval_status==constants.DRIVER_APPROVAL_STATUS.rejected) {
-                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.rejected_account);
+            if (driver.approval_status==constants.DRIVER_APPROVAL_STATUS.rejected) {
+                throw new Error( constants.MESSAGES.rejected_account);
             }
 
 
-            let comparedPassword = await utilityFunction.comparePassword(params.password, driverData.password);
-            console.log(comparedPassword)
+            let comparedPassword = await utilityFunction.comparePassword(params.password, driver.password);
+            
             if (comparedPassword) {
                 const accessToken = await responseToken.generateDriverAccessToken({
                     admin: false,
-                    id: driverData.id,
-                    email: driverData.email,
-                    first_name: driverData.first_name,
-                    last_name: driverData.last_name
+                    id: driver.id,
+                    email: driver.email,
+                    first_name: driver.first_name,
+                    last_name: driver.last_name
                 });
-                driverData.token = accessToken;
+                driver.token = accessToken;
 
-                return driverData;
+                return driver;
             } else {
-                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_password);
+                throw new Error( constants.MESSAGES.invalid_password);
             }
 
         } else {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_email_or_phone);
+            throw new Error( constants.MESSAGES.invalid_email_or_phone);
         }
    },
 
@@ -70,17 +69,17 @@ module.exports = {
     * function for forgot password
     */
    forgotPassword:async (params) => {
-    let getDriverData = await Driver.findOne({
+    let driver = await Driver.findOne({
         where: {
-            phone_no: params.phone
+            phone_no: params.phone_no
         }
     });
 
-    if (getDriverData) {
-         let otpData = await utilityFunction.sentOtp(getDriverData);
-         return otpData;
+    if (driver) {
+         let otpData = await utilityFunction.sentOtp(driver);
+        return { otpData };
     } else {
-         throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_phone);
+         throw new Error( constants.MESSAGES.invalid_phone);
     }
    },
 
@@ -88,38 +87,18 @@ module.exports = {
     * function for verify_otp
     */
    verifyOTP:async (params) => {
-    let getDriverData = await utilityFunction.convertPromiseToObject( await Driver.findOne({
-        where: {
-            phone_no: params.phone
-        }
-    }));
-
-    if (getDriverData) {
+    
         let verifyReq = {
-            country_code: getDriverData.country_code,
-            phone_no: params.phone,
+            country_code: process.env.COUNTRY_CODE,
+            phone_no: params.phone_no,
             otp: params.otp
         }
 
         let otpData = await utilityFunction.verifyOtp(verifyReq);
-        if (otpData) {
-            const accessToken = await responseToken.generateDriverAccessToken({
-                admin: false,
-                id: getDriverData.id,
-                email: getDriverData.email,
-                first_name: getDriverData.first_name,
-                last_name: getDriverData.last_name
-            });
-            getDriverData.token = accessToken;
-
-            return getDriverData;
-
-        } else {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_otp);
-        }
-    } else {
-        throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_phone);
-    }
+        
+        if (otpData) return true;
+        else throw new Error(constants.MESSAGES.invalid_otp);
+    
     },
    
     /*
@@ -127,21 +106,21 @@ module.exports = {
     */
     
     resetPassword:async (params) => {
-        const driverData = await Driver.findOne({
+        const driver = await Driver.findOne({
                 where: {
-                    phone_no: params.phone
+                    phone_no: params.phone_no
                 }
         })
         
-        if (driverData) {
+        if (driver) {
 
-            driverData.password = await utilityFunction.bcryptPassword(params.new_password);
-            driverData.save();
+            driver.password = await utilityFunction.bcryptPassword(params.new_password);
+            driver.save();
 
-            return await utilityFunction.convertPromiseToObject(driverData)
+            return { driver: await utilityFunction.convertPromiseToObject(driver) }
         }
         else {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.invalid_phone);
+            throw new Error( constants.MESSAGES.invalid_phone);
         }
     },
 
@@ -156,7 +135,7 @@ module.exports = {
         });
 
         if (driver && driver.is_signup_completed==constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes) {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.driver_phone_already_exists);
+            throw new Error( constants.MESSAGES.driver_phone_already_exists);
         } else {
             params.country_code=process.env.COUNTRY_CODE
             let otpData = await utilityFunction.sentOtp(params);
@@ -164,7 +143,7 @@ module.exports = {
                 if (driver) return { driver: await utilityFunction.convertPromiseToObject(driver) };
                 return {driver: await utilityFunction.convertPromiseToObject(await Driver.create(params))};
             } else {
-                throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.driver_invalid_phone);
+                throw new Error( constants.MESSAGES.driver_invalid_phone);
             }
             
         }
@@ -176,12 +155,23 @@ module.exports = {
     signUpDetailsStep1: async (params) => {
         let driver = await Driver.findOne({
             where: {
+             email: params.email,
+            id: {
+                    [Op.ne]:params.driver_id,
+                }
+            }
+        })
+
+        if (driver) throw new Error(constants.MESSAGES.driver_email_already_exists)
+
+        driver = await Driver.findOne({
+            where: {
                 id: params.driver_id,
             }
         });
 
         if (driver && driver.is_signup_completed == constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes) {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.driver_phone_already_exists);
+            throw new Error( constants.MESSAGES.driver_phone_already_exists);
         }
         
         driver.profile_picture_url = params.profile_picture_url;
@@ -199,14 +189,14 @@ module.exports = {
         return {
             driver_id:params.driver_id,
             driverBankDetails: await utilityFunction.convertPromiseToObject(
-                DriverBankDetail.findOne({
+                await DriverBankDetail.findOne({
                     where: {
                         driver_id:params.driver_id,
                     }
                 })
             ),
             driverAddressDetails: await utilityFunction.convertPromiseToObject(
-                DriverAddress.findOne({
+                await DriverAddress.findOne({
                     where: {
                         driver_id:params.driver_id,
                     }
@@ -226,7 +216,7 @@ module.exports = {
         });
 
         if (driver && driver.is_signup_completed == constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes) {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.driver_phone_already_exists);
+            throw new Error( constants.MESSAGES.driver_phone_already_exists);
         }
 
         let driverBankDetails = {
@@ -249,7 +239,7 @@ module.exports = {
         return {
             driver_id:params.driver_id,
             driverVehicleDetails: await utilityFunction.convertPromiseToObject(
-                DriverVehicleDetail.findOne({
+                await DriverVehicleDetail.findOne({
                     where: {
                         driver_id:params.driver_id,
                     }
@@ -269,7 +259,7 @@ module.exports = {
         });
 
         if (driver && driver.is_signup_completed == constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes) {
-            throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.driver_phone_already_exists);
+            throw new Error( constants.MESSAGES.driver_phone_already_exists);
         }
 
         await DriverVehicleDetail.create(params);
@@ -281,21 +271,21 @@ module.exports = {
         return {
             driver: await utilityFunction.convertPromiseToObject(driver),
             driverBankDetails: await utilityFunction.convertPromiseToObject(
-                DriverBankDetail.findOne({
+                await DriverBankDetail.findOne({
                     where: {
                         driver_id:params.driver_id,
                     }
                 })
             ),
             driverAddressDetails: await utilityFunction.convertPromiseToObject(
-                DriverAddress.findOne({
+                await DriverAddress.findOne({
                     where: {
                         driver_id:params.driver_id,
                     }
                 })
             ),
             driverVehicleDetails: await utilityFunction.convertPromiseToObject(
-                DriverVehicleDetail.findOne({
+                await DriverVehicleDetail.findOne({
                     where: {
                         driver_id:params.driver_id,
                     }
@@ -306,8 +296,158 @@ module.exports = {
 
 
 
+    getDriverAccount: async (user) => {
+        return {
+            driver: await utility.convertPromiseToObject(
+                await Driver.findByPk(user.id)
+            ),
+            driverBankDetails: await utilityFunction.convertPromiseToObject(
+                await DriverBankDetail.findOne({
+                    where: {
+                        driver_id:user.id,
+                    }
+                })
+            ),
+            driverAddressDetails: await utilityFunction.convertPromiseToObject(
+                await DriverAddress.findOne({
+                    where: {
+                        driver_id:user.id,
+                    }
+                })
+            ),
+            driverVehicleDetails: await utilityFunction.convertPromiseToObject(
+                await DriverVehicleDetail.findOne({
+                    where: {
+                        driver_id:user.id,
+                    }
+                })
+            ),
+        }
+    },
+
+    checkPhoneUpdate :async (params,user) => {
+        let driver = await Driver.findOne({
+            where: {
+                phone_no: params.phone_no,
+            }
+        })
+
+        if (driver) {
+            if (driver.id != user.id) throw new Error(constants.MESSAGES.driver_phone_already_exists);
+            else {
+                return {
+                    is_phone_update_available:false
+                }
+            }
+        }
+        else {
+            params.country_code=process.env.COUNTRY_CODE
+            let otpData = await utilityFunction.sentOtp(params);
+            if (otpData) {
+                return {
+                    is_phone_update_available:true
+                }
+            } else {
+                throw new Error( constants.MESSAGES.driver_invalid_phone);
+            }
+        }            
+        
+    },
+
+    editDriverAccount: async (params, user) => {
+        let driver = null;
+
+        if (params.email) {
+
+            driver = await Driver.findOne({
+                where: {
+                    email: params.email,
+                    id: {
+                        [Op.ne]: user.id,
+                    }
+                }
+            })
+
+            if (driver) throw new Error(constants.MESSAGES.driver_email_already_exists)
+
+        }
+
+        if (params.phone_no) {
+            driver = await Driver.findOne({
+                where: {
+                    phone_no: params.phone_no,
+                    id: {
+                        [Op.ne]: user.id,
+                    }
+                }
+            })
+
+            if (driver) throw new Error(constants.MESSAGES.driver_phone_already_exists)
+        }
+
+        driver = await Driver.findByPk(user.id);
+
+        let driverBankDetails = await DriverBankDetail.findOne({
+            where: {
+                driver_id: user.id,
+            }
+        });
+
+        let driverAddressDetails = await DriverAddress.findOne({
+            where: {
+                driver_id: user.id,
+            }
+        });
+
+        let driverVehicleDetails = await DriverVehicleDetail.findOne({
+            where: {
+                driver_id: user.id,
+            }
+        });
+
+        driver.first_name = params.first_name || driver.first_name;
+        driver.last_name = params.last_name || driver.last_name;
+        driver.email = params.email || driver.email;
+        driver.phone_no = params.phone_no || driver.phone_no;
+        driver.dob = params.dob || driver.dob;
+
+        driverBankDetails.bank_name = params.bank_name || driverBankDetails.bank_name;
+        driverBankDetails.account_number = params.account_number || driverBankDetails.account_number;
+        driverBankDetails.account_holder_name = params.account_holder_name || driverBankDetails.account_holder_name;
+        driverBankDetails.stripe_publishable_key = params.stripe_publishable_key? utilityFunction.encrypt(params.stripe_publishable_key): driverBankDetails.stripe_publishable_key;
+        driverBankDetails.stripe_secret_key = params.stripe_secret_key? utilityFunction.encrypt(params.stripe_secret_key): driverBankDetails.stripe_secret_key;
+
+        driverAddressDetails.address_line1 = params.address_line1 || driverAddressDetails.address_line1;
+        driverAddressDetails.street = params.street || driverAddressDetails.street;
+        driverAddressDetails.city = params.city || driverAddressDetails.city;
+        driverAddressDetails.state = params.state || driverAddressDetails.state;
+        driverAddressDetails.postal_code = params.postal_code || driverAddressDetails.postal_code;
+
+        driverVehicleDetails.vehicle_type = params.vehicle_type || driverVehicleDetails.vehicle_type;
+        driverVehicleDetails.image_url = params.image_url || driverVehicleDetails.image_url;
+        driverVehicleDetails.plate_number = params.plate_number || driverVehicleDetails.plate_number;
+        driverVehicleDetails.vehicle_model = params.vehicle_model || driverVehicleDetails.vehicle_model;
+        driverVehicleDetails.licebse_number = params.licebse_number || driverVehicleDetails.licebse_number;
+        driverVehicleDetails.licebse_image_url = params.vehicle_image_url || driverVehicleDetails.licebse_image_url;
+        driverVehicleDetails.insurance_number = params.insurance_number || driverVehicleDetails.insurance_number;
+        driverVehicleDetails.insurance_image_url = params.insurance_image_url || driverVehicleDetails.insurance_image_url;
+
+        driver.save();
+        driverAddressDetails.save();
+        driverBankDetails.save();
+        driverVehicleDetails.save();
+
+        return {
+            driver: await utilityFunction.convertPromiseToObject(driver),
+            driverBankDetails: await utilityFunction.convertPromiseToObject(driverBankDetails),
+            driverAddressDetails: await utilityFunction.convertPromiseToObject(driverAddressDetails),
+            driverVehicleDetails: await utilityFunction.convertPromiseToObject(driverVehicleDetails),
+        }
+    },
+
+
     changePassword:async (params, driver) => {
-        const driverData = await utilityFunction.convertPromiseToObject( 
+        const driver = await utilityFunction.convertPromiseToObject( 
             await Driver.findOne({
                 where: {
                     id: driver.id
@@ -315,7 +455,7 @@ module.exports = {
             })
         );
 
-        let comparedPassword = await utilityFunction.comparePassword(params.old_password, driverData.password);
+        let comparedPassword = await utilityFunction.comparePassword(params.old_password, driver.password);
         if (comparedPassword) {
             let update = {
                 password: await utilityFunction.bcryptPassword(params.new_password)
@@ -325,6 +465,20 @@ module.exports = {
         } else {
             throw new Error(constants.MESSAGES.invalid_old_password);
         } 
+    },
+
+    toggleNotification: async (params, user) => {
+
+        await Driver.update({
+            notification_status:parseInt(params.notification_status),
+        }, {
+            where: {
+                id: user.id,
+            },
+            returning: true,
+        });
+
+        return true;
     },
 
     logout:async (driver) => {

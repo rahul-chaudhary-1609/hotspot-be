@@ -7,41 +7,39 @@ const driverAuthentication = require('../middlewares/jwt');
 const router=express.Router();
 const {parseStringToArray}=require('../middlewares/validators')
 
-const onBoardingController = require('../controllers/driver/login');
-const earningController  = require('../controllers/driver/earningController');
+const loginController = require('../controllers/driver/login');
+const earningController  = require('../controllers/driver/earning');
 
-const accountController = require('../controllers/driver/account');
-const staticContentController = require('../controllers/driver/staticContent');
+const staticContentController = require('../controllers/driver/static_content');
 const homeController = require('../controllers/driver/home');
 
 // on boarding API's
-router.post('/login',joiValidation.validateBody(apiSchema.login), onBoardingController.login);
-router.post('/forgotPassword',joiValidation.validateBody(apiSchema.forgotPassword), onBoardingController.forgotPassword);
-router.post('/verifyOTP',joiValidation.validateBody(apiSchema.verifyOTP), onBoardingController.verifyOTP);
-router.post('/resetPassword', joiValidation.validateBody(apiSchema.resetPassword), onBoardingController.resetPassword);
-router.post('/changePassword', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.changePassword), onBoardingController.changePassword);
-router.post('/signUp',  joiValidation.validateBody(apiSchema.signUp), onBoardingController.signUp);
-router.post('/signUpDetailsStep1', joiValidation.validateBody(apiSchema.signUpDetailsStep1), onBoardingController.signUpDetailsStep1);
-router.post('/signUpDetailsStep2', joiValidation.validateBody(apiSchema.signUpDetailsStep2), onBoardingController.signUpDetailsStep2);
-router.post('/signUpDetailsStep3', joiValidation.validateBody(apiSchema.signUpDetailsStep3), onBoardingController.signUpDetailsStep3);
-router.get('/logout', driverAuthentication.validateDriverToken, onBoardingController.logout);
+router.post('/login',joiValidation.validateBody(apiSchema.login), loginController.login);
+router.post('/forgotPassword',joiValidation.validateBody(apiSchema.forgotPassword), loginController.forgotPassword);
+router.post('/verifyOTP',joiValidation.validateBody(apiSchema.verifyOTP), loginController.verifyOTP);
+router.post('/resetPassword', joiValidation.validateBody(apiSchema.resetPassword), loginController.resetPassword);
+router.post('/changePassword', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.changePassword), loginController.changePassword);
+router.post('/signUp',  joiValidation.validateBody(apiSchema.signUp), loginController.signUp);
+router.post('/signUpDetailsStep1', joiValidation.validateBody(apiSchema.signUpDetailsStep1), loginController.signUpDetailsStep1);
+router.post('/signUpDetailsStep2', joiValidation.validateBody(apiSchema.signUpDetailsStep2), loginController.signUpDetailsStep2);
+router.post('/signUpDetailsStep3', joiValidation.validateBody(apiSchema.signUpDetailsStep3), loginController.signUpDetailsStep3);
+router.get('/logout', driverAuthentication.validateDriverToken, loginController.logout);
 
 
 
 // accounts API's
-router.put('/editDriverPersonalDetails', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.driverPersonalDetails), accountController.editDriverPersonalDetails);
-router.get('/getDriverPersonalDetails', driverAuthentication.validateDriverToken, accountController.getDriverPersonalDetails);
-router.put('/editDriverAddressDetails', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.driverAddressDetails), accountController.editDriverAddressDetails);
-router.get('/getDriverAddressDetails', driverAuthentication.validateDriverToken, accountController.getDriverAddressDetails);
-router.put('/editDriverVehicleDetails', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.driverVehicleDetails), accountController.editDriverVehicleDetails);
-router.get('/getDriverVehicleDetails', driverAuthentication.validateDriverToken, accountController.getDriverVehicleDetails);
-router.put('/editDriverBankDetails', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.driverBankDetails), accountController.editDriverBankDetails);
-router.get('/getDriverBankDetails', driverAuthentication.validateDriverToken, accountController.getDriverBankDetails);
+router.get('/getDriverAccount', driverAuthentication.validateDriverToken, loginController.getDriverAccount);
+router.get('/checkPhoneUpdate', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(apiSchema.checkPhoneUpdate), loginController.checkPhoneUpdate);
+router.put('/editDriverAccount', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.editDriverAccount), loginController.editDriverAccount);
+router.put('/toggleNotification', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.toggleNotification), loginController.toggleNotification);
+
 
 // statticContent API's
+router.get('/getStaticContent/:type',driverAuthentication.validateDriverToken, joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
+router.get('/getFaqTopics',driverAuthentication.validateDriverToken, staticContentController.getFaqTopics);
+router.get('/getFaqs',driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
+router.get('/htmlFileUrlToTextConvert',driverAuthentication.validateDriverToken, staticContentController.htmlFileUrlToTextConvert);
 
-router.get('/getSupportFaq/:topic_id', driverAuthentication.validateDriverToken, staticContentController.helpFaq);
-router.get('/getStaticContent/:id', driverAuthentication.validateDriverToken, staticContentController.getStaticContent);
 
 // home API's
 router.get('/getPickupCards', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(apiSchema.getPickupCards) ,homeController.getPickupCards);

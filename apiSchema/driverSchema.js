@@ -16,16 +16,16 @@ module.exports = {
     }),
 
     forgotPassword: Joi.object({
-        phone: Joi.number().required()
+        phone_no: Joi.number().required()
     }),
 
     verifyOTP: Joi.object({
-        phone: Joi.number().required(),
+        phone_no: Joi.number().required(),
         otp: Joi.number().required()
     }),
 
     resetPassword : Joi.object({
-        phone: Joi.number().required(),
+        phone_no: Joi.number().required(),
         new_password: Joi.string().min(8)
         .max(15)
         .regex(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})"))
@@ -112,21 +112,22 @@ module.exports = {
         insurance_image_url: Joi.string().trim().required(),
     }),
 
-    driverPersonalDetails: Joi.object({
+    checkPhoneUpdate:Joi.object({
+        phone_no: Joi.number().required(),
+    }),
+
+    editDriverAccount: Joi.object({
         profile_picture_url: Joi.string().trim().optional(),
         first_name: Joi.string().trim().optional(),
         last_name: Joi.string().trim().optional(),
         email: Joi.string().trim().optional(),
-        country_code: Joi.string().trim().optional(),
-        phone_no: Joi.string().trim().optional(),
+        phone_no: Joi.number().optional(),
         dob: Joi.string().trim().optional(),
         gender: Joi.string().trim().optional(),
         nationality: Joi.string().trim().optional(),
         passport_picture_url: Joi.string().trim().optional(),
         passport_number: Joi.string().trim().optional(),
-    }),
 
-    driverAddressDetails: Joi.object({
         address_line1: Joi.string().trim().optional(),
         street: Joi.string().trim().optional(),
         city: Joi.string().trim().optional(),
@@ -134,10 +135,10 @@ module.exports = {
         postal_code: Joi.string().trim().optional(),
         bank_name: Joi.string().trim().optional(),
         account_number: Joi.string().trim().optional(),
-        account_holder_name: Joi.string().trim().optional()
-    }),
-
-    driverVehicleDetails: Joi.object({
+        account_holder_name: Joi.string().trim().optional(),
+        stripe_pubishable_key:Joi.string().trim().optional(),
+        stripe_secret_key: Joi.string().trim().optional(),
+        
         vehicle_type: Joi.number().optional(),
         image_url: Joi.string().trim().optional(),
         plate_number: Joi.string().trim().optional(),
@@ -145,13 +146,23 @@ module.exports = {
         license_number: Joi.string().trim().optional(),
         license_image_url: Joi.string().trim().optional(),
         insurance_number: Joi.string().trim().optional(),
-        insurance_image_url: Joi.string().trim().optional()
+        insurance_image_url: Joi.string().trim().optional(),
     }),
-    driverBankDetails: Joi.object({
-        bank_name: Joi.string().trim().optional(),
-        account_number: Joi.string().trim().optional(),
-        account_holder_name: Joi.string().trim().optional()
+
+    toggleNotification:Joi.object({
+        notification_status: Joi.number().required()   
     }),
+
+    getStaticContent: Joi.object({
+        type: Joi.number().required()   
+    }),
+
+    getFaqs: Joi.object({
+        topic_id: Joi.number().required() ,
+        page: Joi.number().allow(null, '').optional(),        
+        page_size: Joi.number().allow(null, '').optional()     
+    }),
+
 
     deliveryImage: Joi.object({
         url: Joi.string().trim().required(),
@@ -220,7 +231,7 @@ module.exports = {
         dropoff_id:Joi.number().required(),
     }),
 
-
+    
 
 }
 

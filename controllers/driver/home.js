@@ -1,5 +1,5 @@
 const utilityFunction = require('../../utils/utilityFunctions');
-const homeServices = require("../../services/driver/homeServices")
+const homeServices = require("../../services/driver/home.service")
 const constants = require("../../constants");
 
 module.exports = {
