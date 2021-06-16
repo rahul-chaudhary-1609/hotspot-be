@@ -71,9 +71,9 @@ module.exports = {
         }
     },
    
-    savePaymentInfo: async (req, res) => {
+    paymentSuccess: async (req, res) => {
        try {
-            const responseFromService = await paymentService.savePaymentInfo(req.body);
+            const responseFromService = await paymentService.paymentSuccess(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

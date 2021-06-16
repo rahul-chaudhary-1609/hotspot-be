@@ -7039,12 +7039,12 @@
             "responses": {}
           }
         },
-        "/customer/save-payment-info": {
-          "put": {
+        "/customer/payment-success": {
+          "post": {
             "tags": [
               "Customer Payment"
             ],
-            "description": "Api for save payment info",
+            "description": "Api for payment success",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -7062,10 +7062,10 @@
                 "type": "string"
               },
               {
-                "name": "transaction_id",
+                "name": "payment_intent",
                 "in": "formData",
-                "description": "enter transaction id",
-                "required": false,
+                "description": "enter payment intent",
+                "required": true,
                 "type": "string"
               }
             ],

@@ -351,5 +351,10 @@ module.exports = {
         device_token: Joi.string().trim().required().messages(),
     }),
 
+    paymentSuccess: Joi.object({
+        order_id: Joi.string().required(),
+        payment_intent: Joi.object().required(),        
+    })
+
 }
 

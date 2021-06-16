@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
-        transaction_id: {
+        transaction_reference_id: {
             type: DataTypes.STRING
         },
 
@@ -34,7 +34,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue:0,
-        }
+        },
+        payment_details: {
+            type: DataTypes.JSON,
+        },
 
         
 

@@ -189,7 +189,7 @@ router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.va
 
 router.post('/payment',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentCardSchema), PaymentController.payment)
 
-router.put('/save-payment-info',customerAuthentication.validateCustomerToken, PaymentController.savePaymentInfo)
+router.post('/payment-success',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentSuccess), PaymentController.paymentSuccess)
 
 
 module.exports=router;

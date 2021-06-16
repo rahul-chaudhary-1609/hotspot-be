@@ -299,16 +299,21 @@ module.exports = {
         
     },
    
-    savePaymentInfo: async (params) => {
-            
-           const { order_id, transaction_id } = params;
+    paymentSuccess: async (params) => {
            
            const orderPayment = await models.OrderPayment.findOrCreate({
                 where: {
-                    order_id,
+                    order_id:params.order_id,
                 },
                 defaults: {
-                    order_id,transaction_id,payment_status:1,
+                  order_id: params.order_id,
+                  transaction_reference_id: params.payment_intent.id,
+                  payment_status: 1,
+                  payment_details: {
+                    stripePaymentDetails: {
+                      payment_intent:params.payment_intent
+                    }
+                  }
                 }
            });
            
@@ -318,11 +323,18 @@ module.exports = {
             
             if (orderPayment[0]) {
                 await models.OrderPayment.update({
-                    order_id,transaction_id,payment_status:1,
+                      order_id: params.order_id,
+                      transaction_reference_id: params.payment_intent.id,
+                      payment_status: 1,
+                      payment_details: {
+                        stripePaymentDetails: {
+                          payment_intent:params.payment_intent
+                        }
+                      }
                     },
                     {
                         where: {
-                            order_id,
+                            order_id:params.order_id,
                         },
                         returning: true,
                     }
