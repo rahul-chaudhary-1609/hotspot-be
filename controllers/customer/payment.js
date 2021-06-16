@@ -18,7 +18,7 @@ module.exports = {
     
     updatePaymentCard: async (req, res) => {
         try {
-            const responseFromService = await paymentService.updatePaymentCard({ ...req.body,...req,params },req.user);
+            const responseFromService = await paymentService.updatePaymentCard(req.body,req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.update_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

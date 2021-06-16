@@ -175,17 +175,17 @@ router.get('/get-track-status/:orderId', customerAuthentication.validateCustomer
 
 
 //payment routes
-router.post('/add-payment-card', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentCardSchema), PaymentController.addPaymentCard); 
+router.post('/add-payment-card', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.addPaymentCard), PaymentController.addPaymentCard); 
 
-router.put('/update-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentCardSchema),PaymentController.updatePaymentCard)
+router.put('/update-payment-card', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.updatePaymentCard),PaymentController.updatePaymentCard)
 
-router.get('/get-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, PaymentController.getPaymentCard)
+router.get('/get-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.getPaymentCard), PaymentController.getPaymentCard)
 
 router.get('/get-payment-cards', customerAuthentication.validateCustomerToken, PaymentController.getPaymentCards)
 
-router.put('/set-default-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, PaymentController.setDefaultPaymentCard)
+router.put('/set-default-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.setDeafultPaymentCard), PaymentController.setDefaultPaymentCard)
 
-router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, PaymentController.deletePaymentCard)
+router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, joiValidation.validateParams(apiSchema.deletePaymentCard),PaymentController.deletePaymentCard)
 
 router.post('/payment',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentCardSchema), PaymentController.payment)
 

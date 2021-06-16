@@ -280,6 +280,52 @@ module.exports = {
         restaurantId: Joi.number().required(),
     }),
 
+    addPaymentCard : Joi.object({
+        name_on_card: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        }),
+
+        card_number: Joi.string().trim().min(12).max(19).regex(/^\d{12,19}$/).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_no_msg.pattern,
+        }),
+        card_exp_month: Joi.string().trim().min(2).max(2).regex(/^\d{2}$/).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_month_msg.pattern,
+        }),
+        card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg.pattern,
+        }),
+    }),
+
+    updatePaymentCard: Joi.object({
+        payment_card_id: Joi.number().required(),
+        
+        name_on_card: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        }),
+
+        card_number: Joi.string().trim().min(12).max(19).regex(/^\d{12,19}$/).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_no_msg.pattern,
+        }),
+        card_exp_month: Joi.string().trim().min(2).max(2).regex(/^\d{2}$/).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_month_msg.pattern,
+        }),
+        card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg.pattern,
+        }),
+    }),
+
+    getPaymentCard: Joi.object({
+        payment_card_id: Joi.number().required(),
+    }),
+
+    setDeafultPaymentCard: Joi.object({
+        payment_card_id: Joi.number().required(),
+    }),
+
+    deletePaymentCard: Joi.object({
+        payment_card_id: Joi.number().required(),
+    }),
+
     paymentCardSchema : Joi.object({
         name_on_card: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,

@@ -36,9 +36,7 @@ module.exports = {
         
             params.customer_id = user.id;
 
-            const id = params.payment_card_id;
-
-            let card = await models.CustomerCard.findByPk(id);
+            let card = await models.CustomerCard.findByPk(params.payment_card_id);
             
             if (!card || (card.status==constants.STATUS.deleted)) {
                 throw new Error(constants.MESSAGES.no_payment_card);
@@ -48,16 +46,13 @@ module.exports = {
                 params,
                     {
                         where: {
-                            id,   
+                            id:params.payment_card_id,   
                         },
                         returning: true,
                     }
                 );
             
-            return true
-            
-
-            
+            return true          
          
     },
 
