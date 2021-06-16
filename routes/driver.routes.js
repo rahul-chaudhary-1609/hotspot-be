@@ -21,9 +21,9 @@ router.post('/verifyOTP',joiValidation.validateBody(apiSchema.verifyOTP), onBoar
 router.post('/resetPassword', joiValidation.validateBody(apiSchema.resetPassword), onBoardingController.resetPassword);
 router.post('/changePassword', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.changePassword), onBoardingController.changePassword);
 router.post('/signUp',  joiValidation.validateBody(apiSchema.signUp), onBoardingController.signUp);
-router.post('/signUpDetailsStep1', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.signUpDetailsStep1), onBoardingController.signUpDetailsStep1);
-router.post('/signUpDetailsStep2', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.signUpDetailsStep2), onBoardingController.signUpDetailsStep2);
-router.post('/signUpDetailsStep3', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.signUpDetailsStep3), onBoardingController.signUpDetailsStep3);
+router.post('/signUpDetailsStep1', joiValidation.validateBody(apiSchema.signUpDetailsStep1), onBoardingController.signUpDetailsStep1);
+router.post('/signUpDetailsStep2', joiValidation.validateBody(apiSchema.signUpDetailsStep2), onBoardingController.signUpDetailsStep2);
+router.post('/signUpDetailsStep3', joiValidation.validateBody(apiSchema.signUpDetailsStep3), onBoardingController.signUpDetailsStep3);
 router.get('/logout', driverAuthentication.validateDriverToken, onBoardingController.logout);
 
 

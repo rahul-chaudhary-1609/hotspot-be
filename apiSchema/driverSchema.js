@@ -74,6 +74,7 @@ module.exports = {
     }),
 
     signUpDetailsStep1: Joi.object({
+        driver_id:Joi.number().required(),
         profile_picture_url: Joi.string().trim().required(),
         first_name: Joi.string().trim().required(),
         last_name: Joi.string().trim().required(),
@@ -86,6 +87,7 @@ module.exports = {
     }),
 
     signUpDetailsStep2: Joi.object({
+        driver_id:Joi.number().required(),
         address_line1: Joi.string().trim().optional(),
         street: Joi.string().trim().optional(),
         city: Joi.string().trim().optional(),
@@ -97,6 +99,7 @@ module.exports = {
     }),
 
     signUpDetailsStep3: Joi.object({
+        driver_id:Joi.number().required(),
         vehicle_type: Joi.number().optional(),
         image_url: Joi.string().trim().optional(),
         plate_number: Joi.string().trim().optional(),

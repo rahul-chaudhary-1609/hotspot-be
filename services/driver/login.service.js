@@ -173,10 +173,10 @@ module.exports = {
     /*
     * function for sign up details step 1
     */
-    signUpDetailsStep1: async (params, user) => {
+    signUpDetailsStep1: async (params) => {
         let driver = await Driver.findOne({
             where: {
-                id: user.id
+                id: params.driver_id,
             }
         });
 
@@ -197,18 +197,18 @@ module.exports = {
         driver.save();
 
         return {
-            driver_id:user.id, 
+            driver_id:params.driver_id,
             driverBankDetails: await utilityFunction.convertPromiseToObject(
                 DriverBankDetail.findOne({
                     where: {
-                        driver_id:user.id,
+                        driver_id:params.driver_id,
                     }
                 })
             ),
             driverAddressDetails: await utilityFunction.convertPromiseToObject(
                 DriverAddress.findOne({
                     where: {
-                        driver_id:user.id,
+                        driver_id:params.driver_id,
                     }
                 })
             ),
@@ -218,10 +218,10 @@ module.exports = {
     /*
     * function for sign up details step 2
     */
-    signUpDetailsStep2: async (params, user) => {
+    signUpDetailsStep2: async (params) => {
         let driver = await Driver.findOne({
             where: {
-                id: user.id
+                id: params.driver_id,
             }
         });
 
@@ -229,7 +229,6 @@ module.exports = {
             throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.driver_phone_already_exists);
         }
 
-        params.driver_id = user.id;
         let driverBankDetails = {
             driver_id: params.driver_id,
             bank_name: params.bank_name,
@@ -248,11 +247,11 @@ module.exports = {
         ])
 
         return {
-            driver_id:user.id, 
+            driver_id:params.driver_id,
             driverVehicleDetails: await utilityFunction.convertPromiseToObject(
                 DriverVehicleDetail.findOne({
                     where: {
-                        driver_id:user.id,
+                        driver_id:params.driver_id,
                     }
                 })
             ),
@@ -262,10 +261,10 @@ module.exports = {
     /*
         * function for sign up details step 3
         */
-    signUpDetailsStep3: async (params, user) => {
+    signUpDetailsStep3: async (params) => {
         let driver = await Driver.findOne({
             where: {
-                id: user.id
+                id: params.driver_id,
             }
         });
 
@@ -273,7 +272,6 @@ module.exports = {
             throw new ErrorHandler(constants.code.bad_request, constants.MESSAGES.driver_phone_already_exists);
         }
 
-        params.driver_id = user.id;
         await DriverVehicleDetail.create(params);
 
         driver.is_signup_completed = constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes;
@@ -285,21 +283,21 @@ module.exports = {
             driverBankDetails: await utilityFunction.convertPromiseToObject(
                 DriverBankDetail.findOne({
                     where: {
-                        driver_id:user.id,
+                        driver_id:params.driver_id,
                     }
                 })
             ),
             driverAddressDetails: await utilityFunction.convertPromiseToObject(
                 DriverAddress.findOne({
                     where: {
-                        driver_id:user.id,
+                        driver_id:params.driver_id,
                     }
                 })
             ),
             driverVehicleDetails: await utilityFunction.convertPromiseToObject(
                 DriverVehicleDetail.findOne({
                     where: {
-                        driver_id:user.id,
+                        driver_id:params.driver_id,
                     }
                 })
             ),

@@ -77,7 +77,7 @@ module.exports = {
     */
    signUpDetailsStep1:async (req, res) => {
     try {
-        const responseData = await onBoardingServices.signUpDetailsStep1(req.body, req.user);
+        const responseData = await onBoardingServices.signUpDetailsStep1(req.body);
         utilityFunction.successResponse(res, responseData, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -90,7 +90,7 @@ module.exports = {
     */
    signUpDetailsStep2:async (req, res) => {
     try {
-        const responseData = await onBoardingServices.signUpDetailsStep2(req.body, req.user);
+        const responseData = await onBoardingServices.signUpDetailsStep2(req.body);
         utilityFunction.successResponse(res, responseData, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -104,7 +104,7 @@ module.exports = {
     */
     signUpDetailsStep3:async (req, res) => {
     try {
-        const responseData = await onBoardingServices.signUpDetailsStep3(req.body, req.user);
+        const responseData = await onBoardingServices.signUpDetailsStep3(req.body);
         utilityFunction.successResponse(res, responseData, constants.MESSAGES.success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);

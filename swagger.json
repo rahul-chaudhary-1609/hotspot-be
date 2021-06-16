@@ -7288,11 +7288,11 @@
         ],
         "parameters": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Enter jwt token for authentication",
+            "name": "driver_id",
+            "in": "formData",
+            "description": "driver id",
             "required": true,
-            "type": "string"
+            "type": "number"
           },
           {
             "name": "profile_picture_url",
@@ -7373,11 +7373,11 @@
         ],
         "parameters": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Enter jwt token for authentication",
+            "name": "driver_id",
+            "in": "formData",
+            "description": "driver id",
             "required": true,
-            "type": "string"
+            "type": "number"
           },
           {
             "name": "address_line1",
@@ -7465,11 +7465,11 @@
         ],
         "parameters": [
           {
-            "name": "Authorization",
-            "in": "header",
-            "description": "Enter jwt token for authentication",
+            "name": "driver_id",
+            "in": "formData",
+            "description": "driver id",
             "required": true,
-            "type": "string"
+            "type": "number"
           },
           {
             "name": "vehicle_type",
