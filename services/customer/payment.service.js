@@ -117,11 +117,11 @@ module.exports = {
       }
 
       await models.CustomerCard.update(
-        { is_default = false },
+        { is_default : false },
         {
           where: {
               customer_id: user.id,
-              is_default = true,
+              is_default : true,
           },
           returning: true,
       })
