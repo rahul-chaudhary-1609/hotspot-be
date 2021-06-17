@@ -93,7 +93,7 @@ const sendDriverPaymentEmail= async (params) => {
         html: headerHTML + bodyHTML + bottomHTML,
     };
 
-    sendMail.send(mailOptions)
+    await sendMail.send(mailOptions);
 
      return true;
 
@@ -194,7 +194,7 @@ const sendRestaurantPaymentEmail= async (params) => {
         html: headerHTML+bodyHTML+bottomHTML,
     };        
     
-    sendMail.send(mailOptions)
+    await sendMail.send(mailOptions);
     
     return true;
 }

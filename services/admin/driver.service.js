@@ -4,7 +4,8 @@ const utility = require('../../utils/utilityFunctions');
 const dummyData = require('./dummyData');
 const adminAWS = require('../../utils/aws');
 const constants = require("../../constants");
-const { constant } = require('lodash');
+const generator = require('generate-password');
+const sendMail = require('../../utils/mail');
 
 
 module.exports = {
@@ -18,8 +19,9 @@ module.exports = {
                 [Op.not]:constants.STATUS.deleted
             },
             approval_status: {
-                [Op.not]:constants.DRIVER_APPROVAL_STATUS .rejected
-            }
+                [Op.not]:constants.DRIVER_APPROVAL_STATUS.rejected
+            },
+            is_signup_completed:constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes
         };
         if (params.searchKey) {
             let searchKey = params.searchKey;
@@ -219,23 +221,53 @@ module.exports = {
 
     approveDriver: async (params) => {
 
-            const driverId = params.driverId;
+        let driver = await models.Driver.findByPk(params.driverId);
 
-            const driver = await models.Driver.findByPk(driverId);
+        if (!driver) throw new Error(constants.MESSAGES.no_driver);
 
-            if (!driver) throw new Error(constants.MESSAGES.no_driver);
+        let password = generator.generate({
+            length: 10,
+            numbers: true,
+            symbols: true,
+            lowercase: true,
+            uppercase: true,
+            excludeSimilarCharacters: true,
+            strict:true,
+        });
 
+        driver.approval_status = constants.DRIVER_APPROVAL_STATUS.approved;
+        driver.password = await utilityFunction.bcryptPassword(password);
+        driver.save();
+        
+        let bodyHTML = `Hi  ${driver.first_name}
+                <br> Please find the login credentials to login into the app. Thank you! :
+                <br> Driver ID : ${driver.email}
+                <br> Password : ${password}`;
+        
+        let bottomHTML = `</div><br><br>
+            <div
+                style="
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                ">
+                <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" 
+                    style="
+                            opacity:0.5;
+                            margin-top:5px;;
+                        "/>
+            </div><br>`;
+        
+        const mailOptions = {
+                    from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
+                    to: driver.email,
+                    subject: 'Driver Login Credentials',
+                    text: 'Here is your code',
+                    html: bodyHTML+bottomHTML,
+                };
 
-            await models.Driver.update({
-                approval_status:constants.DRIVER_APPROVAL_STATUS .approved,
-            },
-                {
-                    where: {
-                        id: driverId,
-                    },
-                    returning: true,
-                });
-
+        await sendMail.send(mailOptions);
+        
         return true;
 
        
