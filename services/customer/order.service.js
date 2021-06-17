@@ -7,30 +7,40 @@ const getOrderCard =  async (args) => {
     
         
         const orderCards = [];
-        for (const val of args.orders) {
+        for (const order of args.orders) {
             
-            //const restaurant = await models.Restaurant.findByPk(val.restaurant_id);
+            //const restaurant = await models.Restaurant.findByPk(order.restaurant_id);
 
             let status = null;
 
-            if (val.status == 1 && val.type == constants.ORDER_TYPE.pickup) {
+            if (order.status == 1 && order.type == constants.ORDER_TYPE.pickup) {
                 status="Pickup"
             }
-            else if ([1,2, 3].includes(val.status)) {
+            else if ([1,2, 3].includes(order.status)) {
                 status="Confirmed"
             }
-            else if (val.status == 4) {
-                if(val.type==constants.ORDER_TYPE.pickup) status="Completed"
+            else if (order.status == 4) {
+                if(order.type==constants.ORDER_TYPE.pickup) status="Completed"
                 else status="Delivered"
+            }
+            
+            const orderDetails = {
+                createdAt: order.createdAt,
+                restaurant: order.order_details.restaurant.restaurant_name,
+                restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
+                orderItems:order.order_details.ordered_items,
+                amount: parseFloat(order.amount),
+                status,
             }
 
             orderCards.push({
-                id: val.id,
-                orderId: val.order_id,
-                restaurant: val.order_details.restaurant.restaurant_name,
-                restaurant_image_url:val.order_details.restaurant.restaurant_image_url,
+                id: order.id,
+                orderId: order.order_id,
+                restaurant: order.order_details.restaurant.restaurant_name,
+                restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 status,
-                createdAt:val.createdAt,
+                createdAt: order.createdAt,
+                orderDetails,
             })
         }
         
