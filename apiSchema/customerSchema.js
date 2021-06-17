@@ -326,7 +326,9 @@ module.exports = {
         payment_card_id: Joi.number().required(),
     }),
 
-    paymentCardSchema : Joi.object({
+    payment: Joi.object({
+        order_id: Joi.string().optional(),
+        
         name_on_card: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),

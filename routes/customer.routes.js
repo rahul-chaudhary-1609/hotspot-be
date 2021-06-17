@@ -187,7 +187,7 @@ router.put('/set-default-payment-card/:payment_card_id', customerAuthentication.
 
 router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, joiValidation.validateParams(apiSchema.deletePaymentCard),PaymentController.deletePaymentCard)
 
-router.post('/payment',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentCardSchema), PaymentController.payment)
+router.post('/payment',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.payment), PaymentController.payment)
 
 router.post('/payment-success',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentSuccess), PaymentController.paymentSuccess)
 

@@ -116,6 +116,16 @@ module.exports = {
           throw new Error(constants.MESSAGES.card_not_belongs_to_you);
       }
 
+      await models.CustomerCard.update(
+        { is_default = false },
+        {
+          where: {
+              customer_id: user.id,
+              is_default = true,
+          },
+          returning: true,
+      })
+
       if (card.is_default) {
         card.is_default = false;
       } else {
@@ -295,7 +305,7 @@ module.exports = {
               customer: stripeCustomer.id,
             });
 
-            return {stripePaymentMethod, stripePaymentIntent };
+            return {stripePaymentMethod, stripePaymentIntent,orderId:params.order_id };
         
     },
    
