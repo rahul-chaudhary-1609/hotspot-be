@@ -36,7 +36,7 @@ module.exports = {
 
     getPaymentCard: async (req, res) => {
         try {
-            const responseFromService = await paymentService.getPaymentCard(req.params);
+            const responseFromService = await paymentService.getPaymentCard(req.params,req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

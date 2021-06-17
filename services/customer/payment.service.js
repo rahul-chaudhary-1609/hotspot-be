@@ -34,25 +34,30 @@ module.exports = {
     
     updatePaymentCard: async (params,user) => {
         
-            params.customer_id = user.id;
+      params.customer_id = user.id;
 
-            let card = await models.CustomerCard.findByPk(params.payment_card_id);
-            
-            if (!card || (card.status==constants.STATUS.deleted)) {
-                throw new Error(constants.MESSAGES.no_payment_card);
-            }
+      let card = await models.CustomerCard.findOne({
+        where: {
+          id: params.payment_card_id,
+          status:constants.STATUS.active
+        }
+      })
+      
+      if (!card) {
+          throw new Error(constants.MESSAGES.no_payment_card);
+      }
 
-            await models.CustomerCard.update(
-                params,
-                    {
-                        where: {
-                            id:params.payment_card_id,   
-                        },
-                        returning: true,
-                    }
-                );
-            
-            return true          
+      await models.CustomerCard.update(
+          params,
+              {
+                  where: {
+                      id:params.payment_card_id,   
+                  },
+                  returning: true,
+              }
+          );
+      
+      return true                 
          
     },
 
@@ -84,18 +89,23 @@ module.exports = {
          
     },
 
-    getPaymentCard: async (params) => {
+    getPaymentCard: async (params,user) => {
 
-            const id = params.payment_card_id;
 
-            let card = await models.CustomerCard.findByPk(id);
-            
-            if (!card || (card.status==constants.STATUS.deleted)) {
-                throw new Error(constants.MESSAGES.no_payment_card);
-            }
+      let card = await models.CustomerCard.findOne({
+        where: {
+          id: params.payment_card_id,
+          status: constants.STATUS.active,
+          customer_id:user.id,
+        }
+      })
+      
+      if (!card) {
+          throw new Error(constants.MESSAGES.no_payment_card);
+      }
 
-            
-            return { card };            
+      
+      return { card };            
          
     },
 
@@ -104,11 +114,12 @@ module.exports = {
       let card = await models.CustomerCard.findOne({
         where: {
           id: params.payment_card_id,
-          status:constants.STATUS.active,
+          status: constants.STATUS.active,
+          customer_id:user.id,
         }
       })
 
-      if (!card || (card.status!=constants.STATUS.active)) {
+      if (!card ) {
           throw new Error(constants.MESSAGES.no_payment_card);
       }
 
@@ -138,28 +149,23 @@ module.exports = {
          
     },
 
-    deletePaymentCard: async (params,user) => {            
+    deletePaymentCard: async (params,user) => { 
 
-            const id = params.payment_card_id;
+      let card = await models.CustomerCard.findOne({
+        where: {
+          id: params.payment_card_id,
+          customer_id:user.id,
+          status:constants.STATUS.active,
+        }
+      })
+      
+      if (!card ) {
+          throw new Error(constants.MESSAGES.no_payment_card);
+      }
 
-            let card = await models.CustomerCard.findByPk(id);
-            
-            if (!card  || (card.status==constants.STATUS.active)) {
-               throw new Error(constants.MESSAGES.no_payment_card);
-            }
-
-            await models.CustomerCard.update({                
-                status:constants.STATUS.deleted,
-            },
-                {
-                    where: {
-                        id,  
-                    },
-                    returning: true,
-                }
-            );
-            
-            return true
+      card.destroy();
+      
+      return true
             
          
     },
