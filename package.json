@@ -39,7 +39,7 @@
     "password-hash": "^1.2.2",
     "pg": "^8.5.1",
     "pg-hstore": "^2.3.3",
-    "randomstring": "^1.1.5",
+    "randomstring": "^1.2.1",
     "sequelize": "^6.3.5",
     "stripe": "^8.137.0",
     "swagger-ui-express": "^4.1.6",

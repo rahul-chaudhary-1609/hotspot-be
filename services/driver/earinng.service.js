@@ -31,9 +31,11 @@ module.exports = {
             })
         )
 
+        let totalEarning = driverPendingEarnings.map((result, driverPendingEarning) => result + parseFloat(driverPendingEarning.driver_fee), 0);
+
         if (driverPendingEarnings.length==0) throw new Error(constants.MESSAGES.no_record);
 
-        return { driverPendingEarnings };
+        return { driverPendingEarnings, totalEarning };
 
     },
 
@@ -61,9 +63,11 @@ module.exports = {
             })
         )
 
+        let totalEarning = driverCollectedEarnings.map((result, driverCollectedEarning) => result + parseFloat(driverCollectedEarning.driver_fee), 0);
+
         if (driverCollectedEarnings.length==0) throw new Error(constants.MESSAGES.no_record);
 
-        return { driverCollectedEarnings };
+        return { driverCollectedEarnings,totalEarning };
 
     },
 

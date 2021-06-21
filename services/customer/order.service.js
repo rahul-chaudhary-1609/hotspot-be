@@ -414,7 +414,7 @@ module.exports = {
                 return { order_id:order.order_id };
             }
             else {
-                const order_id = "ORD-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
+                const order_id = await utilityFunction.getUniqueOrderId();
                 const amount = parseFloat(params.amount);
                 const tip_amount = parseFloat(params.tip_amount);
                 const status = constants.ORDER_STATUS.not_paid;

@@ -298,7 +298,7 @@ module.exports = {
 
                 let orderObj= {
                     ...order,
-                    payment_id:"PID-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '')+"-"+order.restaurant_id,
+                    payment_id: await utility.getUniqueRestaurantPaymentId(),
                     from_date: utility.getOnlyDate(date.startDate),
                     to_date: utility.getOnlyDate(date.endDate),
                     restaurant_name:restaurant.restaurant_name,
@@ -570,7 +570,7 @@ module.exports = {
 
                 let orderDeliveryObj= {
                     ...orderDelivery,
-                    payment_id:"PID-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '')+"-"+orderDelivery.driver_id,
+                    payment_id:await utility.getUniqueDriverPaymentId(),
                     from_date: utility.getOnlyDate(date.startDate),
                     to_date: utility.getOnlyDate(date.endDate),
                     driver_name:`${driver.first_name} ${driver.last_name}`,

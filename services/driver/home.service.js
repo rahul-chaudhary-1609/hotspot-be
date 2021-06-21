@@ -109,7 +109,7 @@ module.exports = {
 
     const hotspot_fee = parseFloat(currentOrderPickup.amount) - parseFloat(restaurant_fee) - parseFloat(driver_fee.fee);
 
-    const delivery_id="DEL-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
+    const delivery_id = await utility.getUniqueOrderDeliveryId();
     let orderDeliveryObj = {
       delivery_id,
       hotspot_location_id: currentOrderPickup.hotspot_location_id,

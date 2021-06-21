@@ -350,7 +350,7 @@ module.exports = {
                 driver_id:driver.id
                 }
         })
-        let order_pickup_id="PIC-" + (new Date()).toJSON().replace(/[-]|[:]|[.]|[Z]/g, '');
+        let order_pickup_id = await utility.getUniqueOrderPickupId();
         if (orderPickup) {
             let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
             orderPickup.order_count =parseInt(currentOrderPickup.order_count)+ 1;
