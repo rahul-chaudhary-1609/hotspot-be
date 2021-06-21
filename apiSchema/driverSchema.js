@@ -96,7 +96,7 @@ module.exports = {
         bank_name: Joi.string().trim().required(),
         account_number: Joi.string().trim().required(),
         account_holder_name: Joi.string().trim().required(),
-        stripe_pubishable_key:Joi.string().trim().required(),
+        stripe_publishable_key:Joi.string().trim().required(),
         stripe_secret_key:Joi.string().trim().required(),
     }),
 

@@ -7472,9 +7472,9 @@
             "type": "string"
           },
           {
-            "name": "stripe_pubishable_key",
+            "name": "stripe_publishable_key",
             "in": "formData",
-            "description": "enter stripe pubishable key",
+            "description": "enter stripe publishable key",
             "required": true,
             "type": "string"
           },
