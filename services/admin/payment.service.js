@@ -360,6 +360,14 @@ module.exports = {
         
         let currentDriverPayment = await utility.convertPromiseToObject(driverPayment);
 
+        await models.DriverEarningDetail.update({
+            payment_status:constants.PAYMENT_STATUS.paid,
+        }, {
+            where: {
+                payment_id:params.payment_id,
+            }
+        })
+
         delete params.payment_id;
 
         driverPayment.transaction_reference_id = params.payment_intent.id;

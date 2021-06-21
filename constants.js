@@ -201,6 +201,11 @@ CUSTOM_JOI_MESSAGE : {
     paid: 1,
   },
 
+  DRIVER_ORDER_STATUS : {
+    pickedup: 1,
+    delivered: 2,
+  },
+
   CUSTOMER_NOTIFICATION_STATUS : {
     off: 0,
     on: 1,

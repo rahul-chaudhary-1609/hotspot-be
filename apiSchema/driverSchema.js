@@ -168,40 +168,7 @@ module.exports = {
         page_size: Joi.number().allow(null, '').optional()     
     }),
 
-
-    deliveryImage: Joi.object({
-        url: Joi.string().trim().required(),
-        delivery_id: Joi.string().trim().required(),
-        dropoff_id: Joi.number().required()
-    }),
     
-    getEarningList: Joi.object({
-        type: Joi.number().min(0).max(1).required(),
-        customer_location_latitude:Joi.number().optional(),
-        customer_location_longitude:Joi.number().optional(),
-        start_date: Joi.string().trim().optional(),
-        end_date: Joi.string().trim().optional(),
-        page: Joi.number().required(),
-        page_size: Joi.number().required()
-    }),
-
-    getEarningDetails: Joi.object({
-        type: Joi.number().min(0).max(1).required(),
-        id: Joi.number().required()
-    }),
-
-    getTotalEarnings: Joi.object({
-        type: Joi.number().min(0).max(1).required(),
-        start_date: Joi.string().trim().optional(),
-        end_date: Joi.string().trim().optional()
-    }),
-
-    getDeliveryHistory: Joi.object({
-        start_date: Joi.string().trim().optional(),
-        end_date: Joi.string().trim().optional(),
-        page: Joi.number().required(),
-        page_size: Joi.number().required()
-    }),
 
     getPickupCards:Joi.object({
         date: Joi.string().required()
@@ -236,7 +203,24 @@ module.exports = {
         dropoff_id:Joi.number().required(),
     }),
 
+    getPendingEarning: Joi.object({
+        start_date: Joi.string().allow(null, '').trim().optional(),
+        end_date: Joi.string().allow(null, '').trim().optional(),
+    }),
+
+    getCollectedEarning: Joi.object({
+        start_date: Joi.string().allow(null, '').trim().optional(),
+        end_date: Joi.string().allow(null, '').trim().optional(),
+    }),
+
+    getDeliveryHistory: Joi.object({
+        start_date: Joi.string().allow(null, '').trim().optional(),
+        end_date: Joi.string().allow(null, '').trim().optional(),
+    }),
     
+    getDeliveryEarningDetails:Joi.object({
+        delivery_id: Joi.string().required()
+    }),
 
 }
 

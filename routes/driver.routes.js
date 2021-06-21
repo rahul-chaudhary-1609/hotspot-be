@@ -52,8 +52,10 @@ router.get('/getOrdersByDropOffId',driverAuthentication.validateDriverToken, joi
 router.put('/confirmDelivery',driverAuthentication.validateDriverToken, parseStringToArray ,joiValidation.validateBody(apiSchema.confirmDelivery), homeController.confirmDelivery);
 
 // earning API's
-router.get('/getEarningList', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningList), earningController.getEarningList);
-//router.get('/getEarningDetails', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getEarningDetails), earningController.getEarningDetails);
-router.get('/getTotalEarnings', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getTotalEarnings), earningController.getTotalEarnings);
+router.get('/getPendingEarning', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getPendingEarning), earningController.getPendingEarning);
+router.get('/getCollectedEarning', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getCollectedEarning), earningController.getCollectedEarning);
 router.get('/getDeliveryHistory', driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getDeliveryHistory), earningController.getDeliveryHistory);
+router.get('/getDeliveryEarningDetails/:delivery_id', driverAuthentication.validateDriverToken, joiValidation.validateParams(apiSchema.getDeliveryEarningDetails), earningController.getDeliveryEarningDetails);
+
+
 module.exports = router;

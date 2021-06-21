@@ -27,22 +27,32 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    order_id: {
-      type: DataTypes.INTEGER,
+    delivery_id: {
+      type: DataTypes.STRING,
       allowNull: false,
-      },
-    tip_fee: {
-      type: DataTypes.STRING(45),
+    },
+    payment_id: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     driver_fee: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.DECIMAL(15,2),
       allowNull: false,
     },
-    status: {
+    travelled_distance: {
+      type: DataTypes.DECIMAL(15,2),
+    },
+    order_status: {
       type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1,
+      comment: "1=> pickedup, 2=> delivered"
+    },
+    payment_status: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
       defaultValue: 0,
-      comment: "0=> pending, 1=> collected"
+      comment: "0=> not_paid, 1=> paid"
     }
     
   }, {

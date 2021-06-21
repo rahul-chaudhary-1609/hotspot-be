@@ -126,6 +126,12 @@ module.exports = {
       },
     }
 
+    let driverEarningDetailsObj = {
+      driver_id: user.id,
+      delivery_id,
+      driver_fee: parseFloat(driver_fee.fee),
+      delivery_datetime:currentOrderPickup.delivery_datetime,
+    }
     
     await models.Order.update({
       order_delivery_id: delivery_id,
@@ -142,6 +148,8 @@ module.exports = {
     orderPickup.save()
 
     let orderDelivery = await utility.convertPromiseToObject(await models.OrderDelivery.create(orderDeliveryObj));
+
+    await models.DriverEarningDetail.create(driverEarningDetailsObj);
     
     let orders = await utility.convertPromiseToObject(
       await models.Order.findAll({
@@ -337,6 +345,51 @@ getDeliveryCards: async(params,user)=>{
 
     }
 
+    let orderDelivery = await utility.convertPromiseToObject(
+      await models.OrderDelivery.findOne({
+        where: {
+          delivery_id:params.delivery_id,
+        }
+      })
+    )
+
+    if (orderDelivery) {
+      
+      let driverEarningDetail = await models.DriverEarningDetail.findOne({
+        where: {
+          delivery_id: params.delivery_id,
+        }
+      })
+
+      let distanceCalculationParams = {
+        sourceCoordinates: { latitude: orderDelivery.delivery_details.restaurants[0].location[0], longitude:orderDelivery.delivery_details.restaurants[0].location[1]},
+        destinationCoordinates: { latitude: orderDelivery.delivery_details.hotspot.location[0], longitude: orderDelivery.delivery_details.hotspot.location[1] },
+        accuracy:1,
+      }
+
+      driverEarningDetail.order_status = constants.DRIVER_ORDER_STATUS.delivered;
+      driverEarningDetail.travelled_distance = parseFloat(parseFloat(utility.getDistanceBetweenTwoGeoLocations(distanceCalculationParams, 'miles')).toFixed(2));
+      driverEarningDetail.save();
+
+      let newDropOffs = orderDelivery.delivery_details.dropOffs.map((dropOff) => {
+        let dropOffWithImage = params.deliveries.find(delivery => delivery.dropoff_id == dropOff.hotspot_dropoff_id);
+        dropOff.image = dropOffWithImage.image;
+        return dropOff;
+      })
+
+      await models.OrderDelivery.update({
+        delivery_details: {
+          ...orderDelivery.delivery_details,
+          dropOffs:newDropOffs,
+        }
+      }, {
+        where: {
+          delivery_id:params.delivery_id,
+        }
+      })
+      
+    }
+    
     return true;
   }
 }

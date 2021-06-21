@@ -8237,12 +8237,12 @@
 
 
 
-    "/driver/getEarningList": {
+    "/driver/getPendingEarning": {
       "get": {
         "tags": [
           "Driver Earning Management"
         ],
-        "description": "Api to get earning list",
+        "description": "Api to get pending earning",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -8253,14 +8253,6 @@
             "description": "Enter jwt token for authentication",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "description": "enter type, 0=> pending, 1=> collected",
-            "required": true,
-            "type": "number",
-            "enum":[0,1]
           },
           {
             "name": "start_date",
@@ -8275,20 +8267,6 @@
             "description": "enter end_date, YYYY-MM-DD",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "current page count to access",
-            "required": true,
-            "type": "number"
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "description": "no of items per page",
-            "required": true,
-            "type": "number"
           }
 
         ],
@@ -8297,12 +8275,12 @@
     },
 
 
-    "/driver/getTotalEarnings": {
+    "/driver/getCollectedEarning": {
       "get": {
         "tags": [
           "Driver Earning Management"
         ],
-        "description": "Api to get total earnings",
+        "description": "Api to get Collected Earning",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -8313,14 +8291,6 @@
             "description": "Enter jwt token for authentication",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "description": "enter type, 0=> pending, 1=> paid",
-            "required": true,
-            "type": "number",
-            "enum":[0,1]
           },
           {
             "name": "start_date",
@@ -8346,7 +8316,7 @@
         "tags": [
           "Driver Earning Management"
         ],
-        "description": "Api to get delivery history",
+        "description": "Api to get Delivery History",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -8371,32 +8341,18 @@
             "description": "enter end_date, YYYY-MM-DD",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "current page count to access",
-            "required": true,
-            "type": "number"
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "description": "no of items per page",
-            "required": true,
-            "type": "number"
           }
         ],
         "responses": {}
       }
     },
 
-    "/driver/getEarningDetails": {
+    "/driver/getDeliveryEarningDetails/{delivery_id}": {
       "get": {
         "tags": [
           "Driver Earning Management"
         ],
-        "description": "Api to get earning details",
+        "description": "Api to get Delivery Earning Details",
         "consumes": [
           "application/x-www-form-urlencoded"
         ],
@@ -8409,19 +8365,11 @@
             "type": "string"
           },
           {
-            "name": "id",
-            "in": "query",
-            "description": "enter id",
+            "name": "delivery_id",
+            "in": "path",
+            "description": "enter delivery id",
             "required": true,
-            "type": "number"
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "description": "enter type, 0=> pending, 1=> collected",
-            "required": true,
-            "type": "number",
-            "enum":[0,1]
+            "type": "string"
           }
         ],
         "responses": {}

@@ -581,6 +581,14 @@ module.exports = {
                     }
                 }
 
+                await models.DriverEarningDetail.update({
+                    payment_id:orderDeliveryObj.payment_id,
+                }, {
+                    where: {
+                        delivery_id:orderDelivery.delivery_id,
+                    }
+                })
+
                 formattedOrderDeliveries.push(orderDeliveryObj);
 
             }
