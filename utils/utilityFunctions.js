@@ -9,7 +9,6 @@ const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWI
 const geolib = require('geolib');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
-const randomstring = require("randomstring");
 const { Order, OrderPickup, OrderDelivery, DriverPayment, RestaurantPayment } = require('../models');
 
 
@@ -257,7 +256,7 @@ module.exports.decrypt=(params)=> {
 /*
 * function to generate the random key
 */
-let randomStringOfLengthTen = () => {
+let getRandomStringOfLengthTen = () => {
     // Generate Random Number
     return randomstring.generate({
         charset: "alphanumeric",
@@ -271,7 +270,7 @@ module.exports.getUniqueOrderId = async ()=> {
     let isUniqueFound = false;
     let order_id = null;
     while (!isUniqueFound) {
-        order_id = "ORD-"+randomStringOfLengthTen();
+        order_id = "ORD-"+getRandomStringOfLengthTen();
         let order = await Order.findOne({
             where: {
                 order_id
@@ -288,7 +287,7 @@ module.exports.getUniqueOrderPickupId = async ()=> {
     let isUniqueFound = false;
     let pickup_id = null;
     while (!isUniqueFound) {
-        pickup_id = "PIC-"+randomStringOfLengthTen();
+        pickup_id = "PIC-"+getRandomStringOfLengthTen();
         let orderPickup = await OrderPickup.findOne({
             where: {
                 pickup_id
@@ -305,7 +304,7 @@ module.exports.getUniqueOrderDeliveryId = async ()=> {
     let isUniqueFound = false;
     let delivery_id = null;
     while (!isUniqueFound) {
-        delivery_id = "DEL-"+randomStringOfLengthTen();
+        delivery_id = "DEL-"+getRandomStringOfLengthTen();
         let orderDelivery = await OrderDelivery.findOne({
             where: {
                 delivery_id
@@ -322,7 +321,7 @@ module.exports.getUniqueDriverPaymentId = async ()=> {
     let isUniqueFound = false;
     let payment_id = null;
     while (!isUniqueFound) {
-        payment_id = "PMD-"+randomStringOfLengthTen();
+        payment_id = "PMD-"+getRandomStringOfLengthTen();
         let driverPayment = await DriverPayment.findOne({
             where: {
                 payment_id
@@ -339,7 +338,7 @@ module.exports.getUniqueRestaurantPaymentId = async ()=> {
     let isUniqueFound = false;
     let payment_id = null;
     while (!isUniqueFound) {
-        payment_id = "PMR-"+randomStringOfLengthTen();
+        payment_id = "PMR-"+getRandomStringOfLengthTen();
         let restaurantPayment = await RestaurantPayment.findOne({
             where: {
                 payment_id
