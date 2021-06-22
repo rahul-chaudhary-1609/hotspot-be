@@ -230,7 +230,13 @@ CUSTOM_JOI_MESSAGE : {
     customer_how_it_works: 3,
     driver_how_it_works: 4,
     about_us: 5,
-    faq:6,
+    faq: 6,
+    became_a_hotspot: 7,
+    accessibility_statement: 8,
+    customer_community_guidelines:9,
+    restricted_product_list:10,
+    driver_guidelines:11,
+    contact_us:12,
   },
 
   STRIPE_PAYMENT_TYPE : {
