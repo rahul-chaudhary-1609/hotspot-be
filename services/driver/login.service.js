@@ -3,6 +3,7 @@ const constants = require('../../constants');
 const utilityFunction = require("../../utils/utilityFunctions")
 const { Op } = require("sequelize");
 const responseToken = require("../../utils/responseToken");
+const adminAWS=require('../../utils/aws')
 
 module.exports = {
         /*
@@ -501,6 +502,30 @@ module.exports = {
         )
 
         return true
+    },
+
+    uploadFile: async (fileParams) => {
+        
+            let now = (new Date()).getTime();
+
+            const pictureName = fileParams.originalname.split('.');
+            const pictureType = pictureName[pictureName.length - 1];
+            const pictureKey = `driver/${fileParams.folderName}/${pictureName[0]?pictureName[0]:''}_${now}.${pictureType}`;
+            const pictureBuffer = fileParams.buffer;
+
+            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+        
+            const s3upload = adminAWS.s3.upload(params).promise();
+            const image_url=await s3upload.then(function (data) {
+                console.log(data.Location)
+                return  data.Location ;
+            })
+            .catch(function (err) {
+                throw new Error(constants.MESSAGES.picture_upload_error);
+            });
+        
+            return { image_url };
+       
     },
 }
 

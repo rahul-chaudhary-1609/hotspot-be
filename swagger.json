@@ -7567,6 +7567,42 @@
         "responses": {}
       }
     },
+    "/driver/uploadFile": {
+      "put": {
+        "tags": [
+          "Driver Onboarding"
+        ],
+        "description": "Api to upload image",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "image",
+            "in": "formData",
+            "description": "upload image",
+            "required": true,
+            "type": "file"
+          },
+          {
+            "name": "folderName",
+            "in": "formData",
+            "description": "enter folder name",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "driver_profile",
+              "driver_vehicle",
+              "driver_license",
+              "driver_insurance",
+              "agreement_doc",
+              "other"
+            ]
+          }
+        ],
+        "responses": {}
+      }
+    },
 
 
     "/driver/getDriverAccount": {

@@ -2,6 +2,7 @@ const express = require('express');
 
 const joiValidation = require("../middlewares/joi");
 const apiSchema = require("../apiSchema/driverSchema");
+const adminMulter = require('../middlewares/multer');
 
 const driverAuthentication = require('../middlewares/jwt');
 const router=express.Router();
@@ -26,6 +27,8 @@ router.post('/signUpDetailsStep3', joiValidation.validateBody(apiSchema.signUpDe
 router.put('/updateDeviceToken',driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.updateDeviceToken), loginController.updateDeviceToken);
 router.get('/logout', driverAuthentication.validateDriverToken, loginController.logout);
 
+//for image upload
+router.put('/uploadFile', adminMulter.upload, loginController.uploadFile);
 
 
 // accounts API's
