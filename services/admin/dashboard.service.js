@@ -278,7 +278,8 @@ module.exports = {
       getTotalRevenueViaHotspot: async (params) => {
                 
         const totalAmount = await models.Order.sum('amount',{
-            where:  {
+          where: {
+                status: [1,2, 3, 4],
                 hotspot_location_id:params.hotspot_id,
             }
         });
