@@ -356,7 +356,18 @@ module.exports = {
     paymentSuccess: Joi.object({
         order_id: Joi.string().required(),
         payment_intent: Joi.object().required(),        
-    })
+    }),
+
+    getStaticContent: Joi.object({
+        type: Joi.number().required()   
+    }),
+
+    getFaqs: Joi.object({
+        topic_id: Joi.number().required() ,
+        page: Joi.number().allow(null, '').optional(),        
+        page_size: Joi.number().allow(null, '').optional()     
+    }),
+
 
 }
 

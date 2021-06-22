@@ -13,6 +13,7 @@ const RestaurantController = require('../controllers/customer/restaurant');
 const OrderController = require('../controllers/customer/order');
 const PaymentController = require('../controllers/customer/payment');
 const customerMulter = require('../middlewares/multer');
+const staticContentController = require('../controllers/customer/static_content');
 
 const router=express.Router();
 
@@ -190,6 +191,14 @@ router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.va
 router.post('/payment',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.payment), PaymentController.payment)
 
 router.post('/payment-success',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentSuccess), PaymentController.paymentSuccess)
+
+
+// statticContent API's
+router.get('/getStaticContent/:type',customerAuthentication.validateDriverToken, joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
+router.get('/getFaqTopics',customerAuthentication.validateDriverToken, staticContentController.getFaqTopics);
+router.get('/getFaqs',customerAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
+router.get('/htmlFileUrlToTextConvert',customerAuthentication.validateDriverToken, staticContentController.htmlFileUrlToTextConvert);
+
 
 
 module.exports=router;

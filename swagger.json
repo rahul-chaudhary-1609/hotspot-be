@@ -111,6 +111,10 @@
         "description": "customer Account Api's"
       },
       {
+        "name": "Customer Static Content",
+        "description": "customer Static Content Api's"
+      },
+      {
         "name": "Customer Hotspot",
         "description": "customer hotspot Api's"
       },
@@ -5722,6 +5726,124 @@
           }
         },
 
+
+        "/customer/getStaticContent/{type}": {
+          "get": {
+            "tags": [
+              "Customer Static Content"
+            ],
+            "description": "Api to get static content",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "type",
+                "in": "path",
+                "description": "1=> terms_and_conditions, 2=>privacy_policy, 3=> customer_how_it_works, 4=> driver_how_it_works, 5=> about_us",
+                "required": true,
+                "type": "number",
+                "enum": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/customer/getFaqTopics": {
+          "get": {
+            "tags": [
+              "Customer Static Content"
+            ],
+            "description": "Api to get faq Topics ",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [],
+            "responses": {}
+          }
+        },
+        "/customer/getFaqs": {
+          "get": {
+            "tags": [
+              "Customer Static Content"
+            ],
+            "description": "Api to get faqs",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "topic_id",
+                "in": "query",
+                "description": "enter faq topic id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "page",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "page size",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/customer/htmlFileUrlToTextConvert": {
+          "get": {
+            "tags": [
+              "Customer Static Content"
+            ],
+            "description": "Api to get admin profile",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "file_url",
+                "in": "query",
+                "description": "file_url",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 
