@@ -794,7 +794,8 @@ module.exports = {
                 else trackStatus="Delivered"
             }
 
-            trackStatus = {
+        trackStatus = {
+                order_type:order.type,
                 status: order.status,
                 message:trackStatus,
             }
