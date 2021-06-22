@@ -38,7 +38,7 @@ module.exports = {
             const drivers = await models.Driver.findAndCountAll({
                 where: {
                     status: constants.STATUS.active,
-                    approval_status:constants.DRIVER_APPROVAL_STATUS .approved
+                    approval_status:constants.DRIVER_APPROVAL_STATUS.approved
                 }
             });
 
@@ -54,7 +54,7 @@ module.exports = {
                       {
                         status:[1,2,3,4],
                       },
-                      sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+                      sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
                     ] 
                 }
             });
@@ -67,8 +67,10 @@ module.exports = {
     getTotalRevenue: async () => {
                 
             const totalAmount = await models.Order.sum('amount',{
-            });
-           
+                where:  {
+                      status: [1,2, 3, 4],
+                }
+            });           
             
             return {totalRevenue:totalAmount };
 
@@ -84,8 +86,7 @@ module.exports = {
                         [Op.between]: [params.start_date, params.end_date]
                     }
                 }
-            });
-                
+            });              
 
             
             return {totalRevenue:totalAmount };
@@ -95,8 +96,7 @@ module.exports = {
 
     getHotspotCount: async () => {
 
-      const hotspots = await models.HotspotLocation.findAndCountAll({
-      });
+      const hotspots = await models.HotspotLocation.findAndCountAll();
 
       return { numberOfHotspots:hotspots.count };
 
@@ -110,7 +110,7 @@ module.exports = {
             {
               status:[1,2,3],
             },
-            sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
           ] 
       }
       });
@@ -132,30 +132,8 @@ module.exports = {
           ] 
       }
      });
-     const pickupOrders = await models.Order.findAndCountAll({
-      where: {
-        [Op.and]: [
-          {
-            status:constants.ORDER_STATUS.food_being_prepared,
-            type:constants.ORDER_TYPE.pickup,
-          },
-          sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
-        ] 
-    }
-     });
-      const pickupdeliveryOrders = await models.Order.findAndCountAll({
-      where: {
-        [Op.and]: [
-          {
-            status:[constants.ORDER_STATUS.food_being_prepared,constants.ORDER_STATUS.delivered],
-            type:constants.ORDER_TYPE.both,
-          },
-          sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
-        ] 
-    }
-   });
-    const totalOrders = deliveryOrders.count+pickupOrders.count+pickupdeliveryOrders.count
-    return { numberOfCompletedOrders:totalOrders };
+     
+    return { numberOfCompletedOrders:deliveryOrders.count };
 
    
     },
@@ -183,8 +161,6 @@ module.exports = {
         const drivers = await models.HotspotDriver.findAndCountAll({
             where: {
                 hotspot_location_id:params.hotspot_id,
-                status: constants.STATUS.active,
-                approval_status:constants.DRIVER_APPROVAL_STATUS .approved
             }
         });
 
@@ -202,13 +178,12 @@ module.exports = {
                   status:[1,2,3,4],
                   hotspot_location_id:params.hotspot_id,
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
               ] 
           }
         });
 
         return { numberOfOrders:orders.count };
-
      
       },
 
@@ -220,7 +195,7 @@ module.exports = {
                   status:[1,2,3],
                   hotspot_location_id:params.hotspot_id,
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
               ] 
           }
       
@@ -237,39 +212,14 @@ module.exports = {
               [Op.and]: [
                 {
                   status:constants.ORDER_STATUS.delivered,
-                  type:constants.ORDER_TYPE.delivery,
                   hotspot_location_id:params.hotspot_id,
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
               ] 
           }
         });
-        const pickupOrders = await models.Order.findAndCountAll({
-          where: {
-            [Op.and]: [
-              {
-                status:constants.ORDER_STATUS.food_being_prepared,
-                type:constants.ORDER_TYPE.pickup,
-                hotspot_location_id:params.hotspot_id,
-              },
-              sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
-            ] 
-        }
-      });
-      const pickupdeliveryOrders = await models.Order.findAndCountAll({
-        where: {
-          [Op.and]: [
-            {
-              status:[constants.ORDER_STATUS.food_being_prepared,constants.ORDER_STATUS.delivered],
-              type:constants.ORDER_TYPE.both,
-              hotspot_location_id:params.hotspot_id,
-            },
-            sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
-          ] 
-      }
-    });
-        const totalOrders = deliveryOrders.count+pickupOrders.count+pickupdeliveryOrders.count
-        return { numberOfCompletedOrders:totalOrders };
+        
+        return { numberOfCompletedOrders:deliveryOrders.count };
 
      
       },
@@ -300,14 +250,14 @@ module.exports = {
                 {
                   status:[1,2,3,4],
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
               ] 
           }
         });
         const monthOrders = await models.Order.findAndCountAll({
           where:{
             status:[1,2,3,4],
-            updated_at: {
+            delivery_datetime: {
               [Op.between]: [monthStartDate, monthEndDate]
             },
           }
@@ -316,7 +266,7 @@ module.exports = {
       const yearOrders = await models.Order.findAndCountAll({
         where: {
           status:[1,2,3,4],
-          updated_at: {
+          delivery_datetime: {
             [Op.between]: [yearStartDate, yearEndDate]
           },
         }
@@ -348,12 +298,12 @@ module.exports = {
                 const TotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
               });
                 const todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-                  where: sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+                  where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
               });
         
               const monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
                 where:  {
-                    updated_at: {
+                    delivery_datetime: {
                       [Op.between]: [monthStartDate, monthEndDate]
                     },
                 }
@@ -361,7 +311,7 @@ module.exports = {
         
               const yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
                 where:  {
-                    updated_at: {
+                    delivery_datetime: {
                       [Op.between]: [yearStartDate, yearEndDate]
                     },
                 }
