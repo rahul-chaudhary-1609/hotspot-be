@@ -295,8 +295,7 @@ module.exports = {
         const yearStartDate = new Date(new Date().setFullYear(new Date().getFullYear()-1));
         const yearEndDate = new Date();
         
-                const TotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-              });
+                const TotalAmount = await models.OrderDelivery.sum('hotspot_fee');
                 const todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
                   where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
               });
