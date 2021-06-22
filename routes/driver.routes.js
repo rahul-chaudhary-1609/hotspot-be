@@ -28,7 +28,7 @@ router.put('/updateDeviceToken',driverAuthentication.validateDriverToken, joiVal
 router.get('/logout', driverAuthentication.validateDriverToken, loginController.logout);
 
 //for image upload
-router.put('/uploadFile', adminMulter.upload, loginController.uploadFile);
+router.post('/uploadFile', adminMulter.upload, loginController.uploadFile);
 
 
 // accounts API's
