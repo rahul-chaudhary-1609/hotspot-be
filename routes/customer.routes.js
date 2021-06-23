@@ -93,7 +93,11 @@ router.post('/customer-feedback', customerAuthentication.validateCustomerToken, 
 
 router.put('/customer-toggle-notification', customerAuthentication.validateCustomerToken, customerLoginController.toggleNotification);
 
-router.get('/get-notification-status', customerAuthentication.validateCustomerToken,customerLoginController.getNotificationStatus);
+router.get('/get-notification-status', customerAuthentication.validateCustomerToken, customerLoginController.getNotificationStatus);
+
+router.get('/get-notifications', customerAuthentication.validateCustomerToken, customerLoginController.getNotifications);
+
+router.get('/get-unread-notification-count', customerAuthentication.validateCustomerToken,customerLoginController.getUnreadNotificationCount);
 
 router.delete('/customer-logout',customerAuthentication.validateCustomerToken, customerLoginController.logoutCustomer);
 

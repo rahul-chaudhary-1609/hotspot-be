@@ -46,7 +46,7 @@ module.exports = {
                 console.log({ email_accessToken: accessToken })
 
                 if (params.device_token) {
-                    models.Customer.update({
+                    await models.Customer.update({
                         device_token:params.device_token,
                     },
                         {
@@ -104,7 +104,7 @@ module.exports = {
                 console.log({ phone_accessToken: accessToken })
 
                 if (params.device_token) {
-                    models.Customer.update({
+                    await models.Customer.update({
                         device_token:params.device_token,
                     },
                         {
@@ -201,7 +201,7 @@ module.exports = {
                 const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 if (params.device_token) {
-                    models.Customer.update({
+                    await models.Customer.update({
                         device_token:params.device_token,
                     },
                         {
@@ -274,7 +274,7 @@ module.exports = {
                 const accessToken = responseToken.generateCustomerAccessToken(user);
                 
                 if (params.device_token) {
-                    models.Customer.update({
+                    await models.Customer.update({
                         device_token:params.device_token,
                     },
                         {
@@ -310,6 +310,17 @@ module.exports = {
 
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
+
+                if (params.device_token) {
+                    await models.Customer.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                            id:getCustomer.id,
+                        }
+                    })
+                }
 
                 return { accessToken: accessToken };
             }
@@ -357,7 +368,7 @@ module.exports = {
                 const accessToken = responseToken.generateCustomerAccessToken(user);
                 
                 if (params.device_token) {
-                    models.Customer.update({
+                    await models.Customer.update({
                         device_token:params.device_token,
                     },
                         {
@@ -393,6 +404,17 @@ module.exports = {
 
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
+
+                if (params.device_token) {
+                    await models.Customer.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                            id:getCustomer.id,
+                        }
+                    })
+                }
 
                 return { accessToken: accessToken };
             }
@@ -439,7 +461,7 @@ module.exports = {
                 const accessToken = responseToken.generateCustomerAccessToken(user);
                 
                 if (params.device_token) {
-                    models.Customer.update({
+                    await models.Customer.update({
                         device_token:params.device_token,
                     },
                         {
@@ -475,6 +497,17 @@ module.exports = {
 
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
+                            
+                if (params.device_token) {
+                    await models.Customer.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                            id:getCustomer.id,
+                        }
+                    })
+                }
 
                 return { accessToken: accessToken };
             }
@@ -1461,7 +1494,7 @@ module.exports = {
 
     logoutCustomer: async (user) => {
             
-        models.Customer.update({
+        await models.Customer.update({
             device_token:null,
         },
             {
@@ -1479,6 +1512,62 @@ module.exports = {
             }
         )
     },
+    
+    getNotifications: async (user) => {
+        let notification = await utilityFunction.convertPromiseToObject(
+            await models.Notification.findAll({
+                where: {
+                    reciever_id: parseInt(user.uid),
+                    type: [
+                        constants.NOTIFICATION_TYPE.all_user,
+                        constants.NOTIFICATION_TYPE.customer_only,
+                        constants.NOTIFICATION_TYPE.order_confirmed,
+                        constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
+                        constants.NOTIFICATION_TYPE.order_on_the_way,
+                        constants.NOTIFICATION_TYPE.order_delivered,
+                    ]
+                }
+            })
+        )
+
+        await models.Notification.update({
+            status:constants.STATUS.inactive,
+        }, {
+             where: {
+                    reciever_id:parseInt(user.uid),
+                    status: constants.STATUS.active,
+                    type: [
+                        constants.NOTIFICATION_TYPE.all_user,
+                        constants.NOTIFICATION_TYPE.customer_only,
+                        constants.NOTIFICATION_TYPE.order_confirmed,
+                        constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
+                        constants.NOTIFICATION_TYPE.order_on_the_way,
+                        constants.NOTIFICATION_TYPE.order_delivered,
+                    ]
+                }
+        })
+
+        return { notification };
+    },
+
+    getUnreadNotificationCount: async (user) => {
+        let unreadNotificationCount= await models.Notification.count('id',{
+                where: {
+                    reciever_id: parseInt(user.uid),
+                    status: constants.STATUS.active,
+                    type: [
+                        constants.NOTIFICATION_TYPE.all_user,
+                        constants.NOTIFICATION_TYPE.customer_only,
+                        constants.NOTIFICATION_TYPE.order_confirmed,
+                        constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
+                        constants.NOTIFICATION_TYPE.order_on_the_way,
+                        constants.NOTIFICATION_TYPE.order_delivered,
+                    ]
+                }
+            })
+
+        return { unreadNotificationCount };
+    }
 
 }
 

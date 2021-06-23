@@ -5775,6 +5775,44 @@
           }
         },
 
+        "/customer/get-notifications": {
+          "get": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to get customer notifications",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
+        "/customer/get-unread-notification-count": {
+          "get": {
+            "tags": [
+              "Customer Account"
+            ],
+            "description": "Api to get unread notification count",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
         "/customer/customer-logout": {
           "delete": {
             "tags": [

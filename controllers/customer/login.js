@@ -288,5 +288,29 @@ module.exports = {
         }
     },
 
+    getNotifications: async (req, res) => {
+    
+        try {
+            const responseFromService = await loginService.getNotifications(req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    
+    
+    },
+
+    getUnreadNotificationCount: async (req, res) => {
+    
+        try {
+            const responseFromService = await loginService.getUnreadNotificationCount(req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    
+    
+    },
+
 }
 

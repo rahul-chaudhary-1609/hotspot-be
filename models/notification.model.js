@@ -42,8 +42,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
-        reciever_ids:{
-            type: DataTypes.ARRAY(DataTypes.INTEGER),
+        reciever_id:{
+            type: DataTypes.INTEGER,
             allowNull: true,
         },
         

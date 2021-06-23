@@ -5,7 +5,7 @@ const utility = require('../../utils/utilityFunctions');
 
 module.exports = {
     addNotification: async (params, user) => {
-        let reciever_ids = [];
+        //let reciever_ids = [];
 
         var fcmNotificationData = {
             title: params.title,
@@ -26,11 +26,21 @@ module.exports = {
             if(customers.length!=0) {
                 let customerUser = [];
 
-                customers.forEach((customer) => {
-                    if (!reciever_ids.includes(customer.id)) reciever_ids.push(customer.id);
+                for(let customer of customers) {
+                    //if (!reciever_ids.includes(customer.id)) reciever_ids.push(customer.id);
+
+                    let notificationObj = {
+                        title:params.title,
+                        description:params.description,
+                        sender_id:user.id,
+                        reciever_id:customer.id,
+                        type:params.type,
+                    }
+
+                    await Notification.create(notificationObj)
                     
                     if (customer.notification_status==1 && customer.device_token) customerUser.push(customer.device_token);
-                })
+                }
     
                 utility.sendFcmNotification(customerUser,fcmNotificationData);
             }
@@ -53,11 +63,20 @@ module.exports = {
                 
                 let driverUser = [];
 
-                drivers.forEach((driver) => {
-                    if (!reciever_ids.includes(driver.id)) reciever_ids.push(driver.id);
+                for(let driver of drivers ){
+                    //if (!reciever_ids.includes(driver.id)) reciever_ids.push(driver.id);
+                    let notificationObj = {
+                        title:params.title,
+                        description:params.description,
+                        sender_id:user.id,
+                        reciever_id:driver.id,
+                        type:params.type,
+                    }
+
+                    await Notification.create(notificationObj)
                     
                     if (driver.notification_status==1 && driver.device_token) driverUser.push(driver.device_token);
-                })
+                }
     
                 utility.sendFcmNotification(driverUser,fcmNotificationData);
             }
@@ -87,18 +106,20 @@ module.exports = {
             
         }
 
-        let notificationObj = {
-            title:params.title,
-            description:params.description,
-            sender_id:user.id,
-            reciever_ids,
-            type:params.type,
-        }
+        // let notificationObj = {
+        //     title:params.title,
+        //     description:params.description,
+        //     sender_id:user.id,
+        //     reciever_ids,
+        //     type:params.type,
+        // }
 
-        // in app notification create
-        return await Notification.create(notificationObj,
-            {raw: true}
-            );
+        // // in app notification create
+        // return await Notification.create(notificationObj,
+        //     {raw: true}
+        //     );
+
+        return true;
     },
 
     getNotifications: async (params) => {
