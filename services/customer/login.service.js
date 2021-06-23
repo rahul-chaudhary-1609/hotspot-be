@@ -1553,7 +1553,7 @@ module.exports = {
     },
 
     getUnreadNotificationCount: async (user) => {
-        let unreadNotificationCount= await models.Notification.count('id',{
+        let unreadNotificationCount= await models.Notification.count({
                 where: {
                     reciever_id: parseInt(user.id),
                     status: constants.STATUS.active,
