@@ -20,6 +20,7 @@ module.exports = {
             "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
         }),
+        device_token:Joi.string().allow(null, '').optional(),
     }),
 
     phoneLogin : Joi.object({
@@ -37,6 +38,7 @@ module.exports = {
             "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
         }),
+        device_token:Joi.string().allow(null, '').optional(),
     }),
 
     googleLogin: Joi.object({
@@ -52,6 +54,7 @@ module.exports = {
             }
         ),
         id: Joi.string().trim().max(45),
+        device_token:Joi.string().allow(null, '').optional(),
     }),
 
     facebookLogin: Joi.object({
@@ -66,7 +69,8 @@ module.exports = {
                 "string.pattern.base": constants.MESSAGES.invalid_email
             }
         ),
-        id: Joi.string().trim().max(45)
+        id: Joi.string().trim().max(45),
+        device_token:Joi.string().allow(null, '').optional(),
     }),
 
     appleLogin: Joi.object({
@@ -82,6 +86,7 @@ module.exports = {
             }
         ),
         id: Joi.string().trim().max(45),
+        device_token:Joi.string().allow(null, '').optional(),
     }),
 
     forgetPassword : Joi.object({
@@ -131,7 +136,8 @@ module.exports = {
             }),
         apple_id: Joi.string().trim().max(45),
         google_id: Joi.string().trim().max(45),
-        facebook_id: Joi.string().trim().max(45)
+        facebook_id: Joi.string().trim().max(45),
+        device_token:Joi.string().allow(null, '').optional(),
     }),
 
     nameSchema : Joi.object({

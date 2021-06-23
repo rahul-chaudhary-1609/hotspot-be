@@ -45,6 +45,17 @@ module.exports = {
 
                 console.log({ email_accessToken: accessToken })
 
+                if (params.device_token) {
+                    models.Customer.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                            id:customer.id,
+                        }
+                    })
+                }
+
                 return {  accessToken: accessToken };
             }
             else {
@@ -91,6 +102,18 @@ module.exports = {
                 const accessToken = responseToken.generateCustomerAccessToken(user);
 
                 console.log({ phone_accessToken: accessToken })
+
+                if (params.device_token) {
+                    models.Customer.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                            id:customer.id,
+                        }
+                    })
+                }
+
                 return { accessToken: accessToken };
             }
             else {
@@ -177,7 +200,17 @@ module.exports = {
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
 
-                console.log({ signup_accessToken: accessToken })
+                if (params.device_token) {
+                    models.Customer.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                            id:customer.id,
+                        }
+                    })
+                }
+
                 return { accessToken: accessToken };
             }
             else {
@@ -239,7 +272,18 @@ module.exports = {
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
-                console.log({ google_accessToken: accessToken })
+                
+                if (params.device_token) {
+                    models.Customer.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                            id:getCustomer.id,
+                        }
+                    })
+                }
+
                 return { accessToken: accessToken };
             }
             else {
@@ -311,7 +355,18 @@ module.exports = {
                 };
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
-                console.log({ facebook_accessToken: accessToken })
+                
+                if (params.device_token) {
+                    models.Customer.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                            id:getCustomer.id,
+                        }
+                    })
+                }
+
                 return { accessToken: accessToken };
             }
             else {
@@ -383,7 +438,16 @@ module.exports = {
 
                 const accessToken = responseToken.generateCustomerAccessToken(user);
                 
-                console.log({ apple_accessToken: accessToken })
+                if (params.device_token) {
+                    models.Customer.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                            id:getCustomer.id,
+                        }
+                    })
+                }
 
                 return { accessToken: accessToken };
             }
@@ -1395,8 +1459,17 @@ module.exports = {
 
 
 
-    logoutCustomer: async (user) => {       
-            return true 
+    logoutCustomer: async (user) => {
+            
+        models.Customer.update({
+            device_token:null,
+        },
+            {
+                where: {
+                id:user.id,
+            }
+        })
+        return true 
     },
 
     update_device_token: async (params, user) => {      

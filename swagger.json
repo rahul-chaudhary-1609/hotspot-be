@@ -4866,6 +4866,13 @@
                 "description": "enter password",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device token",
+                "required": false,
+                "type": "string"
               }
             ],
             "responses": {}
@@ -4966,6 +4973,13 @@
                 "description": "enter email",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device token",
+                "required": false,
+                "type": "string"
               }
             
             ],
@@ -5002,6 +5016,13 @@
                 "description": "enter email",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device token",
+                "required": false,
+                "type": "string"
               }
             
             ],
@@ -5037,6 +5058,13 @@
                 "in": "formData",
                 "description": "enter email",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device token",
+                "required": false,
                 "type": "string"
               }
             
@@ -5082,6 +5110,13 @@
                 "description": "enter password",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device token",
+                "required": false,
+                "type": "string"
               }
             
             ],
@@ -5119,6 +5154,13 @@
                 "description": "enter password",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device token",
+                "required": false,
+                "type": "string"
               }
             
             ],
@@ -5154,6 +5196,13 @@
                 "in": "formData",
                 "description": "enter email",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device token",
+                "required": false,
                 "type": "string"
               }
             
@@ -5191,6 +5240,13 @@
                 "description": "enter email",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device token",
+                "required": false,
+                "type": "string"
               }
             
             ],
@@ -5226,6 +5282,13 @@
                 "in": "formData",
                 "description": "enter email",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "enter device token",
+                "required": false,
                 "type": "string"
               }
             
