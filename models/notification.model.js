@@ -52,6 +52,12 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             comment: '0=>other,1=> all_users, 2=>drivers_only, 3=> customers_only, 4=> restaurant_only, 5=> order_confirmed, 6=> order_driver_asigned_or_confirmed_by_restaurant, 7=> order_on_the_way, 8=> order_delivered'
         },
+        status: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '0=>inactive,1=>active,2=>deleted'
+        }
 
 
     }, {

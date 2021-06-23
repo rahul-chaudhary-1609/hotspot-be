@@ -23,13 +23,13 @@ module.exports = {
                 })
             );
 
-            if( customers.length) {
+            if(customers.length!=0) {
                 let customerUser = [];
 
                 customers.forEach((customer) => {
                     if (!reciever_ids.includes(customer.id)) reciever_ids.push(customer.id);
                     
-                    if (customer.notification_status && customer.device_token) customerUser.push(customer.device_token);
+                    if (customer.notification_status==1 && customer.device_token) customerUser.push(customer.device_token);
                 })
     
                 utility.sendFcmNotification(customerUser,fcmNotificationData);
@@ -45,18 +45,18 @@ module.exports = {
                         status: constants.STATUS.active,
                         approval_status:constants.DRIVER_APPROVAL_STATUS.approved,
                       },
-                    attributes: ['id','device_token']
+                    attributes: ['id','device_token','notification_status']
                 })
             );
 
-            if (drivers.length) {
+            if (drivers.length!=0) {
                 
                 let driverUser = [];
 
                 drivers.forEach((driver) => {
                     if (!reciever_ids.includes(driver.id)) reciever_ids.push(driver.id);
                     
-                    if (driver.device_token) driverUser.push(driver.device_token);
+                    if (driver.notification_status==1 && driver.device_token) driverUser.push(driver.device_token);
                 })
     
                 utility.sendFcmNotification(driverUser,fcmNotificationData);

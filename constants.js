@@ -206,10 +206,12 @@ CUSTOM_JOI_MESSAGE : {
     delivered: 2,
   },
 
-  CUSTOMER_NOTIFICATION_STATUS : {
+  NOTIFICATION_STATUS : {
     off: 0,
     on: 1,
   },
+
+
   
   DRIVER_APPROVAL_STATUS : {
     pending: 0,

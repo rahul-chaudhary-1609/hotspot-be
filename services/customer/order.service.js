@@ -36,6 +36,7 @@ const getOrderCard =  async (args) => {
             orderCards.push({
                 id: order.id,
                 orderId: order.order_id,
+                restaurant_id:order.restaurant_id,
                 restaurant: order.order_details.restaurant.restaurant_name,
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 status,
