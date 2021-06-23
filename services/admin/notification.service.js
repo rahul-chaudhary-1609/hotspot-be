@@ -126,6 +126,12 @@ module.exports = {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
         return await Notification.findAndCountAll({
+            attributes: [
+                "id","type_id",
+                [Sequelize.fn('DISTINCT', Sequelize.col('title')), 'title'],
+                [Sequelize.fn('DISTINCT', Sequelize.col('description')), 'description'],
+                "sender_id","receiver_id","type","status","createdAt","updatedAt"
+            ],
             where: {
                 type: [
                     constants.NOTIFICATION_TYPE.all_user,
