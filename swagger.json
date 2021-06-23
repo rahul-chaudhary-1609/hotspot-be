@@ -5783,7 +5783,12 @@
             "description": "Api to update customer phone",
             "consumes": [
               "application/x-www-form-urlencoded"
-            ],            
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
             "parameters": [],
             "responses": {}
           }

@@ -95,7 +95,7 @@ router.put('/customer-toggle-notification', customerAuthentication.validateCusto
 
 router.get('/get-notification-status', customerAuthentication.validateCustomerToken,customerLoginController.getNotificationStatus);
 
-router.delete('/customer-logout', customerLoginController.logoutCustomer);
+router.delete('/customer-logout',customerAuthentication.validateCustomerToken, customerLoginController.logoutCustomer);
 
 
 
