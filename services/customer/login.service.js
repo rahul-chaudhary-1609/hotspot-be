@@ -1517,7 +1517,7 @@ module.exports = {
         let notifications = await utilityFunction.convertPromiseToObject(
             await models.Notification.findAll({
                 where: {
-                    reciever_id: parseInt(user.id),
+                    receiver_id: parseInt(user.id),
                     type: [
                         constants.NOTIFICATION_TYPE.all_user,
                         constants.NOTIFICATION_TYPE.customer_only,
@@ -1534,7 +1534,7 @@ module.exports = {
             status:constants.STATUS.inactive,
         }, {
              where: {
-                    reciever_id:parseInt(user.id),
+                    receiver_id:parseInt(user.id),
                     status: constants.STATUS.active,
                     type: [
                         constants.NOTIFICATION_TYPE.all_user,
@@ -1555,7 +1555,7 @@ module.exports = {
     getUnreadNotificationCount: async (user) => {
         let unreadNotificationCount= await models.Notification.count({
                 where: {
-                    reciever_id: parseInt(user.id),
+                    receiver_id: parseInt(user.id),
                     status: constants.STATUS.active,
                     type: [
                         constants.NOTIFICATION_TYPE.all_user,

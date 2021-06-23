@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
-        reciever_id:{
+        receiver_id:{
             type: DataTypes.INTEGER,
             allowNull: true,
         },

@@ -2,11 +2,10 @@ const { Notification, Customer, Driver, Restaurant} = require('../../models');
 const { Op } = require("sequelize");
 const constants = require("../../constants");
 const utility = require('../../utils/utilityFunctions');
-const {sequelize}=require('../../models');
 
 module.exports = {
     addNotification: async (params, user) => {
-        //let reciever_ids = [];
+        //let receiver_ids = [];
 
         var fcmNotificationData = {
             title: params.title,
@@ -34,7 +33,7 @@ module.exports = {
                         title:params.title,
                         description:params.description,
                         sender_id:user.id,
-                        reciever_id:customer.id,
+                        receiver_id:customer.id,
                         type:params.type,
                     }
 
@@ -70,7 +69,7 @@ module.exports = {
                         title:params.title,
                         description:params.description,
                         sender_id:user.id,
-                        reciever_id:driver.id,
+                        receiver_id:driver.id,
                         type:params.type,
                     }
 
@@ -111,7 +110,7 @@ module.exports = {
         //     title:params.title,
         //     description:params.description,
         //     sender_id:user.id,
-        //     reciever_ids,
+        //     receiver_ids,
         //     type:params.type,
         // }
 
@@ -127,12 +126,6 @@ module.exports = {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
         return await Notification.findAndCountAll({
-            attributes: [
-                "id","type_id",
-                [sequelize.literal('DISTINCT `title`'), 'title'],
-                [sequelize.literal('DISTINCT `description`'), 'description'],
-                "sender_id","receiver_id","type","status","createdAt","updatedAt"
-            ],
             where: {
                 type: [
                     constants.NOTIFICATION_TYPE.all_user,

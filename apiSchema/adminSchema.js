@@ -367,7 +367,7 @@ module.exports = {
     addNotification: Joi.object({
         title: Joi.string().required(), 
         description: Joi.string().required(),
-        reciever_id: Joi.number().optional(),    
+        receiver_id: Joi.number().optional(),    
         type:  Joi.number().min(1).max(4).required(),   
     }),
 

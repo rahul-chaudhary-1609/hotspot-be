@@ -4468,9 +4468,9 @@
                 "type": "string"
               },
               {
-                "name": "reciever_ids",
+                "name": "receiver_id",
                 "in": "formData",
-                "description": "enter reciever_ids : array of integers",
+                "description": "enter receiver_id",
                 "required": false,
                 "type": "number"
               },
