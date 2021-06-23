@@ -1514,7 +1514,7 @@ module.exports = {
     },
     
     getNotifications: async (user) => {
-        let notification = await utilityFunction.convertPromiseToObject(
+        let notifications = await utilityFunction.convertPromiseToObject(
             await models.Notification.findAll({
                 where: {
                     reciever_id: parseInt(user.uid),
@@ -1547,7 +1547,9 @@ module.exports = {
                 }
         })
 
-        return { notification };
+        if (notifications.length == 0) throw new Error(constants.MESSAGES.no_notification);
+
+        return { notifications };
     },
 
     getUnreadNotificationCount: async (user) => {

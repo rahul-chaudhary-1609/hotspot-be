@@ -74,6 +74,7 @@ module.exports = {
     no_static_content: "No static content found",
     no_dish_addon: "No dish addon found",
     no_quick_filter: "No quick filter found",
+    no_notification: "No notification found",
     confirm_payment: "Payment confirmed",
     no_payment_card: "No payment card found",
     no_record: "No record found",
