@@ -2,7 +2,6 @@ const { Notification, Customer, Driver, Restaurant} = require('../../models');
 const { Op } = require("sequelize");
 const constants = require("../../constants");
 const utility = require('../../utils/utilityFunctions');
-const {sequelize}=require('../../models');
 
 module.exports = {
     addNotification: async (params, user) => {
@@ -127,12 +126,6 @@ module.exports = {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
         return await Notification.findAndCountAll({
-            attributes: [
-                "id","type_id",
-                [sequelize.fn('DISTINCT', sequelize.col('title')), 'title'],
-                [sequelize.fn('DISTINCT', sequelize.col('description')), 'description'],
-                "sender_id","receiver_id","type","status","createdAt","updatedAt"
-            ],
             where: {
                 type: [
                     constants.NOTIFICATION_TYPE.all_user,
@@ -141,6 +134,7 @@ module.exports = {
                     constants.NOTIFICATION_TYPE.restaurant_only,
                 ]
             },
+            distinct:["title","description"],
             limit: limit,
             offset: offset,
             order: [['id', 'DESC']]
