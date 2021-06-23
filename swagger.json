@@ -7306,6 +7306,13 @@
                 "default": "",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "device_token",
+                "in": "formData",
+                "description": "Enter device token",
+                "required": false,
+                "type": "string"
               }
             ],
             "responses": {}

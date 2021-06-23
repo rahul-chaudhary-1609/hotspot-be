@@ -55,6 +55,17 @@ module.exports = {
                 });
                 driver.token = accessToken;
 
+                if (params.device_token) {
+                    Driver.update({
+                        device_token:params.device_token,
+                    },
+                        {
+                            where: {
+                                id: driver.id,
+                            }
+                    })
+                }
+
                 return driver;
             } else {
                 throw new Error( constants.MESSAGES.invalid_password);

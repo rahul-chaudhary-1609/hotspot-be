@@ -13,6 +13,7 @@ module.exports = {
             "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
         }),
+        device_token:Joi.string().allow(null, '').optional(),
     }),
 
     forgotPassword: Joi.object({
