@@ -304,9 +304,10 @@ module.exports = {
             });   
            }
              
+           
 
             const stripePaymentIntent = await stripe.paymentIntents.create({
-              amount: params.amount*100,
+              amount: parseInt(params.amount*100),
               currency: "INR",
               customer: stripeCustomer.id,
             });
