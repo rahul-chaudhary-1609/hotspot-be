@@ -176,6 +176,8 @@ router.get('/get-order-details/:orderId', customerAuthentication.validateCustome
 
 router.get('/get-track-status/:orderId', customerAuthentication.validateCustomerToken, OrderController.getTrackStatusOfOrder)
 
+router.get('/get-order-delivery-image/:order_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.getOrderDeliveryImage), OrderController.getOrderDeliveryImage)
+
 
 
 

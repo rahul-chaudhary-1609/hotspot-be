@@ -808,5 +808,20 @@ module.exports = {
             return { trackInfo,trackStatus };
 
         
+    },
+
+    getOrderDeliveryImage: async (params) => {
+        let order = await utilityFunction.convertPromiseToObject(
+            await models.Order.findOne({
+                attributes: [
+                    "id","order_id","delivery_image_urls"
+                ],
+                order_id:params.order_id,
+            })
+        )
+
+        if (!order) throw new Error(constants.MESSAGES.no_order);
+
+        return {order}
     }
 }

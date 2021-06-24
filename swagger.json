@@ -6988,6 +6988,33 @@
           }
         },
 
+        "/customer/get-order-delivery-image/{order_id}": {
+          "get": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to get order delivery image",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "order_id",
+                "in": "path",
+                "description": "enter order id",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

@@ -374,6 +374,11 @@ module.exports = {
         page_size: Joi.number().allow(null, '').optional()     
     }),
 
+    getOrderDeliveryImage:Joi.object({
+        type: Joi.string().required()   
+    }),
+
+
 
 }
 

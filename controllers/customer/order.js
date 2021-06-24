@@ -95,5 +95,14 @@ module.exports = {
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
+    },
+
+    getOrderDeliveryImage: async (req, res) => {
+        try {
+            const responseFromService = await orderService.getOrderDeliveryImage(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
     }
 }
