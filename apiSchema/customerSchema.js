@@ -375,7 +375,7 @@ module.exports = {
     }),
 
     getOrderDeliveryImage:Joi.object({
-        type: Joi.string().required()   
+        order_id: Joi.string().required()   
     }),
 
 
