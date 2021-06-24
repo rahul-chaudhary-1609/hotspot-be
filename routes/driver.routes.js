@@ -16,7 +16,8 @@ const homeController = require('../controllers/driver/home');
 
 // on boarding API's
 router.post('/login',joiValidation.validateBody(apiSchema.login), loginController.login);
-router.post('/forgotPassword',joiValidation.validateBody(apiSchema.forgotPassword), loginController.forgotPassword);
+router.post('/forgotPassword', joiValidation.validateBody(apiSchema.forgotPassword), loginController.forgotPassword);
+router.post('/resendOTP',joiValidation.validateBody(apiSchema.resendOTP), loginController.resendOTP);
 router.post('/verifyOTP',joiValidation.validateBody(apiSchema.verifyOTP), loginController.verifyOTP);
 router.post('/resetPassword', joiValidation.validateBody(apiSchema.resetPassword), loginController.resetPassword);
 router.post('/changePassword', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.changePassword), loginController.changePassword);

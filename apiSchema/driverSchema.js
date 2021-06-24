@@ -20,6 +20,10 @@ module.exports = {
         phone_no: Joi.number().required()
     }),
 
+    resendOTP: Joi.object({
+        phone_no: Joi.number().required(),
+    }),
+
     verifyOTP: Joi.object({
         phone_no: Joi.number().required(),
         otp: Joi.number().required()

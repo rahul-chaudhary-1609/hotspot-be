@@ -29,7 +29,16 @@ module.exports = {
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
     }
-   },
+    },
+   
+   resendOTP: async (req, res) => {    
+        try {
+            const responseFromService = await loginService.resendOTP(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.send_otp_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }      
+    },
 
         /*
     * function for verify otp
@@ -202,6 +211,7 @@ module.exports = {
         }  
     
     },
+
 
 }
 

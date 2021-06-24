@@ -94,6 +94,12 @@ module.exports = {
     }
    },
 
+    resendOTP: async (params) => {
+       params.country_code=process.env.COUNTRY_CODE
+        let otpData = await utilityFunction.sentOtp(params);
+        if (!otpData) throw new Error(constants.MESSAGES.send_otp_error)
+        return true
+    },
         /*
     * function for verify_otp
     */

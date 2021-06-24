@@ -78,6 +78,8 @@ module.exports = {
     confirm_payment: "Payment confirmed",
     no_payment_card: "No payment card found",
     no_record: "No record found",
+    send_otp_error: "Error in sending OTP. Please verify contact number.",
+    send_otp_success:"OTP resent successfully.",
     payment_card_already_exist: "Payment card wth same card number already exist",
     invalid_status: "Plese send a valid status",
     picture_upload_success: "Picture uploaded successfully",

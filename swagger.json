@@ -7431,6 +7431,28 @@
         }
     },
 
+    "/driver/resendOTP": {
+      "post": {
+        "tags": [
+          "Driver Onboarding"
+        ],
+        "description": "For driver resending otp",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "phone_no",
+            "in": "formData",
+            "description": "enter phone",
+            "required": true,
+            "type": "number"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
     "/driver/verifyOTP": {
       "post": {
         "tags": [
