@@ -7,6 +7,8 @@ module.exports = {
     addNotification: async (params, user) => {
         //let receiver_ids = [];
 
+        params.type_id = await utility.getUniqueTypeIdForNotification();
+
         var fcmNotificationData = {
             title: params.title,
             body: params.description
@@ -30,7 +32,8 @@ module.exports = {
                     //if (!reciever_ids.includes(customer.id)) reciever_ids.push(customer.id);
 
                     let notificationObj = {
-                        title:params.title,
+                        type_id:params.type_id,
+                        title: params.title,
                         description:params.description,
                         sender_id:user.id,
                         receiver_id:customer.id,
@@ -66,6 +69,7 @@ module.exports = {
                 for(let driver of drivers ){
                     //if (!reciever_ids.includes(driver.id)) reciever_ids.push(driver.id);
                     let notificationObj = {
+                        type_id:params.type_id,
                         title:params.title,
                         description:params.description,
                         sender_id:user.id,
@@ -125,19 +129,41 @@ module.exports = {
     getNotifications: async (params) => {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
-        return await Notification.findAndCountAll({
-            where: {
-                type: [
-                    constants.NOTIFICATION_TYPE.all_user,
-                    constants.NOTIFICATION_TYPE.customer_only,
-                    constants.NOTIFICATION_TYPE.driver_only,
-                    constants.NOTIFICATION_TYPE.restaurant_only,
-                ]
-            },
-            limit: limit,
-            offset: offset,
-            order: [['id', 'DESC']]
-        });
+        let notifications = await utility.convertPromiseToObject(
+            await Notification.findAndCountAll({
+                where: {
+                    type: [
+                        constants.NOTIFICATION_TYPE.all_user,
+                        constants.NOTIFICATION_TYPE.customer_only,
+                        constants.NOTIFICATION_TYPE.driver_only,
+                        constants.NOTIFICATION_TYPE.restaurant_only,
+                    ]
+                },
+                limit: limit,
+                offset: offset,
+                order: [['id', 'DESC']]
+            })
+        );
+
+        if (notifications.count == 0) throw new Error(constants.MESSAGES.no_notification);
+
+        let uniqueNotifications = {
+            count:0,
+            rows:[]
+        }
+
+        uniqueNotifications.rows.push(notifications.rows[0])
+        uniqueNotifications.count++;
+
+        for (let notification of notifications.rows) {
+            let existingNotification = uniqueNotifications.rows.find((uniqueNotification) => uniqueNotification.type_id == notification.type_id);
+            if (!existingNotification) {
+                uniqueNotifications.rows.push(notification);
+                uniqueNotifications.count++;
+            }
+        }
+
+        return {notifications:uniqueNotifications}
     },
 
     getNotificationDetails: async (params) => {

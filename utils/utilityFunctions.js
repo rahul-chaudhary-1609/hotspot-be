@@ -9,7 +9,7 @@ const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWI
 const geolib = require('geolib');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
-const { Order, OrderPickup, OrderDelivery, DriverPayment, RestaurantPayment } = require('../models');
+const { Order, OrderPickup, OrderDelivery, DriverPayment, RestaurantPayment, Notification } = require('../models');
 
 
 /* function for sending the error response */
@@ -349,4 +349,21 @@ module.exports.getUniqueRestaurantPaymentId = async ()=> {
     }
 
     return payment_id;
+}
+
+module.exports.getUniqueTypeIdForNotification = async ()=> {
+    let isUniqueFound = false;
+    let type_id = null;
+    while (!isUniqueFound) {
+        type_id = getRandomStringOfLengthTen();
+        let notification = await Notification.findOne({
+            where: {
+                type_id
+            }
+        });
+
+        if (!notification) isUniqueFound=true 
+    }
+
+    return type_id;
 }
