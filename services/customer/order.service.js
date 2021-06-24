@@ -786,13 +786,13 @@ module.exports = {
             let trackStatus = null;
 
             if (order.status==1) {
-                trackStatus="Confirming order with restaurant"
+                trackStatus="Confirming order with restaurant!"
             }
             else if (order.status == 2) {
-                trackStatus="Food is being Prepared"
+                trackStatus="Food is being Prepared!"
             }
             else if (order.status == 3) {
-                trackStatus="Food is on the way"
+                trackStatus="Food is on the way!"
             }
             else if (order.status == 4) {
                 if(order.type==constants.ORDER_TYPE.pickup) trackStatus="Completed"
