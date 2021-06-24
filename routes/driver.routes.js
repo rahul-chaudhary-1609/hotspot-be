@@ -36,6 +36,8 @@ router.get('/getDriverAccount', driverAuthentication.validateDriverToken, loginC
 router.get('/checkPhoneUpdate', driverAuthentication.validateDriverToken,joiValidation.validateQueryParams(apiSchema.checkPhoneUpdate), loginController.checkPhoneUpdate);
 router.put('/editDriverAccount', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.editDriverAccount), loginController.editDriverAccount);
 router.put('/toggleNotification', driverAuthentication.validateDriverToken, joiValidation.validateBody(apiSchema.toggleNotification), loginController.toggleNotification);
+router.get('/getNotifications', driverAuthentication.validateCustomerToken, loginController.getNotifications);
+router.get('/getUnreadNotificationCount', driverAuthentication.validateCustomerToken,loginController.getUnreadNotificationCount);
 
 
 // statticContent API's

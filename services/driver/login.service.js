@@ -538,6 +538,52 @@ module.exports = {
             return { image_url };
        
     },
+
+    getNotifications: async (user) => {
+        let notifications = await utilityFunction.convertPromiseToObject(
+            await models.Notification.findAll({
+                where: {
+                    receiver_id: parseInt(user.id),
+                    type: [
+                        constants.NOTIFICATION_TYPE.all_user,
+                        constants.NOTIFICATION_TYPE.driver_only,
+                    ]
+                }
+            })
+        )
+
+        await models.Notification.update({
+            status:constants.STATUS.inactive,
+        }, {
+             where: {
+                    receiver_id:parseInt(user.id),
+                    status: constants.STATUS.active,
+                    type: [
+                        constants.NOTIFICATION_TYPE.all_user,
+                        constants.NOTIFICATION_TYPE.driver_only,
+                    ]
+                }
+        })
+
+        if (notifications.length == 0) throw new Error(constants.MESSAGES.no_notification);
+
+        return { notifications };
+    },
+
+    getUnreadNotificationCount: async (user) => {
+        let unreadNotificationCount= await models.Notification.count({
+                where: {
+                    receiver_id: parseInt(user.id),
+                    status: constants.STATUS.active,
+                    type: [
+                        constants.NOTIFICATION_TYPE.all_user,
+                        constants.NOTIFICATION_TYPE.driver_only,
+                    ]
+                }
+            })
+
+        return { unreadNotificationCount };
+    }
 }
 
 
