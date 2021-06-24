@@ -324,6 +324,8 @@ module.exports = {
                         })
 
                         ordered_items.push({
+                            id: item.id,
+                            dishId:item.restaurant_dish_id,
                             itemName: dish.name,
                             itemCount: item.cart_count,
                             itemAddOn: addOns,
@@ -461,6 +463,8 @@ module.exports = {
                     })
 
                     ordered_items.push({
+                        id: item.id,
+                        dishId:item.restaurant_dish_id,
                         itemName: dish.name,
                         itemCount: item.cart_count,
                         itemAddOn: addOns,
