@@ -236,7 +236,7 @@ module.exports = {
         });
 
         driver.approval_status = constants.DRIVER_APPROVAL_STATUS.approved;
-        driver.password = await utilityFunction.bcryptPassword(password);
+        driver.password = await utility.bcryptPassword(password);
         driver.save();
         
         let bodyHTML = `Hi  ${driver.first_name}
