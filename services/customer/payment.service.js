@@ -1,6 +1,5 @@
 require('dotenv/config');
 const models = require('../../models');
-const validate = require('../../apiSchema/customerSchema');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const constants = require("../../constants");
 const utilityFunction=require('../../utils/utilityFunctions')
@@ -91,14 +90,16 @@ module.exports = {
       }
 
       for (let card of cards) {
-        paymentCards.push({
-              id:card.id,
-              nameOnCard: card.name_on_card,
-              cardNumber: card.card_number,
-              cardExpMonth: card.card_exp_month,
-              cardExpYear: card.card_exp_year,
-              isDefault:card.is_default,
-        })
+        if (!card.is_default) {
+          paymentCards.push({
+            id: card.id,
+            nameOnCard: card.name_on_card,
+            cardNumber: card.card_number,
+            cardExpMonth: card.card_exp_month,
+            cardExpYear: card.card_exp_year,
+            isDefault: card.is_default,
+          })
+        }
       }
           
       return { paymentCards };          
