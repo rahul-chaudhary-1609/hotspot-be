@@ -63,29 +63,45 @@ module.exports = {
 
     getPaymentCards: async (user) => {
 
-            let cards = await models.CustomerCard.findAll({
-                where: {
-                    customer_id: user.id,
-                    status:constants.STATUS.active
-                    }
-            });
-            
-            const paymentCards = cards.map((val) => {
-                return {
-                    id:val.id,
-                    nameOnCard: val.name_on_card,
-                    cardNumber: val.card_number,
-                    cardExpMonth: val.card_exp_month,
-                    cardExpYear: val.card_exp_year,
-                    isDefault:val.is_default,
-                }
-            })
-            
-            
-            return { paymentCards };
-            
+      let cards = await utilityFunction.convertPromiseToObject(
+          await models.CustomerCard.findAll({
+          where: {
+            customer_id: user.id,
+            status: constants.STATUS.active
+          }
+        })
+      )
 
-            
+
+      if (cards.length == 0) throw new Error(constants.MESSAGES.no_payment_card);
+
+      let paymentCards = [];
+
+      let defaultCard = cards.find((card) => card.is_default);
+
+      if (defaultCard) {
+        paymentCards.push({
+              id:defaultCard.id,
+              nameOnCard: defaultCard.name_on_card,
+              cardNumber: defaultCard.card_number,
+              cardExpMonth: defaultCard.card_exp_month,
+              cardExpYear: defaultCard.card_exp_year,
+              isDefault:defaultCard.is_default,
+        });
+      }
+
+      for (let card of cards) {
+        paymentCards.push({
+              id:card.id,
+              nameOnCard: card.name_on_card,
+              cardNumber: card.card_number,
+              cardExpMonth: card.card_exp_month,
+              cardExpYear: card.card_exp_year,
+              isDefault:card.is_default,
+        })
+      }
+          
+      return { paymentCards };          
          
     },
 
