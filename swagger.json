@@ -8151,7 +8151,7 @@
     "/driver/getNotifications": {
       "get": {
         "tags": [
-          "Customer Account"
+          "Driver Account"
         ],
         "description": "Api to get customer notifications",
         "consumes": [
@@ -8171,7 +8171,7 @@
     "/driver/getUnreadNotificationCount": {
       "get": {
         "tags": [
-          "Customer Account"
+          "Driver Account"
         ],
         "description": "Api to get unread notification count",
         "consumes": [
