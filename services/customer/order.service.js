@@ -816,7 +816,9 @@ module.exports = {
                 attributes: [
                     "id","order_id","delivery_image_urls"
                 ],
-                order_id:params.order_id,
+                where:{
+                    order_id:params.order_id,
+                }
             })
         )
 
