@@ -42,10 +42,10 @@ router.get('/getUnreadNotificationCount', driverAuthentication.validateCustomerT
 
 
 // statticContent API's
-router.get('/getStaticContent/:type',driverAuthentication.validateDriverToken, joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
-router.get('/getFaqTopics',driverAuthentication.validateDriverToken, staticContentController.getFaqTopics);
-router.get('/getFaqs',driverAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
-router.get('/htmlFileUrlToTextConvert',driverAuthentication.validateDriverToken, staticContentController.htmlFileUrlToTextConvert);
+router.get('/getStaticContent/:type', joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
+router.get('/getFaqTopics', staticContentController.getFaqTopics);
+router.get('/getFaqs', joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
+router.get('/htmlFileUrlToTextConvert', staticContentController.htmlFileUrlToTextConvert);
 
 
 // home API's
