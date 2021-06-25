@@ -79,6 +79,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
         },
 
+        payment_datetime: {
+            type: DataTypes.DATE,
+        },
+
         delivery_image_urls: {
             type: DataTypes.ARRAY(DataTypes.STRING),
         },

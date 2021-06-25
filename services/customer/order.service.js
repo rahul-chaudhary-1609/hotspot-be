@@ -41,7 +41,7 @@ const getOrderCard =  async (args) => {
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 status,
                 createdAt: order.createdAt,
-                updatedAt: order.updatedAt,
+                updatedAt: order.payment_datetime || order.updatedAt,
                 orderDetails,
             })
         }
@@ -646,7 +646,8 @@ module.exports = {
         if (!orderPayment || !orderPayment.payment_status) throw new Error(constants.MESSAGES.no_payment);
 
         await models.Order.update({
-            status:1,
+            status: 1,
+            payment_datetime:new Date(),
         },
             {
                 where: {
@@ -700,7 +701,7 @@ module.exports = {
                     status: [1,2,3,4],
                 },
                 order: [
-                    ['id', 'DESC']
+                    ['payment_datetime', 'DESC']
                 ]
             })
 
