@@ -341,8 +341,15 @@ module.exports = {
     
         if (!driver) throw new Error(constants.MESSAGES.no_driver);
 
-        let currentOrder = order;
+        let currentOrder = await utility.convertPromiseToObject(await models.Order.findOne({
+                where: {
+                    order_id:orderId,
+                }
+            })
+        );
+
         delete currentOrder.order_details.hotspot.dropoff;
+        
         const orderPickup = await models.OrderPickup.findOne({
             where: {
                 hotspot_location_id: currentOrder.hotspot_location_id,
