@@ -200,10 +200,10 @@ router.post('/payment-success',customerAuthentication.validateCustomerToken,joiV
 
 
 // statticContent API's
-router.get('/getStaticContent/:type',customerAuthentication.validateDriverToken, joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
-router.get('/getFaqTopics',customerAuthentication.validateDriverToken, staticContentController.getFaqTopics);
-router.get('/getFaqs',customerAuthentication.validateDriverToken, joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
-router.get('/htmlFileUrlToTextConvert',customerAuthentication.validateDriverToken, staticContentController.htmlFileUrlToTextConvert);
+router.get('/getStaticContent/:type',customerAuthentication.validateCustomerToken, joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
+router.get('/getFaqTopics',customerAuthentication.validateCustomerToken, staticContentController.getFaqTopics);
+router.get('/getFaqs',customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
+router.get('/htmlFileUrlToTextConvert',customerAuthentication.validateCustomerToken, staticContentController.htmlFileUrlToTextConvert);
 
 
 
