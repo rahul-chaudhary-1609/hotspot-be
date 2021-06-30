@@ -315,7 +315,7 @@ module.exports = {
 
     getDriverAccount: async (user) => {
         return {
-            driver: await utility.convertPromiseToObject(
+            driver: await utilityFunction.convertPromiseToObject(
                 await Driver.findByPk(user.id)
             ),
             driverBankDetails: await utilityFunction.convertPromiseToObject(
