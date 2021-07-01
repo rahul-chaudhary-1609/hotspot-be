@@ -305,6 +305,7 @@ module.exports = {
                 dropoff:order.order_details.hotspot?order.order_details.hotspot.dropoff:null,
                 orderItems:order.order_details.ordered_items,
                 amount: parseFloat(order.amount),
+                tipAmount:parseFloat(order.tip_amount),
                 type:order.type,
                 status,
                 driver: order.order_details.driver? `${order.order_details.driver.first_name} ${order.order_details.driver.last_name}`:null,
