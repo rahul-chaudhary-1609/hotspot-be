@@ -128,7 +128,7 @@ module.exports = {
               status:constants.ORDER_STATUS.delivered,
               type:constants.ORDER_TYPE.delivery,
             },
-            sequelize.where(sequelize.fn('date', sequelize.col('updated_at')), '=', utility.getOnlyDate(new Date()))
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
           ] 
       }
      });
