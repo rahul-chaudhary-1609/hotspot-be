@@ -13,5 +13,7 @@ router.get('/getFaqTopics', staticContentController.getFaqTopics);
 router.get('/getFaqs', joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
 router.get('/htmlFileUrlToTextConvert', staticContentController.htmlFileUrlToTextConvert);
 
+router.post('/sendBecameHotspotEmail', joiValidation.validateBody(apiSchema.sendBecameHotspotEmail), staticContentController.sendBecameHotspotEmail);
+
 
 module.exports = router;

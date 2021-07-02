@@ -8817,6 +8817,91 @@
         ],
         "responses": {}
       }
+    },
+    "/website/sendBecameHotspotEmail": {
+      "post": {
+        "tags": [
+          "Website Management"
+        ],
+        "description": "Api to send Became Hotspot Email",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "first_name",
+            "in": "formData",
+            "description": "enter first_name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "last_name",
+            "in": "formData",
+            "description": "enter first_name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "description": "enter email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "phone",
+            "in": "formData",
+            "description": "enter phone",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "company_name",
+            "in": "formData",
+            "description": "enter company_name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "formData",
+            "description": "enter address",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "city",
+            "in": "formData",
+            "description": "enter city",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "zipcode",
+            "in": "formData",
+            "description": "enter zipcode",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "no_of_people_in_the_building",
+            "in": "formData",
+            "description": "enter people count",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "hours_of_operation",
+            "in": "formData",
+            "description": "enter operational hours",
+            "required": true,
+            "type": "string"
+          }
+
+        ],
+        "responses": {}
+      }
     }
 
     }

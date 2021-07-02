@@ -43,4 +43,13 @@ module.exports = {
         }
     },
   
+  sendBecameHotspotEmail: async (req, res) => {
+        try {
+            const responseFromService = await staticContent.sendBecameHotspotEmail(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.application_sent_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+  
 }
