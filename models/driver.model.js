@@ -61,6 +61,9 @@ module.exports = (sequelize, DataTypes) => {
     passport_picture_url: {
       type: DataTypes.STRING,
     },
+    passport_number: {
+      type: DataTypes.STRING,
+    },
 
     profile_picture_url: {
       type: DataTypes.STRING,
