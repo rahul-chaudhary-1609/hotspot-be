@@ -78,7 +78,7 @@ module.exports = {
         let bodyHTML = `Hello, <br>
         This is ${params.company_name}'s application to become a hotspot.<br><br>
         <div style="border: 3px solid rgba(255, 0, 0, 0.3); max-width:fit-content; font-family: Arial, Helvetica, sans-serif;border-radius:10px;">
-        <h3 style="padding:10px 10px 0px 25px;">Became A <span style="color: red;">Hot</span>spot</h3>
+        <h3 style="padding:10px 10px 0px 25px;">Become A <span style="color: red;">Hot</span>spot</h3>
         <table style="padding:0px 10px 10px 10px;">`
             
         for (let key in params) {
@@ -112,7 +112,7 @@ module.exports = {
         const mailOptions = {
                     from: process.env.SG_EMAIL_ID,
                     to: params.email,
-                    subject: 'Application: Became A Hotspot',
+                    subject: 'Application: Become A Hotspot',
                     text: 'Here is your code',
                     html: bodyHTML+bottomHTML,
         };
