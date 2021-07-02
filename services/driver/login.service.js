@@ -427,6 +427,10 @@ module.exports = {
         driver.email = params.email || driver.email;
         driver.phone_no = params.phone_no || driver.phone_no;
         driver.dob = params.dob || driver.dob;
+        driver.passport_number = params.passport_number || driver.passport_number;
+        driver.gender = params.gender || driver.gender;
+        driver.nationality = params.nationality || driver.nationality;
+        driver.passport_picture_url = params.passport_picture_url || driver.passport_picture_url;
 
         driverBankDetails.bank_name = params.bank_name || driverBankDetails.bank_name;
         driverBankDetails.account_number = params.account_number || driverBankDetails.account_number;
