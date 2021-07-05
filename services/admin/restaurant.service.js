@@ -395,7 +395,8 @@ module.exports = {
                 where: {
                     restaurant_dish_id: parseInt(params.restaurant_dish_id),
                     status:constants.STATUS.active,
-                }
+                },
+                order:[["createdAt","DESC"]]
             })
         );
 
