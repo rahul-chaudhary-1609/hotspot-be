@@ -585,7 +585,11 @@ module.exports = {
                     payment_id:orderDeliveryObj.payment_id,
                 }, {
                     where: {
-                        delivery_id:orderDelivery.delivery_id,
+                        driver_id:orderDelivery.driver_id,
+                        [Op.and]: [
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
+                    ]
                     }
                 })
 
