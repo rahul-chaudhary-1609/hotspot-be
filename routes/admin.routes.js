@@ -242,7 +242,8 @@ router.get('/listBanners',adminAuthentication.validateAdminToken, bannerControll
 router.post('/addBanner',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addBanner),bannerController.addBanner);
 router.put('/editBanner/:banner_id',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editBanner),bannerController.editBanner);
 router.delete('/deleteBanner/:banner_id',adminAuthentication.validateAdminToken, bannerController.deleteBanner)
-router.get('/getBanner/:banner_id',adminAuthentication.validateAdminToken, bannerController.getBanner)
+router.get('/getBanner/:banner_id', adminAuthentication.validateAdminToken, bannerController.getBanner)
+router.put('/updateBannerOrder',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.updateBannerOrder),bannerController.updateBannerOrder);
 module.exports = router;
 
 

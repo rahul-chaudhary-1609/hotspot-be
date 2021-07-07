@@ -107,7 +107,8 @@ module.exports = {
     driver_fee_error_7: `There must be at least one range whose 'start range' value is 0`,
     payment_already_done: `This payment is already completed`,
     card_not_belongs_to_you: `This card is not belongs to you`,
-    application_sent_success:`Email application sent successfully`,
+    application_sent_success: `Email application sent successfully`,
+    invalid_current_order:"Current order does not match banner current order",
   },
 
   code: {

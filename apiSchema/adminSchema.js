@@ -433,13 +433,11 @@ module.exports = {
       addBanner: Joi.object({
         name: Joi.string().required(),
         image_url: Joi.string().required(),
-        order: Joi.number().required()
     }),
 
     editBanner: Joi.object({
         name: Joi.string().optional(),
         image_url: Joi.string().optional(),
-        order: Joi.number().optional()
     }),
 
     getOrderDeliveryDetails: Joi.object({
@@ -547,6 +545,12 @@ module.exports = {
     restaurantPaymentSuccess: Joi.object({
         payment_id: Joi.string().trim().required(),
         payment_intent:Joi.object().optional(),
+    }),
+
+    updateBannerOrder: Joi.object({
+        banner_id: Joi.number().required(),
+        current_order: Joi.number().required(),
+        new_order:Joi.number().required(),
     }),
     
 }

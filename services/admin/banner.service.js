@@ -9,20 +9,23 @@ module.exports = {
             const banners = await models.HotspotOffer.findAndCountAll({
            where: { status: [0,1]},
             limit:limit,
-            offset: offset
+            offset: offset,
+            order:["order"]
             });
             return { banners };    
      },
 
     addBanner: async (params) => {
-        const orderNumber = await models.HotspotOffer.findOne({
+        let maxOrder = await models.HotspotOffer.max("order", {
             where:{
-                order:params.order,
                 status: [0,1]
             }
-        })
-
-        if(orderNumber) throw new Error(constants.MESSAGES.order_sequence_exist);
+        });
+        if (maxOrder && maxOrder > 0) {
+            params.order=maxOrder
+        } else {
+            params.order = 1;
+        }
 
         const addBanner = await models.HotspotOffer.create({ name: params.name, image_url: params.image_url, order: params.order });
 
@@ -39,17 +42,9 @@ module.exports = {
             }
         })
         if (checkBannerId) {
-            if (params.order) {
-                const orderNumber = await models.HotspotOffer.findOne({
-                    where:{
-                        order:params.order,
-                        status: [0,1]
-                    }
-                })
-        
-                if(orderNumber) throw new Error(constants.MESSAGES.order_sequence_exist);
-            }
-            const bannerData=await models.HotspotOffer.update({ name:params.name,image_url:params.image_url,order:params.order}, { where: {id:Number(params.banner_id)}});
+            checkBannerId.name = params.name || checkBannerId.name;
+            checkBannerId.image_url = params.image_url || checkBannerId.image_url;
+            checkBannerId.save();
             return true
         } else {
             throw new Error(constants.MESSAGES.invalid_id);
@@ -61,8 +56,7 @@ module.exports = {
             where: { id: params.banner_id}
         })
         if (checkBannerId) {
-            await models.HotspotOffer.update({ status:2}, { where: {id:Number(params.banner_id)}});
-            return true
+            checkBannerId.destroy();
         } else {
             throw new Error(constants.MESSAGES.invalid_id);
         }
@@ -77,6 +71,36 @@ module.exports = {
         })
         if (checkBannerId) {
             return checkBannerId.dataValues
+        } else {
+            throw new Error(constants.MESSAGES.invalid_id);
+        }
+    },
+     
+    updateBannerOrder: async(params)=>{
+        let checkBannerId = await models.HotspotOffer.findOne({
+            where: { 
+                id: params.banner_id,
+                status: [0,1]
+            }
+        })
+        if (checkBannerId) {
+            if (params.current_order == checkBannerId.order) {
+                await models.HotspotOffer.update({
+                    order: params.current_order
+                }, {
+                    where: {
+                        order: params.new_order,
+                        status: [0, 1]
+                    }
+                })
+
+                checkBannerId.order = params.new_order
+                checkBannerId.save();
+                return true;
+            } else {
+                throw new Error(constants.MESSAGES.invalid_current_order);
+            }
+
         } else {
             throw new Error(constants.MESSAGES.invalid_id);
         }
