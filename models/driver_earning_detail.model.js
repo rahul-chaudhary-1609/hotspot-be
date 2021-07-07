@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     payment_id: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     driver_fee: {
       type: DataTypes.DECIMAL(15,2),
