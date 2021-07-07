@@ -463,6 +463,10 @@ module.exports = {
     },
 
     getOrdersByRestaurantIdAndDateRange: async (params) => {
+        models.Order.hasOne(models.HotspotLocation, { foreignKey: 'id', sourceKey: 'hotspot_location_id', targetKey: 'id' })
+        models.Order.hasOne(models.Restaurant, { foreignKey: 'id', sourceKey: 'restaurant_id', targetKey: 'id' })
+        models.Order.hasOne(models.HotspotDropoff, { foreignKey: 'id', sourceKey: 'hotspot_dropoff_id', targetKey: 'id' })
+
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
         let ordersByRestaurantIdAndDateRange= await utility.convertPromiseToObject(
@@ -748,6 +752,10 @@ module.exports = {
     },
 
     getOrdersByDriverIdAndDateRange: async (params) => {
+        models.Order.hasOne(models.HotspotLocation, { foreignKey: 'id', sourceKey: 'hotspot_location_id', targetKey: 'id' })
+        models.Order.hasOne(models.Restaurant, { foreignKey: 'id', sourceKey: 'restaurant_id', targetKey: 'id' })
+        models.Order.hasOne(models.HotspotDropoff, { foreignKey: 'id', sourceKey: 'hotspot_dropoff_id', targetKey: 'id' })
+
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
         let ordersByDriverIdAndDateRange= await utility.convertPromiseToObject(
