@@ -41,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
     travelled_distance: {
       type: DataTypes.DECIMAL(15,2),
     },
+    delivery_datetime: {
+            type: DataTypes.DATE,
+    },
     order_status: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -53,6 +56,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
       comment: "0=> not_paid, 1=> paid"
     }
+
     
   }, {
       sequelize,
