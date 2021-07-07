@@ -31,7 +31,7 @@ module.exports = {
             })
         )
 
-        let totalEarning = driverPendingEarnings.map((result, driverPendingEarning) => result + parseFloat(driverPendingEarning.driver_fee), 0);
+        let totalEarning = driverPendingEarnings.reduce((result, driverPendingEarning) => result + parseFloat(driverPendingEarning.driver_fee), 0);
 
         if (driverPendingEarnings.length==0) throw new Error(constants.MESSAGES.no_record);
 
@@ -63,7 +63,7 @@ module.exports = {
             })
         )
 
-        let totalEarning = driverCollectedEarnings.map((result, driverCollectedEarning) => result + parseFloat(driverCollectedEarning.driver_fee), 0);
+        let totalEarning = driverCollectedEarnings.reduce((result, driverCollectedEarning) => result + parseFloat(driverCollectedEarning.driver_fee), 0);
 
         if (driverCollectedEarnings.length==0) throw new Error(constants.MESSAGES.no_record);
 
@@ -127,12 +127,12 @@ module.exports = {
             })
         )
 
-        if (deliveryDetails) throw new Error(constants.MESSAGES.no_record);
+        if (!deliveryDetails) throw new Error(constants.MESSAGES.no_record);
 
         deliveryDetails.dropOffs=JSON.parse(deliveryDetails.dropOffs)
 
         for (let dropOff of deliveryDetails.dropOffs) {
-            let hotspotDropoff = await utility.convertPromiseToObject(
+            let hotspotDropoff = await utilityFunction.convertPromiseToObject(
                 await HotspotDropoff.findOne({
                     attributes:['dropoff_detail'],
                     where: {
