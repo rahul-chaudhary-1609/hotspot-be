@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       DriverEarningDetail.belongsTo(models.Driver);
-      DriverEarningDetail.belongsTo(models.Order);
     }
   };
   DriverEarningDetail.init({
