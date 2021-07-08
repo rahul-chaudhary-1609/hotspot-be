@@ -202,6 +202,12 @@ router.put('/editRestaurantFee',adminAuthentication.validateAdminToken,joiValida
 
 router.delete('/deleteDriverFee/:fee_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.deleteDriverFee), adminFeeController.deleteDriverFee);
 
+router.get('/listTip', adminAuthentication.validateAdminToken, adminFeeController.listTip);
+
+router.get('/getTipById/:tip_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getTipById), adminFeeController.getTipById);
+
+router.put('/editTip',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editTip) , adminFeeController.editTip);
+
 
 //schedule Settings
 

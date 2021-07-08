@@ -3462,6 +3462,92 @@
           }
         },
 
+        "/admin/listTip": {
+          "get": {
+            "tags": [
+              "Admin Fee Settings"
+            ],
+            "description": "Api to get tip list",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/getTipById/{tip_id}": {
+          "get": {
+            "tags": [
+              "Admin Fee Settings"
+            ],
+            "description": "Api to get tip by id",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "tip_id",
+                "in": "path",
+                "description": "enter tip id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/editTip": {
+          "put": {
+            "tags": [
+              "Admin Fee Settings"
+            ],
+            "description": "Api to edit tip",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "tip_id",
+                "in": "formData",
+                "description": "enter tip id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "tip_amount",
+                "in": "formData",
+                "description": "tip amount",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 

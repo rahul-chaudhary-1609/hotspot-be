@@ -185,7 +185,36 @@ module.exports = {
         restaurant.percentage_fee = params.percentage_fee;
         restaurant.save()
 
-        return {restaurant}
+        return { restaurant }
+    },
+
+    listTip: async () => {
+        let tips = await utility.convertPromiseToObject(
+            await models.Tip.findAll({
+                order: ["id"]
+            })
+        )
+
+        return {tips}
+    },
+
+    getTipById: async (params) => {
+        let tip = await models.Tip.findByPk(parseInt(params.tip_id));
+
+        if (!tip) throw new Error(constants.MESSAGES.no_tip);
+
+        return {tip}
+    },
+
+    editTip: async (params) => {
+      let tip = await models.Tip.findByPk(parseInt(params.tip_id));
+
+        if (!tip) throw new Error(constants.MESSAGES.no_tip);
+
+        tip.tip_amount = params.tip_amount;
+        tip.save()
+
+        return {tip}
     }
 
 }

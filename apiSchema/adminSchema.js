@@ -552,6 +552,15 @@ module.exports = {
         current_order: Joi.number().required(),
         new_order:Joi.number().required(),
     }),
+
+    getTipById: Joi.object({
+        tip_id: Joi.number().required(),
+    }),
+
+    editTip: Joi.object({
+        tip_id: Joi.number().required(),
+        tip_amount:Joi.number().required(),
+    }),
     
 }
 

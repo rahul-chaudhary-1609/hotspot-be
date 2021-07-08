@@ -108,7 +108,8 @@ module.exports = {
     payment_already_done: `This payment is already completed`,
     card_not_belongs_to_you: `This card is not belongs to you`,
     application_sent_success: `Email application sent successfully`,
-    invalid_current_order:"Current order does not match banner current order",
+    invalid_current_order: "Current order does not match banner current order",
+    no_tip:"No tip found",
   },
 
   code: {
