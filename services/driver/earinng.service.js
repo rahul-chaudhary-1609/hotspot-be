@@ -104,8 +104,12 @@ module.exports = {
             })
         )
 
-        if (deliveryHistory.length==0) throw new Error(constants.MESSAGES.no_record);
-
+        if (deliveryHistory.length == 0) throw new Error(constants.MESSAGES.no_record);
+        
+        for (let delivery of deliveryHistory) {
+            delivery.hotspot = JSON.parse(delivery.hotspot)
+            delivery.dropOffs = JSON.parse(delivery.dropOffs)
+        }
         return { deliveryHistory };
     },
 
@@ -129,6 +133,8 @@ module.exports = {
 
         if (!deliveryDetails) throw new Error(constants.MESSAGES.no_record);
 
+        deliveryDetails.driver=JSON.parse(deliveryDetails.driver)
+        deliveryDetails.hotspot=JSON.parse(deliveryDetails.hotspot)
         deliveryDetails.dropOffs=JSON.parse(deliveryDetails.dropOffs)
 
         for (let dropOff of deliveryDetails.dropOffs) {
