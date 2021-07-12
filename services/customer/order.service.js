@@ -54,27 +54,40 @@ const getOrderCard =  async (args) => {
 module.exports = {
     checkCartItem: async (params, user) => {
 
+        models.Cart.hasOne(models.Restaurant, { targetKey: "id", sourceKey: "restaurant_id", foreignKey: "id" })
+
         const customer_id = user.id;
         const restaurant_id = parseInt(params.restaurant_id);
         let isClear = true;
+        let infoMessage = "";
 
-        const cart = await models.Cart.findOne({
+        const cart = await utilityFunction.convertPromiseToObject(await models.Cart.findOne({
             where: {
-                    customer_id
+                customer_id
+            },
+            include: [
+                {
+                    model: models.Restaurant,
+                    attributes: ["id", "restaurant_name"]
                 }
-        })
+            ]
+        }))
             
-        const currentCart = await models.Cart.findOne({
+        const currentCart = await utilityFunction.convertPromiseToObject(await models.Cart.findOne({
                 where: {
                     restaurant_id, customer_id
-                }
-        })
+            }
+        }))
 
         if (cart && !currentCart) {
+            let restaurant =await utilityFunction.convertPromiseToObject( await models.Restaurant.findByPk(restaurant_id));
+            console.log(cart,restaurant)
             isClear = false;
+            
+            infoMessage=   `Your cart contains dishes from ${cart.Restaurant.restaurant_name}. Do you want to discard the selection and add dishes from ${restaurant.restaurant_name}?`
         }
 
-        return {isClear}
+        return {isClear,infoMessage}
     },
     addToCart: async (params,user) => {
 
