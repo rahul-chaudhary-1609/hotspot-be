@@ -378,6 +378,10 @@ module.exports = {
         order_id: Joi.string().required()   
     }),
 
+    checkCartItem:Joi.object({
+        restaurant_id: Joi.number().required()   
+    }),
+
 
 
 }

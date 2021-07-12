@@ -5,6 +5,16 @@ const constants = require("../../constants");
 
 
 module.exports = {
+    
+    checkCartItem: async (req, res) => {
+        try {
+            const responseFromService = await orderService.checkCartItem(req.query,req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     addToCart: async (req, res) => {
         try {
             const responseFromService = await orderService.addToCart(req.body,req.user);

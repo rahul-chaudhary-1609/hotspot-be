@@ -52,6 +52,30 @@ const getOrderCard =  async (args) => {
 };
 
 module.exports = {
+    checkCartItem: async (params, user) => {
+
+        const customer_id = user.id;
+        const restaurant_id = parseInt(params.restaurant_id);
+        let isClear = true;
+
+        const cart = await models.Cart.findOne({
+            where: {
+                    customer_id
+                }
+        })
+            
+        const currentCart = await models.Cart.findOne({
+                where: {
+                    restaurant_id, customer_id
+                }
+        })
+
+        if (cart && !currentCart) {
+            isClear = false;
+        }
+
+        return {isClear}
+    },
     addToCart: async (params,user) => {
 
             const customer_id = user.id;

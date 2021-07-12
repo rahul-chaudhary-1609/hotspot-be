@@ -156,6 +156,8 @@ router.get('/get-recomended-slides', customerAuthentication.validateCustomerToke
 
 
 //Orders routes
+router.get('/check-cart-item', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.checkCartItem), OrderController.checkCartItem);
+
 router.post('/add-to-cart', customerAuthentication.validateCustomerToken,parseStringToArray, OrderController.addToCart);
 
 router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.validateCustomerToken,  OrderController.getCart)

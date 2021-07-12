@@ -240,7 +240,7 @@ module.exports = {
     feedbackCustomer: async(req, res) => {
         try {
             const responseFromService = await loginService.feedbackCustomer(req.body,req.user);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.feedback_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }

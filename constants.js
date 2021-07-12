@@ -109,7 +109,8 @@ module.exports = {
     card_not_belongs_to_you: `This card is not belongs to you`,
     application_sent_success: `Email application sent successfully`,
     invalid_current_order: "Current order does not match banner current order",
-    no_tip:"No tip found",
+    no_tip: "No tip found",
+    feedback_success:"Feedback sent successfully."
   },
 
   code: {
