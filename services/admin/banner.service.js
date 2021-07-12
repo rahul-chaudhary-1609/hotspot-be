@@ -22,7 +22,7 @@ module.exports = {
             }
         });
         if (maxOrder && maxOrder > 0) {
-            params.order=maxOrder
+            params.order=maxOrder+1
         } else {
             params.order = 1;
         }
@@ -55,7 +55,22 @@ module.exports = {
         let checkBannerId = await models.HotspotOffer.findOne({
             where: { id: params.banner_id}
         })
-        if (checkBannerId) {
+         if (checkBannerId) {
+            let maxOrder = await models.HotspotOffer.max("order", {
+                where:{
+                    status: [0,1]
+                }
+            });
+             for (let i = checkBannerId.order+1; i <= maxOrder; i++){
+                 await models.update({
+                     order:i-1,
+                 }, {
+                     where: {
+                         order: i,
+                         status: [0,1]
+                     }
+                 })
+             }
             checkBannerId.destroy();
         } else {
             throw new Error(constants.MESSAGES.invalid_id);
