@@ -62,7 +62,7 @@ module.exports = {
                 }
             });
              for (let i = checkBannerId.order+1; i <= maxOrder; i++){
-                 await models.update({
+                 await models.HotspotOffer.update({
                      order:i-1,
                  }, {
                      where: {
