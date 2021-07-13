@@ -226,10 +226,22 @@ module.exports = {
 
 
       getOrderStats: async () => {
-        const monthStartDate = new Date(new Date().setMonth(new Date().getMonth()-1));
+        const monthStartDate = new Date();
+        monthStartDate.setDate(1)
         const monthEndDate = new Date();
-        const yearStartDate = new Date(new Date().setFullYear(new Date().getFullYear()-1));
+        monthEndDate.setMonth(monthStartDate.getMonth() + 1)
+        monthEndDate.setDate(1)
+        monthEndDate.setDate(monthEndDate.getDate()-1)
+        const yearStartDate = new Date();
+        yearStartDate.setDate(1)
+        yearStartDate.setMonth(0)
         const yearEndDate = new Date();
+        yearEndDate.setDate(1)
+        yearEndDate.setMonth(0)
+        yearEndDate.setFullYear(yearEndDate.getFullYear() + 1)
+        yearEndDate.setDate(yearEndDate.getDate()-1)
+        
+        
 
         const totalOrders = await models.Order.findAndCountAll({
           where: {
@@ -256,19 +268,33 @@ module.exports = {
         });
         const monthOrders = await models.Order.findAndCountAll({
           where:{
-            status:[1,2,3,4],
-            delivery_datetime: {
-              [Op.between]: [monthStartDate, monthEndDate]
-            },
+            // status:[1,2,3,4],
+            // delivery_datetime: {
+            //   [Op.between]: [monthStartDate, monthEndDate]
+            // },
+            [Op.and]: [
+              {
+                status:[1,2,3,4],
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(monthStartDate)),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(monthEndDate))
+            ] 
           }
       });
 
       const yearOrders = await models.Order.findAndCountAll({
         where: {
-          status:[1,2,3,4],
-          delivery_datetime: {
-            [Op.between]: [yearStartDate, yearEndDate]
-          },
+          // status:[1,2,3,4],
+          // delivery_datetime: {
+          //   [Op.between]: [yearStartDate, yearEndDate]
+          // },
+          [Op.and]: [
+            {
+              status:[1,2,3,4],
+            },
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(yearStartDate)),
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(yearEndDate))
+          ]
         }
      });
     return { completedOrderPercentage:completedPercent,numberOfTotalOrders:totalOrders.count,numberOfTodayOrders:todayOrders.count,numberOfMonthlyOrders:monthOrders.count,numberOfYearlyOrders:yearOrders.count };
@@ -291,35 +317,53 @@ module.exports = {
       },
 
       getRevenueStats: async () => {
-        const monthStartDate = new Date(new Date().setMonth(new Date().getMonth()-1));
+        const monthStartDate = new Date();
+        monthStartDate.setDate(1)
         const monthEndDate = new Date();
-        const yearStartDate = new Date(new Date().setFullYear(new Date().getFullYear()-1));
+        monthEndDate.setMonth(monthStartDate.getMonth() + 1)
+        monthEndDate.setDate(1)
+        monthEndDate.setDate(monthEndDate.getDate()-1)
+        const yearStartDate = new Date();
+        yearStartDate.setDate(1)
+        yearStartDate.setMonth(0)
         const yearEndDate = new Date();
+        yearEndDate.setDate(1)
+        yearEndDate.setMonth(0)
+        yearEndDate.setFullYear(yearEndDate.getFullYear() + 1)
+        yearEndDate.setDate(yearEndDate.getDate()-1)
         
-                const TotalAmount = await models.OrderDelivery.sum('hotspot_fee');
-                const todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-                  where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-              });
-        
-              const monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-                where:  {
-                    delivery_datetime: {
-                      [Op.between]: [monthStartDate, monthEndDate]
-                    },
-                }
-              });
-        
-              const yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-                where:  {
-                    delivery_datetime: {
-                      [Op.between]: [yearStartDate, yearEndDate]
-                    },
-                }
-              });
-                return { totalRevenue:TotalAmount,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
-        
-             
-              },
+            const TotalAmount = await models.OrderDelivery.sum('hotspot_fee');
+            const todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+              where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
+          });
+    
+          const monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+            where: {
+              // delivery_datetime: {
+              //   [Op.between]: [monthStartDate, monthEndDate]
+              // },
+              [Op.and]: [
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(monthStartDate)),
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(monthEndDate))
+              ]
+            }
+          });
+    
+          const yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+            where:  {
+                // delivery_datetime: {
+                //   [Op.between]: [yearStartDate, yearEndDate]
+                // },
+              [Op.and]: [
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(yearStartDate)),
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(yearEndDate))
+              ]
+            }
+          });
+            return { totalRevenue:TotalAmount,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
+    
+          
+          },
 
               
         
