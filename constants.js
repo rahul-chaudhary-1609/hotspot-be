@@ -93,7 +93,7 @@ module.exports = {
     faq_topic_already_exist:'FAQ topic with the same name already exist',
     invalid_id_or_phone: 'Invalid id or phone',
     order_sequence_exist: 'A banner on same sequence already exist',
-    invalid_email_or_phone: 'Invalid id or phone',
+    invalid_email_or_phone: 'Invalid id or phone number.',
     not_approved: 'Your account is not approved by admin',
     rejected_account: 'Your account is rejected by admin.',
     driver_invalid_phone: 'Invalid phone number.',
