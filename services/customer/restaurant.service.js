@@ -412,7 +412,7 @@ module.exports = {
         }
 
         hotspotOffer = await models.HotspotOffer.findAll({
-            order:[["order","DESC"]]
+            order:[["order"]]
         });
 
         const hotspot_offers = await hotspotOffer.map((hotspotOffer) => {return hotspotOffer.image_url });
