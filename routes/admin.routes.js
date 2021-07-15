@@ -261,6 +261,8 @@ router.get('/getRestaurantEarnings',adminAuthentication.validateAdminToken,joiVa
 router.get('/getOrdersByRestaurantIdAndDateRange',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrdersByRestaurantIdAndDateRange), earningController.getOrdersByRestaurantIdAndDateRange);
 router.get('/getDriverEarnings',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getDriverEarnings), earningController.getDriverEarnings);
 router.get('/getOrdersByDriverIdAndDateRange',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrdersByDriverIdAndDateRange), earningController.getOrdersByDriverIdAndDateRange);
+router.get('/getDriverPaymentDetails/:payment_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getDriverPaymentDetails), earningController.getDriverPaymentDetails);
+router.get('/getRestaurantPaymentDetails/:payment_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getRestaurantPaymentDetails), earningController.getRestaurantPaymentDetails);
 
 //payment management
 router.post('/paymentDriver', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.paymentDriver), paymentController.paymentDriver);

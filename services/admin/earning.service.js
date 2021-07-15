@@ -804,4 +804,26 @@ module.exports = {
         return ordersByDriverIdAndDateRange
     },
 
+    getDriverPaymentDetails: async (params) => {
+        let driverPaymentDetails = await utility.convertPromiseToObject( await models.DriverPayment.findOne({
+            where: {
+                payment_id:params.payment_id,
+            }
+        })
+        )
+
+        return {driverPaymentDetails}
+    },
+
+    getRestaurantPaymentDetails: async (params) => {
+        let restaurantPaymentDetails = await utility.convertPromiseToObject( await models.RestaurantPayment.findOne({
+            where: {
+                payment_id:params.payment_id,
+            }
+        })
+        )
+
+        return {restaurantPaymentDetails}
+    }
+
 }

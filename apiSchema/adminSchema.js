@@ -562,6 +562,13 @@ module.exports = {
         tip_amount:Joi.number().required(),
     }),
     
+    getDriverPaymentDetails: Joi.object({
+        payment_id: Joi.string().required(),
+    }),
+
+    getRestaurantPaymentDetails: Joi.object({
+        payment_id: Joi.string().required(),
+    }),
 }
 
 

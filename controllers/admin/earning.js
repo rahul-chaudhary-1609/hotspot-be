@@ -66,4 +66,22 @@ module.exports = {
         }
     },
 
+    getDriverPaymentDetails: async (req, res) => {
+         try {
+            const responseFromService = await earningService.getDriverPaymentDetails(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getRestaurantPaymentDetails: async (req, res) => {
+         try {
+            const responseFromService = await earningService.getRestaurantPaymentDetails(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
 }

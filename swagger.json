@@ -4332,6 +4332,62 @@
         }
       },
 
+      "/admin/getDriverPaymentDetails/{payment_id}": {
+        "get": {
+          "tags": [
+            "Admin Earning Management"
+          ],
+          "description": "Api to get driver payment details",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "payment_id",
+              "in": "path",
+              "description": "payment id",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+      },
+      "/admin/getRestaurantPaymentDetails/{payment_id}": {
+        "get": {
+          "tags": [
+            "Admin Earning Management"
+          ],
+          "description": "Api to get restaurant payment details",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "payment_id",
+              "in": "path",
+              "description": "payment id",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+      },
 
 
 
