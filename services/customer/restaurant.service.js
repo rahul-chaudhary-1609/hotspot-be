@@ -402,20 +402,22 @@ module.exports = {
          
     },
     getOfferBanner: async () => {
-            let hotspotOffer = await models.HotspotOffer.findAndCountAll();
+        let hotspotOffer = await models.HotspotOffer.findAndCountAll();
 
-            if (hotspotOffer.count === 0) {
-                await models.HotspotOffer.bulkCreate(
-                    dummyData.hotspotOfferBanners,
-                    { returning: ['id'] },
-                );
-            }
+        if (hotspotOffer.count === 0) {
+            await models.HotspotOffer.bulkCreate(
+                dummyData.hotspotOfferBanners,
+                { returning: ['id'] },
+            );
+        }
 
-            hotspotOffer = await models.HotspotOffer.findAll();
+        hotspotOffer = await models.HotspotOffer.findAll({
+            order:[["order","DESC"]]
+        });
 
-            const hotspot_offers = await hotspotOffer.map((hotspotOffer) => {return hotspotOffer.image_url });
+        const hotspot_offers = await hotspotOffer.map((hotspotOffer) => {return hotspotOffer.image_url });
 
-            return { hotspot_offers };         
+        return { hotspot_offers };         
     },
 
     getHotspotRestaurantDelivery: async (params, user) => {
