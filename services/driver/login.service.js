@@ -127,7 +127,7 @@ module.exports = {
     verifyOTP: async (params) => {
         let driver = await utilityFunction.convertPromiseToObject(  await Driver.findOne({
                 where: {
-                     phone_no
+                     phone_no:params.phone_no
                 }
             })
         );
