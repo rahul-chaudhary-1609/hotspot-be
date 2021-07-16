@@ -107,7 +107,7 @@ module.exports = {
 
     signUpDetailsStep3: Joi.object({
         driver_id:Joi.number().required(),
-        vehicle_type: Joi.number().required(),
+        vehicle_type: Joi.string().required(),
         image_url: Joi.string().trim().required(),
         plate_number: Joi.string().trim().required(),
         vehicle_model: Joi.string().trim().required(),
@@ -144,7 +144,7 @@ module.exports = {
         stripe_pubishable_key:Joi.string().trim().optional(),
         stripe_secret_key: Joi.string().trim().optional(),
         
-        vehicle_type: Joi.number().optional(),
+        vehicle_type: Joi.string().optional(),
         image_url: Joi.string().trim().optional(),
         plate_number: Joi.string().trim().optional(),
         vehicle_model: Joi.string().trim().optional(),
