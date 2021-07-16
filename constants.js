@@ -82,7 +82,7 @@ module.exports = {
     send_otp_success:"OTP resent successfully.",
     payment_card_already_exist: "Payment card wth same card number already exist",
     invalid_status: "Plese send a valid status",
-    picture_upload_success: "Picture uploaded successfully",
+    picture_upload_success: "Uploaded successfully",
     picture_upload_error: "Picture uploaded successfully",
     update_success: "Updated successfully",
     delete_success: "Deleted successfully",
