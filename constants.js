@@ -110,7 +110,8 @@ module.exports = {
     application_sent_success: `Email application sent successfully`,
     invalid_current_order: "Current order does not match banner current order",
     no_tip: "No tip found",
-    feedback_success:"Feedback sent successfully."
+    feedback_success: "Feedback sent successfully.",
+    no_driver_account:"No driver account found with this phone number",
   },
 
   code: {

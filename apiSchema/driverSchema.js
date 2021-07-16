@@ -22,6 +22,7 @@ module.exports = {
 
     resendOTP: Joi.object({
         phone_no: Joi.number().required(),
+        user_id: Joi.number().optional(),
     }),
 
     verifyOTP: Joi.object({

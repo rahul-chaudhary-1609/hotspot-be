@@ -7676,6 +7676,13 @@
             "description": "enter phone",
             "required": true,
             "type": "number"
+          },
+          {
+            "name": "user_id",
+            "in": "formData",
+            "description": "enter user id",
+            "required": false,
+            "type": "number"
           }
         ],
         "responses": {}
@@ -8004,7 +8011,7 @@
             "in": "formData",
             "description": "enter vehicle_type",
             "required": true,
-            "type": "number"
+            "type": "string"
           },
           {
             "name": "image_url",
@@ -8310,7 +8317,7 @@
             "in": "formData",
             "description": "enter vehicle_type",
             "required": false,
-            "type": "number"
+            "type": "string"
           },
           {
             "name": "image_url",

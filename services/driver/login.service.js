@@ -3,7 +3,8 @@ const constants = require('../../constants');
 const utilityFunction = require("../../utils/utilityFunctions")
 const { Op } = require("sequelize");
 const responseToken = require("../../utils/responseToken");
-const adminAWS=require('../../utils/aws')
+const adminAWS=require('../../utils/aws');
+
 
 module.exports = {
         /*
@@ -87,7 +88,15 @@ module.exports = {
     });
 
     if (driver) {
-         let otpData = await utilityFunction.sentOtp(driver);
+        let otpData = await utilityFunction.sentOtp(driver);
+        await Driver.update({
+            phone_verification_otp_expiry: new Date(),
+        }, {
+            where: {
+                phone_no: params.phone_no
+            },
+            returning: true,
+        });
         return { otpData };
     } else {
          throw new Error( constants.MESSAGES.invalid_phone);
@@ -98,12 +107,39 @@ module.exports = {
        params.country_code=process.env.COUNTRY_CODE
         let otpData = await utilityFunction.sentOtp(params);
         if (!otpData) throw new Error(constants.MESSAGES.send_otp_error)
+        else {
+            let where = {phone_no: params.phone_no}
+            if (params.user_id) {
+                where={id:params.user_id}
+            }
+            await Driver.update({
+                    phone_verification_otp_expiry: new Date(),
+                }, {
+                    where,
+                    returning: true,
+                });
+        }
         return true
     },
         /*
     * function for verify_otp
     */
-   verifyOTP:async (params) => {
+    verifyOTP: async (params) => {
+        let driver = await utilityFunction.convertPromiseToObject(  await Driver.findOne({
+                where: {
+                     phone_no
+                }
+            })
+        );
+        if(!driver) throw new Error (constants.MESSAGES.no_driver_account)
+       
+        const phone_verification_otp_expiry = driver.phone_verification_otp_expiry;
+        const now = new Date();
+
+        const timeDiff = Math.floor((now.getTime() - (new Date(phone_verification_otp_expiry)).getTime()) / 1000)
+        if (timeDiff > constants.otp_expiry_time) {
+            throw new Error(constants.MESSAGES.expire_otp);
+        }
     
         let verifyReq = {
             country_code: process.env.COUNTRY_CODE,
@@ -154,10 +190,15 @@ module.exports = {
         if (driver && driver.is_signup_completed==constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes) {
             throw new Error( constants.MESSAGES.driver_phone_already_exists);
         } else {
-            params.country_code=process.env.COUNTRY_CODE
+            params.country_code = process.env.COUNTRY_CODE
+            params.phone_verification_otp_expiry = new Date();
             let otpData = await utilityFunction.sentOtp(params);
             if (otpData) {
-                if (driver) return { driver: await utilityFunction.convertPromiseToObject(driver) };
+                if (driver) {
+                    driver.phone_verification_otp_expiry = new Date();
+                    driver.save();
+                    return { driver: await utilityFunction.convertPromiseToObject(driver) }
+                };
                 return {driver: await utilityFunction.convertPromiseToObject(await Driver.create(params))};
             } else {
                 throw new Error( constants.MESSAGES.driver_invalid_phone);
@@ -361,7 +402,17 @@ module.exports = {
             params.country_code=process.env.COUNTRY_CODE
             let otpData = await utilityFunction.sentOtp(params);
             if (otpData) {
+                await Driver.update({
+                    phone_verification_otp_expiry: new Date(),
+                }, {
+                    where: {
+                        id: user.id
+                    },
+                    returning: true,
+                });
+                
                 return {
+                    user_id:user.id,
                     is_phone_update_available:true
                 }
             } else {

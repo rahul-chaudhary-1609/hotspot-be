@@ -101,6 +101,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 0,
       comment: '0=>no, 1=>yes'
     },
+    phone_verification_otp_expiry: {
+      type: DataTypes.DATE,
+    },
   }, {
       sequelize,
     underscored:true,
