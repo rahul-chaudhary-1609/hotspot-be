@@ -643,86 +643,99 @@ module.exports = {
     },
  
 
-    generateEmailOTP: async (params ) => {
-
-            const email = (params.email).toLowerCase();
-
-            let customer = await utilityFunction.convertPromiseToObject(  await models.Customer.findOne({
-                    where: {
-                        email,
-                    }
-                })
-            );
-
-            if (customer) {
-                throw new Error(constants.MESSAGES.email_already_registered);
-            }
-
-            let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
-            const is_email_verified = false;
-
-            const newTempEmail = await models.TempEmail.findOrCreate({
+    generateEmailOTP: async (params) => {
+        
+        if (params.phone) {
+            let customerPhone =await models.Customer.findOne({
                 where: {
-                    email,
-                },
-                defaults: {
-                    email,
-                    email_verification_otp,
-                    is_email_verified,
-                    email_verification_otp_expiry: new Date(),
+                    phone_no:params.phone,
                 }
             });
 
-            if (newTempEmail[1]) {
-
-                const mailOptions = {
-                    from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
-                    to: email,
-                    subject: 'Email Verification',
-                    text: 'Here is your code',
-                    html: `OTP is: <b>${email_verification_otp}</b>`,
-                };
-
-                sendMail.send(mailOptions)
-                    .then((resp) => {
-                        //.status(200).json({ status: 200, message: `Verification code sent to email address` });
-                    }).catch((error) => {
-                        throw new Error(constants.MESSAGES.error_occurred);
-                    });
-                
-                return true
+            if (customerPhone) {
+                throw new Error(constants.MESSAGES.phone_already_registered);
             }
-            else {
 
-                await models.TempEmail.update({
-                    email_verification_otp,
-                    is_email_verified,
-                    email_verification_otp_expiry: new Date(),
-                }, {
-                    where: {
-                        email
-                    },
-                    returning: true,
+        }
+
+        const email = (params.email).toLowerCase();
+
+        let customer = await utilityFunction.convertPromiseToObject(  await models.Customer.findOne({
+                where: {
+                    email,
+                }
+            })
+        );
+
+        if (customer) {
+            throw new Error(constants.MESSAGES.email_already_registered);
+        }
+
+        let email_verification_otp = Math.floor(1000 + Math.random() * 9000);
+        const is_email_verified = false;
+
+        const newTempEmail = await models.TempEmail.findOrCreate({
+            where: {
+                email,
+            },
+            defaults: {
+                email,
+                email_verification_otp,
+                is_email_verified,
+                email_verification_otp_expiry: new Date(),
+            }
+        });
+
+        if (newTempEmail[1]) {
+
+            const mailOptions = {
+                from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
+                to: email,
+                subject: 'Email Verification',
+                text: 'Here is your code',
+                html: `OTP is: <b>${email_verification_otp}</b>`,
+            };
+
+            sendMail.send(mailOptions)
+                .then((resp) => {
+                    //.status(200).json({ status: 200, message: `Verification code sent to email address` });
+                }).catch((error) => {
+                    throw new Error(constants.MESSAGES.error_occurred);
                 });
+            
+            return true
+        }
+        else {
 
-                const mailOptions = {
-                    from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
-                    to: email,
-                    subject: 'Email Verification',
-                    text: 'Here is your code',
-                    html: `OTP is: <b>${email_verification_otp}</b>`,
-                };
+            await models.TempEmail.update({
+                email_verification_otp,
+                is_email_verified,
+                email_verification_otp_expiry: new Date(),
+            }, {
+                where: {
+                    email
+                },
+                returning: true,
+            });
 
-                sendMail.send(mailOptions)
-                    .then((resp) => {
-                        //.status(200).json({ status: 200, message: `Verification code Sent to email address` });
-                    }).catch((error) => {
-                        throw new Error(constants.MESSAGES.error_occurred);
-                    });
-                
-                return true
-            }
-        
+            const mailOptions = {
+                from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
+                to: email,
+                subject: 'Email Verification',
+                text: 'Here is your code',
+                html: `OTP is: <b>${email_verification_otp}</b>`,
+            };
+
+            sendMail.send(mailOptions)
+                .then((resp) => {
+                    //.status(200).json({ status: 200, message: `Verification code Sent to email address` });
+                }).catch((error) => {
+                    throw new Error(constants.MESSAGES.error_occurred);
+                });
+            
+            return true
+        }
+
         
     
     },

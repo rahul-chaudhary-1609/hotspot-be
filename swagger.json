@@ -4959,6 +4959,13 @@
                 "description": "enter email",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "phone",
+                "in": "query",
+                "description": "enter phone",
+                "required": false,
+                "type": "string"
               }
             ],
             "responses": {}

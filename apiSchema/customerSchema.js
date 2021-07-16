@@ -146,7 +146,10 @@ module.exports = {
         }),
     }),
 
-    emailSchema : Joi.object({
+    emailSchema: Joi.object({
+        phone:Joi.string().trim().regex(/^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/).min(10).max(10).optional().allow(null,'').messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
+        }),
         email: Joi.string().trim().max(45).email().required(),
         code:Joi.string().trim().max(45),
     }),
