@@ -141,7 +141,7 @@ module.exports = {
     editDriverAccount:async (req, res) => {
         try {
             const responseData = await loginService.editDriverAccount(req.body,req.user);
-            utilityFunction.successResponse(res, responseData, constants.MESSAGES.success);
+            utilityFunction.successResponse(res, responseData, constants.MESSAGES.driver_profile_update_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
