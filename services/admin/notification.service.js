@@ -127,6 +127,7 @@ module.exports = {
     },
 
     getNotifications: async (params) => {
+        console.log(params.page, params.page_size)
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
         let notifications = await utility.convertPromiseToObject(
@@ -164,11 +165,13 @@ module.exports = {
             }
         }
 
+        console.log("offset",offset,limit)
+        console.log(offset,offset+limit)
 
         return {
             notifications: {
                 count: uniqueNotifications.count,
-                rows:uniqueNotifications.rows.slice(offset+1,limit)
+                rows:uniqueNotifications.rows.slice(offset,offset+limit)
             }
         }
     },
