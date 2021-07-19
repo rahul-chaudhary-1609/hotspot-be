@@ -139,8 +139,8 @@ module.exports = {
                         constants.NOTIFICATION_TYPE.restaurant_only,
                     ]
                 },
-                limit: limit,
-                offset: offset,
+                // limit: limit,
+                // offset: offset,
                 order: [['id', 'DESC']]
             })
         );
@@ -155,6 +155,7 @@ module.exports = {
         uniqueNotifications.rows.push(notifications.rows[0])
         uniqueNotifications.count++;
 
+        
         for (let notification of notifications.rows) {
             let existingNotification = uniqueNotifications.rows.find((uniqueNotification) => uniqueNotification.type_id == notification.type_id);
             if (!existingNotification) {
@@ -163,7 +164,13 @@ module.exports = {
             }
         }
 
-        return {notifications:uniqueNotifications}
+
+        return {
+            notifications: {
+                count: uniqueNotifications.count,
+                rows:uniqueNotifications.rows.slice(offset+1,limit)
+            }
+        }
     },
 
     getNotificationDetails: async (params) => {
