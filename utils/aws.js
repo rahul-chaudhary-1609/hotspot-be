@@ -10,11 +10,13 @@ const S3 = new AWS.S3({
 
 module.exports = {
     s3: S3,
-    setParams: (key, body) => {
+    setParams: (key, body,contentType) => {
         return {
             Bucket: process.env.AWS_S3_BUCKET_NAME,
             Key: key,
-            Body:body
+            Body: body,
+            ContentType: contentType,
+            ACL:"public-read"
         }
     },
 }

@@ -352,6 +352,13 @@
                 "type": "file"
               },
               {
+                "name": "mimeType",
+                "in": "formData",
+                "description": "'application/pdf', 'image/jpeg', 'video/mp4', 'text/html' etc ",
+                "required": true,
+                "type": "string"
+              },
+              {
                 "name": "folderName",
                 "in": "formData",
                 "description": "enter folder name",

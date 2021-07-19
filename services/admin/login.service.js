@@ -197,7 +197,7 @@ module.exports = {
             const pictureKey = `admin/${fileParams.folderName}/${pictureName[0]?pictureName[0]:''}_${now}.${pictureType}`;
             const pictureBuffer = fileParams.buffer;
 
-            const params = adminAWS.setParams(pictureKey, pictureBuffer);
+            const params = adminAWS.setParams(pictureKey, pictureBuffer,fileParams.mimeType);
         
             const s3upload = adminAWS.s3.upload(params).promise();
             const image_url=await s3upload.then(function (data) {
