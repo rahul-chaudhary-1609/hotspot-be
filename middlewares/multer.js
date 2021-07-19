@@ -8,5 +8,5 @@ const storage = multer.memoryStorage({
 });
 
 module.exports = {
-    upload: multer({ storage }).single('image'),
+    upload: multer({ storage }).single('file'),
  }

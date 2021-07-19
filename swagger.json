@@ -345,7 +345,7 @@
                 "type": "string"
               },
               {
-                "name": "image",
+                "name": "file",
                 "in": "formData",
                 "description": "upload image",
                 "required": true,
@@ -8077,11 +8077,18 @@
         ],
         "parameters": [
           {
-            "name": "image",
+            "name": "file",
             "in": "formData",
             "description": "upload image",
             "required": true,
             "type": "file"
+          },
+          {
+            "name": "mimeType",
+            "in": "formData",
+            "description": "'application/pdf', 'image/jpeg', 'video/mp4', 'text/html' etc ",
+            "required": true,
+            "type": "string"
           },
           {
             "name": "folderName",
