@@ -500,8 +500,8 @@ module.exports = {
         driverVehicleDetails.image_url = params.image_url || driverVehicleDetails.image_url;
         driverVehicleDetails.plate_number = params.plate_number || driverVehicleDetails.plate_number;
         driverVehicleDetails.vehicle_model = params.vehicle_model || driverVehicleDetails.vehicle_model;
-        driverVehicleDetails.licebse_number = params.licebse_number || driverVehicleDetails.licebse_number;
-        driverVehicleDetails.licebse_image_url = params.vehicle_image_url || driverVehicleDetails.licebse_image_url;
+        driverVehicleDetails.license_number = params.licebse_number || driverVehicleDetails.license_number;
+        driverVehicleDetails.license_image_url = params.vehicle_image_url || driverVehicleDetails.license_image_url;
         driverVehicleDetails.insurance_number = params.insurance_number || driverVehicleDetails.insurance_number;
         driverVehicleDetails.insurance_image_url = params.insurance_image_url || driverVehicleDetails.insurance_image_url;
 
