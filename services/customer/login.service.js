@@ -1092,7 +1092,7 @@ module.exports = {
             const pictureKey = `customer/profile/${now}.${pictureType}`;
             const pictureBuffer = fileParams.buffer;
 
-            const params = customerAWS.setParams(pictureKey, pictureBuffer);
+            const params = customerAWS.setParams(pictureKey, pictureBuffer,fileParams.mimeType);
 
 
             const s3upload = customerAWS.s3.upload(params).promise();
