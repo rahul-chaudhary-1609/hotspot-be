@@ -473,6 +473,8 @@ module.exports = {
             }
         });
 
+        console.log(params)
+
         driver.profile_picture_url = params.profile_picture_url || driver.profile_picture_url;
         driver.first_name = params.first_name || driver.first_name;
         driver.last_name = params.last_name || driver.last_name;
@@ -500,8 +502,8 @@ module.exports = {
         driverVehicleDetails.image_url = params.image_url || driverVehicleDetails.image_url;
         driverVehicleDetails.plate_number = params.plate_number || driverVehicleDetails.plate_number;
         driverVehicleDetails.vehicle_model = params.vehicle_model || driverVehicleDetails.vehicle_model;
-        driverVehicleDetails.license_number = params.licebse_number || driverVehicleDetails.license_number;
-        driverVehicleDetails.license_image_url = params.vehicle_image_url || driverVehicleDetails.license_image_url;
+        driverVehicleDetails.license_number = params.license_number || driverVehicleDetails.license_number;
+        driverVehicleDetails.license_image_url = params.license_image_url || driverVehicleDetails.license_image_url;
         driverVehicleDetails.insurance_number = params.insurance_number || driverVehicleDetails.insurance_number;
         driverVehicleDetails.insurance_image_url = params.insurance_image_url || driverVehicleDetails.insurance_image_url;
 
