@@ -473,6 +473,7 @@ module.exports = {
             }
         });
 
+        driver.profile_picture_url = params.profile_picture_url || driver.profile_picture_url;
         driver.first_name = params.first_name || driver.first_name;
         driver.last_name = params.last_name || driver.last_name;
         driver.email = params.email || driver.email;
