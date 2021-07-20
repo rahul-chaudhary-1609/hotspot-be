@@ -66,6 +66,10 @@ module.exports = {
 
                 //params.location = [parseFloat((params.lat).toFixed(7)), parseFloat((params.long).toFixed(7))];
                 params.location = [parseFloat(params.lat), parseFloat(params.long)];
+                if (params.stripe_publishable_key && params.stripe_secret_key) {
+                    params.stripe_publishable_key = utilityFunction.encrypt(params.stripe_publishable_key);
+                    params.stripe_secret_key = utilityFunction.encrypt(params.stripe_secret_key);
+                }
                 
                 let restaurantCreated = await Restaurant.create(params);
                 if (restaurantCreated)
@@ -163,7 +167,11 @@ module.exports = {
             const hotspotLocationIds = params.hotspot_location_ids;
 
             delete params.hotspot_location_ids;
-            
+            if (params.stripe_publishable_key && params.stripe_secret_key) {
+                    params.stripe_publishable_key = utilityFunction.encrypt(params.stripe_publishable_key);
+                    params.stripe_secret_key = utilityFunction.encrypt(params.stripe_secret_key);
+        }
+        console.log(params)
             let updates = params;
             let restaurantExists = await Restaurant.findOne(query);
             if(restaurantExists) {

@@ -1461,7 +1461,7 @@
                   "name": "country_code",
                   "in": "formData",
                   "description": "country code",
-                  "required": true,
+                  "required": false,
                   "type": "string"
               },
               {
@@ -1546,6 +1546,20 @@
                 "name": "agreement_doc_url",
                 "in": "formData",
                 "description": "agreement_doc_url",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "stripe_publishable_key",
+                "in": "formData",
+                "description": "enter stripe pubishable key",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "stripe_secret_key",
+                "in": "formData",
+                "description": "enter stripe secret key",
                 "required": false,
                 "type": "string"
               }
@@ -1693,7 +1707,7 @@
                 "name": "country_code",
                 "in": "formData",
                 "description": "country code",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
@@ -1782,6 +1796,20 @@
                 "name": "agreement_doc_url",
                 "in": "formData",
                 "description": "agreement_doc_url",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "stripe_publishable_key",
+                "in": "formData",
+                "description": "enter stripe pubishable key",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "stripe_secret_key",
+                "in": "formData",
+                "description": "enter stripe secret key",
                 "required": false,
                 "type": "string"
               }
@@ -8313,7 +8341,7 @@
             "type": "string"
           },
           {
-            "name": "stripe_pubishable_key",
+            "name": "stripe_publishable_key",
             "in": "formData",
             "description": "enter stripe pubishable key",
             "required": false,

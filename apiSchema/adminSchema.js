@@ -348,6 +348,8 @@ module.exports = {
         restaurant_category_ids: Joi.array().required(),
         agreement_doc_url: Joi.string().optional(),
         hotspot_location_ids: Joi.array(),
+        stripe_publishable_key:Joi.string().trim().optional(),
+        stripe_secret_key: Joi.string().trim().optional(),
     }),
 
     restaurantIdSchema: Joi.object({

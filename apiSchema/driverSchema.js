@@ -142,7 +142,7 @@ module.exports = {
         bank_name: Joi.string().trim().optional(),
         account_number: Joi.string().trim().optional(),
         account_holder_name: Joi.string().trim().optional(),
-        stripe_pubishable_key:Joi.string().trim().optional(),
+        stripe_publishable_key:Joi.string().trim().optional(),
         stripe_secret_key: Joi.string().trim().optional(),
         
         vehicle_type: Joi.string().optional(),
