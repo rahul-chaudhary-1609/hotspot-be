@@ -2,7 +2,7 @@
 const schedule = require('node-schedule');
 const Sequelize = require('sequelize');
 const constants = require('../constants');
-const { Restaurant, HotspotLocation,HotspotRestaurant } = require("../models")
+const { Restaurant, HotspotLocation,HotspotRestaurant,Order } = require("../models")
 const utilityFunctions = require('./utilityFunctions');
 var Op = Sequelize.Op;
 
@@ -67,12 +67,25 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     else return `${displayHours}:${displayMinutes}:00`
                 }
 
-                let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
+                // let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
+                // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
+                let deliveryDatetime = new Date(`2021-06-28 11:30:00`);
                 let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime)}`);
 
+                let orders = await utilityFunctions.convertPromiseToObject(
+                    await Order.findAll({
+                        where: {
+                            hotspot_location_id:hotspotLocation.id,
+                            restaurant_id: restaurant.id,
+                            type: constants.ORDER_TYPE.delivery,
+                            delivery_datetime:deliveryDatetime,
+                        }
+                    })
+                )
 
+                console.log("orders",hotspotLocation.id,restaurant.id,orders)
 
-                console.log("nextDeliveryTime",hotspotLocation.id,hotspotRestaurant.restaurant_id, deliveryDatetime,cutOffTime, Intl.DateTimeFormat().resolvedOptions().timeZone)
+                
             }
 
         }
