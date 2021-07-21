@@ -6,7 +6,8 @@ const cors=require("cors");
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const bodyParser = require('body-parser');
-const port=process.env.PORT || 5000;
+const port = process.env.PORT || 5000;
+const cronJob = require("./utils/cronJob");
 
 const app=express();
 
@@ -40,6 +41,7 @@ app.listen(port, async (err)=>{
     try {
         //await sequelize.sync({alter:true});
         console.log("Database synced")
+        await cronJob.scheduleRestaurantOrdersEmailJob()
     } catch (error) {
         console.log("Error in database sync",error);
     }
