@@ -99,10 +99,16 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(15,2),
         },
 
+        is_restaurant_notified: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=> no, 1=> yes,'
+        },
+
         push_order_id: {
             type: DataTypes.INTEGER,
         },
-
 
 
     }, {

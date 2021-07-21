@@ -375,7 +375,7 @@ module.exports = {
                 let hotspot = null;
                 let restaurant = null;
                 let customer = await utilityFunction.convertPromiseToObject(await models.Customer.findOne({
-                        attributes: ['id', 'name', 'email'],
+                        attributes: ['id', 'name', 'email','phone_no'],
                         where: {
                             id: customer_id
                         }
@@ -513,7 +513,7 @@ module.exports = {
                 let hotspot = null;
                 let restaurant = null;
                 let customer = await utilityFunction.convertPromiseToObject(await models.Customer.findOne({
-                        attributes: ['id', 'name', 'email'],
+                        attributes: ['id', 'name', 'email','phone_no'],
                         where: {
                             id: customer_id
                         }
