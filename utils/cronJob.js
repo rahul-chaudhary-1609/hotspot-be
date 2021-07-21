@@ -6,11 +6,9 @@ const { Restaurant, HotspotLocation,HotspotRestaurant,Order } = require("../mode
 const utilityFunctions = require('./utilityFunctions');
 var Op = Sequelize.Op;
 
-/*
-* function to schedule job
-*/
+
 module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
-    schedule.scheduleJob('*/10 * * * * *', async ()=> {
+    schedule.scheduleJob('0 */5 * * *', async ()=> {
         console.log(`Job Ran ${new Date()}`)
 
         let hotspotLocations = await utilityFunctions.convertPromiseToObject(
@@ -69,7 +67,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                 // let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
                 // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
-                let deliveryDatetime = new Date(`2021-06-28 11:30:00`);
+                let deliveryDatetime = new Date(`2021-06-28 11:30:00+00`);
                 let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime)}`);
 
                 let orders = await utilityFunctions.convertPromiseToObject(
@@ -82,6 +80,10 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                         }
                     })
                 )
+
+                // if (orders.length > 0) {
+                    
+                // }
 
                 console.log("orders",hotspotLocation.id,restaurant.id,orders)
 
