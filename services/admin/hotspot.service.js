@@ -144,14 +144,18 @@ module.exports = {
 
                 for (let dropoff of currentDropoffs) {
                     if (!dropoffs.includes(dropoff.dropoff_detail)) {
-                        await models.HotspotDropoff.destroy({
+                        let deletedDropoffs= await utility.convertPromiseToObject( await models.HotspotDropoff.destroy({
                                 where: {
                                     hotspot_location_id: hotspotLocationId,
                                     dropoff_detail:dropoff.dropoff_detail,
                                     
-                                },
-                                force: true,
-                            })
+                            },
+                            returning:true,
+                            force: true,
+                        })
+                        )
+
+                        console.log("deletedDropoffs",deletedDropoffs)
                     }
                 }
 
@@ -375,6 +379,13 @@ module.exports = {
         })
         
         await models.HotspotDriver.destroy({
+            where: {
+                hotspot_location_id:hotspotLocationId,
+            },
+            force:true,
+        })
+
+        await models.CustomerFavLocation.destroy({
             where: {
                 hotspot_location_id:hotspotLocationId,
             },
