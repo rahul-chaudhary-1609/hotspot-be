@@ -1,6 +1,5 @@
 
 const schedule = require('node-schedule');
-const Sequelize = require('sequelize');
 const constants = require('../constants');
 const { Restaurant, HotspotLocation,HotspotRestaurant,Order } = require("../models")
 const utilityFunctions = require('./utilityFunctions');
@@ -65,8 +64,7 @@ const sendRestaurantOrderEmail= async (params) => {
         style="
             position: relative;
         ">
-        Hello, Transfer of payment has been submitted to your account. Payment may take up to 1-3 business
-    days to show in your account. Thank you!<br><br>
+        Hello, New delivery order(s) received from ${params.hotspotLocation.name} for the shift ${new Date(params.deliveryDatetime).toLocaleString('en-us')}. Thank you!<br><br>
     `;
 
     let bottomHTML = `</div><br><br>
@@ -149,7 +147,7 @@ const sendRestaurantOrderEmail= async (params) => {
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: 'rahulchaudhary99r@gmail.com',//params.restaurant.owner_email,
-        subject: `${params.hotspotLocation.name} ORDERS For Shift ${new Date(params.deliveryDatetime).toLocaleString('en-us')}`,
+        subject: `New Order For the Shift ${new Date(params.deliveryDatetime).toLocaleString('en-us')}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
         //     {
@@ -176,8 +174,8 @@ const sendRestaurantOrderEmail= async (params) => {
 }
 
 module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
-    schedule.scheduleJob('0 */10 * * *', async ()=> {
-        console.log(`Job Ran ${new Date()}`)
+    schedule.scheduleJob('* 6-20 * * *', async ()=> {
+        //console.log(`Job Ran ${new Date()}`)
 
         let hotspotLocations = await utilityFunctions.convertPromiseToObject(
             await HotspotLocation.findAll({

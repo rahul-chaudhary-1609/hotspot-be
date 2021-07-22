@@ -7900,27 +7900,6 @@
             "type": "string"
           },
           {
-            "name": "gender",
-            "in": "formData",
-            "description": "enter gender",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "nationality",
-            "in": "formData",
-            "description": "enter nationality",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "passport_picture_url",
-            "in": "formData",
-            "description": "enter passport_picture_url",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "passport_number",
             "in": "formData",
             "description": "enter passport_number",
@@ -7985,27 +7964,6 @@
             "type": "string"
           },
           {
-            "name": "bank_name",
-            "in": "formData",
-            "description": "enter bank_name",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "account_number",
-            "in": "formData",
-            "description": "enter account_number",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "account_holder_name",
-            "in": "formData",
-            "description": "enter account_holder_name",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "stripe_publishable_key",
             "in": "formData",
             "description": "enter stripe publishable key",
@@ -8042,20 +8000,6 @@
             "type": "number"
           },
           {
-            "name": "vehicle_type",
-            "in": "formData",
-            "description": "enter vehicle_type",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "image_url",
-            "in": "formData",
-            "description": "enter image_url",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "plate_number",
             "in": "formData",
             "description": "enter plate_number",
@@ -8087,13 +8031,6 @@
             "name": "insurance_number",
             "in": "formData",
             "description": "enter insurance_number",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "insurance_image_url",
-            "in": "formData",
-            "description": "enter insurance_image_url",
             "required": true,
             "type": "string"
           }
@@ -8257,27 +8194,6 @@
             "type": "string"
           },
           {
-            "name": "gender",
-            "in": "formData",
-            "description": "enter gender",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "nationality",
-            "in": "formData",
-            "description": "enter nationality",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "passport_picture_url",
-            "in": "formData",
-            "description": "enter passport_picture_url",
-            "required": false,
-            "type": "string"
-          },
-          {
             "name": "passport_number",
             "in": "formData",
             "description": "enter passport_number",
@@ -8320,27 +8236,6 @@
             "type": "string"
           },
           {
-            "name": "bank_name",
-            "in": "formData",
-            "description": "enter bank_name",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "account_number",
-            "in": "formData",
-            "description": "enter account_number",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "account_holder_name",
-            "in": "formData",
-            "description": "enter account_holder_name",
-            "required": false,
-            "type": "string"
-          },
-          {
             "name": "stripe_publishable_key",
             "in": "formData",
             "description": "enter stripe pubishable key",
@@ -8351,20 +8246,6 @@
             "name": "stripe_secret_key",
             "in": "formData",
             "description": "enter stripe secret key",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "vehicle_type",
-            "in": "formData",
-            "description": "enter vehicle_type",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "image_url",
-            "in": "formData",
-            "description": "enter image_url",
             "required": false,
             "type": "string"
           },
@@ -8400,13 +8281,6 @@
             "name": "insurance_number",
             "in": "formData",
             "description": "enter insurance_number",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "insurance_image_url",
-            "in": "formData",
-            "description": "enter insurance_image_url",
             "required": false,
             "type": "string"
           }

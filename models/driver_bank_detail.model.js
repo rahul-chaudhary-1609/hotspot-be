@@ -27,15 +27,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     bank_name: {
       type: DataTypes.STRING(45),
-      allowNull: false,
       },
     account_number: {
       type: DataTypes.STRING(45),
-      allowNull: false,
     },
     account_holder_name: {
       type: DataTypes.STRING(45),
-      allowNull: false,
     },
     stripe_publishable_key: {
       type: DataTypes.TEXT,

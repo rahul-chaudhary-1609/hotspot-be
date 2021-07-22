@@ -51,6 +51,122 @@ const getOrderCard =  async (args) => {
 
 };
 
+const sendRestaurantOrderEmail= async (params) => {
+
+
+    let headerHTML = `<div
+        style="
+            position: relative;
+        ">
+        Hello, New pickup order received from ${params.order.order_details.customer.name} for the shift ${new Date(params.order.delivery_datetime).toLocaleString('en-us')}. Thank you!<br><br>
+    `;
+
+    let bottomHTML = `</div><br><br>
+    <div
+        style="
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        ">
+        <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" 
+            style="
+                    opacity:0.5;
+                    margin-top:5px;;
+                "/>
+    </div><br>`;
+
+    let bodyHTML = `<p>${params.restaurant.restaurant_name}</p>`;
+
+    
+    bodyHTML += `<table cellpadding=5 style="margin-top:10px;border-collapse: collapse;" border="1"><tr>
+        <th style="text-align:center;">Order#</th>
+        <th style="text-align:center;">Order ID</th>
+        <th style="text-align:center;">Customer Name</th>
+        <th style="text-align:center;">Customer Phone</th>
+        <th style="text-align:center;">Ordered Items<br/>
+            <table cellpadding="10">
+                <tr>
+                    <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Item</th>
+                    <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Quantity</th>
+                    <th style="color:rgba(0,0,0,0.6);">Add-Ons</th>
+                <tr>
+            </table>
+        </th>
+    </tr>`
+
+    let snCounter = 1;
+    // for (let order of params.orders) {
+    let rowHTML = `<tr>
+        <td style="text-align:center;">${snCounter++}</td>
+        <td style="text-align:center;">${params.order.order_id}</td>
+        <td style="text-align:center;">${params.order.order_details.customer.name}</td>
+        <td style="text-align:center;">${params.order.order_details.customer.email}</td>
+        <td style="text-align:center;">
+            <div style="display:flex; justify-content:'center';">
+                <div>
+                    <table cellpadding="10">
+                        `
+    for (let ordered_item of params.order.order_details.ordered_items) {
+        let itemHTML =`
+                <tr>
+                    <td style="border-right:1px solid #ddd;">${ordered_item.itemName}</td>
+                    <td style="border-right:1px solid #ddd;">${ordered_item.itemCount}</td>
+                    <td>`
+                
+        for (let addOn of ordered_item.itemAddOn) {
+            itemHTML+=`${addOn.name}<br/>`
+        }
+        
+        rowHTML+=itemHTML
+    }
+        
+    rowHTML +=`</td></tr></table></div></div></td>
+    </tr>`
+
+    bodyHTML+=rowHTML
+    // }
+
+
+    bodyHTML += `</table>`
+
+    
+    
+    // fs.writeFile('mail.html', headerHTML + bodyHTML + bottomHTML, function (err) {
+    //     if (err) return console.log(err);
+    //     console.log('Hello World > helloworld.txt');
+    // });
+
+    // let attachment = fs.readFileSync('mail.html').toString('base64');
+        
+    let mailOptions = {
+        from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
+        to: 'rahulchaudhary99r@gmail.com',//params.order.order_details.restaurant.owner_email,
+        subject: `New Order for Pickup`,
+        html: headerHTML + bodyHTML + bottomHTML,
+        // attachments: [
+        //     {
+        //         content: attachment,
+        //         filename: "mail.html",
+        //         type: "text/html",
+        //         disposition: "attachment"
+        //     },
+        //     {
+        //         content: attachment,
+        //         filename: "mail.html",
+        //         type: "text/html",
+        //         disposition: "attachment"
+        //     }
+        // ]
+    };
+
+    console.log(mailOptions)    
+    
+    
+    await sendMail.send(mailOptions);
+    
+    return true;
+}
+
 module.exports = {
     checkCartItem: async (params, user) => {
 
@@ -411,7 +527,7 @@ module.exports = {
 
                 if (restaurant_id) {
                     restaurant = await utilityFunction.convertPromiseToObject(await models.Restaurant.findOne({
-                        attributes: ['id', 'restaurant_name','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
+                        attributes: ['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
                             where: {
                                 id: restaurant_id
                             }
@@ -549,7 +665,7 @@ module.exports = {
 
                 if (restaurant_id) {
                     restaurant = await utilityFunction.convertPromiseToObject(await models.Restaurant.findOne({
-                        attributes: ['id', 'restaurant_name','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
+                        attributes: ['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
                             where: {
                                 id: restaurant_id
                             }
@@ -723,6 +839,12 @@ module.exports = {
                 body: `Order - ${order_id} is confirmed`,
             }
             await utilityFunction.sendFcmNotification([customer.device_token], notificationData);
+        }
+
+        if (order.type == constants.ORDER_TYPE.pickup) {
+            await sendRestaurantOrderEmail({ order })
+            order.is_restaurant_notified = 1;
+            order.save();
         }
 
         return true

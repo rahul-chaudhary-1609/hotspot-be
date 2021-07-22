@@ -145,7 +145,6 @@ module.exports = {
         const customers = await models.CustomerFavLocation.findAndCountAll({
             where: {
                 hotspot_location_id:params.hotspot_id,
-                status:constants.STATUS.active
             }
         });
 

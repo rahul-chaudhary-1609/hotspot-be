@@ -198,8 +198,9 @@ module.exports = {
                     driver.phone_verification_otp_expiry = new Date();
                     driver.save();
                     return { driver: await utilityFunction.convertPromiseToObject(driver) }
-                };
-                return {driver: await utilityFunction.convertPromiseToObject(await Driver.create(params))};
+                } else {
+                    return { driver: await utilityFunction.convertPromiseToObject(await Driver.create(params)) };
+                }
             } else {
                 throw new Error( constants.MESSAGES.driver_invalid_phone);
             }
@@ -237,9 +238,9 @@ module.exports = {
         driver.last_name = params.last_name;
         driver.email = params.email;
         driver.dob = params.dob;
-        driver.gender = params.gender;
-        driver.nationality = params.nationality;
-        driver.passport_picture_url = params.passport_picture_url;
+        //driver.gender = params.gender;
+        //driver.nationality = params.nationality;
+        //driver.passport_picture_url = params.passport_picture_url;
         driver.passport_number = params.passport_number;
         
         driver.save();
@@ -279,19 +280,36 @@ module.exports = {
 
         let driverBankDetails = {
             driver_id: params.driver_id,
-            bank_name: params.bank_name,
-            account_number: params.account_number,
-            account_holder_name: params.account_holder_name,
+            // bank_name: params.bank_name,
+            // account_number: params.account_number,
+            // account_holder_name: params.account_holder_name,
             stripe_publishable_key: utilityFunction.encrypt(params.stripe_publishable_key),
             stripe_secret_key:utilityFunction.encrypt(params.stripe_secret_key),
         }
-        delete params.bank_name;
-        delete params.account_number;
-        delete params.account_holder_name;
+
+        let driverAddressDetails = {
+            driver_id: params.driver_id,
+            address_line1: params.address_line1,
+            street: params.street,
+            city: params.city,
+            state: params.state,
+            postal_code: params.postal_code,
+        }
+        
         
         await Promise.all([
-            DriverBankDetail.create(driverBankDetails),
-            DriverAddress.create(params)
+            DriverBankDetail.findOrCreate({
+                where: {
+                    driver_id:params.driver_id,
+                },
+                defaults: driverBankDetails
+            }),
+            DriverAddress.findOrCreate({
+                where: {
+                    driver_id:params.driver_id,
+                },
+                defaults:driverAddressDetails
+            })
         ])
 
         return {
@@ -320,7 +338,12 @@ module.exports = {
             throw new Error( constants.MESSAGES.driver_phone_already_exists);
         }
 
-        await DriverVehicleDetail.create(params);
+        await DriverVehicleDetail.findOrCreate({
+                where: {
+                    driver_id:params.driver_id,
+                },
+                defaults:params
+            });
 
         driver.is_signup_completed = constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes;
 
@@ -482,13 +505,13 @@ module.exports = {
         driver.phone_no = params.phone_no || driver.phone_no;
         driver.dob = params.dob || driver.dob;
         driver.passport_number = params.passport_number || driver.passport_number;
-        driver.gender = params.gender || driver.gender;
-        driver.nationality = params.nationality || driver.nationality;
-        driver.passport_picture_url = params.passport_picture_url || driver.passport_picture_url;
+        // driver.gender = params.gender || driver.gender;
+        // driver.nationality = params.nationality || driver.nationality;
+        // driver.passport_picture_url = params.passport_picture_url || driver.passport_picture_url;
 
-        driverBankDetails.bank_name = params.bank_name || driverBankDetails.bank_name;
-        driverBankDetails.account_number = params.account_number || driverBankDetails.account_number;
-        driverBankDetails.account_holder_name = params.account_holder_name || driverBankDetails.account_holder_name;
+        // driverBankDetails.bank_name = params.bank_name || driverBankDetails.bank_name;
+        // driverBankDetails.account_number = params.account_number || driverBankDetails.account_number;
+        // driverBankDetails.account_holder_name = params.account_holder_name || driverBankDetails.account_holder_name;
         driverBankDetails.stripe_publishable_key = params.stripe_publishable_key? utilityFunction.encrypt(params.stripe_publishable_key): driverBankDetails.stripe_publishable_key;
         driverBankDetails.stripe_secret_key = params.stripe_secret_key? utilityFunction.encrypt(params.stripe_secret_key): driverBankDetails.stripe_secret_key;
 
@@ -498,14 +521,14 @@ module.exports = {
         driverAddressDetails.state = params.state || driverAddressDetails.state;
         driverAddressDetails.postal_code = params.postal_code || driverAddressDetails.postal_code;
 
-        driverVehicleDetails.vehicle_type = params.vehicle_type || driverVehicleDetails.vehicle_type;
-        driverVehicleDetails.image_url = params.image_url || driverVehicleDetails.image_url;
+        // driverVehicleDetails.vehicle_type = params.vehicle_type || driverVehicleDetails.vehicle_type;
+        // driverVehicleDetails.image_url = params.image_url || driverVehicleDetails.image_url;
         driverVehicleDetails.plate_number = params.plate_number || driverVehicleDetails.plate_number;
         driverVehicleDetails.vehicle_model = params.vehicle_model || driverVehicleDetails.vehicle_model;
         driverVehicleDetails.license_number = params.license_number || driverVehicleDetails.license_number;
         driverVehicleDetails.license_image_url = params.license_image_url || driverVehicleDetails.license_image_url;
         driverVehicleDetails.insurance_number = params.insurance_number || driverVehicleDetails.insurance_number;
-        driverVehicleDetails.insurance_image_url = params.insurance_image_url || driverVehicleDetails.insurance_image_url;
+        //driverVehicleDetails.insurance_image_url = params.insurance_image_url || driverVehicleDetails.insurance_image_url;
 
         driver.save();
         driverAddressDetails.save();

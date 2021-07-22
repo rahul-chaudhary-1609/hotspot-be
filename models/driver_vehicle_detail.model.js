@@ -28,42 +28,34 @@ module.exports = (sequelize, DataTypes) => {
     
     vehicle_type: {
       type: DataTypes.STRING(45),
-      allowNull: false,
       },
     
     image_url: {
       type: DataTypes.STRING,
-      allowNull: false,
       },
     
     plate_number: {
       type: DataTypes.STRING(45),
-      allowNull: false,
       },
     
     vehicle_model: {
       type: DataTypes.STRING(45),
-      allowNull: false,
       },
     
     license_number: {
       type: DataTypes.STRING(45),
-      allowNull: false,
       },
     
     license_image_url: {
       type: DataTypes.STRING,
-      allowNull: false,
       },
     
     insurance_number: {
       type: DataTypes.STRING(45),
-      allowNull: false,
       },
     
     insurance_image_url: {
       type: DataTypes.STRING,
-      allowNull: false,
       },
     
   }, {
