@@ -88,7 +88,7 @@ const sendRestaurantOrderEmail= async (params) => {
         <th style="text-align:center;">Order#</th>
         <th style="text-align:center;">Order ID</th>
         <th style="text-align:center;">Customer Name</th>
-        <th style="text-align:center;">Customer Phone</th>
+        <th style="text-align:center;">Customer Phone/Email</th>
         <th style="text-align:center;">Ordered Items<br/>
             <table cellpadding="10">
                 <tr>
@@ -106,7 +106,7 @@ const sendRestaurantOrderEmail= async (params) => {
             <td style="text-align:center;">${snCounter++}</td>
             <td style="text-align:center;">${order.order_id}</td>
             <td style="text-align:center;">${order.order_details.customer.name}</td>
-            <td style="text-align:center;">${order.order_details.customer.email}</td>
+            <td style="text-align:center;">${order.order_details.customer.phone || order.order_details.customer.email}</td>
             <td style="text-align:center;">
                 <div style="display:flex; justify-content:'center';">
                     <div>
@@ -146,7 +146,7 @@ const sendRestaurantOrderEmail= async (params) => {
         
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
-        to: 'rahulchaudhary99r@gmail.com',//params.restaurant.owner_email,
+        to: params.restaurant.owner_email,
         subject: `New Order For the Shift ${new Date(params.deliveryDatetime).toLocaleString('en-us')}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
