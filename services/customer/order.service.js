@@ -75,7 +75,7 @@ const sendRestaurantOrderEmail= async (params) => {
                 "/>
     </div><br>`;
 
-    let bodyHTML = `<p>${params.restaurant.restaurant_name}</p>`;
+    let bodyHTML = `<p>${params.order.order_details.restaurant.restaurant_name}</p>`;
 
     
     bodyHTML += `<table cellpadding=5 style="margin-top:10px;border-collapse: collapse;" border="1"><tr>
