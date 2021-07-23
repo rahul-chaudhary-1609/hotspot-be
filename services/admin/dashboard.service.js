@@ -344,7 +344,7 @@ module.exports = {
         )
 
         TotalAmount += allPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-          return result + pickupTypeOrder.amount - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
+          return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
         }, 0)
 
         let todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
@@ -370,7 +370,7 @@ module.exports = {
         )
 
         todayTotalAmount += todayPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-          return result + pickupTypeOrder.amount - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
+          return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
         }, 0)
         
     
@@ -406,7 +406,7 @@ module.exports = {
         )
 
         monthTotalAmount += monthPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-          return result + pickupTypeOrder.amount - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
+          return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
         }, 0)
     
           let yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
@@ -441,7 +441,7 @@ module.exports = {
         )
 
         yearTotalAmount += yearPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-          return result + pickupTypeOrder.amount - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
+          return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
         }, 0)
 
 
