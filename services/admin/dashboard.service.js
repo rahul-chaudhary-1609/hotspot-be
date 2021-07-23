@@ -431,7 +431,8 @@ module.exports = {
                 {
                   status:constants.ORDER_STATUS.delivered,
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(yearStartDate)),
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(yearEndDate))
               ]
               
               
