@@ -343,9 +343,9 @@ module.exports = {
           })
         )
 
-        TotalAmount += allPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+        TotalAmount += (allPickupTypeOrders.reduce((result, pickupTypeOrder) => {
           return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-        }, 0)
+        }, 0)).toFixed(2)
 
         let todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
             where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
@@ -369,9 +369,9 @@ module.exports = {
           })
         )
 
-        todayTotalAmount += todayPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+        todayTotalAmount += (todayPickupTypeOrders.reduce((result, pickupTypeOrder) => {
           return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-        }, 0)
+        }, 0)).toFixed(2)
         
     
           let monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
@@ -405,9 +405,9 @@ module.exports = {
           })
         )
 
-        monthTotalAmount += monthPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+        monthTotalAmount += (monthPickupTypeOrders.reduce((result, pickupTypeOrder) => {
           return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-        }, 0)
+        }, 0)).toFixed(2)
     
           let yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
             where:  {
@@ -440,9 +440,9 @@ module.exports = {
           })
         )
 
-        yearTotalAmount += yearPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+        yearTotalAmount += (yearPickupTypeOrders.reduce((result, pickupTypeOrder) => {
           return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-        }, 0)
+        }, 0)).toFixed(2)
 
 
         return { totalRevenue:TotalAmount,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
