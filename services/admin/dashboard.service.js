@@ -332,12 +332,49 @@ module.exports = {
         yearEndDate.setFullYear(yearEndDate.getFullYear() + 1)
         yearEndDate.setDate(yearEndDate.getDate()-1)
         
-            const TotalAmount = await models.OrderDelivery.sum('hotspot_fee');
-            const todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-              where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-          });
+        let TotalAmount = await models.OrderDelivery.sum('hotspot_fee');
+        
+        let allPickupTypeOrders = await utility.convertPromiseToObject(
+          await models.Order.findAll({
+            where: {
+              type: constants.ORDER_TYPE.pickup,
+              status:constants.ORDER_STATUS.delivered,
+             }
+          })
+        )
+
+        TotalAmount += allPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+          return result + pickupTypeOrder.amount - pickupTypeOrder.order_details.restaurant.fee
+        }, 0)
+
+        let todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+            where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
+        });
+        
+        let todayPickupTypeOrders = await utility.convertPromiseToObject(
+          await models.Order.findAll({
+            where: {
+              [Op.and]: [
+                {
+                  type: constants.ORDER_TYPE.pickup,
+                },
+                {
+                  status:constants.ORDER_STATUS.delivered,
+                },
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
+              ]
+              
+              
+            }
+          })
+        )
+
+        todayTotalAmount += todayPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+          return result + pickupTypeOrder.amount - pickupTypeOrder.order_details.restaurant.fee
+        }, 0)
+        
     
-          const monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+          let monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
             where: {
               // delivery_datetime: {
               //   [Op.between]: [monthStartDate, monthEndDate]
@@ -348,8 +385,31 @@ module.exports = {
               ]
             }
           });
+        
+        let monthPickupTypeOrders = await utility.convertPromiseToObject(
+          await models.Order.findAll({
+            where: {
+              [Op.and]: [
+                {
+                  type: constants.ORDER_TYPE.pickup,
+                },
+                {
+                  status:constants.ORDER_STATUS.delivered,
+                },
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(monthStartDate)),
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(monthEndDate))
+              ]
+              
+              
+            }
+          })
+        )
+
+        monthTotalAmount += monthPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+          return result + pickupTypeOrder.amount - pickupTypeOrder.order_details.restaurant.fee
+        }, 0)
     
-          const yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+          let yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
             where:  {
                 // delivery_datetime: {
                 //   [Op.between]: [yearStartDate, yearEndDate]
@@ -360,10 +420,34 @@ module.exports = {
               ]
             }
           });
-            return { totalRevenue:TotalAmount,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
-    
-          
-          },
+        
+        let yearPickupTypeOrders = await utility.convertPromiseToObject(
+          await models.Order.findAll({
+            where: {
+              [Op.and]: [
+                {
+                  type: constants.ORDER_TYPE.pickup,
+                },
+                {
+                  status:constants.ORDER_STATUS.delivered,
+                },
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
+              ]
+              
+              
+            }
+          })
+        )
+
+        yearTotalAmount += yearPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+          return result + pickupTypeOrder.amount - pickupTypeOrder.order_details.restaurant.fee
+        }, 0)
+
+
+        return { totalRevenue:TotalAmount,todayRevenue:todayTotalAmount,monthlyRevenue:monthTotalAmount,yearlyRevenue:yearTotalAmount };
+
+      
+      },
 
               
         
