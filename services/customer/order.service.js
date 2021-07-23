@@ -59,7 +59,7 @@ const sendRestaurantOrderEmail= async (params) => {
         style="
             position: relative;
         ">
-        Hello, New pickup order received from ${params.order.order_details.customer.name} for the shift ${new Date(params.order.delivery_datetime).toLocaleString('en-us')}. Thank you!<br><br>
+        Hello, New pickup order received from ${params.order.order_details.customer.name} for the pickup at ${new Date(params.order.delivery_datetime).toLocaleString('en-us')}. Thank you!<br><br>
     `;
 
     let bottomHTML = `</div><br><br>
