@@ -445,7 +445,12 @@ module.exports = {
         }, 0)
 
 
-        return { totalRevenue:TotalAmount.toFixed(2),todayRevenue:todayTotalAmount.toFixed(2),monthlyRevenue:monthTotalAmount.toFixed(2),yearlyRevenue:yearTotalAmount.toFixed(2) };
+        return {
+          totalRevenue: parseFloat(TotalAmount.toFixed(2)),
+          todayRevenue: parseFloat(todayTotalAmount.toFixed(2)),
+          monthlyRevenue: parseFloat(monthTotalAmount.toFixed(2)),
+          yearlyRevenue: parseFloat(yearTotalAmount.toFixed(2)),
+        };
 
       
       },
