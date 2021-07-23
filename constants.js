@@ -112,7 +112,12 @@ module.exports = {
     no_tip: "No tip found",
     feedback_success: "Feedback sent successfully.",
     no_driver_account: "No driver account found with this phone number",
-    driver_profile_update_success:`Profile updated successfully`,
+    driver_profile_update_success: `Profile updated successfully`,
+    pickup_already_done: 'This pickup already done.',
+    delivery_already_done: 'This delivery already done.',
+    no_pickup: 'No pickup found.',
+    no_delivery: 'No delivery found.',
+    
   },
 
   code: {

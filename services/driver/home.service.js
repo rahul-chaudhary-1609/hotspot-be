@@ -6,28 +6,111 @@ const Sequelize  = require("sequelize");
 const constants = require("../../constants");
 const utility = require('../../utils/utilityFunctions');
 
+const getWhereCondition = (params,user)=>{
+  let whereCondition = {
+        driver_id:user.id,              
+  };
+  
+  if (params.date) {
+    whereCondition = {
+      [Op.and]: [
+        {
+            ...whereCondition,                      
+        },
+        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date))),
+      ]
+    };
+  } else if (params.filter_key) {
+      let start_date = new Date();
+      let end_date = new Date();
+      if (params.filter_key == "Daily") {
+          whereCondition = {
+            [Op.and]: [
+              {
+                  ...whereCondition,                      
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date())),
+            ]
+          };
+      }
+      else if (params.filter_key == "Weekly") {
+        start_date = utility.getMonday(start_date);
+        end_date = utility.getMonday(start_date);
+        end_date.setDate(start_date.getDate() + 6);
+          whereCondition = {
+            [Op.and]: [
+              {
+                  ...whereCondition,                      
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+            ]
+          };
+      }
+      else if (params.filter_key == "Monthly") {
+          start_date.setDate(1)
+          end_date.setMonth(start_date.getMonth() + 1)
+          end_date.setDate(1)
+          end_date.setDate(end_date.getDate() - 1)
+        
+          whereCondition = {
+            [Op.and]: [
+              {
+                  ...whereCondition,                      
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+            ]
+          };
+      }
+      else if (params.filter_key == "Yearly") {
+          start_date.setDate(1)
+          start_date.setMonth(0)
+          end_date.setDate(1)
+          end_date.setMonth(0)
+          end_date.setFullYear(end_date.getFullYear() + 1)
+          end_date.setDate(end_date.getDate()-1)
+          whereCondition = {
+            [Op.and]: [
+              {
+                  ...whereCondition,                      
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+            ]
+          };
+    }
+    
+    console.log(start_date,end_date)
+  } else {
+    whereCondition = {
+      [Op.and]: [
+        {
+            ...whereCondition,                      
+        },
+        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date())),
+      ]
+    };
+}
+  
+  return whereCondition;
+}
+
 module.exports = {
 
   getPickupCards: async (params,user) => {
     
-    models.OrderPickup.hasOne(models.HotspotLocation,{foreignKey:'id',sourceKey:'hotspot_location_id',targetKey:'id'})
+    models.OrderPickup.hasOne(models.HotspotLocation, { foreignKey: 'id', sourceKey: 'hotspot_location_id', targetKey: 'id' })
+    
+    let whereCondition = getWhereCondition(params, user);
+    
     
     const orderPickups = await utility.convertPromiseToObject(
 
      await models.OrderPickup.findAll({
       
       attributes: ["pickup_id","pickup_datetime","order_count","delivery_datetime"],
-      where: {
-        [Op.and]: [
-          {
-            driver_id:user.id,
-          },
-          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date))),
-          {
-            status:constants.PICKUP_STATUS.pending
-          }
-        ]                
-      },
+      where: whereCondition,
       include: [
         {
           model: models.HotspotLocation,
@@ -35,24 +118,10 @@ module.exports = {
         }
       ]
      }))
-    
-    
-    
-    const totalOrderCount = await models.OrderPickup.count({
-      where: {
-        [Op.and]: [
-          {
-            driver_id: user.id,
-          },
-          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date)))
-        ]
-      }
-    });//orderPickups.reduce((result, orderPickup) => result + parseFloat(orderPickup.order_count), 0);
 
     return {
       orderPickups,
-      totalOrderCount,
-      pendingOrderCount:orderPickups.length,
+      totalOrderCount:orderPickups.length,
     }
 
   
@@ -94,7 +163,11 @@ module.exports = {
       }
     })
 
+    if(!orderPickup) throw new Error(constants.MESSAGES.no_pickup)
+
     let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
+
+    if(currentOrderPickup.status==constants.PICKUP_STATUS.done) throw new Error(constants.MESSAGES.pickup_already_done)
 
     const driver_fee = await models.Fee.findOne({
             where: {
@@ -209,6 +282,8 @@ module.exports = {
 getDeliveryCards: async(params,user)=>{
     models.OrderDelivery.hasOne(models.HotspotLocation,{foreignKey:'id',sourceKey:'hotspot_location_id',targetKey:'id'})
     
+  let whereCondition = getWhereCondition(params, user);
+
     const orderDeliveries = await utility.convertPromiseToObject(
 
     await models.OrderDelivery.findAll({       
@@ -218,17 +293,7 @@ getDeliveryCards: async(params,user)=>{
         [sequelize.json("delivery_details.dropOffs"), 'dropOffs']
       ],
           
-        where: {
-          [Op.and]: [
-            {
-              driver_id:user.id,
-            },
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date))),
-            {
-              status:constants.DELIVERY_STATUS.pending,
-            }
-          ]                
-        },
+        where: whereCondition,
         include: [
           {
             model: models.HotspotLocation,
@@ -237,15 +302,15 @@ getDeliveryCards: async(params,user)=>{
         ]
     }))
   
-  for (let orderDelivery of orderDeliveries) {
-    orderDelivery.dropOffs=JSON.parse(orderDelivery.dropOffs)
-  }
-  
-  
+    for (let orderDelivery of orderDeliveries) {
+      orderDelivery.dropOffs=JSON.parse(orderDelivery.dropOffs)
+    }
     
+    
+      
     return {orderDeliveries}
     
-    },    
+  },    
 
 
   getDeliveryDetails: async (params) => {
@@ -313,6 +378,19 @@ getDeliveryCards: async(params,user)=>{
 
   confirmDelivery: async (params, user) => {
 
+    let orderDelivery = await utility.convertPromiseToObject(
+      await models.OrderDelivery.findOne({
+        where: {
+          delivery_id:params.delivery_id,
+        }
+      })
+    )
+
+    if(!orderDelivery) throw new Error(constants.MESSAGES.no_delivery)
+
+    if(orderDelivery.status==constants.DELIVERY_STATUS.done) throw new Error(constants.MESSAGES.delivery_already_done)
+
+
     for (let delivery of params.deliveries) {
       let orders = await utility.convertPromiseToObject(
         await models.Order.findAll({
@@ -363,13 +441,7 @@ getDeliveryCards: async(params,user)=>{
 
     }
 
-    let orderDelivery = await utility.convertPromiseToObject(
-      await models.OrderDelivery.findOne({
-        where: {
-          delivery_id:params.delivery_id,
-        }
-      })
-    )
+    
 
     if (orderDelivery) {
       

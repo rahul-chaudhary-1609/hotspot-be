@@ -8497,8 +8497,21 @@
             "name": "date",
             "in": "query",
             "description": "date- format: YYYY-DD-MM",
-            "required": true,
+            "required": false,
             "type": "string"
+          },
+          {
+            "name": "filter_key",
+            "in": "query",
+            "description": "filter key",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Daily",
+              "Weekly",
+              "Monthly",
+              "Yearly"
+            ]
           }
         ],
         "responses": {}
@@ -8585,8 +8598,21 @@
         "name": "date",
         "in": "query",
         "description": "date- format: YYYY-DD-MM",
-        "required": true,
+        "required": false,
         "type": "string"
+      },
+      {
+        "name": "filter_key",
+        "in": "query",
+        "description": "filter key",
+        "required": false,
+        "type": "string",
+        "enum": [
+          "Daily",
+          "Weekly",
+          "Monthly",
+          "Yearly"
+        ]
       }
     ],
     "responses": {}

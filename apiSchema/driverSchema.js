@@ -177,7 +177,8 @@ module.exports = {
     
 
     getPickupCards:Joi.object({
-        date: Joi.string().required()
+        date: Joi.string().allow(null, '').optional(),
+        filter_key: Joi.string().empty().trim().valid("Daily", "Weekly", "Monthly", "Yearly").allow(null, '').optional(),
     }),
 
     getPickupDetails:Joi.object({
@@ -189,7 +190,8 @@ module.exports = {
     }),
 
     getDeliveryCards:Joi.object({
-        date: Joi.string().required()
+        date: Joi.string().allow(null, '').optional(),
+        filter_key: Joi.string().empty().trim().valid("Daily", "Weekly", "Monthly", "Yearly").allow(null, '').optional(),
     }),
 
     getDeliveryDetails:Joi.object({

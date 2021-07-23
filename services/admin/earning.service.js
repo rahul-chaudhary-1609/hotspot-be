@@ -33,8 +33,8 @@ module.exports = {
             whereCondition = {
                 ...whereCondition,
                 delivery_datetime: {
-                    [Op.gte]: new Date(params.start_date),
-                    [Op.lte]: new Date(params.end_date)
+                    [Op.gte]: new Date(params.start_date+" 00:00:00"),
+                    [Op.lte]: new Date(params.end_date+" 23:59:59")
                 }
             };
         }
@@ -173,8 +173,8 @@ module.exports = {
             whereCondition = {
                 ...whereCondition,
                 delivery_datetime: {
-                    [Op.gte]: new Date(params.start_date),
-                    [Op.lte]: new Date(params.end_date)
+                    [Op.gte]: new Date(params.start_date+" 00:00:00"),
+                    [Op.lte]: new Date(params.end_date+" 23:59:59")
                 }
             };
         }
