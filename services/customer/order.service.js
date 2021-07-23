@@ -2,6 +2,7 @@ require('dotenv/config');
 const models = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const constants = require('../../constants');
+const sendMail = require('../../utils/mail');
 
 const getOrderCard =  async (args) => {
     
