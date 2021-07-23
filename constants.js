@@ -261,5 +261,15 @@ CUSTOM_JOI_MESSAGE : {
     yes: 1
   },
 
+  PICKUP_STATUS : {
+    pending: 0,
+    done: 1
+  },
+
+  DELIVERY_STATUS : {
+    pending: 0,
+    done: 1
+  },
+
 }
 

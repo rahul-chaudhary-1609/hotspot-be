@@ -53,6 +53,13 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.JSON,
         },
 
+        status: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=> pending, 1=> done,'
+        }
+
 
     }, {
         sequelize,

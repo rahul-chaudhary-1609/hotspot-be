@@ -22,7 +22,10 @@ module.exports = {
           {
             driver_id:user.id,
           },
-          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date)))
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date))),
+          {
+            status:constants.PICKUP_STATUS.pending
+          }
         ]                
       },
       include: [
@@ -34,11 +37,22 @@ module.exports = {
      }))
     
     
-    const totalOrderCount = orderPickups.reduce((result, orderPickup) => result + parseFloat(orderPickup.order_count), 0);
+    
+    const totalOrderCount = await models.OrderPickup.count({
+      where: {
+        [Op.and]: [
+          {
+            driver_id: user.id,
+          },
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date)))
+        ]
+      }
+    });//orderPickups.reduce((result, orderPickup) => result + parseFloat(orderPickup.order_count), 0);
 
     return {
       orderPickups,
-      totalOrderCount
+      totalOrderCount,
+      pendingOrderCount:orderPickups.length,
     }
 
   
@@ -56,7 +70,7 @@ module.exports = {
           [sequelize.json("pickup_details.restaurants"), 'restaurants']
         ],
         where: {
-          pickup_id:params.pickup_id,
+          pickup_id: params.pickup_id,
         },
         include: [
         {
@@ -145,6 +159,7 @@ module.exports = {
     )
 
     orderPickup.pickup_datetime = new Date();
+    orderPickup.status = constants.PICKUP_STATUS.done;
     orderPickup.save()
 
     let orderDelivery = await utility.convertPromiseToObject(await models.OrderDelivery.create(orderDeliveryObj));
@@ -208,7 +223,10 @@ getDeliveryCards: async(params,user)=>{
             {
               driver_id:user.id,
             },
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date)))
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date))),
+            {
+              status:constants.DELIVERY_STATUS.pending,
+            }
           ]                
         },
         include: [
@@ -381,7 +399,8 @@ getDeliveryCards: async(params,user)=>{
         delivery_details: {
           ...orderDelivery.delivery_details,
           dropOffs:newDropOffs,
-        }
+        },
+        status:constants.DELIVERY_STATUS.done,
       }, {
         where: {
           delivery_id:params.delivery_id,

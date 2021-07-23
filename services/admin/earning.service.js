@@ -101,6 +101,7 @@ module.exports = {
         for (let orderDelivery of orderDeliveries.rows) {
             orderDelivery.order_amount = parseFloat(orderDelivery.amount) - parseFloat(orderDelivery.tip_amount);
             orderDeliveriesRows.push(orderDelivery)
+            orderDelivery.restaurant_fee = (orderDelivery.delivery_details.restaurants.reduce((result, restaurant) => result + restaurant.fee, 0)).toFixed(2)
         }
 
         orderDeliveries.rows = orderDeliveriesRows;
