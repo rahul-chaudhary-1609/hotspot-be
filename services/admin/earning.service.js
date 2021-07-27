@@ -11,12 +11,105 @@ const getStartAndEndDate = (params) => {
     return {startDate,endDate}
 }
 
+const getWhereCondition = (params)=>{
+  let whereCondition = {
+        ...params.whereCondition     
+    };
+    
+
+    if (params.start_date && params.end_date) {
+        whereCondition = {
+            [Op.and]: [
+                {
+                    ...whereCondition,                      
+                },
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(params.start_date))),
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(params.end_date))),
+            ]
+        };
+    }else if (params.filter_key) {
+      let start_date = new Date();
+      let end_date = new Date();
+      if (params.filter_key == "Daily") {
+          whereCondition = {
+            [Op.and]: [
+              {
+                  ...whereCondition,                      
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date())),
+            ]
+          };
+      }
+      else if (params.filter_key == "Weekly") {
+        start_date = utility.getMonday(start_date);
+        end_date = utility.getMonday(start_date);
+        end_date.setDate(start_date.getDate() + 6);
+          whereCondition = {
+            [Op.and]: [
+              {
+                  ...whereCondition,                      
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+            ]
+          };
+      }
+      else if (params.filter_key == "Monthly") {
+          start_date.setDate(1)
+          end_date.setMonth(start_date.getMonth() + 1)
+          end_date.setDate(1)
+          end_date.setDate(end_date.getDate() - 1)
+        
+          whereCondition = {
+            [Op.and]: [
+              {
+                  ...whereCondition,                      
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+            ]
+          };
+      }
+      else if (params.filter_key == "Yearly") {
+          start_date.setDate(1)
+          start_date.setMonth(0)
+          end_date.setDate(1)
+          end_date.setMonth(0)
+          end_date.setFullYear(end_date.getFullYear() + 1)
+          end_date.setDate(end_date.getDate()-1)
+          whereCondition = {
+            [Op.and]: [
+              {
+                  ...whereCondition,                      
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+            ]
+          };
+    }
+    
+    console.log(start_date,end_date)
+  } else {
+    whereCondition = {
+      [Op.and]: [
+        {
+            ...whereCondition,                      
+        },
+        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date())),
+      ]
+    };
+}
+  
+  return whereCondition;
+}
+
 module.exports = {
     getOrderDeliveries: async (params) => {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
         
         let whereCondition = {};
+        
         if (params.search_key) {
             let searchKey = params.search_key;
             whereCondition = {
@@ -29,59 +122,62 @@ module.exports = {
             };
         }
 
-        if (params.start_date && params.end_date) {
-            whereCondition = {
-                ...whereCondition,
-                delivery_datetime: {
-                    [Op.gte]: new Date(params.start_date+" 00:00:00"),
-                    [Op.lte]: new Date(params.end_date+" 23:59:59")
-                }
-            };
-        }
-        else if (params.filter_key) {
-            let start_date = new Date();
-            let end_date = new Date();
-            if (params.filter_key == "Daily") {
-                start_date.setDate(end_date.getDate() - 1)
-                whereCondition = {
-                    ...whereCondition,
-                    delivery_datetime: {
-                        [Op.gte]: new Date(start_date),
-                        [Op.lte]: new Date(end_date)
-                    }
-                };
-            }
-            else if (params.filter_key == "Weekly") {
-                start_date.setDate(end_date.getDate() - 7)
-                whereCondition = {
-                    ...whereCondition,
-                    delivery_datetime: {
-                        [Op.gte]: new Date(start_date),
-                        [Op.lte]: new Date(end_date)
-                    }
-                };
-            }
-            else if (params.filter_key == "Monthly") {
-                start_date.setMonth(end_date.getMonth() - 1)
-                whereCondition = {
-                    ...whereCondition,
-                    delivery_datetime: {
-                        [Op.gte]: new Date(start_date),
-                        [Op.lte]: new Date(end_date)
-                    }
-                };
-            }
-            else if (params.filter_key == "Yearly") {
-                start_date.setFullYear(end_date.getFullYear() - 1)
-                whereCondition = {
-                    ...whereCondition,
-                    delivery_datetime: {
-                        [Op.gte]: new Date(start_date),
-                        [Op.lte]: new Date(end_date)
-                    }
-                };
-            }
-        }
+        params.whereCondition=whereCondition
+        whereCondition=getWhereCondition(params)
+
+        // if (params.start_date && params.end_date) {
+        //     whereCondition = {
+        //         ...whereCondition,
+        //         delivery_datetime: {
+        //             [Op.gte]: new Date(params.start_date+" 00:00:00"),
+        //             [Op.lte]: new Date(params.end_date+" 23:59:59")
+        //         }
+        //     };
+        // }
+        // else if (params.filter_key) {
+        //     let start_date = new Date();
+        //     let end_date = new Date();
+        //     if (params.filter_key == "Daily") {
+        //         start_date.setDate(end_date.getDate() - 1)
+        //         whereCondition = {
+        //             ...whereCondition,
+        //             delivery_datetime: {
+        //                 [Op.gte]: new Date(start_date),
+        //                 [Op.lte]: new Date(end_date)
+        //             }
+        //         };
+        //     }
+        //     else if (params.filter_key == "Weekly") {
+        //         start_date.setDate(end_date.getDate() - 7)
+        //         whereCondition = {
+        //             ...whereCondition,
+        //             delivery_datetime: {
+        //                 [Op.gte]: new Date(start_date),
+        //                 [Op.lte]: new Date(end_date)
+        //             }
+        //         };
+        //     }
+        //     else if (params.filter_key == "Monthly") {
+        //         start_date.setMonth(end_date.getMonth() - 1)
+        //         whereCondition = {
+        //             ...whereCondition,
+        //             delivery_datetime: {
+        //                 [Op.gte]: new Date(start_date),
+        //                 [Op.lte]: new Date(end_date)
+        //             }
+        //         };
+        //     }
+        //     else if (params.filter_key == "Yearly") {
+        //         start_date.setFullYear(end_date.getFullYear() - 1)
+        //         whereCondition = {
+        //             ...whereCondition,
+        //             delivery_datetime: {
+        //                 [Op.gte]: new Date(start_date),
+        //                 [Op.lte]: new Date(end_date)
+        //             }
+        //         };
+        //     }
+        // }
 
         // models.OrderDelivery.hasOne(models.HotspotLocation,{foreignKey:"id",sourceKey:"hotspot_location_id",targetKey:"id"})
 
@@ -99,9 +195,9 @@ module.exports = {
         let orderDeliveriesRows = []
         
         for (let orderDelivery of orderDeliveries.rows) {
-            orderDelivery.order_amount = parseFloat(orderDelivery.amount) - parseFloat(orderDelivery.tip_amount);
-            orderDeliveriesRows.push(orderDelivery)
+            orderDelivery.order_amount = (parseFloat(orderDelivery.amount) - parseFloat(orderDelivery.tip_amount)).toFixed(2);
             orderDelivery.restaurant_fee = (orderDelivery.delivery_details.restaurants.reduce((result, restaurant) => result + restaurant.fee, 0)).toFixed(2)
+            orderDeliveriesRows.push(orderDelivery)
         }
 
         orderDeliveries.rows = orderDeliveriesRows;
@@ -169,59 +265,62 @@ module.exports = {
             };
         }
 
-        if (params.start_date && params.end_date) {
-            whereCondition = {
-                ...whereCondition,
-                delivery_datetime: {
-                    [Op.gte]: new Date(params.start_date+" 00:00:00"),
-                    [Op.lte]: new Date(params.end_date+" 23:59:59")
-                }
-            };
-        }
-        else if (params.filter_key) {
-            let start_date = new Date();
-            let end_date = new Date();
-            if (params.filter_key == "Daily") {
-                start_date.setDate(end_date.getDate() - 1)
-                whereCondition = {
-                    ...whereCondition,
-                    delivery_datetime: {
-                        [Op.gte]: new Date(start_date),
-                        [Op.lte]: new Date(end_date)
-                    }
-                };
-            }
-            else if (params.filter_key == "Weekly") {
-                start_date.setDate(end_date.getDate() - 7)
-                whereCondition = {
-                    ...whereCondition,
-                    delivery_datetime: {
-                        [Op.gte]: new Date(start_date),
-                        [Op.lte]: new Date(end_date)
-                    }
-                };
-            }
-            else if (params.filter_key == "Monthly") {
-                start_date.setMonth(end_date.getMonth() - 1)
-                whereCondition = {
-                    ...whereCondition,
-                    delivery_datetime: {
-                        [Op.gte]: new Date(start_date),
-                        [Op.lte]: new Date(end_date)
-                    }
-                };
-            }
-            else if (params.filter_key == "Yearly") {
-                start_date.setFullYear(end_date.getFullYear() - 1)
-                whereCondition = {
-                    ...whereCondition,
-                    delivery_datetime: {
-                        [Op.gte]: new Date(start_date),
-                        [Op.lte]: new Date(end_date)
-                    }
-                };
-            }
-        }
+        params.whereCondition=whereCondition
+        whereCondition=getWhereCondition(params)
+
+        // if (params.start_date && params.end_date) {
+        //     whereCondition = {
+        //         ...whereCondition,
+        //         delivery_datetime: {
+        //             [Op.gte]: new Date(params.start_date+" 00:00:00"),
+        //             [Op.lte]: new Date(params.end_date+" 23:59:59")
+        //         }
+        //     };
+        // }
+        // else if (params.filter_key) {
+        //     let start_date = new Date();
+        //     let end_date = new Date();
+        //     if (params.filter_key == "Daily") {
+        //         start_date.setDate(end_date.getDate() - 1)
+        //         whereCondition = {
+        //             ...whereCondition,
+        //             delivery_datetime: {
+        //                 [Op.gte]: new Date(start_date),
+        //                 [Op.lte]: new Date(end_date)
+        //             }
+        //         };
+        //     }
+        //     else if (params.filter_key == "Weekly") {
+        //         start_date.setDate(end_date.getDate() - 7)
+        //         whereCondition = {
+        //             ...whereCondition,
+        //             delivery_datetime: {
+        //                 [Op.gte]: new Date(start_date),
+        //                 [Op.lte]: new Date(end_date)
+        //             }
+        //         };
+        //     }
+        //     else if (params.filter_key == "Monthly") {
+        //         start_date.setMonth(end_date.getMonth() - 1)
+        //         whereCondition = {
+        //             ...whereCondition,
+        //             delivery_datetime: {
+        //                 [Op.gte]: new Date(start_date),
+        //                 [Op.lte]: new Date(end_date)
+        //             }
+        //         };
+        //     }
+        //     else if (params.filter_key == "Yearly") {
+        //         start_date.setFullYear(end_date.getFullYear() - 1)
+        //         whereCondition = {
+        //             ...whereCondition,
+        //             delivery_datetime: {
+        //                 [Op.gte]: new Date(start_date),
+        //                 [Op.lte]: new Date(end_date)
+        //             }
+        //         };
+        //     }
+        // }
 
         let orders = await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
@@ -237,8 +336,8 @@ module.exports = {
         let ordersRows = []
         
         for (let order of orders.rows) {
-            order.restaurant_fee = parseFloat(order.order_details.restaurant.fee);
-            order.hotspot_fee = parseFloat(order.amount) - parseFloat(order.order_details.restaurant.fee);
+            order.restaurant_fee = (parseFloat(order.order_details.restaurant.fee)).toFixed(2);
+            order.hotspot_fee = (parseFloat(order.amount) - parseFloat(order.order_details.restaurant.fee)).toFixed(2);
             ordersRows.push(order)
         }
 
