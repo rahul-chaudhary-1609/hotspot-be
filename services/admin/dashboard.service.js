@@ -6,6 +6,31 @@ const utility = require('../../utils/utilityFunctions');
 
 
 module.exports = {
+
+  listAllHotspot: async () => {
+    
+            let query = {};
+            query.order = [
+                ['id', 'DESC']
+            ];
+            query.raw = true;
+
+            let hotspotList = await models.HotspotLocation.findAndCountAll(query);
+            
+            if (hotspotList.count === 0) throw new Error(constants.MESSAGES.no_hotspot);
+
+            hotspotList.rows = hotspotList.rows.map((val) => {
+                return {
+                    id:val.id,
+                    name: val.name,
+                    location: val.location,
+                    locationDetail: val.location_detail,                   
+                }
+            })
+            
+            return { hotspotList };         
+  },
+  
     getTotalCustomers: async () => {
 
             const customers = await models.Customer.findAndCountAll({
@@ -18,6 +43,7 @@ module.exports = {
 
          
     },
+  
 
     getTotalRestaurants: async () => {
 

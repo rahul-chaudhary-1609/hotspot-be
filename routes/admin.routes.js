@@ -112,6 +112,8 @@ router.delete('/deleteCustomer/:customerId',adminAuthentication.validateAdminTok
 
 //Dashboard Management
 
+router.get('/listAllHotspot', adminAuthentication.validateAdminToken, adminDashboardController.listAllHotspot);
+
 router.get('/getTotalCustomers',adminAuthentication.validateAdminToken, adminDashboardController.getTotalCustomers);
 
 router.get('/getCustomersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getCustomersViaHotspot);
@@ -210,6 +212,10 @@ router.put('/editTip',adminAuthentication.validateAdminToken,joiValidation.valid
 
 
 //schedule Settings
+
+router.get('/listAllRestaurant', adminAuthentication.validateAdminToken, adminHotspotController.listAllRestaurant);
+
+router.get('/listAllDriver', adminAuthentication.validateAdminToken, adminHotspotController.listAllDriver);
 
 router.get('/listHotspots',adminAuthentication.validateAdminToken, adminHotspotController.listHotspots);
 

@@ -934,6 +934,28 @@
 
 
 
+    "/admin/listAllHotspot": {
+      "get": {
+        "tags": [
+          "Admin Dashboard"
+        ],
+        "description": "Api to list all hotspot",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+
         "/admin/getTotalCustomers": {
           "get": {
             "tags": [
@@ -3588,6 +3610,49 @@
 
 
 
+        "/admin/listAllRestaurant": {
+          "get": {
+            "tags": [
+              "Admin Schedule Settings"
+            ],
+            "description": "Api to list all restaurant",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/listAllDriver": {
+          "get": {
+            "tags": [
+              "Admin Schedule Settings"
+            ],
+            "description": "Api to list all Driver",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
         "/admin/listHotspots": {
           "get": {

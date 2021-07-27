@@ -5,6 +5,60 @@ const constants = require("../../constants");
 
 
 module.exports = {
+    listAllRestaurant: async () => {        
+
+        let query = {};
+        query.where = {status:[constants.STATUS.active]};
+        query.order = [
+            ['id', 'DESC']
+        ];
+        query.raw = true;
+
+        let restaurantList = await models.Restaurant.findAndCountAll(query);
+
+        if (restaurantList && restaurantList.count == 0) throw new Error(constants.MESSAGES.no_restaurant);
+        
+        return { restaurantList };
+    },
+
+    listAllDriver: async () => {        
+
+    
+        let query = {};
+        query.where = {
+            status: {
+                [Op.not]:constants.STATUS.deleted
+            },
+            approval_status: {
+                [Op.not]:constants.DRIVER_APPROVAL_STATUS.rejected
+            },
+            is_signup_completed:constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes
+        };
+      
+        query.order = [
+            ['id', 'DESC']
+        ];
+    
+        let driverList = await models.Driver.findAndCountAll(query);
+        
+        if (driverList.count === 0) throw new Error(constants.MESSAGES.no_driver);
+        //driverList.count = driverList.count.length;
+        driverList.rows = driverList.rows.map((val) => {
+            return {
+                id:val.id,
+                name: val.first_name+" "+val.last_name,
+                email: val.email,
+                phone: val.phone_no ?val.phone_no : null,
+                status: val.status,
+                approval_status:val.approval_status,
+                signupDate: val.createdAt,                       
+            }
+        })
+        
+        return { driverList };
+        
+    },
+
     addHotspot: async (params) => {
                 
             const name = params.name;

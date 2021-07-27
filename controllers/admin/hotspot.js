@@ -12,6 +12,24 @@ module.exports = {
         }
     },
 
+    listAllRestaurant: async (req, res) => {
+        try {
+            const responseFromService = await hotspotService.listAllRestaurant();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    listAllDriver: async (req, res) => {
+        try {
+            const responseFromService = await hotspotService.listAllDriver();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     editHotspot: async (req, res) => {
         try {
             const responseFromService = await hotspotService.editHotspot({...req.params,...req.body});
