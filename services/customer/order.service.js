@@ -60,7 +60,7 @@ const sendRestaurantOrderEmail= async (params) => {
             position: relative;
         ">
         ${params.order.order_details.customer.name}<br>
-        PICKUP TIME ${utilityFunctions.getLocaleTime(new Date(params.order.deliveryDatetime))}<br><br>
+        PICKUP TIME ${utilityFunction.getLocaleTime(new Date(params.order.deliveryDatetime))}<br><br>
     `;
 
     let bottomHTML = `</div><br><br>
@@ -129,7 +129,7 @@ const sendRestaurantOrderEmail= async (params) => {
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: params.order.order_details.restaurant.owner_email,
-        subject:  `Hotspot pickup order ${utilityFunctions.getLocaleTime(new Date(params.order.deliveryDatetime))}`,
+        subject:  `Hotspot pickup order ${utilityFunction.getLocaleTime(new Date(params.order.deliveryDatetime))}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
         //     {
