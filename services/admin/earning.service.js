@@ -89,16 +89,7 @@ const getWhereCondition = (params)=>{
     }
     
     console.log(start_date,end_date)
-  } else {
-    whereCondition = {
-      [Op.and]: [
-        {
-            ...whereCondition,                      
-        },
-        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date())),
-      ]
-    };
-}
+  } 
   
   return whereCondition;
 }
@@ -486,7 +477,10 @@ module.exports = {
             let start_date = new Date();
             let end_date = new Date();
             if (params.filter_key == "Monthly") {
-                start_date.setMonth(end_date.getMonth() - 1)
+                start_date.setDate(1)
+                end_date.setMonth(start_date.getMonth() + 1)
+                end_date.setDate(1)
+                end_date.setDate(end_date.getDate() - 1)
                 whereCondition = {
                     [Op.and]: [
                         {
@@ -519,7 +513,12 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.setFullYear(end_date.getFullYear() - 1)
+                start_date.setDate(1)
+                start_date.setMonth(0)
+                end_date.setDate(1)
+                end_date.setMonth(0)
+                end_date.setFullYear(end_date.getFullYear() + 1)
+                end_date.setDate(end_date.getDate()-1)
                 whereCondition = {
                     [Op.and]: [
                         {
@@ -775,7 +774,10 @@ module.exports = {
             let start_date = new Date();
             let end_date = new Date();
             if (params.filter_key == "Monthly") {
-                start_date.setMonth(end_date.getMonth() - 1)
+                start_date.setDate(1)
+                end_date.setMonth(start_date.getMonth() + 1)
+                end_date.setDate(1)
+                end_date.setDate(end_date.getDate() - 1)
                 whereCondition = {
                     [Op.and]: [
                         {
@@ -808,7 +810,12 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.setFullYear(end_date.getFullYear() - 1)
+                start_date.setDate(1)
+                start_date.setMonth(0)
+                end_date.setDate(1)
+                end_date.setMonth(0)
+                end_date.setFullYear(end_date.getFullYear() + 1)
+                end_date.setDate(end_date.getDate()-1)
                 whereCondition = {
                     [Op.and]: [
                         {
