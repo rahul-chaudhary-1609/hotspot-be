@@ -221,10 +221,10 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     else return `${displayHours}:${displayMinutes}:00`
                 }
 
-                //let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
+                let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
                 // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
-                let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
-                let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "11:30:00")}`);
+                //let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
+                let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}`);
 
                 let orders = await utilityFunctions.convertPromiseToObject(
                     await Order.findAll({
@@ -241,20 +241,18 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                 if (orders.length > 0) {
                     let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
-                    console.log(timeDiff,cutOffTime,nextDeliveryTime)
                     if (timeDiff > 0) {
-                        console.log(timeDiff)
                         sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryDatetime })
                         
-                        // for (let order of orders) {
-                        //     await Order.update({
-                        //         is_restaurant_notified:1,
-                        //     }, {
-                        //         where: {
-                        //             id:order.id,
-                        //         }
-                        //     })
-                        // }
+                        for (let order of orders) {
+                            await Order.update({
+                                is_restaurant_notified:1,
+                            }, {
+                                where: {
+                                    id:order.id,
+                                }
+                            })
+                        }
                     }
                 }
 
