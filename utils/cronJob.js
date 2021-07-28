@@ -64,7 +64,8 @@ const sendRestaurantOrderEmail= async (params) => {
         style="
             position: relative;
         ">
-        Hello, New delivery order(s) received from ${params.hotspotLocation.name} for the shift ${new Date(params.deliveryDatetime).toLocaleString('en-us')}. Thank you!<br><br>
+       ${params.hotspotLocation.name}<br>
+       DELIVERY TIME ${utilityFunctions.getLocaleTime(new Date(params.deliveryDatetime))}<br><br>
     `;
 
     let bottomHTML = `</div><br><br>
@@ -87,16 +88,10 @@ const sendRestaurantOrderEmail= async (params) => {
     bodyHTML += `<table cellpadding=5 style="margin-top:10px;border-collapse: collapse;" border="1"><tr>
         <th style="text-align:center;">Order#</th>
         <th style="text-align:center;">Order ID</th>
-        <th style="text-align:center;">Customer Name</th>
-        <th style="text-align:center;">Customer Phone/Email</th>
+        <th style="text-align:center;">Customer Name<sup>(Label on order)</sup></th>
+        <th style="text-align:center;">Drop-off Location<sup>(Label on order)</sup></th>
         <th style="text-align:center;">Ordered Items<br/>
-            <table cellpadding="10">
-                <tr>
-                    <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Item</th>
-                    <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Quantity</th>
-                    <th style="color:rgba(0,0,0,0.6);">Add-Ons</th>
-                <tr>
-            </table>
+            Item / Quantity / Add-ons
         </th>
     </tr>`
 
@@ -106,27 +101,22 @@ const sendRestaurantOrderEmail= async (params) => {
             <td style="text-align:center;">${snCounter++}</td>
             <td style="text-align:center;">${order.order_id}</td>
             <td style="text-align:center;">${order.order_details.customer.name}</td>
-            <td style="text-align:center;">${order.order_details.customer.phone || order.order_details.customer.email}</td>
-            <td style="text-align:center;">
-                <div style="display:flex; justify-content:'center';">
-                    <div>
-                        <table cellpadding="10">
-                            `
+            <td style="text-align:center;">${order.order_details.hotspot.dropoff.dropoff_detail}</td>
+            <td style="text-align:center;">`
         for (let ordered_item of order.order_details.ordered_items) {
             let itemHTML =`
-                    <tr>
-                        <td style="border-right:1px solid #ddd;">${ordered_item.itemName}</td>
-                        <td style="border-right:1px solid #ddd;">${ordered_item.itemCount}</td>
-                        <td>`
+                    ${ordered_item.itemName} / ${ordered_item.itemCount} / (`
                     
             for (let addOn of ordered_item.itemAddOn) {
-                itemHTML+=`${addOn.name}<br/>`
+                itemHTML+=`${addOn.name}, `
             }
+
+            itemHTML +=`)<br>`
             
             rowHTML+=itemHTML
         }
             
-        rowHTML +=`</td></tr></table></div></div></td>
+        rowHTML +=`</td>
         </tr>`
 
         bodyHTML+=rowHTML
@@ -146,8 +136,8 @@ const sendRestaurantOrderEmail= async (params) => {
         
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
-        to: params.restaurant.owner_email,
-        subject: `New Order For the Shift ${new Date(params.deliveryDatetime).toLocaleString('en-us')}`,
+        to:params.restaurant.owner_email,
+        subject: `Hotspot delivery order(s) ${params.hotspotLocation.name}, delivery time ${utilityFunctions.getLocaleTime(new Date(params.deliveryDatetime))}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
         //     {
@@ -231,10 +221,10 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     else return `${displayHours}:${displayMinutes}:00`
                 }
 
-                let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
+                //let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
                 // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
-                // let deliveryDatetime = new Date(`2021-07-07 12:30:00+00`);
-                let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}`);
+                let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
+                let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "11:30:00")}`);
 
                 let orders = await utilityFunctions.convertPromiseToObject(
                     await Order.findAll({
@@ -251,18 +241,20 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                 if (orders.length > 0) {
                     let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
+                    console.log(timeDiff,cutOffTime,nextDeliveryTime)
                     if (timeDiff > 0) {
+                        console.log(timeDiff)
                         sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryDatetime })
                         
-                        for (let order of orders) {
-                            await Order.update({
-                                is_restaurant_notified:1,
-                            }, {
-                                where: {
-                                    id:order.id,
-                                }
-                            })
-                        }
+                        // for (let order of orders) {
+                        //     await Order.update({
+                        //         is_restaurant_notified:1,
+                        //     }, {
+                        //         where: {
+                        //             id:order.id,
+                        //         }
+                        //     })
+                        // }
                     }
                 }
 

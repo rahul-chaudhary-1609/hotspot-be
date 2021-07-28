@@ -230,6 +230,14 @@ module.exports.getOnlyDate = (params) => {
     return params.toJSON().replace(/[:]|[.]|[Z]/g, '').slice(0,10)
 }
 
+module.exports.getLocaleTime = (params) => {
+    let time = params.toLocaleTimeString("en-us");
+    let end = time.lastIndexOf(":");
+    let timeArray = time.split("");
+    return timeArray.slice(0, end).join("") + timeArray.slice(-2).join("").toLowerCase();
+    
+}
+
 module.exports.getDateInUSFormat = (params) => {
     let now = new Date(params);
     now = now.toJSON()

@@ -59,7 +59,8 @@ const sendRestaurantOrderEmail= async (params) => {
         style="
             position: relative;
         ">
-        Hello, New pickup order received from ${params.order.order_details.customer.name} for the pickup at ${new Date(params.order.delivery_datetime).toLocaleString('en-us')}. Thank you!<br><br>
+        ${params.order.order_details.customer.name}<br>
+        PICKUP TIME ${utilityFunctions.getLocaleTime(new Date(params.order.deliveryDatetime))}<br><br>
     `;
 
     let bottomHTML = `</div><br><br>
@@ -80,18 +81,11 @@ const sendRestaurantOrderEmail= async (params) => {
 
     
     bodyHTML += `<table cellpadding=5 style="margin-top:10px;border-collapse: collapse;" border="1"><tr>
-        <th style="text-align:center;">Order#</th>
+         <th style="text-align:center;">Order#</th>
         <th style="text-align:center;">Order ID</th>
-        <th style="text-align:center;">Customer Name</th>
-        <th style="text-align:center;">Customer Phone/Email</th>
+        <th style="text-align:center;">Customer Name<sup>(Label on order)</sup></th>
         <th style="text-align:center;">Ordered Items<br/>
-            <table cellpadding="10">
-                <tr>
-                    <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Item</th>
-                    <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Quantity</th>
-                    <th style="color:rgba(0,0,0,0.6);">Add-Ons</th>
-                <tr>
-            </table>
+            Item / Quantity / Add-ons
         </th>
     </tr>`
 
@@ -101,27 +95,20 @@ const sendRestaurantOrderEmail= async (params) => {
         <td style="text-align:center;">${snCounter++}</td>
         <td style="text-align:center;">${params.order.order_id}</td>
         <td style="text-align:center;">${params.order.order_details.customer.name}</td>
-        <td style="text-align:center;">${params.order.order_details.customer.phone || params.order.order_details.customer.email}</td>
-        <td style="text-align:center;">
-            <div style="display:flex; justify-content:'center';">
-                <div>
-                    <table cellpadding="10">
-                        `
+        <td style="text-align:center;">`
     for (let ordered_item of params.order.order_details.ordered_items) {
-        let itemHTML =`
-                <tr>
-                    <td style="border-right:1px solid #ddd;">${ordered_item.itemName}</td>
-                    <td style="border-right:1px solid #ddd;">${ordered_item.itemCount}</td>
-                    <td>`
+        let itemHTML =`${ordered_item.itemName} / ${ordered_item.itemCount} / (`
                 
         for (let addOn of ordered_item.itemAddOn) {
-            itemHTML+=`${addOn.name}<br/>`
+            itemHTML+=`${addOn.name}, `
         }
+
+        itemHTML += `)<br>`
         
         rowHTML+=itemHTML
     }
         
-    rowHTML +=`</td></tr></table></div></div></td>
+    rowHTML +=`</td>
     </tr>`
 
     bodyHTML+=rowHTML
@@ -142,7 +129,7 @@ const sendRestaurantOrderEmail= async (params) => {
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: params.order.order_details.restaurant.owner_email,
-        subject: `New Order for Pickup`,
+        subject:  `Hotspot pickup order ${utilityFunctions.getLocaleTime(new Date(params.order.deliveryDatetime))}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
         //     {
