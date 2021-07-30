@@ -351,8 +351,8 @@ module.exports = {
         dish.restaurant_id = params.restaurant_id;
         //dish.dish_category_id = params.dish_category_id;
         dish.image_url = params.image_url;
-        dish.is_recommended = params.is_recommended || dish.is_recommended;
-        dish.is_quick_filter = params.is_quick_filter || dish.is_quick_filter;
+        dish.is_recommended = [0,1].includes(params.is_recommended)?params.is_recommended : dish.is_recommended;
+        dish.is_quick_filter = [0,1].includes(params.is_quick_filter)?params.is_quick_filter: dish.is_quick_filter;
         
         dish.save();
             
