@@ -130,11 +130,11 @@ module.exports = {
         let restaurantId = parseInt(params.restaurantId);
 
         const restaurant = await Restaurant.findByPk(restaurantId);
-
+        
         if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
         
-        restaurant.stripe_publishable_key = utilityFunction.decrypt(restaurant.stripe_publishable_key);
-        restaurant.stripe_secret_key=utilityFunction.decrypt(restaurant.stripe_secret_key)
+        restaurant.stripe_publishable_key = restaurant.stripe_publishable_key? utilityFunction.decrypt(restaurant.stripe_publishable_key):null;
+        restaurant.stripe_secret_key=restaurant.stripe_secret_key? utilityFunction.decrypt(restaurant.stripe_secret_key):null;
 
         let coveringHotspots = [];
 

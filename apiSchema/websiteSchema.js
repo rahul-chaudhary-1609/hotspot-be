@@ -15,16 +15,15 @@ module.exports = {
     }),
 
     sendBecameHotspotEmail: Joi.object({
-        first_name: Joi.string().required(),
-        last_name: Joi.string().required(),
+        name_of_institution: Joi.string().required(),
+        name: Joi.string().required(),
         email: Joi.string().email().required(),
         phone: Joi.number().required(),
-        company_name: Joi.string().required(),
-        address: Joi.string().required(),
+        street_address: Joi.string().required(),
+        address_line_2: Joi.string().required(),
         city: Joi.string().required(),
-        zipcode: Joi.string().required(),
-        no_of_people_in_the_building: Joi.number().required(),
-        hours_of_operation: Joi.string().required(),
+        state: Joi.string().required(),
+        zip_code: Joi.string().required(),        
     })
 
 }
