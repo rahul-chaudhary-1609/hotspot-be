@@ -9045,16 +9045,16 @@
         ],
         "parameters": [
           {
-            "name": "first_name",
+            "name": "name_of_institution",
             "in": "formData",
-            "description": "enter first_name",
+            "description": "enter name of institution",
             "required": true,
             "type": "string"
           },
           {
-            "name": "last_name",
+            "name": "name",
             "in": "formData",
-            "description": "enter first_name",
+            "description": "enter name",
             "required": true,
             "type": "string"
           },
@@ -9073,14 +9073,14 @@
             "type": "number"
           },
           {
-            "name": "company_name",
+            "name": "street_address",
             "in": "formData",
-            "description": "enter company_name",
+            "description": "enter street_address",
             "required": true,
             "type": "string"
           },
           {
-            "name": "address",
+            "name": "address_line_2",
             "in": "formData",
             "description": "enter address",
             "required": true,
@@ -9094,23 +9094,16 @@
             "type": "string"
           },
           {
-            "name": "zipcode",
+            "name": "state",
             "in": "formData",
-            "description": "enter zipcode",
+            "description": "enter state",
             "required": true,
             "type": "string"
           },
           {
-            "name": "no_of_people_in_the_building",
+            "name": "zip_code",
             "in": "formData",
-            "description": "enter people count",
-            "required": true,
-            "type": "number"
-          },
-          {
-            "name": "hours_of_operation",
-            "in": "formData",
-            "description": "enter operational hours",
+            "description": "enter zip code",
             "required": true,
             "type": "string"
           }
