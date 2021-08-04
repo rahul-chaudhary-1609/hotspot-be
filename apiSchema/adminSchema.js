@@ -386,9 +386,12 @@ module.exports = {
     }),
 
     updateStaticContent: Joi.object({
-        id: Joi.string().required(),
+        id: Joi.string().optional(),
+        title: Joi.string().optional(),
+        description: Joi.string().optional(),
         page_url: Joi.string().optional(),
-        video_url: Joi.string().optional()
+        video_url: Joi.string().optional(),
+        type: Joi.number().valid(1,2,3,4,5,6,7,8,9,10,11,12).optional(),
     }),
 
     addFaq: Joi.object({

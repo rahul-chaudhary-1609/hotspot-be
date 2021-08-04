@@ -587,7 +587,21 @@
             "name": "id",
             "in": "formData",
             "description": "id, If you will provide id then it will update else add",
-            "required": true,
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "in": "formData",
+            "description": "title",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "description",
+            "required": false,
             "type": "string"
           },
           {
@@ -603,6 +617,14 @@
             "description": "video_url",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "formData",
+            "description": "1=> terms_and_conditions, 2=>privacy_policy, 3=> customer_how_it_works, 4=> driver_how_it_works, 5=> about_us,6=> faq, 7=> become_a_hotspot, 8=> accessibility_statement, 9=> customer_community_guidelines, 10=> restricted_product_list, 11=> driver_guidelines, 12=> contact_us",
+            "required": true,
+            "type": "number",
+            "enum":[1,2,3,4,5,6,7,8,9,10,11,12]
           }
         ],
         "responses": {}

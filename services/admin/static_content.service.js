@@ -5,9 +5,28 @@ const utility = require('../../utils/utilityFunctions');
 
 module.exports = {
     updateStaticContent: async (params, user) => {
-       return await StaticContent.update(params,{
-           where: { id: params.id}
-       })
+        if(params.id){
+            let staticContent=StaticContent.findOne({
+                where:{
+                    id: params.id,
+                    type:params.type
+                }
+            })
+
+            if(!staticContent) throw new Error(constants.MESSAGES.no_static_content);
+
+            staticContent.title=params.title || staticContent.title;
+            staticContent.description=params.description || staticContent.description;
+            staticContent.page_url=params.page_url || staticContent.page_url;
+            staticContent.video_url=params.video_url || staticContent.video_url;
+            //staticContent.type=params.type || staticContent.type;
+
+            staticContent.save();
+
+            return await utility.convertPromiseToObject(staticContent);
+        }else{
+            return await utility.convertPromiseToObject(StaticContent.create(params))
+        }
     },
 
     getStaticContents: async (params) => {
