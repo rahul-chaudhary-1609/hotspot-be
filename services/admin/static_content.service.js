@@ -6,7 +6,7 @@ const utility = require('../../utils/utilityFunctions');
 module.exports = {
     updateStaticContent: async (params, user) => {
         if(params.id){
-            let staticContent=StaticContent.findOne({
+            let staticContent=await StaticContent.findOne({
                 where:{
                     id: params.id,
                     type:params.type
@@ -25,7 +25,7 @@ module.exports = {
 
             return await utility.convertPromiseToObject(staticContent);
         }else{
-            return await utility.convertPromiseToObject(StaticContent.create(params))
+            return await utility.convertPromiseToObject(await StaticContent.create(params))
         }
     },
 
