@@ -9,7 +9,7 @@ module.exports = {
             let staticContent=await StaticContent.findOne({
                 where:{
                     id: params.id,
-                    type:params.type
+                    //type:params.type
                 }
             })
 
