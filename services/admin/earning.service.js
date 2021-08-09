@@ -339,84 +339,84 @@ module.exports = {
 
     getRestaurantEarnings: async (params) => {
 
-        let restaurantPayment = await models.RestaurantPayment.findAndCountAll({
-            order:[['to_date','DESC']]
-        });
+        // let restaurantPayment = await models.RestaurantPayment.findAndCountAll({
+        //     order:[['to_date','DESC']]
+        // });
 
-        let now = restaurantPayment.count > 0 ? (new Date(restaurantPayment.rows[0].to_date)) : new Date(process.env.PAYMENT_CALCULATION_START_DATE);
-        now = new Date(now)
-        now.setDate(now.getDate()+1)
+        // let now = restaurantPayment.count > 0 ? (new Date(restaurantPayment.rows[0].to_date)) : new Date(process.env.PAYMENT_CALCULATION_START_DATE);
+        // now = new Date(now)
+        // now.setDate(now.getDate()+1)
 
-        let date = getStartAndEndDate({ now })
+        // let date = getStartAndEndDate({ now })
 
-        let newRestaurantPayment = [];
+        // let newRestaurantPayment = [];
 
         
-        while (date.endDate < (new Date())) {
-            let orders = await utility.convertPromiseToObject(
-            await models.Order.findAll({
-                attributes: [
-                    'restaurant_id',
-                    [sequelize.fn("sum", sequelize.cast(sequelize.json("order_details.restaurant.fee"), 'float')), "restaurant_fee"],
-                    [sequelize.fn("count", sequelize.col("Order.id")), "order_count"],
-                    [sequelize.fn("sum", sequelize.col("amount")), "amount"],
-                    [sequelize.fn("sum", sequelize.col("tip_amount")), "tip_amount"],
-                ],
-                where: {
-                    status: constants.ORDER_STATUS.delivered,
-                    [Op.and]: [
-                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
-                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
-                    ]
-                    // delivery_datetime: {
-                    //     [Op.and]: [
-                    //         { [Op.gte]: utility.getOnlyDate(date.startDate) },
-                    //         {[Op.lte]:utility.getOnlyDate(date.endDate)}
-                    //     ]
-                    // }
-                },
-                group:['"restaurant_id"']
-            })
-            )
+        // while (date.endDate < (new Date())) {
+        //     let orders = await utility.convertPromiseToObject(
+        //     await models.Order.findAll({
+        //         attributes: [
+        //             'restaurant_id',
+        //             [sequelize.fn("sum", sequelize.cast(sequelize.json("order_details.restaurant.fee"), 'float')), "restaurant_fee"],
+        //             [sequelize.fn("count", sequelize.col("Order.id")), "order_count"],
+        //             [sequelize.fn("sum", sequelize.col("amount")), "amount"],
+        //             [sequelize.fn("sum", sequelize.col("tip_amount")), "tip_amount"],
+        //         ],
+        //         where: {
+        //             status: constants.ORDER_STATUS.delivered,
+        //             [Op.and]: [
+        //                 sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
+        //                 sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
+        //             ]
+        //             // delivery_datetime: {
+        //             //     [Op.and]: [
+        //             //         { [Op.gte]: utility.getOnlyDate(date.startDate) },
+        //             //         {[Op.lte]:utility.getOnlyDate(date.endDate)}
+        //             //     ]
+        //             // }
+        //         },
+        //         group:['"restaurant_id"']
+        //     })
+        //     )
 
-            let formattedOrders = [];
+        //     let formattedOrders = [];
             
-            for (let order of orders) {
-                let restaurant = await utility.convertPromiseToObject(
-                    await models.Restaurant.findOne({
-                        attributes:['id','restaurant_name'],
-                        where: {
-                            id:order.restaurant_id
-                        }
-                    })
-                )
+        //     for (let order of orders) {
+        //         let restaurant = await utility.convertPromiseToObject(
+        //             await models.Restaurant.findOne({
+        //                 attributes:['id','restaurant_name'],
+        //                 where: {
+        //                     id:order.restaurant_id
+        //                 }
+        //             })
+        //         )
 
-                let orderObj= {
-                    ...order,
-                    payment_id: await utility.getUniqueRestaurantPaymentId(),
-                    from_date: utility.getOnlyDate(date.startDate),
-                    to_date: utility.getOnlyDate(date.endDate),
-                    restaurant_name:restaurant.restaurant_name,
-                    payment_details: {
-                        restaurnat:{
-                            ...restaurant
-                        }
-                    }
-                }
+        //         let orderObj= {
+        //             ...order,
+        //             payment_id: await utility.getUniqueRestaurantPaymentId(),
+        //             from_date: utility.getOnlyDate(date.startDate),
+        //             to_date: utility.getOnlyDate(date.endDate),
+        //             restaurant_name:restaurant.restaurant_name,
+        //             payment_details: {
+        //                 restaurnat:{
+        //                     ...restaurant
+        //                 }
+        //             }
+        //         }
 
-                formattedOrders.push(orderObj);
+        //         formattedOrders.push(orderObj);
 
-            }
+        //     }
 
-            newRestaurantPayment.push(...formattedOrders)            
-            date.endDate.setDate(date.endDate.getDate() + 1)
-            now = utility.getOnlyDate(date.endDate);
-            date=getStartAndEndDate({ now })
-        }
+        //     newRestaurantPayment.push(...formattedOrders)            
+        //     date.endDate.setDate(date.endDate.getDate() + 1)
+        //     now = utility.getOnlyDate(date.endDate);
+        //     date=getStartAndEndDate({ now })
+        // }
 
-        //console.log(newRestaurantPayment);
+        // //console.log(newRestaurantPayment);
 
-        await models.RestaurantPayment.bulkCreate(newRestaurantPayment);
+        // await models.RestaurantPayment.bulkCreate(newRestaurantPayment);
 
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
