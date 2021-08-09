@@ -155,6 +155,36 @@ const sendRestaurantOrderEmail= async (params) => {
     return true;
 }
 
+const addRestaurantPayment=async(params)=>{
+    let order={};
+    order.restaurant_id=params.order.restaurant_id;
+    order.restaurant_fee=params.order.order_details.restaurant.restaurant_fee;
+    order.order_count=1;
+    order.amount=params.order.amount;
+    order.tip_amount=params.order.tip_amount;
+
+    let restaurantPaymentObj={
+        ...order,
+        payment_id: await utilityFunctions.getUniqueRestaurantPaymentId(),
+        from_date: utilityFunctions.getOnlyDate(params.order.delivery_datetime),
+        to_date: utilityFunctions.getOnlyDate(params.order.delivery_datetime),
+        delivery_datetime:params.order.delivery_datetime,
+        restaurant_name:params.order.order_details.restaurant.restaurant_name,
+        order_type:constants.ORDER_TYPE.pickup,
+        payment_details: {
+            restaurnat:{
+                ...params.order.order_details.restaurant
+            },
+            hotspot:{
+                ...params.order.order_details.hotspot
+            }
+        },
+    }
+
+    await RestaurantPayment.create(restaurantPaymentObj);
+
+}
+
 module.exports = {
     checkCartItem: async (params, user) => {
 
@@ -831,6 +861,7 @@ module.exports = {
 
         if (order.type == constants.ORDER_TYPE.pickup) {
             await sendRestaurantOrderEmail({ order })
+            await addRestaurantPayment({order})
             order.is_restaurant_notified = 1;
             order.save();
         }

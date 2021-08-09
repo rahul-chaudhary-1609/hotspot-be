@@ -1,7 +1,7 @@
 
 const schedule = require('node-schedule');
 const constants = require('../constants');
-const { Restaurant, HotspotLocation,HotspotRestaurant,Order } = require("../models")
+const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment } = require("../models")
 const utilityFunctions = require('./utilityFunctions');
 const sendMail = require('./mail');
 const fs = require('fs');
@@ -163,8 +163,38 @@ const sendRestaurantOrderEmail= async (params) => {
     return true;
 }
 
+const addRestaurantPayment=async(params)=>{
+    let order={};
+    order.restaurant_id=params.restaurant.id;
+    order.restaurant_fee=params.orders.reduce((result,order)=>result+order.order_details.restaurant.restaurant_fee,0)
+    order.order_count=params.orders.length;
+    order.amount=params.orders.reduce((result,order)=>result+order.amount,0)
+    order.tip_amount=params.orders.reduce((result,order)=>result+order.tip_amount,0)
+
+    let restaurantPaymentObj={
+        ...order,
+        payment_id: await utilityFunctions.getUniqueRestaurantPaymentId(),
+        from_date: utilityFunctions.getOnlyDate(params.deliveryDatetime),
+        to_date: utilityFunctions.getOnlyDate(params.deliveryDatetime),
+        delivery_datetime:params.deliveryDatetime,
+        restaurant_name:params.restaurant.restaurant_name,
+        order_type:constants.ORDER_TYPE.delivery,
+        payment_details: {
+            restaurnat:{
+                ...params.restaurant
+            },
+            hotspot:{
+                ...params.hotspotLocation
+            }
+        },
+    }
+
+    await RestaurantPayment.create(restaurantPaymentObj);
+
+}
+
 module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
-    schedule.scheduleJob('* 6-20 * * *', async ()=> {
+    schedule.scheduleJob('* 5-23 * * *', async ()=> {
         //console.log(`Job Ran ${new Date()}`)
 
         let hotspotLocations = await utilityFunctions.convertPromiseToObject(
@@ -221,42 +251,46 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     else return `${displayHours}:${displayMinutes}:00`
                 }
 
-                let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
-                // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
-                //let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
-                let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}`);
+                if(nextDeliveryTime){
 
-                let orders = await utilityFunctions.convertPromiseToObject(
-                    await Order.findAll({
-                        where: {
-                            hotspot_location_id:hotspotLocation.id,
-                            restaurant_id: restaurant.id,
-                            type: constants.ORDER_TYPE.delivery,
-                            delivery_datetime: deliveryDatetime,
-                            is_restaurant_notified:0,
-                        }
-                    })
-                )
+                    let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
+                    // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
+                    //let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
+                    let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}`);
+
+                    let orders = await utilityFunctions.convertPromiseToObject(
+                        await Order.findAll({
+                            where: {
+                                hotspot_location_id:hotspotLocation.id,
+                                restaurant_id: restaurant.id,
+                                type: constants.ORDER_TYPE.delivery,
+                                delivery_datetime: deliveryDatetime,
+                                is_restaurant_notified:0,
+                            }
+                        })
+                    )
 
 
-                if (orders.length > 0) {
-                    let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
-                    if (timeDiff > 0) {
-                        sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryDatetime })
-                        
-                        for (let order of orders) {
-                            await Order.update({
-                                is_restaurant_notified:1,
-                            }, {
-                                where: {
-                                    id:order.id,
-                                }
-                            })
+                    if (orders.length > 0) {
+                        let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
+                        if (timeDiff > 0) {
+                            await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryDatetime })
+                            await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
+                            
+                            for (let order of orders) {
+                                await Order.update({
+                                    is_restaurant_notified:1,
+                                }, {
+                                    where: {
+                                        id:order.id,
+                                    }
+                                })
+                            }
                         }
                     }
-                }
 
-                //console.log("orders",hotspotLocation.id,restaurant.id,orders)
+                    //console.log("orders",hotspotLocation.id,restaurant.id,orders)
+                }
 
                 
             }

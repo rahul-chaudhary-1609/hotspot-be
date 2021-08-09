@@ -37,6 +37,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(15,2),
             allowNull: false,
         },
+        order_type: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            comment: '1=> delivery only, 2=>pickup only, 3=> both'
+        },
         order_count: {
             type: DataTypes.BIGINT,
         },
@@ -53,6 +58,9 @@ module.exports = (sequelize, DataTypes) => {
         },
         to_date: {
             type: DataTypes.DATEONLY,
+        },
+        delivery_datetime: {
+            type: DataTypes.DATE,
         },
         payment_details: {
             type: DataTypes.JSON,
