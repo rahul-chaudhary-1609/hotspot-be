@@ -158,7 +158,7 @@ const sendRestaurantOrderEmail= async (params) => {
 const addRestaurantPayment=async(params)=>{
     let order={};
     order.restaurant_id=params.order.restaurant_id;
-    order.restaurant_fee=params.order.order_details.restaurant.restaurant_fee;
+    order.restaurant_fee=params.order.order_details.restaurant.fee;
     order.order_count=1;
     order.amount=params.order.amount;
     order.tip_amount=params.order.tip_amount;
