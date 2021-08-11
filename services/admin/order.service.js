@@ -393,6 +393,8 @@ module.exports = {
         }
         else {
             currentOrder.order_details.restaurant.order_count = 1;
+            let pickup_datetime=new Date(currentOrder.delivery_datetime);
+            pickup_datetime.setMinutes(pickup_datetime.getMinutes()-20);
             let orderPickupObj = {
                 pickup_id: order_pickup_id,
                 hotspot_location_id: currentOrder.hotspot_location_id,
@@ -400,6 +402,7 @@ module.exports = {
                 amount:parseFloat(currentOrder.amount),
                 tip_amount:parseFloat(currentOrder.tip_amount),
                 driver_id:driver.id,
+                pickup_datetime,
                 delivery_datetime:currentOrder.delivery_datetime,
                 pickup_details: {
                     hotspot:currentOrder.order_details.hotspot,
