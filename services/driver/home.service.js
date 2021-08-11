@@ -231,7 +231,7 @@ module.exports = {
       }
     )
 
-    orderPickup.pickup_datetime = new Date();
+    //orderPickup.pickup_datetime = new Date();
     orderPickup.status = constants.PICKUP_STATUS.done;
     orderPickup.save()
 
