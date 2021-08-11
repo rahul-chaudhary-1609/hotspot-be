@@ -165,9 +165,9 @@ const addRestaurantPayment=async(params)=>{
 
     let restaurantPaymentObj={
         ...order,
-        payment_id: await utilityFunctions.getUniqueRestaurantPaymentId(),
-        from_date: utilityFunctions.getOnlyDate(params.order.delivery_datetime),
-        to_date: utilityFunctions.getOnlyDate(params.order.delivery_datetime),
+        payment_id: await utilityFunction.getUniqueRestaurantPaymentId(),
+        from_date: utilityFunction.getOnlyDate(params.order.delivery_datetime),
+        to_date: utilityFunction.getOnlyDate(params.order.delivery_datetime),
         delivery_datetime:params.order.delivery_datetime,
         restaurant_name:params.order.order_details.restaurant.restaurant_name,
         order_type:constants.ORDER_TYPE.pickup,
