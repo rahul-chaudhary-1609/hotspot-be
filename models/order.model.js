@@ -31,6 +31,12 @@ module.exports = (sequelize, DataTypes) => {
         order_delivery_id: {
             type: DataTypes.STRING,
         },
+        restaurant_payment_id: {
+            type: DataTypes.STRING,
+        },
+        driver_payment_id: {
+            type: DataTypes.STRING,
+        },
         customer_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -106,8 +112,17 @@ module.exports = (sequelize, DataTypes) => {
             comment: '0=> no, 1=> yes,'
         },
 
-        push_order_id: {
+        restaurant_payment_status: {
             type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=>not_paid, 1=>paid'
+        },
+        driver_payment_status: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=>not_paid, 1=>paid, 2=>not_applicable'
         },
 
 

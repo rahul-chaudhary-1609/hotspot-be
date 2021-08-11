@@ -191,6 +191,8 @@ const addRestaurantPayment=async(params)=>{
 
     await RestaurantPayment.create(restaurantPaymentObj);
 
+    return restaurantPaymentObj.payment_id;
+
 }
 
 module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
@@ -275,11 +277,12 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                         let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
                         if (timeDiff > 0) {
                             await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryDatetime })
-                            await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
+                            let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
                             
                             for (let order of orders) {
                                 await Order.update({
                                     is_restaurant_notified:1,
+                                    restaurant_payment_id,
                                 }, {
                                     where: {
                                         id:order.id,

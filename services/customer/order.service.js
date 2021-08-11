@@ -183,6 +183,8 @@ const addRestaurantPayment=async(params)=>{
 
     await RestaurantPayment.create(restaurantPaymentObj);
 
+    return restaurantPaymentObj.payment_id;
+
 }
 
 module.exports = {
@@ -576,6 +578,7 @@ module.exports = {
                     cooking_instructions,
                     delivery_datetime,
                     order_details,
+                    driver_payment_status: type == constants.ORDER_TYPE.delivery?constants.PAYMENT_STATUS.not_paid:constants.PAYMENT_STATUS.not_applicable,
                 },
                     {
                         where: {
@@ -715,7 +718,8 @@ module.exports = {
                     status,
                     type,
                     cooking_instructions,
-                    delivery_datetime
+                    delivery_datetime,
+                    driver_payment_status: type == constants.ORDER_TYPE.delivery?constants.PAYMENT_STATUS.not_paid:constants.PAYMENT_STATUS.not_applicable,
                 });
 
 
@@ -861,7 +865,7 @@ module.exports = {
 
         if (order.type == constants.ORDER_TYPE.pickup) {
             await sendRestaurantOrderEmail({ order })
-            await addRestaurantPayment({order})
+            order.restaurant_payment_id=await addRestaurantPayment({order})
             order.is_restaurant_notified = 1;
             order.save();
         }

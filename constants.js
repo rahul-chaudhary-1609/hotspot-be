@@ -213,6 +213,7 @@ CUSTOM_JOI_MESSAGE : {
   PAYMENT_STATUS : {
     not_paid: 0,
     paid: 1,
+    not_applicable:2,
   },
 
   DRIVER_ORDER_STATUS : {

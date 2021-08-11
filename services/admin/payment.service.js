@@ -379,6 +379,16 @@ module.exports = {
 
         driverPayment.save();
 
+        await models.Order.update({
+            driver_payment_status:constants.PAYMENT_STATUS.paid,
+            },
+              {
+                where: {
+                    driver_payment_id:currentDriverPayment.payment_id
+                }
+            }
+        )
+
         await sendDriverPaymentEmail(currentDriverPayment);
 
         return {driverPayment:await utility.convertPromiseToObject(driverPayment)}
@@ -517,6 +527,16 @@ module.exports = {
         restaurantPayment.status = constants.PAYMENT_STATUS.paid;
 
         restaurantPayment.save();
+
+        await models.Order.update({
+            restaurant_payment_status:constants.PAYMENT_STATUS.paid,
+            },
+              {
+                where: {
+                    restaurant_payment_id:currentRestaurantPayment.payment_id
+                }
+            }
+        )
 
         await sendRestaurantPaymentEmail(currentRestaurantPayment);
 

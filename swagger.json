@@ -4245,6 +4245,8 @@
                 "required": false,
                 "type": "string",
                 "enum": [
+                  "Daily",
+                  "Weekly",
                   "Monthly",
                   "Yearly"
                 ]
@@ -4285,24 +4287,24 @@
                 "type": "string"
               },
               {
-                "name": "restaurant_id",
+                "name": "restaurant_payment_id",
                 "in": "query",
-                "description": "restaurant id",
+                "description": "restaurant payment id",
                 "required": true,
-                "type": "number"
+                "type": "string"
               },
               {
                 "name": "start_date",
                 "in": "query",
                 "description": "start date- format: YYYY-DD-MM",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
                 "name": "end_date",
                 "in": "query",
                 "description": "end date- format: YYYY-DD-MM",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
@@ -4408,24 +4410,24 @@
               "type": "string"
             },
             {
-              "name": "driver_id",
+              "name": "driver_payment_id",
               "in": "query",
-              "description": "driver id",
+              "description": "driver payment id",
               "required": true,
-              "type": "number"
+              "type": "string"
             },
             {
               "name": "start_date",
               "in": "query",
               "description": "start date- format: YYYY-DD-MM",
-              "required": true,
+              "required": false,
               "type": "string"
             },
             {
               "name": "end_date",
               "in": "query",
               "description": "end date- format: YYYY-DD-MM",
-              "required": true,
+              "required": false,
               "type": "string"
             },
             {

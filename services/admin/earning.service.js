@@ -440,117 +440,120 @@ module.exports = {
             };
         }
 
-        if (params.start_date && params.end_date) {
-            whereCondition = {
-                [Op.and]: [
-                    {
-                        ...whereCondition
-                    },
-                    {
-                        [Op.or]: [
-                    {
-                        from_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+        params.whereCondition=whereCondition
+        whereCondition=getWhereCondition(params)
 
-                    },
-                    {
-                        to_date: {
-                            [Op.and]: [
-                                { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-                            ]                
-                        }
+        // if (params.start_date && params.end_date) {
+        //     whereCondition = {
+        //         [Op.and]: [
+        //             {
+        //                 ...whereCondition
+        //             },
+        //             {
+        //                 [Op.or]: [
+        //             {
+        //                 from_date: {
+        //                     [Op.and]: [
+        //                         { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+        //                         {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+        //                     ]                
+        //                 }
 
-                    },
-                ]
+        //             },
+        //             {
+        //                 to_date: {
+        //                     [Op.and]: [
+        //                         { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+        //                         {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+        //                     ]                
+        //                 }
+
+        //             },
+        //         ]
                 
-                    }
-                ]
+        //             }
+        //         ]
                 
-            };
-        }
-        else if (params.filter_key) {
-            let start_date = new Date();
-            let end_date = new Date();
-            if (params.filter_key == "Monthly") {
-                start_date.setDate(1)
-                end_date.setMonth(start_date.getMonth() + 1)
-                end_date.setDate(1)
-                end_date.setDate(end_date.getDate() - 1)
-                whereCondition = {
-                    [Op.and]: [
-                        {
-                            ...whereCondition,
-                        },
-                        {
-                            [Op.or]: [
-                                {
-                                    from_date: {
-                                        [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
-                                        ]                
-                                    }
+        //     };
+        // }
+        // else if (params.filter_key) {
+        //     let start_date = new Date();
+        //     let end_date = new Date();
+        //     if (params.filter_key == "Monthly") {
+        //         start_date.setDate(1)
+        //         end_date.setMonth(start_date.getMonth() + 1)
+        //         end_date.setDate(1)
+        //         end_date.setDate(end_date.getDate() - 1)
+        //         whereCondition = {
+        //             [Op.and]: [
+        //                 {
+        //                     ...whereCondition,
+        //                 },
+        //                 {
+        //                     [Op.or]: [
+        //                         {
+        //                             from_date: {
+        //                                 [Op.and]: [
+        //                                     { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+        //                                     {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
+        //                                 ]                
+        //                             }
 
-                                },
-                                {
-                                    to_date: {
-                                        [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
-                                        ]                
-                                    }
+        //                         },
+        //                         {
+        //                             to_date: {
+        //                                 [Op.and]: [
+        //                                     { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+        //                                     {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
+        //                                 ]                
+        //                             }
 
-                                },
-                            ]
-                        }
-                    ]
+        //                         },
+        //                     ]
+        //                 }
+        //             ]
                     
-                };
-            }
-            else if (params.filter_key == "Yearly") {
-                start_date.setDate(1)
-                start_date.setMonth(0)
-                end_date.setDate(1)
-                end_date.setMonth(0)
-                end_date.setFullYear(end_date.getFullYear() + 1)
-                end_date.setDate(end_date.getDate()-1)
-                whereCondition = {
-                    [Op.and]: [
-                        {
-                            ...whereCondition,
-                        },
-                        {
-                            [Op.or]: [
-                                {
-                                    from_date: {
-                                        [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
-                                        ]                
-                                    }
+        //         };
+        //     }
+        //     else if (params.filter_key == "Yearly") {
+        //         start_date.setDate(1)
+        //         start_date.setMonth(0)
+        //         end_date.setDate(1)
+        //         end_date.setMonth(0)
+        //         end_date.setFullYear(end_date.getFullYear() + 1)
+        //         end_date.setDate(end_date.getDate()-1)
+        //         whereCondition = {
+        //             [Op.and]: [
+        //                 {
+        //                     ...whereCondition,
+        //                 },
+        //                 {
+        //                     [Op.or]: [
+        //                         {
+        //                             from_date: {
+        //                                 [Op.and]: [
+        //                                     { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+        //                                     {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
+        //                                 ]                
+        //                             }
 
-                                },
-                                {
-                                    to_date: {
-                                        [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
-                                        ]                
-                                    }
+        //                         },
+        //                         {
+        //                             to_date: {
+        //                                 [Op.and]: [
+        //                                     { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
+        //                                     {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
+        //                                 ]                
+        //                             }
 
-                                },
-                            ]
-                        }
-                    ]
+        //                         },
+        //                     ]
+        //                 }
+        //             ]
                     
-                };
-            }
-        }
+        //         };
+        //     }
+        // }
 
 
         let restaurantEarnings= await utility.convertPromiseToObject(await models.RestaurantPayment.findAndCountAll({
@@ -575,14 +578,14 @@ module.exports = {
         let ordersByRestaurantIdAndDateRange= await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
-                    restaurant_id: params.restaurant_id,
-                    status: constants.ORDER_STATUS.delivered,
-                    delivery_datetime: {
-                        [Op.and]: [
-                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                            {[Op.lte]:utility.getOnlyDate(new Date(params.end_date))}
-                        ]
-                    }
+                    restaurant_payment_id: params.restaurant_payment_id,
+                    // status: constants.ORDER_STATUS.delivered,
+                    // delivery_datetime: {
+                    //     [Op.and]: [
+                    //         { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                    //         {[Op.lte]:utility.getOnlyDate(new Date(params.end_date))}
+                    //     ]
+                    // }
                 },
                 include: [
                     {
@@ -687,6 +690,20 @@ module.exports = {
                         }
                     }
                 }
+
+                await models.Order.update({
+                    driver_payment_id:orderDeliveryObj.payment_id,
+                    },
+                      {
+                        where: {
+                            driver_id:orderDelivery.driver_id,
+                            [Op.and]: [
+                            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
+                            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
+                        ]
+                        }
+                    }
+                )
 
                 await models.DriverEarningDetail.update({
                     payment_id:orderDeliveryObj.payment_id,
@@ -872,14 +889,14 @@ module.exports = {
         let ordersByDriverIdAndDateRange= await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: {
-                    driver_id: params.driver_id,
-                    status: constants.ORDER_STATUS.delivered,
-                    delivery_datetime: {
-                        [Op.and]: [
-                            { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                            {[Op.lte]:utility.getOnlyDate(new Date(params.end_date))}
-                        ]
-                    }
+                    driver_payment_id: params.driver_payment_id,
+                    // status: constants.ORDER_STATUS.delivered,
+                    // delivery_datetime: {
+                    //     [Op.and]: [
+                    //         { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
+                    //         {[Op.lte]:utility.getOnlyDate(new Date(params.end_date))}
+                    //     ]
+                    // }
                 },
                 include: [
                     {
