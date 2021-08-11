@@ -181,7 +181,7 @@ const addRestaurantPayment=async(params)=>{
         },
     }
 
-    await RestaurantPayment.create(restaurantPaymentObj);
+    await models.RestaurantPayment.create(restaurantPaymentObj);
 
     return restaurantPaymentObj.payment_id;
 
