@@ -166,10 +166,10 @@ const sendRestaurantOrderEmail= async (params) => {
 const addRestaurantPayment=async(params)=>{
     let order={};
     order.restaurant_id=params.restaurant.id;
-    order.restaurant_fee=(params.orders.reduce((result,order)=>result+order.order_details.restaurant.fee,0)).toFixed(2)
+    order.restaurant_fee=parseFloat((params.orders.reduce((result,order)=>result+order.order_details.restaurant.fee,0)).toFixed(2));
     order.order_count=params.orders.length;
-    order.amount=params.orders.reduce((result,order)=>result+order.amount,0)
-    order.tip_amount=params.orders.reduce((result,order)=>result+order.tip_amount,0)
+    order.amount=parseFloat((params.orders.reduce((result,order)=>result+parseFloat(order.amount),0)).toFixed(2));
+    order.tip_amount=parseFloat((params.orders.reduce((result,order)=>result+parseFloat(order.tip_amount),0)).toFixed(2));
 
     let restaurantPaymentObj={
         ...order,
