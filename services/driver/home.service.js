@@ -109,7 +109,7 @@ module.exports = {
 
      await models.OrderPickup.findAll({
       
-      attributes: ["pickup_id","pickup_datetime","order_count","delivery_datetime"],
+      attributes: ["pickup_id","pickup_datetime","order_count","delivery_datetime",'status',],
       where: whereCondition,
       include: [
         {
@@ -136,7 +136,8 @@ module.exports = {
           'pickup_id',
           "pickup_datetime",
           "delivery_datetime",
-          [sequelize.json("pickup_details.restaurants"), 'restaurants']
+          [sequelize.json("pickup_details.restaurants"), 'restaurants'],
+          'status',
         ],
         where: {
           pickup_id: params.pickup_id,
