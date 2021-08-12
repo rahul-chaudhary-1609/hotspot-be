@@ -291,7 +291,8 @@ getDeliveryCards: async(params,user)=>{
       attributes: [
         "delivery_id",
         "delivery_datetime",
-        [sequelize.json("delivery_details.dropOffs"), 'dropOffs']
+        [sequelize.json("delivery_details.dropOffs"), 'dropOffs'],
+        'status',
       ],
           
         where: whereCondition,
@@ -323,7 +324,8 @@ getDeliveryCards: async(params,user)=>{
       attributes: [
         "delivery_id",
         "delivery_datetime",
-        [sequelize.json("delivery_details.dropOffs"), 'dropOffs']
+        [sequelize.json("delivery_details.dropOffs"), 'dropOffs'],
+        'status',
       ],
           
         where: {
