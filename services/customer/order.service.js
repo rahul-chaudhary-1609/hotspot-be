@@ -436,6 +436,8 @@ module.exports = {
 
     createOrder:async (params,user) => {
 
+        console.log("params",params)
+
             const customer_id = user.id;
             const restaurant_id = parseInt(params.restaurant_id);
 
