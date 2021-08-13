@@ -10,6 +10,8 @@ const getWhereCondition = (params,user)=>{
   let whereCondition = {
         driver_id:user.id,              
   };
+  let start_date = new Date();
+  let end_date = new Date();
   
   if (params.date) {
     whereCondition = {
@@ -21,8 +23,8 @@ const getWhereCondition = (params,user)=>{
       ]
     };
   } else if (params.filter_key) {
-      let start_date = new Date();
-      let end_date = new Date();
+      // let start_date = new Date();
+      // let end_date = new Date();
       if (params.filter_key == "Daily") {
           whereCondition = {
             [Op.and]: [
@@ -93,7 +95,7 @@ const getWhereCondition = (params,user)=>{
     };
 }
   
-  return whereCondition;
+  return [whereCondition,start_date,end_date];
 }
 
 module.exports = {
@@ -102,7 +104,7 @@ module.exports = {
     
     models.OrderPickup.hasOne(models.HotspotLocation, { foreignKey: 'id', sourceKey: 'hotspot_location_id', targetKey: 'id' })
     
-    let whereCondition = getWhereCondition(params, user);
+    let [whereCondition,start_date,end_date] = getWhereCondition(params, user);
     
     
     const orderPickups = await utility.convertPromiseToObject(
@@ -121,6 +123,8 @@ module.exports = {
 
     return {
       orderPickups,
+      startDate:start_date,
+      endDate:end_date,
       totalOrderCount:orderPickups.length,
     }
 
@@ -283,7 +287,7 @@ module.exports = {
 getDeliveryCards: async(params,user)=>{
     models.OrderDelivery.hasOne(models.HotspotLocation,{foreignKey:'id',sourceKey:'hotspot_location_id',targetKey:'id'})
     
-  let whereCondition = getWhereCondition(params, user);
+  let [whereCondition,start_date,end_date] = getWhereCondition(params, user);
 
     const orderDeliveries = await utility.convertPromiseToObject(
 
@@ -310,7 +314,11 @@ getDeliveryCards: async(params,user)=>{
     
     
       
-    return {orderDeliveries}
+    return {
+      startDate:start_date,
+      endDate:end_date,
+      orderDeliveries
+    }
     
   },    
 
