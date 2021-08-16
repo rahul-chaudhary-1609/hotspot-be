@@ -254,6 +254,7 @@ CUSTOM_JOI_MESSAGE : {
     restricted_product_list:10,
     driver_guidelines:11,
     contact_us:12,
+    contact_us_driver:13,
   },
 
   STRIPE_PAYMENT_TYPE : {

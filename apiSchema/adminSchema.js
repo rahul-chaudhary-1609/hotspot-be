@@ -391,7 +391,7 @@ module.exports = {
         description: Joi.string().optional(),
         page_url: Joi.string().optional(),
         video_url: Joi.string().optional(),
-        type: Joi.number().valid(1,2,3,4,5,6,7,8,9,10,11,12).optional(),
+        type: Joi.number().valid(1,2,3,4,5,6,7,8,9,10,11,12,13).optional(),
     }),
 
     addFaq: Joi.object({
