@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
         type: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            comment: '1=> terms_and_conditions, 2=>privacy_policy, 3=> customer_how_it_works, 4=> driver_how_it_works, 5=> about_us, 6=> faq, 7=> become_a_hotspot, 8=> accessibility_statement, 9=> customer_community_guidelines, 10=> restricted_product_list, 11=> driver_guidelines, 12=> contact_us'
+            comment: '1=> terms_and_conditions, 2=>privacy_policy, 3=> customer_how_it_works, 4=> driver_how_it_works, 5=> about_us, 6=> faq, 7=> become_a_hotspot, 8=> accessibility_statement, 9=> customer_community_guidelines, 10=> restricted_product_list, 11=> driver_guidelines, 12=> contact_us, 13=> contact_us_driver'
         },
     }, {
         sequelize,
