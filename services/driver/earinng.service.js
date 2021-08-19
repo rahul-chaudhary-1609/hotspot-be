@@ -97,7 +97,8 @@ module.exports = {
                     "driver_fee",
                     "delivery_datetime",
                     [sequelize.json("delivery_details.hotspot"), 'hotspot'],
-                    [sequelize.json("delivery_details.dropOffs"), 'dropOffs']
+                    [sequelize.json("delivery_details.dropOffs"), 'dropOffs'],
+                    "status"
                 ],
                 where,
                 order:[["delivery_datetime","DESC"]]
