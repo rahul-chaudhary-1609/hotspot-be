@@ -144,6 +144,7 @@ module.exports.sendFcmNotification = async (tokens, notification) => {
         },
         data: notification.data
     };
+    console.log("sendFcmNotification",message)
     if (tokens.length) {
         fcm.send(message, function (err, response) {
             if (err) {

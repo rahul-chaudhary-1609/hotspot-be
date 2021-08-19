@@ -436,6 +436,7 @@ getDeliveryCards: async(params,user)=>{
           reciever_ids: [order.customer_id],
           type: constants.NOTIFICATION_TYPE.order_delivered,
         }
+        console.log("notificationObj",notificationObj)
         await models.Notification.create(notificationObj);
         
         if (customer.notification_status && customer.device_token) {

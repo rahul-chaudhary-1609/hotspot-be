@@ -841,7 +841,7 @@ module.exports = {
                 },
                 force: true,
         })
-
+        
         let customer=await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(parseInt(user.id)))    
     
     
@@ -854,6 +854,8 @@ module.exports = {
             reciever_ids: [user.id],
             type: constants.NOTIFICATION_TYPE.order_confirmed,
         }
+
+        console.log("notificationObj",notificationObj)
         await models.Notification.create(notificationObj);
 
         if (customer.notification_status && customer.device_token) {
