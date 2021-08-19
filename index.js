@@ -41,7 +41,7 @@ app.listen(port, async (err)=>{
     try {
         await sequelize.sync({alter:true});
         console.log("Database synced Success")
-        //await cronJob.scheduleRestaurantOrdersEmailJob()
+        await cronJob.scheduleRestaurantOrdersEmailJob()
     } catch (error) {
         console.log("Error in database sync",error);
     }
