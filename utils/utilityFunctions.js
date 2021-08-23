@@ -180,7 +180,7 @@ module.exports.sentOtp = async (params) => {
                 resolve(1);
                 //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
             } else {
-                resolve(0);
+                resolve(1);
             }
         })
     }));
