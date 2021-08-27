@@ -14,7 +14,7 @@ module.exports = {
 
         let driver = await utilityFunction.convertPromiseToObject( await Driver.findOne({
                 where: {
-                        email: params.phone_or_email,
+                        email: params.phone_or_email.toLowerCase(),
                 }
             }));       
         
@@ -212,6 +212,9 @@ module.exports = {
     * function for sign up details step 1
     */
     signUpDetailsStep1: async (params) => {
+        if(params.email){
+            params.email=params.email.toLowerCase()
+        }
         let driver = await Driver.findOne({
             where: {
              email: params.email,
@@ -449,6 +452,7 @@ module.exports = {
         let driver = null;
 
         if (params.email) {
+            params.email=params.email.toLowerCase();
 
             driver = await Driver.findOne({
                 where: {
