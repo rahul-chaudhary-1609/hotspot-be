@@ -390,7 +390,7 @@ module.exports = {
             }
         )
 
-        await sendDriverPaymentEmail(currentDriverPayment);
+        //await sendDriverPaymentEmail(currentDriverPayment);
 
         return {driverPayment:await utility.convertPromiseToObject(driverPayment)}
     },
