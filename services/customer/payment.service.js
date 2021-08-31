@@ -325,7 +325,7 @@ module.exports = {
 
             const stripePaymentIntent = await stripe.paymentIntents.create({
               amount: parseInt(params.amount*100),
-              currency: "usd",
+              currency: "inr",
               customer: stripeCustomer.id,
             });
 
