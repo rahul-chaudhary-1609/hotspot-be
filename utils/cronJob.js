@@ -275,7 +275,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                     if (orders.length > 0) {
                         let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
-                        if (ture) {
+                        if (true) {
                             await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryDatetime })
                             let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
                             
