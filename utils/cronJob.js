@@ -229,7 +229,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                 var currentTime = new Date();
 
-                currentTime=moment(currentTime.toLocaleString('en-us',{timeZone:``}),'MM/DD/YYYY, hh:mm:ss A').format('HH:mm:ss');
+                currentTime=moment(currentTime.toLocaleString('en-us',{timeZone:`${process.env.TIME_ZONE}`}),'MM/DD/YYYY, hh:mm:ss A').format('HH:mm:ss');
 
                 console.log("moment",currentTime)
 
