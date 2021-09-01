@@ -255,7 +255,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                 if(nextDeliveryTime){
 
-                    let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}`);
+                    let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}+330`);
                     // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
                     //let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
                     let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}`);
