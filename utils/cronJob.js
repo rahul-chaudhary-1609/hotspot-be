@@ -5,6 +5,7 @@ const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment } 
 const utilityFunctions = require('./utilityFunctions');
 const sendMail = require('./mail');
 const fs = require('fs');
+const moment = require('moment');
 
 
 // let order_details = {
@@ -196,7 +197,7 @@ const addRestaurantPayment=async(params)=>{
 }
 
 module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
-    schedule.scheduleJob('* 5-23 * * *', async ()=> {
+    schedule.scheduleJob('* * * * *', async ()=> {
         //console.log(`Job Ran ${new Date()}`)
 
         let hotspotLocations = await utilityFunctions.convertPromiseToObject(
@@ -226,8 +227,13 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     })
                 )
 
-                var currentTime = new Date().toString().slice(16, 24);
+                var currentTime = new Date();
 
+                currentTime=moment(currentTime.toLocaleString('en-us',{timeZone:``}),'MM/DD/YYYY, hh:mm:ss A').format('HH:mm:ss');
+
+                console.log("moment",currentTime)
+
+                
                 let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
                     return time >= currentTime;
                 });
@@ -255,10 +261,10 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                 if(nextDeliveryTime){
 
-                    let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}${process.env.TIME_ZONE}`);
+                    let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}${process.env.TIME_ZONE_OFFSET}`);
                     // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
                     //let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
-                    let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}${process.env.TIME_ZONE}`);
+                    let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}${process.env.TIME_ZONE_OFFSET}`);
 
                     let orders = await utilityFunctions.convertPromiseToObject(
                         await Order.findAll({
@@ -266,6 +272,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                                 hotspot_location_id:hotspotLocation.id,
                                 restaurant_id: restaurant.id,
                                 type: constants.ORDER_TYPE.delivery,
+                                status:constants.ORDER_STATUS.pending,
                                 delivery_datetime: deliveryDatetime,
                                 is_restaurant_notified:0,
                             }
