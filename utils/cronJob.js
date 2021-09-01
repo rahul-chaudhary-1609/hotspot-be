@@ -255,10 +255,10 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                 if(nextDeliveryTime){
 
-                    //let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}+330`);
+                    let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}${process.env.TIME_ZONE}`);
                     // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
-                    let deliveryDatetime = new Date(`2021-09-01 13:30:00+00`);
-                    let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}`);
+                    //let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
+                    let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}${process.env.TIME_ZONE}`);
 
                     let orders = await utilityFunctions.convertPromiseToObject(
                         await Order.findAll({
@@ -275,7 +275,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                     if (orders.length > 0) {
                         let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
-                        if (true) {
+                        if (timeDiff > 0) {
                             await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryDatetime })
                             let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
                             
