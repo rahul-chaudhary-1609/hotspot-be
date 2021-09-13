@@ -299,6 +299,17 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                                     }
                                 })
                             }
+
+                            await Order.destroy({
+                                where: {
+                                    hotspot_location_id:hotspotLocation.id,
+                                    restaurant_id: restaurant.id,
+                                    type: constants.ORDER_TYPE.delivery,
+                                    status:constants.ORDER_STATUS.not_paid,
+                                    delivery_datetime: deliveryDatetime,
+                                    is_restaurant_notified:0,
+                                }
+                            })
                         }
                     }
 

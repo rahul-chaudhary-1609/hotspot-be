@@ -117,6 +117,7 @@ module.exports = {
     delivery_already_done: 'This delivery already done.',
     no_pickup: 'No pickup found.',
     no_delivery: 'No delivery found.',
+    cart_item_not_available:`Some cart items are no longer available.Please check your cart again.`,
     
   },
 

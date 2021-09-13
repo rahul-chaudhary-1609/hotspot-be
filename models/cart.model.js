@@ -44,6 +44,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        expire_datetime: {
+            type: DataTypes.DATE,
+        },
 
         status: {
             type: DataTypes.INTEGER,

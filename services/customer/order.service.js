@@ -405,6 +405,16 @@ module.exports = {
                     }
                 })
 
+                if(!dish){
+                    await models.Cart.destroy({
+                        where:{
+                            id:item.id,
+                        }
+                    })
+
+                    continue;
+                }
+
                 const dishAddOn=await models.DishAddOn.findAll({
                     where: {
                         id: item.dish_add_on_ids,
@@ -461,8 +471,6 @@ module.exports = {
 
     createOrder:async (params,user) => {
 
-        console.log("params",params)
-
             const customer_id = user.id;
             const restaurant_id = parseInt(params.restaurant_id);
 
@@ -505,6 +513,10 @@ module.exports = {
                                 status:constants.STATUS.active,
                             }
                         })
+
+                        if(!dish){
+                            throw new Error(constants.MESSAGES.cart_item_not_available)
+                        }
 
                         const dishAddOn = await models.DishAddOn.findAll({
                             where: {
@@ -645,6 +657,10 @@ module.exports = {
                             status:constants.STATUS.active,
                         }
                     })
+
+                    if(!dish){
+                        throw new Error(constants.MESSAGES.cart_item_not_available)
+                    }
 
                     const dishAddOn=await models.DishAddOn.findAll({
                         where: {

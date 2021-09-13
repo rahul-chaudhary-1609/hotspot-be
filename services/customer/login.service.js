@@ -1395,15 +1395,18 @@ module.exports = {
                 }
             });
 
-            await models.CustomerFavLocation.update({
-                is_default: false
-            }, {
-                where: {
-                    is_default: true,
-                    customer_id
-                },
-                returning: true,
-            });
+            let favLocation=await models.CustomerFavLocation.findOne({
+                    where: {
+                        is_default: true,
+                        customer_id
+                    },
+                });
+
+            if(favLocation){
+                favLocation.is_default=false;
+                favLocation.save();
+                favLocation=await utilityFunction.convertPromiseToObject(favLocation);
+            }
 
             await models.CustomerFavLocation.update({
                 is_default: true
@@ -1427,12 +1430,25 @@ module.exports = {
                 returning: true,
             });
 
-            return true;
+            if(favLocation && favLocation.hotspot_location_id!=params.hotspot_location_id){
+                await models.Cart.destroy({
+                    where:{
+                        customer_id:user.id
+                    }
+                })
 
+                await models.Order.destroy({
+                    where:{
+                        customer_id:user.id,
+                        type:constants.ORDER_TYPE.delivery,
+                        status:constants.ORDER_STATUS.not_paid,
+                    }
+                })
+            }
 
-
-        
+            return true;        
     },
+
 
     checkDefaultAddress: async (user) => {
 
