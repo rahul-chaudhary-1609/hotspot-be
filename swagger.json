@@ -7053,6 +7053,26 @@
           }
         },
 
+        "/customer/get-cart-item-count": {
+          "get": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to get cart count",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
+
         "/customer/delete-from-cart/{restaurantDishId}": {
           "delete": {
             "tags": [

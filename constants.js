@@ -263,6 +263,11 @@ CUSTOM_JOI_MESSAGE : {
     admin_restaurant:3,
   },
 
+  STRIPE_TAXRATE:{
+    variable_percentage:2.9, //in percent
+    fixed_amount:30, //in cents
+  },
+
   DRIVER_SIGNUP_COMPLETE_STATUS : {
     no: 0,
     yes: 1

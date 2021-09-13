@@ -160,6 +160,8 @@ router.get('/check-cart-item', customerAuthentication.validateCustomerToken,joiV
 
 router.post('/add-to-cart', customerAuthentication.validateCustomerToken,parseStringToArray, OrderController.addToCart);
 
+router.get('/get-cart-item-count', customerAuthentication.validateCustomerToken, OrderController.getCartItemCount);
+
 router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.validateCustomerToken,  OrderController.getCart)
 
 router.delete('/delete-from-cart/:restaurantDishId', customerAuthentication.validateCustomerToken,OrderController.deleteFromCart)

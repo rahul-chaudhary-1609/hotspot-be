@@ -280,6 +280,17 @@ module.exports = {
         
     },
 
+    getCartItemCount:async(user)=>{
+        return {
+            count:await models.Cart.count({
+                where:{
+                    customer_id:user.id,
+                    status:constants.STATUS.active,
+                }
+            })
+        }
+    },
+
     deleteFromCart: async (params,user) => {            
             const customer_id = user.id;
             const restaurant_dish_id = parseInt(params.restaurantDishId);
@@ -423,13 +434,27 @@ module.exports = {
             }
 
             const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice, 0);
+
+            const taxAmount=parseFloat((((totalAmount*constants.STRIPE_TAXRATE.variable_percentage)/100)+(constants.STRIPE_TAXRATE.fixed_amount/100)).toFixed(2));
             
             if (!cartInfo) {
                 return { cart: null, isDeliveryOnly,isPickupOnly,isBothAvailable };
             }
  
 
-            return { cart: { cartInfo,cartItems,cooking_instructions:order? order.cooking_instructions : null,totalAmount }, isDeliveryOnly,isPickupOnly,isBothAvailable };
+            return { 
+                cart: { 
+                    cartInfo,
+                    cartItems,
+                    cooking_instructions:order? order.cooking_instructions : null,
+                    totalAmount,
+                    taxAmount,
+                    grandTotal:totalAmount+taxAmount,
+                }, 
+                isDeliveryOnly,
+                isPickupOnly,
+                isBothAvailable
+            };
 
          
     },
