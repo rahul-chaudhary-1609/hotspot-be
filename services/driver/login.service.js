@@ -388,20 +388,15 @@ module.exports = {
                     }
                 })
             )
-        driverBankDetails.stripe_publishable_key=utilityFunction.decrypt(driverBankDetails.stripe_publishable_key);
-        driverBankDetails.stripe_secret_key=utilityFunction.decrypt(driverBankDetails.stripe_secret_key);
+
+            driverBankDetails.stripe_publishable_key = driverBankDetails.stripe_publishable_key? utilityFunction.decrypt(driverBankDetails.stripe_publishable_key):null;
+            driverBankDetails.stripe_secret_key=driverBankDetails.stripe_secret_key? utilityFunction.decrypt(driverBankDetails.stripe_secret_key):null;
+            
         return {
             driver: await utilityFunction.convertPromiseToObject(
                 await Driver.findByPk(user.id)
             ),
-            driverBankDetails,            
-            driverBankDetails: await utilityFunction.convertPromiseToObject(
-                await DriverBankDetail.findOne({
-                    where: {
-                        driver_id:user.id,
-                    }
-                })
-            ),
+            driverBankDetails,
             driverAddressDetails: await utilityFunction.convertPromiseToObject(
                 await DriverAddress.findOne({
                     where: {
