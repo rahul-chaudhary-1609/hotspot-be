@@ -452,7 +452,8 @@ module.exports = {
             }
  
 
-            return { 
+            return {
+                restaurant_name:restaurant.restaurant_name,
                 cart: { 
                     cartInfo,
                     cartItems,
