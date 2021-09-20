@@ -103,14 +103,33 @@ module.exports = {
 
     },
 
-    getFoodCardDetails: async (req, res) => {
+    getRestaurantDishCategories: async (req, res) => {
+        try {
+              const responseFromService = await restaurantService.getRestaurantDishCategories(req.query);
+              utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+          } catch (error) {
+              utilityFunction.errorResponse(res, error, constants.code.error_code);
+          }  
+    },
+
+    getDishes: async (req, res) => {
       try {
-            const responseFromService = await restaurantService.getFoodCardDetails(req.query,req.user);
+            const responseFromService = await restaurantService.getDishes(req.query,req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
 
+    },
+
+    getDishDetails: async (req, res) => {
+        try {
+              const responseFromService = await restaurantService.getDishDetails(req.query,req.user);
+              utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+          } catch (error) {
+              utilityFunction.errorResponse(res, error, constants.code.error_code);
+          }
+  
     },
 
     setFavoriteFood: async (req, res) => {
@@ -126,16 +145,6 @@ module.exports = {
     getFavoriteFood: async (req, res) => {
        try {
             const responseFromService = await restaurantService.getFavoriteFood(req.user);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-
-    },
-
-    getFoodDetails: async (req, res) => {
-         try {
-            const responseFromService = await restaurantService.getFoodDetails(req.params,req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

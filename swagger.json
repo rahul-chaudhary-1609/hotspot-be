@@ -131,8 +131,8 @@
         "description": "customer restaurant Api's"
       },
       {
-        "name": "Customer Food",
-        "description": "customer food Api's"
+        "name": "Customer Dish",
+        "description": "customer dish Api's"
       },
       {
         "name": "Customer Cart and Order",
@@ -7291,13 +7291,12 @@
           }
         },
 
-        
-        "/customer/get-food-card-details": {
+        "/customer/get-restaurant-dish-categories": {
           "get": {
             "tags": [
-              "Customer Food"
+              "Customer Dish"
             ],
-            "description": "Api to get food cards",
+            "description": "Api to get restaurant dish categories",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -7309,9 +7308,64 @@
             
             "parameters": [
               {
-                "name": "restaurantId",
+                "name": "restaurant_id",
                 "in": "query",
-                "description": "restaurant Id",
+                "description": "restaurant id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/customer/get-dishes": {
+          "get": {
+            "tags": [
+              "Customer Dish"
+            ],
+            "description": "Api to get dishes",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "restaurant_dish_category_id",
+                "in": "query",
+                "description": "restaurant dish category id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer/get-dish-details": {
+          "get": {
+            "tags": [
+              "Customer Dish"
+            ],
+            "description": "Api to get a dish details",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "restaurant_dish_id",
+                "in": "query",
+                "description": "enter restaurant dish id",
                 "required": true,
                 "type": "number"
               }
@@ -7323,7 +7377,7 @@
         "/customer/set-favorite-food": {
           "put": {
             "tags": [
-              "Customer Food"
+              "Customer Dish"
             ],
             "description": "Api to set a dish as favorite",
             "consumes": [
@@ -7351,7 +7405,7 @@
         "/customer/get-favorite-food": {
           "get": {
             "tags": [
-              "Customer Food"
+              "Customer Dish"
             ],
             "description": "Api to get all favorite foods",
             "consumes": [
@@ -7368,38 +7422,10 @@
           }
         },
 
-         "/customer/get-food-details/{restaurant_dish_id}": {
-          "get": {
-            "tags": [
-              "Customer Food"
-            ],
-            "description": "Api to get a dish details",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [
-              {
-                "name": "restaurant_dish_id",
-                "in": "path",
-                "description": "enter restaurant dish id",
-                "required": true,
-                "type": "number"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
         "/customer/get-recomended-slides": {
           "get": {
             "tags": [
-              "Customer Food"
+              "Customer Dish"
             ],
             "description": "Api to get recomended slides",
             "consumes": [

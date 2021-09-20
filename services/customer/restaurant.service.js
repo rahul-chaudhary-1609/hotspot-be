@@ -102,7 +102,7 @@ const getRestaurantCard =  async (args) => {
 
 };
 
-const getFoodCard =  async (args) => {
+const getDishCard =  async (args) => {
           
 
         const foodCards = [];
@@ -124,17 +124,6 @@ const getFoodCard =  async (args) => {
                     customer_id:args.customer_id,
                 }
             });
-
-            const dishAddOn = await models.DishAddOn.findAndCountAll({
-                where: {
-                    restaurant_dish_id: dish.id,
-                }
-            });
-            if (dishAddOn.count === 0) {
-                await models.DishAddOn.bulkCreate(
-                    dummyData.getdishAddOns(dish)
-                );
-            }
             
             if (favFood) is_favorite = true;
             if (cart) {
@@ -858,17 +847,91 @@ module.exports = {
          
     },
 
-    getFoodCardDetails: async (params, user) => {
+    getRestaurantDishCategories:async(params)=>{        
+        let query={
+            where:{
+                restaurant_id:params.restaurant_id,
+                status:constants.STATUS.active,
+            }
+        }      
+
+        let categories=await utility.convertPromiseToObject(
+            await models.RestaurantDishCategory.findAndCountAll(query)
+        )
+
+        if(categories.count==0){
+            throw new Error(constants.MESSAGES.no_restaurant_category_found);
+        }
+
+        return {
+            categories,
+        }
+    },
+
+    getDishes: async (params, user) => {
         
             const restaurantDish = await models.RestaurantDish.findAll({
                 where: {
-                    restaurant_id: params.restaurantId
+                    restaurant_dish_category_id:parseInt(params.restaurant_dish_category_id),
+                    status:constants.STATUS.active,
                 }
             });
 
-           return getFoodCard({ restaurantDish,customer_id:user.id});
-
+           return getDishCard({ restaurantDish,customer_id:user.id});
         
+    },
+
+    getDishDetails: async (params,user) => {
+
+        models.RestaurantDish.hasMany(models.DishAddOnSection, { foreignKey: 'restaurant_dish_id', sourceKey: 'id', targetKey: 'restaurant_dish_id' })
+        models.DishAddOnSection.hasMany(models.DishAddOn, { foreignKey: 'dish_add_on_section_id', sourceKey: 'id', targetKey: 'dish_add_on_section_id' })
+
+        const dish = await utility.convertPromiseToObject(
+            await models.RestaurantDish.findOne({
+                where: {
+                    id: params.restaurant_dish_id,
+                    status:constants.STATUS.active,
+                },
+                include:[
+                    {
+                        model:models.DishAddOnSection,
+                        require:false,
+                        where:{
+                            status:constants.STATUS.active,
+                        },
+                        include:[
+                            {
+                                model:models.DishAddOn,
+                                require:false,
+                                where:{
+                                    status:constants.STATUS.active,
+                                },
+                            }
+                        ]
+                    }
+                ]
+            })
+        ) 
+
+        if (!dish)  throw new Error(constants.MESSAGES.no_dish);
+
+        let isFavorite = false;
+
+        const favFood = await models.FavFood.findOne({
+            where: {
+                restaurant_dish_id:params.restaurant_dish_id,
+                customer_id:user.id,
+            }
+        });
+
+        if (favFood) isFavorite = true;
+
+        return { 
+            dish,
+            isFavorite,
+        };
+        
+    
     },
 
     setFavoriteFood: async (params, user) => {
@@ -929,58 +992,11 @@ module.exports = {
             }
         });
 
-        return getFoodCard({ restaurantDish,customer_id:user.id, });
+        return getDishCard({ restaurantDish,customer_id:user.id, });
 
           
     },
 
-    getFoodDetails: async (params,user) => {
-
-        const restaurantDish = await models.RestaurantDish.findOne({
-            where: {
-                id: params.restaurant_dish_id,
-            }
-        })
-
-        if (!(restaurantDish) || (restaurantDish.status==constants.STATUS.deleted))  throw new Error(constants.MESSAGES.no_dish);
-
-        const dishAddOn = await models.DishAddOn.findAll({
-            where: {
-                restaurant_dish_id:params.restaurant_dish_id,
-            }
-        })
-
-        const restaurant = await models.Restaurant.findOne({
-            attributes: [
-                'id','restaurant_name'
-            ],
-            where: {
-                id: restaurantDish.restaurant_id,
-                status:constants.STATUS.active
-            }
-        })
-
-        let isFavorite = false;
-
-        const favFood = await models.FavFood.findOne({
-            where: {
-                restaurant_dish_id:params.restaurant_dish_id,
-                customer_id:user.id,
-            }
-        });
-        if (favFood) isFavorite = true;
-
-        const dishdetails = {
-            restaurant,
-            dish: restaurantDish,
-            isFavorite,
-            dishAddOn: dishAddOn ? dishAddOn.map(addOn=>addOn): "no add-ons available for this food",
-        }
-
-        return { dishdetails};
-        
-    
-    },
 
     getRecomendedSlide: async (params,user) => {
 
@@ -992,7 +1008,7 @@ module.exports = {
             }
         });
 
-        return getFoodCard({ restaurantDish,customer_id:user.id });
+        return getDishCard({ restaurantDish,customer_id:user.id });
         
     }
 

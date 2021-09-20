@@ -144,14 +144,11 @@ router.get('/get-restaurant-schedule', customerAuthentication.validateCustomerTo
 
 //Foods Routes
 
-router.get('/get-food-card-details', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getFoodCardDetails), RestaurantController.getFoodCardDetails);
-
+router.get('/get-restaurant-dish-categories', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getRestaurantDishCategories), RestaurantController.getRestaurantDishCategories);
+router.get('/get-dishes', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getDishes), RestaurantController.getDishes);
+router.get('/get-dish-details', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getDishDetails), RestaurantController.getDishDetails);
 router.put('/set-favorite-food', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.setFavoriteFood), RestaurantController.setFavoriteFood);
-
 router.get('/get-favorite-food', customerAuthentication.validateCustomerToken, RestaurantController.getFavoriteFood);
-
-router.get('/get-food-details/:restaurant_dish_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.getFoodDetails), RestaurantController.getFoodDetails);
-
 router.get('/get-recomended-slides', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getRecomendedSlide), RestaurantController.getRecomendedSlide);
 
 

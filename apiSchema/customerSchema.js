@@ -273,15 +273,7 @@ module.exports = {
         searchPhrase: Joi.string().trim().required(),
     }),
 
-    getFoodCardDetails:Joi.object({
-        restaurantId: Joi.number().required(),
-    }),
-
     setFavoriteFood:Joi.object({
-        restaurant_dish_id: Joi.number().required(),
-    }),
-
-    getFoodDetails:Joi.object({
         restaurant_dish_id: Joi.number().required(),
     }),
 
@@ -385,7 +377,16 @@ module.exports = {
         restaurant_id: Joi.number().required()   
     }),
 
+    getRestaurantDishCategories: Joi.object({        
+        restaurant_id: Joi.number().required(),
+    }),
 
+    getDishes: Joi.object({        
+        restaurant_dish_category_id: Joi.number().required(),
+    }),
 
+    getDishDetails: Joi.object({        
+        restaurant_dish_id: Joi.number().required(),
+    }),
 }
 
