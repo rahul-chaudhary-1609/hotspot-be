@@ -123,6 +123,8 @@ module.exports = {
     add_on_section_already_exist:`A add on section with the same name already exist`,
     no_add_on_section_found:`No add on section found`,
     dish_already_exist:`A dish with the same name already exist`,
+    no_addon:`No addon found`,
+    addon_already_exist:`An addon with the same name already exist`,
   },
 
   code: {

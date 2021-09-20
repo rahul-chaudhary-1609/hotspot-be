@@ -91,13 +91,9 @@ router.put('/toggleDishAddOnSectionStatus',adminAuthentication.validateAdminToke
 //Dish Addon Management
 
 router.post('/addDishAddon',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addDishAddon), adminRestaurantController.addDishAddon);
-
 router.get('/getDishAddonById/:dish_addon_id',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getDishAddonById),adminRestaurantController.getDishAddonById);
-
 router.get('/listDishAddon',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listDishAddon), adminRestaurantController.listDishAddon);
-
 router.put('/editDishAddon',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editDishAddon), adminRestaurantController.editDishAddon);
-
 router.delete('/deleteDishAddon/:dish_addon_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.deleteDishAddon), adminRestaurantController.deleteDishAddon);
 
 

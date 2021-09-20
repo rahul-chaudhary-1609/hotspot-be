@@ -168,12 +168,13 @@ module.exports = {
     addDishAddon : Joi.object({
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
-        image_url: Joi.string().uri().required(),
-        restaurant_dish_id: Joi.number().required(),
+        image_url: Joi.string().uri().optional(),
+        dish_add_on_section_id: Joi.number().required(),
     }),
 
     listDishAddon: Joi.object({
-        restaurant_dish_id: Joi.number().required(),
+        dish_add_on_section_id: Joi.number().required(),
+        is_pagination: Joi.number().default(0).optional(),
     }),
 
     getDishAddonById: Joi.object({
@@ -185,7 +186,7 @@ module.exports = {
         name: Joi.string().trim().optional(),
         price: Joi.number().optional(),
         image_url: Joi.string().uri().optional(),
-        restaurant_dish_id: Joi.number().optional(),
+        dish_add_on_section_id: Joi.number().optional(),
     }),
 
 
@@ -587,7 +588,7 @@ module.exports = {
     listRestaurantDishCategories: Joi.object({        
         restaurant_id: Joi.number().required(),
         search_key: Joi.string().allow(null, '').optional(),
-        is_pagination: Joi.number().optional(),
+        is_pagination: Joi.number().default(1).optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
     }),
@@ -624,7 +625,7 @@ module.exports = {
         search_key: Joi.string().allow(null, '').optional(),
         is_required: Joi.number().optional(),  
         is_multiple_choice: Joi.number().optional(),
-        is_pagination: Joi.number().optional(),
+        is_pagination: Joi.number().default(1).optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
     }),

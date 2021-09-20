@@ -655,9 +655,7 @@ module.exports = {
 
     },
 
-    listDishAddOnSections:async(params)=>{
-
-        
+    listDishAddOnSections:async(params)=>{        
         let query={
             where:{
                 restaurant_dish_id:params.restaurant_dish_id
@@ -711,7 +709,7 @@ module.exports = {
         }        
 
         let sections=await utilityFunction.convertPromiseToObject(
-            await DishAddOnSections.findAndCountAll(query)
+            await DishAddOnSection.findAndCountAll(query)
         )
 
         if(sections.count==0){
@@ -784,27 +782,68 @@ module.exports = {
 
 
     addDishAddon: async (params) => {
-        let dishAddon = await utilityFunction.convertPromiseToObject(
-            await DishAddOn.create(params)
-        );
+        let dishAddon=await DishAddOn.findOne({
+            where:{
+                dish_add_on_section_id:params.dish_add_on_section_id,
+                name:{
+                    [Op.iLike]:`%${params.name}%`
+                }
+            }
+        })
 
-        return { dishAddon }
+        if(!dishAddon){
+            let dishAddonObj={
+                name:params.name,
+                price:parseFloat(params.price),
+                dish_add_on_section_id:params.dish_add_on_section_id,
+                image_url:params.image_url,
+            }
+
+            return {
+                dishAddon:await utilityFunction.convertPromiseToObject(
+                    await DishAddOn.create(dishAddonObj)
+                )
+            }
+        }else{
+            throw new Error(constants.MESSAGES.addon_already_exist)
+        }
     },
 
     listDishAddon: async (params) => {
-        let dishAddons = await utilityFunction.convertPromiseToObject(
-            await DishAddOn.findAndCountAll({
-                where: {
-                    restaurant_dish_id: parseInt(params.restaurant_dish_id),
-                    status:constants.STATUS.active,
-                },
-                order:[["createdAt","DESC"]]
-            })
-        );
+        let query={
+            where:{
+                dish_add_on_section_id:params.dish_add_on_section_id
+            }
+        }
 
-        if (dishAddons.count==0) throw new Error(constants.MESSAGES.no_dish_addon);
+        if(params.search_key){
+            query.where={
+                ...query.where,
+                name:{
+                    [Op.iLike]:`%${params.search_key}%`
+                }
+            }
+        }
+        
 
-        return {dishAddons}
+        if(params.is_pagination==constants.IS_PAGINATION.yes){
+            let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
+            query.offset=offset,
+            query.limit=limit
+            
+        }        
+
+        let dishAddons=await utilityFunction.convertPromiseToObject(
+            await DishAddOn.findAndCountAll(query)
+        )
+
+        if(dishAddons.count==0){
+            throw new Error(constants.MESSAGES.no_addon);
+        }
+
+        return {
+            dishAddons,
+        }
     },
 
     getDishAddonById: async (params) => {
@@ -815,17 +854,34 @@ module.exports = {
     },
 
     editDishAddon: async (params) => {
-        let dishAddon = await DishAddOn.findByPk(parseInt(params.dish_addon_id));
-        if (!dishAddon) throw new Error(constants.MESSAGES.no_dish_addon);
+        let dishAddon=await DishAddOn.findOne({
+            where:{
+                dish_add_on_section_id:params.dish_add_on_section_id,
+                name:{
+                    [Op.iLike]:`%${params.name}%`
+                },
+                id:{
+                    [Op.notIn]:[params.dish_addon_id]
+                }
+            }
+        })
 
-        dishAddon.name = params.name || dishAddon.name;
-        dishAddon.price =parseFloat(params.price) || parseFloat(dishAddon.price);
-        dishAddon.image_url = params.image_url|| dishAddon.image_url;
-        dishAddon.restaurant_dish_id = params.restaurant_dish_id || dishAddon.restaurant_dish_id;
+        if(!dishAddon){
+            let dishAddon = await DishAddOn.findByPk(parseInt(params.dish_addon_id));
+            if (!dishAddon) throw new Error(constants.MESSAGES.no_dish_addon);
 
-        dishAddon.save();
+            dishAddon.name = params.name || dishAddon.name;
+            dishAddon.price =parseFloat(params.price) || parseFloat(dishAddon.price);
+            dishAddon.image_url = params.image_url|| dishAddon.image_url;
+            dishAddon.dish_add_on_section_id = params.dish_add_on_section_id || dishAddon.dish_add_on_section_id;
 
-        return {dishAddon}
+            dishAddon.save();
+
+            return {dishAddon}
+        }else{
+            throw new Error(constants.MESSAGES.addon_already_exist)
+        }
+        
     },
 
     deleteDishAddon: async (params) => {

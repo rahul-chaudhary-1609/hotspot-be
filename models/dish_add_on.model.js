@@ -31,12 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         image_url: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        restaurant_dish_id: {
-            type: DataTypes.INTEGER,
-            allowNull: true,
+            type: DataTypes.TEXT,
         },
 
         dish_add_on_section_id: {

@@ -2223,7 +2223,7 @@
                 "name": "image_url",
                 "in": "formData",
                 "description": "enter dish image url",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
@@ -2806,13 +2806,13 @@
                 "name": "image_url",
                 "in": "formData",
                 "description": "enter dish addon image url",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
-                "name": "restaurant_dish_id",
+                "name": "dish_add_on_section_id",
                 "in": "formData",
-                "description": "enter restaurant dish id",
+                "description": "enter dish add on section id",
                 "required": true,
                 "type": "number"
               }
@@ -2838,11 +2838,20 @@
                 "type": "string"
               },
               {
-                "name": "restaurant_dish_id",
+                "name": "dish_add_on_section_id",
                 "in": "query",
-                "description": "enter the restaurant Id",
+                "description": "enter dish add on section id",
                 "required": true,
                 "type": "number"
+              },
+              {
+                "name": "is_pagination",
+                "in": "query",
+                "description": "is_pagination: 0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "default":0,
+                "enum":[0,1]
               }
             ],
             "responses": {}
@@ -2922,9 +2931,9 @@
                 "type": "string"
               },
               {
-                "name": "restaurant_dish_id",
+                "name": "dish_add_on_section_id",
                 "in": "formData",
-                "description": "enter restaurant dish id",
+                "description": "enter dish add on section id",
                 "required": false,
                 "type": "number"
               }
