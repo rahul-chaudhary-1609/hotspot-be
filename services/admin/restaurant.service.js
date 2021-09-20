@@ -454,54 +454,64 @@ module.exports = {
     },
 
     addDish: async (params) => {
-        
-        delete params.dish_category_id;
 
-        const restaurantDish=await RestaurantDish.create(params);
+        let dish=await RestaurantDish.findOne({
+            where:{
+                restaurant_dish_category_id:params.restaurant_dish_category_id,
+                name:{
+                    [Op.iLike]:`%${params.name}%`
+                }
+            }
+        })
 
-        return { dish:restaurantDish };
+        if(!dish){
+            let dishObj={
+                name:params.name,
+                price:parseFloat(params.price),
+                restaurant_dish_category_id:params.restaurant_dish_category_id,
+                description:params.description,
+                image_url:params.image_url,
+                is_recommended:params.is_recommended,
+                is_quick_filter:params.is_quick_filter,
+            }
+
+            return {
+                dish:await utilityFunction.convertPromiseToObject(
+                    await RestaurantDish.create(dishObj)
+                )
+            }
+        }else{
+            throw new Error(constants.MESSAGES.dish_already_exist)
+        }
         
     },
     
     listDishes: async (params) => {
 
-            let [offset, limit] =await utilityFunction.pagination(params.page, params.page_size);
+        let [offset, limit] =await utilityFunction.pagination(params.page, params.page_size);
 
         let query = {};
-            query.where = { status:constants.STATUS.active, restaurant_id:parseInt(params.restaurantId)};
-            if (params.searchKey) {
-                let searchKey = params.searchKey;
+        query.where = { status:constants.STATUS.active, restaurant_dish_category_id:parseInt(params.restaurant_dish_category_id)};
+        if (params.searchKey) {
+            let searchKey = params.searchKey;
 
-                // const dishCategory = await DishCategory.findAll({
-                //     where: {
-                //         name: { [Op.iLike]: `%${searchKey}%` }
-                //     }
-                // });
+            query.where = {
+                ...query.where,
+                name: { [Op.iLike]: `%${searchKey}%` },
+            };
+        }
+        query.order = [
+            ['id', 'DESC']
+        ];
+        query.limit = limit;
+        query.offset = offset;
+        query.raw = true;
 
-                //const dishCategoryIds = dishCategory.map(val => val.id);
+        let dishes = await RestaurantDish.findAndCountAll(query);
 
-                query.where = {
-                    ...query.where,
-                    name: { [Op.iLike]: `%${searchKey}%` },
-                    // [Op.or]: [
-                    //     { name: { [Op.iLike]: `%${searchKey}%` } },
-                    //     { dish_category_id: dishCategoryIds}
-                        
-                    // ]
-                };
-            }
-            query.order = [
-                ['id', 'DESC']
-            ];
-            query.limit = limit;
-            query.offset = offset;
-            query.raw = true;
+        if (dishes.count === 0) throw new Error(constants.MESSAGES.no_dish);
 
-            let dishes = await RestaurantDish.findAndCountAll(query);
-
-            if (dishes.count === 0) throw new Error(constants.MESSAGES.no_dish);
-
-            return { dishes };
+        return { dishes };
         
     },
     getDish: async (params) => {
@@ -514,23 +524,37 @@ module.exports = {
     },
 
     editDish: async (params) => {
+        let dish=await RestaurantDish.findOne({
+            where:{
+                restaurant_dish_category_id:params.restaurant_dish_category_id,
+                name:{
+                    [Op.iLike]:`%${params.name}%`
+                },
+                id:{
+                    [Op.notIn]:[params.dishId],
+                }
+            }
+        })
 
-        let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
+        if(!dish){
+            let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
 
-        if (!dish) throw new Error(constants.MESSAGES.no_dish);
-        
-        dish.name = params.name;
-        dish.price = parseFloat(params.price);
-        dish.description = params.description;
-        dish.restaurant_id = params.restaurant_id;
-        //dish.dish_category_id = params.dish_category_id;
-        dish.image_url = params.image_url;
-        dish.is_recommended = [0,1].includes(params.is_recommended)?params.is_recommended : dish.is_recommended;
-        dish.is_quick_filter = [0,1].includes(params.is_quick_filter)?params.is_quick_filter: dish.is_quick_filter;
-        
-        dish.save();
+            if (!dish) throw new Error(constants.MESSAGES.no_dish);
             
-        return true;       
+            dish.name = params.name || dish.name;
+            dish.price = parseFloat(params.price) || dish.price;
+            dish.description = params.description || dish.description;
+            dish.restaurant_dish_category_id = params.restaurant_dish_category_id || dish.restaurant_dish_category_id ;
+            dish.image_url = params.image_url;
+            dish.is_recommended = [0,1].includes(params.is_recommended)?params.is_recommended : dish.is_recommended;
+            dish.is_quick_filter = [0,1].includes(params.is_quick_filter)?params.is_quick_filter: dish.is_quick_filter;
+            
+            dish.save();
+                
+            return {dish};  
+        }else{
+            throw new Error(constants.MESSAGES.dish_already_exist)
+        }     
 
     },
 
@@ -547,7 +571,7 @@ module.exports = {
         let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
         if (!dish) throw new Error(constants.MESSAGES.no_dish);
 
-        dish.is_recommended =dish.is_recommended ? 0 : 1;
+        dish.is_recommended =dish.is_recommended ? constants.STATUS.inactive : constants.STATUS.active;
         
         dish.save();
         return true;

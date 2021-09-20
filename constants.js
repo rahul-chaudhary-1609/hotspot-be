@@ -122,6 +122,7 @@ module.exports = {
     no_restaurant_category_found:`No restaurant category found`,
     add_on_section_already_exist:`A add on section with the same name already exist`,
     no_add_on_section_found:`No add on section found`,
+    dish_already_exist:`A dish with the same name already exist`,
   },
 
   code: {

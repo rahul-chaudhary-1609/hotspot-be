@@ -36,8 +36,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
         },
         image_url: {
-            type: DataTypes.STRING,
-            allowNull: false,
+            type: DataTypes.TEXT,
         },
 
         is_recommended: {

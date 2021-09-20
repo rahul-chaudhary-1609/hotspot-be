@@ -128,15 +128,14 @@ module.exports = {
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
         description: Joi.string().required(),
-        restaurant_id: Joi.number().required(),
-        dish_category_id: Joi.number().optional(),
-        image_url: Joi.string().uri().required(),
+        restaurant_dish_category_id: Joi.number().required(),
+        image_url: Joi.string().uri().allow('',null).optional(),
         is_recommended: Joi.number().optional(),
         is_quick_filter: Joi.number().optional(),
     }),
 
     listDishes: Joi.object({
-        restaurantId: Joi.number().required(),
+        restaurant_dish_category_id: Joi.number().required(),
     }),
 
     getDish: Joi.object({
@@ -147,8 +146,7 @@ module.exports = {
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
         description: Joi.string().required(),
-        restaurant_id: Joi.number().required(),
-        dish_category_id: Joi.number().optional(),
+        restaurant_dish_category_id: Joi.number().required(),
         image_url: Joi.string().uri().required(),
         is_recommended: Joi.number().optional(),
         is_quick_filter: Joi.number().optional(),

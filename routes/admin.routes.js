@@ -69,19 +69,12 @@ router.put('/toggleRestaurantDishCategoryStatus',adminAuthentication.validateAdm
 //Menu Management
 
 router.get('/dishCategoryList',adminAuthentication.validateAdminToken, adminRestaurantController.dishCategoryList);
-
 router.post('/addDish',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addDish), adminRestaurantController.addDish);
-
 router.get('/getDish/:dishId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getDish),adminRestaurantController.getDish);
-
-router.get('/listDishes/:restaurantId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.listDishes), adminRestaurantController.listDishes);
-
-router.put('/editDish/:dishId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getDish),joiValidation.validateBody(apiSchema.editDish), adminRestaurantController.editDish);
-
+router.get('/listDishes',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listDishes), adminRestaurantController.listDishes);
+router.put('/editDish',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editDish), adminRestaurantController.editDish);
 router.delete('/deleteDish/:dishId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.deleteDish), adminRestaurantController.deleteDish);
-
 router.put('/toggleDishAsRecommended',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.toggleDishAsRecommended), adminRestaurantController.toggleDishAsRecommended);
-
 router.put('/toggleDishAsQuickFilter',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.toggleDishAsQuickFilter), adminRestaurantController.toggleDishAsQuickFilter);
 
 

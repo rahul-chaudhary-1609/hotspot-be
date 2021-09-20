@@ -141,7 +141,7 @@ module.exports = {
     
     listDishes: async (req, res) => {
         try {
-            const responseFromService = await restaurantService.listDishes({ ...req.query, ...req.params});
+            const responseFromService = await restaurantService.listDishes(req.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -159,7 +159,7 @@ module.exports = {
 
     editDish: async (req, res) => {
         try {
-            const responseFromService = await restaurantService.editDish({ ...req.params,...req.body });
+            const responseFromService = await restaurantService.editDish(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.update_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

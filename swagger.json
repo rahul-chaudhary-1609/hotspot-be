@@ -2213,17 +2213,10 @@
                 "type": "string"
               },
               {
-                "name": "restaurant_id",
+                "name": "restaurant_dish_category_id",
                 "in": "formData",
-                "description": "enter restaurant id",
+                "description": "enter restaurant dish category id,",
                 "required": true,
-                "type": "number"
-              },
-              {
-                "name": "dish_category_id",
-                "in": "formData",
-                "description": "enter dish category id",
-                "required": false,
                 "type": "number"
               },
               {
@@ -2260,7 +2253,7 @@
           }
         },
         
-        "/admin/listDishes/{restaurantId}": {
+        "/admin/listDishes": {
           "get": {
             "tags": [
               "Admin Menu Management"
@@ -2278,9 +2271,9 @@
                 "type": "string"
               },
               {
-                "name": "restaurantId",
-                "in": "path",
-                "description": "enter the restaurant Id",
+                "name": "restaurant_dish_category_id",
+                "in": "query",
+                "description": "enter the restaurant dish category Id",
                 "required": true,
                 "type": "number"
               },
@@ -2338,7 +2331,7 @@
             "responses": {}
           }
         },
-        "/admin/editDish/{dishId}": {
+        "/admin/editDish": {
           "put": {
             "tags": [
               "Admin Menu Management"
@@ -2357,7 +2350,7 @@
               },
               {
                 "name": "dishId",
-                "in": "path",
+                "in": "formData",
                 "description": "dish id",
                 "required": true,
                 "type": "number"
@@ -2373,27 +2366,20 @@
                 "name": "price",
                 "in": "formData",
                 "description": "enter dish price",
-                "required": true,
+                "required": false,
                 "type": "number"
               },
               {
                 "name": "description",
                 "in": "formData",
                 "description": "enter dish description",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
-                "name": "restaurant_id",
+                "name": "restaurant_dish_category_id",
                 "in": "formData",
-                "description": "enter restaurant id",
-                "required": true,
-                "type": "number"
-              },
-              {
-                "name": "dish_category_id",
-                "in": "formData",
-                "description": "enter dish category id",
+                "description": "enter restaurant dish category id,",
                 "required": false,
                 "type": "number"
               },
@@ -2401,7 +2387,7 @@
                 "name": "image_url",
                 "in": "formData",
                 "description": "enter dish image url",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
