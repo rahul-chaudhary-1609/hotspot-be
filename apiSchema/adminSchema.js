@@ -574,6 +574,39 @@ module.exports = {
     getRestaurantPaymentDetails: Joi.object({
         payment_id: Joi.string().required(),
     }),
+
+    addRestaurantCategory: Joi.object({
+        name: Joi.string().required(),
+        restaurant_id: Joi.number().required(),
+    }),
+
+    editRestaurantCategory: Joi.object({
+        category_id: Joi.number().required(),
+        name: Joi.string().required(),
+        restaurant_id: Joi.number().required(),
+    }),
+
+    listRestaurantCategories: Joi.object({        
+        restaurant_id: Joi.number().required(),
+        search_key: Joi.string().allow(null, '').optional(),
+        is_pagination: Joi.number().optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
+    }),
+
+    getRestaurantCategory: Joi.object({
+        category_id: Joi.number().required(),
+    }),
+
+    deleteRestaurantCategory: Joi.object({
+        category_id: Joi.number().required(),
+        restaurant_id: Joi.number().required(),
+    }),
+
+    toggleRestaurantCategoryStatus: Joi.object({
+        category_id: Joi.number().required(),
+        restaurant_id: Joi.number().required(),
+    }),
 }
 
 

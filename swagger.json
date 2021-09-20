@@ -47,6 +47,10 @@
         "description": "admin restaurant management Api's"
       },
       {
+        "name": "Admin Restaurant Category Management",
+        "description": "admin restaurant category management Api's"
+      },
+      {
         "name": "Admin Menu Management",
         "description": "admin menu management Api's"
       },
@@ -1403,6 +1407,239 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/listRestaurantCategories": {
+          "get": {
+            "tags": [
+              "Admin Restaurant Category Management"
+            ],
+            "description": "Api to list Restaurant Categories",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_id",
+                "in": "query",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "is_pagination",
+                "in": "query",
+                "description": "is_pagination: 0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "default":1,
+                "enum":[0,1]
+              },
+              {
+                "name": "search_key",
+                "in": "query",
+                "description": "search restaurant category by its name",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/addRestaurantCategory": {
+          "post": {
+            "tags": [
+              "Admin Restaurant Category Management"
+            ],
+            "description": "Api to add Restaurant Category",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enetr category name",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/editRestaurantCategory": {
+          "put": {
+            "tags": [
+              "Admin Restaurant Category Management"
+            ],
+            "description": "Api to edit Restaurant Category",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "category_id",
+                "in": "formData",
+                "description": "enter category id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enetr category name",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/getRestaurantCategory": {
+          "get": {
+            "tags": [
+              "Admin Restaurant Category Management"
+            ],
+            "description": "Api to get Restaurant Category",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "category_id",
+                "in": "formData",
+                "description": "enter category id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/deleteRestaurantCategory": {
+          "delete": {
+            "tags": [
+              "Admin Restaurant Category Management"
+            ],
+            "description": "Api to delete Restaurant Category",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "category_id",
+                "in": "formData",
+                "description": "enter category id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/toggleRestaurantCategoryStatus": {
+          "put": {
+            "tags": [
+              "Admin Restaurant Category Management"
+            ],
+            "description": "Api to toggle Restaurant Category status",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "category_id",
+                "in": "formData",
+                "description": "enter category id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
               }
             ],
             "responses": {}

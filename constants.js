@@ -118,7 +118,8 @@ module.exports = {
     no_pickup: 'No pickup found.',
     no_delivery: 'No delivery found.',
     cart_item_not_available:`Some cart items are no longer available.Please check your cart again.`,
-    
+    restaurant_category_already_exist:`A restaurant category with the same name already exist`,
+    no_restaurant_category_found:`No restaurant category found`,
   },
 
   code: {
@@ -283,6 +284,11 @@ CUSTOM_JOI_MESSAGE : {
     pending: 0,
     done: 1
   },
+
+  IS_PAGINATION:{
+    no:0,
+    yes:1,
+  }
 
 }
 

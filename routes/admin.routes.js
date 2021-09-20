@@ -49,19 +49,21 @@ router.put('/uploadFile',adminAuthentication.validateAdminToken, adminMulter.upl
 //Restaurant Management
 
 router.get('/restaurantCategoryList',adminAuthentication.validateAdminToken, adminRestaurantController.restaurantCategoryList);
-
 router.post('/addRestaurant',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.addRestaurant);
-
 router.get('/listRestaurant',adminAuthentication.validateAdminToken, adminRestaurantController.listRestaurant);
-
 router.put('/changeRestaurantStatus/:restaurantId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.restaurantIdSchema), adminRestaurantController.changeRestaurantStatus);
-
 router.get('/getRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.restaurantIdSchema),adminRestaurantController.getRestaurant);
-
 router.put('/editRestaurant/:restaurantId',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateParams(apiSchema.restaurantIdSchema),joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.editRestaurant);
-
 router.delete('/deleteRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.restaurantIdSchema),adminRestaurantController.deleteRestaurant);
 
+//Restaurant Category Management
+
+router.post('/addRestaurantCategory',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addRestaurantCategory), adminRestaurantController.addRestaurantCategory);
+router.put('/editRestaurantCategory',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editRestaurantCategory), adminRestaurantController.editRestaurantCategory);
+router.get('/listRestaurantCategories',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listRestaurantCategories), adminRestaurantController.listRestaurantCategories);
+router.get('/getRestaurantCategory/:category_id',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getRestaurantCategory),adminRestaurantController.getRestaurantCategory);
+router.delete('/deleteRestaurantCategory',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.deleteRestaurantCategory), adminRestaurantController.deleteRestaurantCategory);
+router.put('/toggleRestaurantCategoryStatus',adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.toggleRestaurantCategoryStatus),adminRestaurantController.toggleRestaurantCategoryStatus);
 
 
 //Menu Management

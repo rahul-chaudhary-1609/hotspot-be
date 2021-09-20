@@ -58,6 +58,59 @@ module.exports = {
         }
     },
 
+    addRestaurantCategory: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.addRestaurantCategory(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    editRestaurantCategory: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.editRestaurantCategory(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    listRestaurantCategories: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.listRestaurantCategories(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getRestaurantCategory: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.getRestaurantCategory(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    deleteRestaurantCategory: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.deleteRestaurantCategory(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    toggleRestaurantCategoryStatus: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.toggleRestaurantCategoryStatus(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 
     restaurantCategoryList: async (req, res) => {
         try {

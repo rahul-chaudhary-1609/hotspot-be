@@ -240,6 +240,170 @@ module.exports = {
         
     },
 
+    addRestaurantCategory:async(params)=>{
+        let category=await RestaurantCategory.findOne({
+            where:{
+                restaurant_id:params.restaurant_id,
+                name:{
+                    [Op.iLike]:`%${params.name}%`
+                }
+            }
+        })
+
+        if(!category){
+            let categoryObj={
+                name:params.name,
+                restaurant_id:params.restaurant_id,
+            }
+
+            return {
+                category:await utilityFunction.convertPromiseToObject(
+                    await RestaurantCategory.create(categoryObj)
+                )
+            }
+        }else{
+            throw new Error(constants.MESSAGES.restaurant_category_already_exist)
+        }
+
+    },
+
+    editRestaurantCategory:async(params)=>{
+        let category=await RestaurantCategory.findOne({
+            where:{
+                restaurant_id:params.restaurant_id,
+                name:{
+                    [Op.iLike]:`%${params.name}%`
+                },
+                id:{
+                    [Op.notIn]:[params.category_id]
+                }
+            }
+        })
+
+        if(!category){
+            let category=await RestaurantCategory.findOne({
+                where:{
+                    id:params.category_id,
+                }
+            })
+
+            if(category){
+
+                category.name=params.name;
+                category.save();
+
+                return {
+                    category:await utilityFunction.convertPromiseToObject(category)
+                }
+            }else{
+                throw new Error(constants.MESSAGES.no_restaurant_category_found)
+            }
+        }else{
+            throw new Error(constants.MESSAGES.restaurant_category_already_exist)
+        }
+
+    },
+
+    listRestaurantCategories:async(params)=>{
+
+        console.log("params",params)
+        
+        let query={
+            where:{
+                restaurant_id:params.restaurant_id
+            }
+        }
+
+        if(params.search_key){
+            query.where={
+                ...query.where,
+                name:{
+                    [Op.iLike]:`%${params.search_key}%`
+                }
+            }
+        }
+
+        if(params.is_pagination==constants.IS_PAGINATION.yes){
+            let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
+            query.offset=offset,
+            query.limit=limit
+            
+        }        
+
+        let categories=await utilityFunction.convertPromiseToObject(
+            await RestaurantCategory.findAndCountAll(query)
+        )
+
+        if(categories.count==0){
+            throw new Error(constants.MESSAGES.no_restaurant_category_found);
+        }
+
+        return {
+            categories,
+        }
+    },
+
+    getRestaurantCategory:async(params)=>{
+
+        let category=await utilityFunction.convertPromiseToObject(
+            await RestaurantCategory.findOne({
+                where:{
+                    id:params.category_id,
+                },
+            })
+        )
+
+        if(!category){
+            throw new Error(constants.MESSAGES.no_restaurant_category_found);
+        }
+
+        return {
+            category,
+        }
+    },
+
+    deleteRestaurantCategory:async(params)=>{
+        let category=await RestaurantCategory.findOne({
+            where:{
+                id:params.category_id,
+                restaurant_id:params.restaurant_id
+            },
+        });
+
+        if(!category){
+            throw new Error(constants.MESSAGES.no_restaurant_category_found);
+        }
+
+        category.destroy();
+
+        return true;
+    },
+
+    toggleRestaurantCategoryStatus:async(params)=>{
+        let category=await RestaurantCategory.findOne({
+            where:{
+                id:params.category_id,
+                restaurant_id:params.restaurant_id
+            },
+        });
+
+        if(!category){
+            throw new Error(constants.MESSAGES.no_restaurant_category_found);
+        }
+
+        if(category.status==constants.STATUS.active){
+            category.status=constants.STATUS.inactive
+        }else{
+            category.status=constants.STATUS.active
+        }
+
+        category.save();
+
+        return {
+            category
+        };
+    },
+
 
     restaurantCategoryList: async () => {
 
