@@ -575,18 +575,18 @@ module.exports = {
         payment_id: Joi.string().required(),
     }),
 
-    addRestaurantCategory: Joi.object({
+    addRestaurantDishCategory: Joi.object({
         name: Joi.string().required(),
         restaurant_id: Joi.number().required(),
     }),
 
-    editRestaurantCategory: Joi.object({
+    editRestaurantDishCategory: Joi.object({
         category_id: Joi.number().required(),
         name: Joi.string().required(),
         restaurant_id: Joi.number().required(),
     }),
 
-    listRestaurantCategories: Joi.object({        
+    listRestaurantDishCategories: Joi.object({        
         restaurant_id: Joi.number().required(),
         search_key: Joi.string().allow(null, '').optional(),
         is_pagination: Joi.number().optional(),
@@ -594,16 +594,16 @@ module.exports = {
         page_size: Joi.number().allow(null, '').optional(),
     }),
 
-    getRestaurantCategory: Joi.object({
+    getRestaurantDishCategory: Joi.object({
         category_id: Joi.number().required(),
     }),
 
-    deleteRestaurantCategory: Joi.object({
+    deleteRestaurantDishCategory: Joi.object({
         category_id: Joi.number().required(),
         restaurant_id: Joi.number().required(),
     }),
 
-    toggleRestaurantCategoryStatus: Joi.object({
+    toggleRestaurantDishCategoryStatus: Joi.object({
         category_id: Joi.number().required(),
         restaurant_id: Joi.number().required(),
     }),

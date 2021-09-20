@@ -1,4 +1,4 @@
-const { Restaurant, RestaurantCategory,HotspotRestaurant,DishCategory,RestaurantDish,HotspotLocation,DishAddOn } = require('../../models');
+const { Restaurant,RestaurantCategory, RestaurantDishCategory,HotspotRestaurant,DishCategory,RestaurantDish,HotspotLocation,DishAddOn } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
 const constants = require("../../constants");
@@ -240,8 +240,8 @@ module.exports = {
         
     },
 
-    addRestaurantCategory:async(params)=>{
-        let category=await RestaurantCategory.findOne({
+    addRestaurantDishCategory:async(params)=>{
+        let category=await RestaurantDishCategory.findOne({
             where:{
                 restaurant_id:params.restaurant_id,
                 name:{
@@ -258,7 +258,7 @@ module.exports = {
 
             return {
                 category:await utilityFunction.convertPromiseToObject(
-                    await RestaurantCategory.create(categoryObj)
+                    await RestaurantDishCategory.create(categoryObj)
                 )
             }
         }else{
@@ -267,8 +267,8 @@ module.exports = {
 
     },
 
-    editRestaurantCategory:async(params)=>{
-        let category=await RestaurantCategory.findOne({
+    editRestaurantDishCategory:async(params)=>{
+        let category=await RestaurantDishCategory.findOne({
             where:{
                 restaurant_id:params.restaurant_id,
                 name:{
@@ -281,7 +281,7 @@ module.exports = {
         })
 
         if(!category){
-            let category=await RestaurantCategory.findOne({
+            let category=await RestaurantDishCategory.findOne({
                 where:{
                     id:params.category_id,
                 }
@@ -304,7 +304,7 @@ module.exports = {
 
     },
 
-    listRestaurantCategories:async(params)=>{
+    listRestaurantDishCategories:async(params)=>{
 
         console.log("params",params)
         
@@ -331,7 +331,7 @@ module.exports = {
         }        
 
         let categories=await utilityFunction.convertPromiseToObject(
-            await RestaurantCategory.findAndCountAll(query)
+            await RestaurantDishCategory.findAndCountAll(query)
         )
 
         if(categories.count==0){
@@ -343,10 +343,10 @@ module.exports = {
         }
     },
 
-    getRestaurantCategory:async(params)=>{
+    getRestaurantDishCategory:async(params)=>{
 
         let category=await utilityFunction.convertPromiseToObject(
-            await RestaurantCategory.findOne({
+            await RestaurantDishCategory.findOne({
                 where:{
                     id:params.category_id,
                 },
@@ -362,8 +362,8 @@ module.exports = {
         }
     },
 
-    deleteRestaurantCategory:async(params)=>{
-        let category=await RestaurantCategory.findOne({
+    deleteRestaurantDishCategory:async(params)=>{
+        let category=await RestaurantDishCategory.findOne({
             where:{
                 id:params.category_id,
                 restaurant_id:params.restaurant_id
@@ -379,8 +379,8 @@ module.exports = {
         return true;
     },
 
-    toggleRestaurantCategoryStatus:async(params)=>{
-        let category=await RestaurantCategory.findOne({
+    toggleRestaurantDishCategoryStatus:async(params)=>{
+        let category=await RestaurantDishCategory.findOne({
             where:{
                 id:params.category_id,
                 restaurant_id:params.restaurant_id

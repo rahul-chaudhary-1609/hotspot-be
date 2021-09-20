@@ -58,63 +58,63 @@ module.exports = {
         }
     },
 
-    addRestaurantCategory: async (req, res) => { 
+    addRestaurantDishCategory: async (req, res) => { 
         try {
-            const responseFromService = await restaurantService.addRestaurantCategory(req.body);
+            const responseFromService = await restaurantService.addRestaurantDishCategory(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
-    editRestaurantCategory: async (req, res) => { 
+    editRestaurantDishCategory: async (req, res) => { 
         try {
-            const responseFromService = await restaurantService.editRestaurantCategory(req.body);
+            const responseFromService = await restaurantService.editRestaurantDishCategory(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
-    listRestaurantCategories: async (req, res) => { 
+    listRestaurantDishCategories: async (req, res) => { 
         try {
-            const responseFromService = await restaurantService.listRestaurantCategories(req.query);
+            const responseFromService = await restaurantService.listRestaurantDishCategories(req.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
-    getRestaurantCategory: async (req, res) => { 
+    getRestaurantDishCategory: async (req, res) => { 
         try {
-            const responseFromService = await restaurantService.getRestaurantCategory(req.params);
+            const responseFromService = await restaurantService.getRestaurantDishCategory(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
-    deleteRestaurantCategory: async (req, res) => { 
+    deleteRestaurantDishCategory: async (req, res) => { 
         try {
-            const responseFromService = await restaurantService.deleteRestaurantCategory(req.body);
+            const responseFromService = await restaurantService.deleteRestaurantDishCategory(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
-    toggleRestaurantCategoryStatus: async (req, res) => { 
+    toggleRestaurantDishCategoryStatus: async (req, res) => { 
         try {
-            const responseFromService = await restaurantService.toggleRestaurantCategoryStatus(req.body);
+            const responseFromService = await restaurantService.toggleRestaurantDishCategoryStatus(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
 
-    restaurantCategoryList: async (req, res) => {
+    restaurantDishCategoryList: async (req, res) => {
         try {
-            const responseFromService = await restaurantService.restaurantCategoryList();
+            const responseFromService = await restaurantService.restaurantDishCategoryList();
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
