@@ -582,8 +582,8 @@ module.exports = {
 
     editRestaurantDishCategory: Joi.object({
         category_id: Joi.number().required(),
+        restaurant_id:Joi.number().required(),
         name: Joi.string().required(),
-        restaurant_id: Joi.number().required(),
     }),
 
     listRestaurantDishCategories: Joi.object({        
@@ -600,12 +600,47 @@ module.exports = {
 
     deleteRestaurantDishCategory: Joi.object({
         category_id: Joi.number().required(),
-        restaurant_id: Joi.number().required(),
     }),
 
     toggleRestaurantDishCategoryStatus: Joi.object({
         category_id: Joi.number().required(),
-        restaurant_id: Joi.number().required(),
+    }),
+
+    addDishAddOnSection: Joi.object({
+        name: Joi.string().required(),
+        restaurant_dish_id: Joi.number().required(),
+        is_required: Joi.number().required(),  
+        is_multiple_choice: Joi.number().required(),        
+    }),
+
+    editDishAddOnSection: Joi.object({
+        section_id: Joi.number().required(),
+        restaurant_dish_id:Joi.number().required(),
+        name: Joi.string().required(),
+        is_required: Joi.number().optional(),  
+        is_multiple_choice: Joi.number().optional(), 
+    }),
+
+    listDishAddOnSections: Joi.object({        
+        restaurant_dish_id: Joi.number().required(),
+        search_key: Joi.string().allow(null, '').optional(),
+        is_required: Joi.number().optional(),  
+        is_multiple_choice: Joi.number().optional(),
+        is_pagination: Joi.number().optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
+    }),
+
+    getDishAddOnSection: Joi.object({
+        section_id: Joi.number().required(),
+    }),
+
+    deleteDishAddOnSection: Joi.object({
+        section_id: Joi.number().required()
+    }),
+
+    toggleDishAddOnSectionStatus: Joi.object({
+        section_id: Joi.number().required()
     }),
 }
 

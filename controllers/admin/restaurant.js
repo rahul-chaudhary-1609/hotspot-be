@@ -194,6 +194,60 @@ module.exports = {
         }
     },
 
+    addDishAddOnSection: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.addDishAddOnSection(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    editDishAddOnSection: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.editDishAddOnSection(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    listDishAddOnSections: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.listDishAddOnSections(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getDishAddOnSection: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.getDishAddOnSection(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    deleteDishAddOnSection: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.deleteDishAddOnSection(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    toggleDishAddOnSectionStatus: async (req, res) => { 
+        try {
+            const responseFromService = await restaurantService.toggleDishAddOnSectionStatus(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     
     addDishAddon: async (req, res) => {
         try {

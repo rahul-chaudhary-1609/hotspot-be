@@ -3,7 +3,7 @@ const {
     Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class RestaurantDishCategory extends Model {
+    class DishAddOnSection extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
         }
     }
-    RestaurantDishCategory.init({
+    DishAddOnSection.init({
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -25,9 +25,23 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
-        restaurant_id: {
+        restaurant_dish_id: {
             type: DataTypes.INTEGER,
             allowNull:false,
+        },
+
+        is_required: {
+            type: DataTypes.INTEGER,
+            allowNull:false,
+            defaultValue: 1,
+            comment: '0=>no,1=>yes'
+        },
+
+        is_multiple_choice: {
+            type: DataTypes.INTEGER,
+            allowNull:false,
+            defaultValue: 0,
+            comment: '0=>no,1=>yes'
         },
 
         status: {
@@ -41,8 +55,8 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         underscored: true,
-        tableName: 'restaurant_dish_categories',
-        modelName: 'RestaurantDishCategory',
+        tableName: 'dish_add_on_sections',
+        modelName: 'DishAddOnSection',
     });
-    return RestaurantDishCategory;
+    return DishAddOnSection;
 };

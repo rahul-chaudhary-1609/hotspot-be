@@ -55,6 +55,10 @@
         "description": "admin menu management Api's"
       },
       {
+        "name": "Admin Menu Addon section Management",
+        "description": "admin menu addon section management Api's"
+      },
+      {
         "name": "Admin Menu Addon Management",
         "description": "admin menu addon management Api's"
       },
@@ -1598,13 +1602,6 @@
                 "description": "enter category id",
                 "required": true,
                 "type": "number"
-              },
-              {
-                "name": "restaurant_id",
-                "in": "formData",
-                "description": "enter restaurant id",
-                "required": true,
-                "type": "number"
               }
             ],
             "responses": {}
@@ -1631,13 +1628,6 @@
                 "name": "category_id",
                 "in": "formData",
                 "description": "enter category id",
-                "required": true,
-                "type": "number"
-              },
-              {
-                "name": "restaurant_id",
-                "in": "formData",
-                "description": "enter restaurant id",
                 "required": true,
                 "type": "number"
               }
@@ -2521,6 +2511,275 @@
             "responses": {}
           }
         },
+
+        "/admin/listDishAddOnSections": {
+          "get": {
+            "tags": [
+              "Admin Menu Addon section Management"
+            ],
+            "description": "Api to list Dish AddOn Sections",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_dish_id",
+                "in": "query",
+                "description": "enter restaurant dish id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "is_required",
+                "in": "query",
+                "description": "is required: 0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "enum":[0,1]
+              },
+              {
+                "name": "is_multiple_choice",
+                "in": "query",
+                "description": "is multiple choice: 0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "enum":[0,1]
+              },
+              {
+                "name": "is_pagination",
+                "in": "query",
+                "description": "is_pagination: 0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "default":1,
+                "enum":[0,1]
+              },
+              {
+                "name": "search_key",
+                "in": "query",
+                "description": "search restaurant category by its name",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/addDishAddOnSection": {
+          "post": {
+            "tags": [
+              "Admin Menu Addon section Management"
+            ],
+            "description": "Api to add Dish AddOn Section",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_dish_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enetr section name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "is_required",
+                "in": "formData",
+                "description": "is required: 0=> no, 1=> yes",
+                "required": true,
+                "type": "number",
+                "enum":[0,1]
+              },
+              {
+                "name": "is_multiple_choice",
+                "in": "formData",
+                "description": "is multiple choice: 0=> no, 1=> yes",
+                "required": true,
+                "type": "number",
+                "enum":[0,1]
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/editDishAddOnSection": {
+          "put": {
+            "tags": [
+              "Admin Menu Addon section Management"
+            ],
+            "description": "Api to edit Dish Add On Section",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "section_id",
+                "in": "formData",
+                "description": "enter section id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "restaurant_dish_id",
+                "in": "formData",
+                "description": "enter restaurant dish id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "name",
+                "in": "formData",
+                "description": "enetr section name",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "is_required",
+                "in": "formData",
+                "description": "is required: 0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "enum":[0,1]
+              },
+              {
+                "name": "is_multiple_choice",
+                "in": "formData",
+                "description": "is multiple choice: 0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "enum":[0,1]
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/getDishAddOnSection": {
+          "get": {
+            "tags": [
+              "Admin Menu Addon section Management"
+            ],
+            "description": "Api to get Dish AddOn Section",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "section_id",
+                "in": "formData",
+                "description": "enter section id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/deleteDishAddOnSection": {
+          "delete": {
+            "tags": [
+              "Admin Menu Addon section Management"
+            ],
+            "description": "Api to delete Dish AddOn Section",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "section_id",
+                "in": "formData",
+                "description": "enter section id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/toggleDishAddOnSectionStatus": {
+          "put": {
+            "tags": [
+              "Admin Menu Addon section Management"
+            ],
+            "description": "Api to toggle Dish AddOn Section status",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "section_id",
+                "in": "formData",
+                "description": "enter section id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

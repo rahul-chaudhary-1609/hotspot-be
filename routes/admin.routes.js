@@ -56,7 +56,7 @@ router.get('/getRestaurant/:restaurantId',adminAuthentication.validateAdminToken
 router.put('/editRestaurant/:restaurantId',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateParams(apiSchema.restaurantIdSchema),joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.editRestaurant);
 router.delete('/deleteRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.restaurantIdSchema),adminRestaurantController.deleteRestaurant);
 
-//Restaurant Category Management
+//Restaurant dish Category Management
 
 router.post('/addRestaurantDishCategory',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addRestaurantDishCategory), adminRestaurantController.addRestaurantDishCategory);
 router.put('/editRestaurantDishCategory',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editRestaurantDishCategory), adminRestaurantController.editRestaurantDishCategory);
@@ -83,6 +83,16 @@ router.delete('/deleteDish/:dishId',adminAuthentication.validateAdminToken,joiVa
 router.put('/toggleDishAsRecommended',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.toggleDishAsRecommended), adminRestaurantController.toggleDishAsRecommended);
 
 router.put('/toggleDishAsQuickFilter',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.toggleDishAsQuickFilter), adminRestaurantController.toggleDishAsQuickFilter);
+
+
+//Dish add on section Management
+
+router.post('/addDishAddOnSection',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addDishAddOnSection), adminRestaurantController.addDishAddOnSection);
+router.put('/editDishAddOnSection',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editDishAddOnSection), adminRestaurantController.editDishAddOnSection);
+router.get('/listDishAddOnSections',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listDishAddOnSections), adminRestaurantController.listDishAddOnSections);
+router.get('/getDishAddOnSection/:category_id',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getDishAddOnSection),adminRestaurantController.getDishAddOnSection);
+router.delete('/deleteDishAddOnSection',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.deleteDishAddOnSection), adminRestaurantController.deleteDishAddOnSection);
+router.put('/toggleDishAddOnSectionStatus',adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.toggleDishAddOnSectionStatus),adminRestaurantController.toggleDishAddOnSectionStatus);
 
 
 //Dish Addon Management

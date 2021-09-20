@@ -120,6 +120,8 @@ module.exports = {
     cart_item_not_available:`Some cart items are no longer available.Please check your cart again.`,
     restaurant_category_already_exist:`A restaurant category with the same name already exist`,
     no_restaurant_category_found:`No restaurant category found`,
+    add_on_section_already_exist:`A add on section with the same name already exist`,
+    no_add_on_section_found:`No add on section found`,
   },
 
   code: {
@@ -286,6 +288,16 @@ CUSTOM_JOI_MESSAGE : {
   },
 
   IS_PAGINATION:{
+    no:0,
+    yes:1,
+  },
+
+  IS_MULTIPLE_CHOICE:{
+    no:0,
+    yes:1,
+  },
+
+  IS_REQUIRED:{
     no:0,
     yes:1,
   }

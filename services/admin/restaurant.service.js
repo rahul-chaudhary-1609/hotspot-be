@@ -1,4 +1,14 @@
-const { Restaurant,RestaurantCategory, RestaurantDishCategory,HotspotRestaurant,DishCategory,RestaurantDish,HotspotLocation,DishAddOn } = require('../../models');
+const { 
+    Restaurant,
+    RestaurantCategory,
+    RestaurantDishCategory,
+    DishAddOnSection,
+    HotspotRestaurant,
+    DishCategory,
+    RestaurantDish,
+    HotspotLocation,
+    DishAddOn 
+} = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
 const constants = require("../../constants");
@@ -306,7 +316,6 @@ module.exports = {
 
     listRestaurantDishCategories:async(params)=>{
 
-        console.log("params",params)
         
         let query={
             where:{
@@ -366,7 +375,6 @@ module.exports = {
         let category=await RestaurantDishCategory.findOne({
             where:{
                 id:params.category_id,
-                restaurant_id:params.restaurant_id
             },
         });
 
@@ -383,7 +391,6 @@ module.exports = {
         let category=await RestaurantDishCategory.findOne({
             where:{
                 id:params.category_id,
-                restaurant_id:params.restaurant_id
             },
         });
 
@@ -555,6 +562,202 @@ module.exports = {
         dish.save();
         return true;
     },
+
+    addDishAddOnSection:async(params)=>{
+        let section=await DishAddOnSection.findOne({
+            where:{
+                restaurant_dish_id:params.restaurant_dish_id,
+                name:{
+                    [Op.iLike]:`%${params.name}%`
+                }
+            }
+        })
+
+        if(!section){
+            let sectionObj={
+                name:params.name,
+                restaurant_dish_id:params.restaurant_dish_id,
+                is_required:params.is_required,
+                is_multiple_choice:params.is_multiple_choice,
+            }
+
+            return {
+                section:await utilityFunction.convertPromiseToObject(
+                    await DishAddOnSection.create(sectionObj)
+                )
+            }
+        }else{
+            throw new Error(constants.MESSAGES.add_on_section_already_exist)
+        }
+
+    },
+
+    editDishAddOnSection:async(params)=>{
+        let section=await DishAddOnSection.findOne({
+            where:{
+                restaurant_dish_id:params.restaurant_dish_id,
+                name:{
+                    [Op.iLike]:`%${params.name}%`
+                },
+                id:{
+                    [Op.notIn]:[params.section_id]
+                }
+            }
+        })
+
+        if(!section){
+            let section=await DishAddOnSection.findOne({
+                where:{
+                    id:params.section_id,
+                }
+            })
+
+            if(section){
+
+                section.name=params.name;
+                section.is_required=params.is_required || section.is_required;
+                section.is_multiple_choice=params.is_multiple_choice || section.is_multiple_choice
+                section.save();
+
+                return {
+                    section:await utilityFunction.convertPromiseToObject(section)
+                }
+            }else{
+                throw new Error(constants.MESSAGES.no_add_on_section_found)
+            }
+        }else{
+            throw new Error(constants.MESSAGES.add_on_section_already_exist)
+        }
+
+    },
+
+    listDishAddOnSections:async(params)=>{
+
+        
+        let query={
+            where:{
+                restaurant_dish_id:params.restaurant_dish_id
+            }
+        }
+
+        if(params.search_key){
+            query.where={
+                ...query.where,
+                name:{
+                    [Op.iLike]:`%${params.search_key}%`
+                }
+            }
+        }
+
+        if(params.is_required){
+            if(params.is_required==constants.IS_REQUIRED.yes){
+                query.where={
+                    ...query.where,
+                    is_required:constants.IS_REQUIRED.yes
+                }
+            }else{
+                query.where={
+                    ...query.where,
+                    is_required:constants.IS_REQUIRED.no
+                }
+            }
+
+        }
+
+        if(params.is_multiple_choice){
+            if(params.is_multiple_choice==constants.IS_MULTIPLE_CHOICE.yes){
+                query.where={
+                    ...query.where,
+                    is_multiple_choice:constants.IS_MULTIPLE_CHOICE.yes,
+                }
+            }else{
+                query.where={
+                    ...query.where,
+                    is_multiple_choice:constants.IS_MULTIPLE_CHOICE.no,
+                }
+            }
+        }
+        
+
+        if(params.is_pagination==constants.IS_PAGINATION.yes){
+            let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
+            query.offset=offset,
+            query.limit=limit
+            
+        }        
+
+        let sections=await utilityFunction.convertPromiseToObject(
+            await DishAddOnSections.findAndCountAll(query)
+        )
+
+        if(sections.count==0){
+            throw new Error(constants.MESSAGES.no_add_on_section_found);
+        }
+
+        return {
+            sections,
+        }
+    },
+
+    getDishAddOnSections:async(params)=>{
+
+        let section=await utilityFunction.convertPromiseToObject(
+            await DishAddOnSections.findOne({
+                where:{
+                    id:params.section_id,
+                },
+            })
+        )
+
+        if(!section){
+            throw new Error(constants.MESSAGES.no_add_on_section_found);
+        }
+
+        return {
+            section,
+        }
+    },
+
+    deleteDishAddOnSections:async(params)=>{
+        let section=await DishAddOnSections.findOne({
+            where:{
+                id:params.section_id,
+            },
+        });
+
+        if(!section){
+            throw new Error(constants.MESSAGES.no_add_on_section_found);
+        }
+
+        section.destroy();
+
+        return true;
+    },
+
+    toggleDishAddOnSectionsStatus:async(params)=>{
+        let section=await DishAddOnSections.findOne({
+            where:{
+                id:params.section_id,
+            },
+        });
+
+        if(!section){
+            throw new Error(constants.MESSAGES.no_add_on_section_found);
+        }
+
+        if(section.status==constants.STATUS.active){
+            section.status=constants.STATUS.inactive
+        }else{
+            section.status=constants.STATUS.active
+        }
+
+        section.save();
+
+        return {
+            section
+        };
+    },
+
 
     addDishAddon: async (params) => {
         let dishAddon = await utilityFunction.convertPromiseToObject(

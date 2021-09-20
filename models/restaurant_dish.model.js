@@ -32,13 +32,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-
-        restaurant_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-
-        dish_category_id: {
+        restaurant_dish_category_id: {
             type: DataTypes.INTEGER,
         },
         image_url: {
