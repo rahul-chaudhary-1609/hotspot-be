@@ -7529,6 +7529,13 @@
                 "description": "enter dish add-on ids: 1,2,3,...",
                 "required": false,
                 "type": "string"
+              },
+              {
+                "name": "special_instructions",
+                "in": "formData",
+                "description": "enter special instructions",
+                "required": false,
+                "type": "string"
               }
             ],
             "responses": {}
@@ -7568,6 +7575,13 @@
                 "name": "dish_add_on_ids",
                 "in": "formData",
                 "description": "enter dish add-on ids: 1,2,3,...",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "special_instructions",
+                "in": "formData",
+                "description": "enter special instructions",
                 "required": false,
                 "type": "string"
               }

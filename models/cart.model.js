@@ -44,6 +44,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        special_instructions: {
+            type: DataTypes.TEXT,
+        },
         expire_datetime: {
             type: DataTypes.DATE,
         },
