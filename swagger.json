@@ -7534,6 +7534,47 @@
             "responses": {}
           }
         },
+        "/customer/edit-cart-item": {
+          "put": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to edit cart item",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "cart_item_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "cart_count",
+                "in": "formData",
+                "description": "enter the count",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "dish_add_on_ids",
+                "in": "formData",
+                "description": "enter dish add-on ids: 1,2,3,...",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
         "/customer/get-cart/{restaurant_id}/{order_type}": {
           "get": {
             "tags": [

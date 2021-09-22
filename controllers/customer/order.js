@@ -24,6 +24,15 @@ module.exports = {
         }
     },
 
+    editCartItem: async (req, res) => {
+        try {
+            const responseFromService = await orderService.editCartItem(req.body,req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     getCartItemCount: async (req, res) => {
         try {
             const responseFromService = await orderService.getCartItemCount(req.user);

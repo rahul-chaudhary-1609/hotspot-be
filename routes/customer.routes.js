@@ -154,29 +154,18 @@ router.get('/get-recomended-slides', customerAuthentication.validateCustomerToke
 
 //Orders routes
 router.get('/check-cart-item', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.checkCartItem), OrderController.checkCartItem);
-
-router.post('/add-to-cart', customerAuthentication.validateCustomerToken,parseStringToArray, OrderController.addToCart);
-
+router.post('/add-to-cart', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.addToCart), OrderController.addToCart);
+router.put('/edit-cart-item', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.editCartItem), OrderController.editCartItem);
 router.get('/get-cart-item-count', customerAuthentication.validateCustomerToken, OrderController.getCartItemCount);
-
 router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.validateCustomerToken,  OrderController.getCart)
-
 router.delete('/delete-from-cart/:restaurantDishId', customerAuthentication.validateCustomerToken,OrderController.deleteFromCart)
-
 router.post('/create-order', customerAuthentication.validateCustomerToken,parseStringToArray, OrderController.createOrder)
-
 router.get('/get-pre-order-info/:orderId', customerAuthentication.validateCustomerToken, OrderController.getPreOrderInfo)
-
 router.put('/set-pickup-time/:orderId', customerAuthentication.validateCustomerToken, OrderController.setPickupTime)
-
 router.put('/confirm-order-payment/:orderId', customerAuthentication.validateCustomerToken, OrderController.confirmOrderPayment)
-
 router.get('/get-orders', customerAuthentication.validateCustomerToken,  OrderController.getOrders)
-
 router.get('/get-order-details/:orderId', customerAuthentication.validateCustomerToken, OrderController.getOrderDetails)
-
 router.get('/get-track-status/:orderId', customerAuthentication.validateCustomerToken, OrderController.getTrackStatusOfOrder)
-
 router.get('/get-order-delivery-image/:order_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.getOrderDeliveryImage), OrderController.getOrderDeliveryImage)
 
 

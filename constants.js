@@ -125,6 +125,7 @@ module.exports = {
     dish_already_exist:`A dish with the same name already exist`,
     no_addon:`No addon found`,
     addon_already_exist:`An addon with the same name already exist`,
+    no_cart_item:`No cart item found`,
   },
 
   code: {

@@ -225,59 +225,59 @@ module.exports = {
 
         return {isClear,infoMessage}
     },
-    addToCart: async (params,user) => {
 
-            const customer_id = user.id;
-            const restaurant_id = parseInt(params.restaurant_id);
-            const restaurant_dish_id = parseInt(params.restaurant_dish_id);
-            const cart_count = parseInt(params.cart_count);
-            const dish_add_on_ids = params.dish_add_on_ids;
+    addToCart: async (params,user) => {
 
             const currentCart = await models.Cart.findOne({
                 where: {
-                    restaurant_id, customer_id
+                    restaurant_id:parseInt(params.restaurant_id),
+                    customer_id:user.id,
                 }
             })
 
             if (!currentCart) {
                 await models.Cart.destroy({
                     where: {
-                        customer_id
+                        customer_id:user.id,
                     },
                     force: true,
                 })
             }
-
-            const [cart, created] = await models.Cart.findOrCreate({
-                where: {
-                    restaurant_id,restaurant_dish_id, customer_id,
-                },
-                defaults: {
-                    restaurant_id,restaurant_dish_id, cart_count, dish_add_on_ids, customer_id
-                }
-            });
             
-            if (created) {
-                return true
+            return {
+                cart:await utilityFunction.convertPromiseToObject(
+                        await models.Cart.create({
+                            restaurant_id:parseInt(params.restaurant_id),
+                            restaurant_dish_id:parseInt(params.restaurant_dish_id),
+                            cart_count:parseInt(params.cart_count),
+                            dish_add_on_ids:params.dish_add_on_ids,
+                            customer_id:user.id,
+                        })
+                    )
             }
-            
-            if (cart) {
-                await models.Cart.update({
-                    cart_count, dish_add_on_ids,
-                    },
-                    {
-                        where: {
-                            restaurant_id,restaurant_dish_id, customer_id,
-                        },
-                        returning: true,
-                    }
-                );
-                
-                return true
-            }          
-            
-            
-        
+             
+    },
+
+    editCartItem: async (params,user) => {
+
+        const cart = await models.Cart.findOne({
+            where: {
+                id:parseInt(params.cart_item_id)
+            }
+        })
+
+        if (cart) {
+            cart.cart_count=parseInt(params.cart_count) || cart.cart_count;
+            cart.dish_add_on_ids=params.dish_add_on_ids || cart.dish_add_on_ids;
+
+            currentCart.save();
+
+            return {
+                cart
+            }
+        }else{
+            throw new Error(constants.MESSAGES.no_cart_item)
+        }         
     },
 
     getCartItemCount:async(user)=>{
