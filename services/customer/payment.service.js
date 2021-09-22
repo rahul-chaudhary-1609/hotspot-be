@@ -25,9 +25,7 @@ module.exports = {
         
             if (card) {
                 return true
-            }
-
-            
+            }           
          
     },
     

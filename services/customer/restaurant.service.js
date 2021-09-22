@@ -135,7 +135,7 @@ const getDishCard =  async (args) => {
             foodCards.push({
                 id: dish.id,
                 name: dish.name,
-                price: dish.price,
+                price: dish.markup_price? (parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2):dish.price,
                 description: dish.description,
                 image: dish.image_url,
                 is_added_to_cart,

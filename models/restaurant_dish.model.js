@@ -28,6 +28,9 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DECIMAL(15,2),
             allowNull: false,
         },
+        markup_price: {
+            type: DataTypes.DECIMAL(15,2),
+        },
         description: {
             type: DataTypes.STRING,
             allowNull: false,

@@ -468,6 +468,7 @@ module.exports = {
             let dishObj={
                 name:params.name,
                 price:parseFloat(params.price),
+                markup_price:params.markup_price && parseFloat(params.markup_price),
                 restaurant_dish_category_id:params.restaurant_dish_category_id,
                 description:params.description,
                 image_url:params.image_url,
@@ -543,6 +544,7 @@ module.exports = {
             
             dish.name = params.name || dish.name;
             dish.price = parseFloat(params.price) || dish.price;
+            dish.markup_price=(params.markup_price && parseFloat(params.markup_price)) || dish.markup_price,
             dish.description = params.description || dish.description;
             dish.restaurant_dish_category_id = params.restaurant_dish_category_id || dish.restaurant_dish_category_id ;
             dish.image_url = params.image_url;
