@@ -884,6 +884,8 @@ module.exports = {
     getDishDetails: async (params,user) => {
 
         models.RestaurantDish.hasMany(models.DishAddOnSection, { foreignKey: 'restaurant_dish_id', sourceKey: 'id', targetKey: 'restaurant_dish_id' })
+        models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
+        models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
         models.DishAddOnSection.hasMany(models.DishAddOn, { foreignKey: 'dish_add_on_section_id', sourceKey: 'id', targetKey: 'dish_add_on_section_id' })
 
         const dish = await utility.convertPromiseToObject(
@@ -906,6 +908,18 @@ module.exports = {
                                 where:{
                                     status:constants.STATUS.active,
                                 },
+                            }
+                        ]
+                    },
+                    {
+                        model:models.RestaurantCategory,
+                        require:true,
+                        attributes:['id','name'],
+                        include:[
+                            {
+                                model:models.Restaurant,
+                                require:true,
+                                attributes:['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to'],
                             }
                         ]
                     }
