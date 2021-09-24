@@ -912,7 +912,7 @@ module.exports = {
                         ]
                     },
                     {
-                        model:models.RestaurantCategory,
+                        model:models.RestaurantDishCategory,
                         require:true,
                         attributes:['id','name'],
                         include:[
@@ -928,6 +928,8 @@ module.exports = {
         ) 
 
         if (!dish)  throw new Error(constants.MESSAGES.no_dish);
+
+        //for(let dishAddOnSection)
 
         let isFavorite = false;
 
