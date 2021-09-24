@@ -891,10 +891,16 @@ module.exports = {
 
         const dish = await utility.convertPromiseToObject(
             await models.RestaurantDish.findOne({
+                attributes: ['id', 'name',
+                    [ sequelize.literal(
+                        `COALESCE("RestaurantDish"."price", 0) + COALESCE("RestaurantDish"."markup_price", 0)`
+                    ), 'price'
+                    ],'description','restaurant_dish_category_id','image_url','status','createdAt','updatedAt'
+                ],
                 where: {
                     id: params.restaurant_dish_id,
                     status:constants.STATUS.active,
-                },
+                },                
                 include:[
                     {
                         model:models.RestaurantDishCategory,
@@ -923,8 +929,8 @@ module.exports = {
                                 },
                                 attributes: ['id', 'name',
                                     [ sequelize.literal(
-                                        'COALESCE("DishAddOnSections->DishAddOns"."price", 0) + COALESCE("DishAddOnSections->DishAddOns"."markup_price", 0)'
-                                    ), 'pprice'
+                                        `COALESCE("DishAddOnSections->DishAddOns"."price", 0) + COALESCE("DishAddOnSections->DishAddOns"."markup_price", 0)`
+                                    ), 'price'
                                     ],'image_url','dish_add_on_section_id','status','createdAt','updatedAt'
                                 ],
                             }
