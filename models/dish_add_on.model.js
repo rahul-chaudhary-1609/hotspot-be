@@ -30,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
+        markup_price: {
+            type: DataTypes.DECIMAL(15,2),
+        },
+
         image_url: {
             type: DataTypes.TEXT,
         },

@@ -1,5 +1,6 @@
 require('dotenv/config');
 const models = require('../../models');
+const {sequelize}=require('../../models');
 const { Op } = require("sequelize");
 const dummyData = require('./dummyData');
 const constants = require('../../constants');
@@ -896,6 +897,18 @@ module.exports = {
                 },
                 include:[
                     {
+                        model:models.RestaurantDishCategory,
+                        require:true,
+                        attributes:['id','name'],
+                        include:[
+                            {
+                                model:models.Restaurant,
+                                require:true,
+                                attributes:['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to'],
+                            }
+                        ]
+                    },
+                    {
                         model:models.DishAddOnSection,
                         require:false,
                         where:{
@@ -908,28 +921,20 @@ module.exports = {
                                 where:{
                                     status:constants.STATUS.active,
                                 },
+                                attributes: ['id', 'name',
+                                    [ sequelize.literal(
+                                        'COALESCE("DishAddOnSections->DishAddOns"."price", 0) + COALESCE("DishAddOnSections->DishAddOns"."markup_price", 0)'
+                                    ), 'pprice'
+                                    ],'image_url','dish_add_on_section_id','status','createdAt','updatedAt'
+                                ],
                             }
                         ]
                     },
-                    {
-                        model:models.RestaurantDishCategory,
-                        require:true,
-                        attributes:['id','name'],
-                        include:[
-                            {
-                                model:models.Restaurant,
-                                require:true,
-                                attributes:['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to'],
-                            }
-                        ]
-                    }
                 ]
             })
         ) 
 
         if (!dish)  throw new Error(constants.MESSAGES.no_dish);
-
-        //for(let dishAddOnSection)
 
         let isFavorite = false;
 

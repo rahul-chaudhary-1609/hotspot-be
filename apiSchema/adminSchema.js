@@ -127,6 +127,7 @@ module.exports = {
     addDish : Joi.object({
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
+        markup_price: Joi.number().optional(),
         description: Joi.string().required(),
         restaurant_dish_category_id: Joi.number().required(),
         image_url: Joi.string().uri().allow('',null).optional(),
@@ -145,6 +146,7 @@ module.exports = {
     editDish : Joi.object({
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
+        markup_price: Joi.number().optional(),
         description: Joi.string().required(),
         restaurant_dish_category_id: Joi.number().required(),
         image_url: Joi.string().uri().required(),
@@ -168,6 +170,7 @@ module.exports = {
     addDishAddon : Joi.object({
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
+        markup_price: Joi.number().optional(),
         image_url: Joi.string().uri().optional(),
         dish_add_on_section_id: Joi.number().required(),
     }),
@@ -185,6 +188,7 @@ module.exports = {
         dish_addon_id: Joi.number().required(),
         name: Joi.string().trim().optional(),
         price: Joi.number().optional(),
+        markup_price: Joi.number().optional(),
         image_url: Joi.string().uri().optional(),
         dish_add_on_section_id: Joi.number().optional(),
     }),

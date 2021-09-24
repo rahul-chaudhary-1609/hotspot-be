@@ -797,6 +797,7 @@ module.exports = {
             let dishAddonObj={
                 name:params.name,
                 price:parseFloat(params.price),
+                markup_price:params.markup_price && parseFloat(params.markup_price),
                 dish_add_on_section_id:params.dish_add_on_section_id,
                 image_url:params.image_url,
             }
@@ -874,6 +875,7 @@ module.exports = {
 
             dishAddon.name = params.name || dishAddon.name;
             dishAddon.price =parseFloat(params.price) || parseFloat(dishAddon.price);
+            dishAddon.markup_price=(params.markup_price && parseFloat(params.markup_price)) || dishAddon.markup_price;
             dishAddon.image_url = params.image_url|| dishAddon.image_url;
             dishAddon.dish_add_on_section_id = params.dish_add_on_section_id || dishAddon.dish_add_on_section_id;
 

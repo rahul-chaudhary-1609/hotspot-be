@@ -2206,6 +2206,13 @@
                 "type": "number"
               },
               {
+                "name": "markup_price",
+                "in": "formData",
+                "description": "enter markup price if any",
+                "required": false,
+                "type": "number"
+              },
+              {
                 "name": "description",
                 "in": "formData",
                 "description": "enter dish description",
@@ -2366,6 +2373,13 @@
                 "name": "price",
                 "in": "formData",
                 "description": "enter dish price",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "markup_price",
+                "in": "formData",
+                "description": "enter markup price if any",
                 "required": false,
                 "type": "number"
               },
@@ -2803,6 +2817,13 @@
                 "type": "number"
               },
               {
+                "name": "markup_price",
+                "in": "formData",
+                "description": "enter markup price if any",
+                "required": false,
+                "type": "number"
+              },
+              {
                 "name": "image_url",
                 "in": "formData",
                 "description": "enter dish addon image url",
@@ -2920,6 +2941,13 @@
                 "name": "price",
                 "in": "formData",
                 "description": "enter dish addon price",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "markup_price",
+                "in": "formData",
+                "description": "enter markup price if any",
                 "required": false,
                 "type": "number"
               },
