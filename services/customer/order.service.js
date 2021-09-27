@@ -273,7 +273,7 @@ module.exports = {
             cart.dish_add_on_ids=params.dish_add_on_ids || cart.dish_add_on_ids;
             cart.special_instructions=params.special_instructions || cart.special_instructions;
 
-            currentCart.save();
+            cart.save();
 
             return {
                 cart
