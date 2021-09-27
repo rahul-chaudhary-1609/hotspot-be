@@ -89,6 +89,15 @@ module.exports = {
         }
     },
 
+    updateTipAmount: async (req, res) => {
+        try {
+            const responseFromService = await orderService.updateTipAmount(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     confirmOrderPayment:async (req, res) => {
         try {
             const responseFromService = await orderService.confirmOrderPayment(req.params,req.user);

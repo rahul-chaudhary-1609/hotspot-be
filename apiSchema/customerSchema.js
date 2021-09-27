@@ -403,5 +403,19 @@ module.exports = {
         dish_add_on_ids:Joi.array().allow(null, '').optional(),
         special_instructions:Joi.string().optional(),
     }),
+
+    createOrder:Joi.object({
+        restaurant_id:Joi.number().required(),
+        cart_ids:Joi.array().required(),
+        amount:  Joi.number().required(),
+        order_type:Joi.number().required(),   
+        delivery_datetime:Joi.string().optional(),
+    }),
+
+    updateTipAmount:Joi.object({     
+        order_id:Joi.string().required(),   
+        tip_amount:Joi.number().required(),
+    }),
+
 }
 

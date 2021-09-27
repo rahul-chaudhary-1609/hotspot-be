@@ -159,9 +159,10 @@ router.put('/edit-cart-item', customerAuthentication.validateCustomerToken,parse
 router.get('/get-cart-item-count', customerAuthentication.validateCustomerToken, OrderController.getCartItemCount);
 router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.validateCustomerToken,  OrderController.getCart)
 router.delete('/delete-from-cart/:restaurantDishId', customerAuthentication.validateCustomerToken,OrderController.deleteFromCart)
-router.post('/create-order', customerAuthentication.validateCustomerToken,parseStringToArray, OrderController.createOrder)
+router.post('/create-order', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.createOrder), OrderController.createOrder)
 router.get('/get-pre-order-info/:orderId', customerAuthentication.validateCustomerToken, OrderController.getPreOrderInfo)
 router.put('/set-pickup-time/:orderId', customerAuthentication.validateCustomerToken, OrderController.setPickupTime)
+router.put('/update-tip-amount', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.updateTipAmount), OrderController.updateTipAmount)
 router.put('/confirm-order-payment/:orderId', customerAuthentication.validateCustomerToken, OrderController.confirmOrderPayment)
 router.get('/get-orders', customerAuthentication.validateCustomerToken,  OrderController.getOrders)
 router.get('/get-order-details/:orderId', customerAuthentication.validateCustomerToken, OrderController.getOrderDetails)
@@ -173,19 +174,12 @@ router.get('/get-order-delivery-image/:order_id', customerAuthentication.validat
 
 //payment routes
 router.post('/add-payment-card', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.addPaymentCard), PaymentController.addPaymentCard); 
-
 router.put('/update-payment-card', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.updatePaymentCard),PaymentController.updatePaymentCard)
-
 router.get('/get-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.getPaymentCard), PaymentController.getPaymentCard)
-
 router.get('/get-payment-cards', customerAuthentication.validateCustomerToken, PaymentController.getPaymentCards)
-
 router.put('/set-default-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.setDeafultPaymentCard), PaymentController.setDefaultPaymentCard)
-
 router.delete('/delete-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken, joiValidation.validateParams(apiSchema.deletePaymentCard),PaymentController.deletePaymentCard)
-
 router.post('/payment',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.payment), PaymentController.payment)
-
 router.post('/payment-success',customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.paymentSuccess), PaymentController.paymentSuccess)
 
 

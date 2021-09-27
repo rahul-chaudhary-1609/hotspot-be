@@ -3,6 +3,7 @@ const models = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const constants = require('../../constants');
 const sendMail = require('../../utils/mail');
+const { Op } = require("sequelize");
 
 const getOrderCard =  async (args) => {
     
@@ -323,7 +324,7 @@ module.exports = {
            
             const restaurant_id = parseInt(params.restaurant_id);
 
-            const order = await models.Order.findOne({
+            await models.Order.destroy({
                 where: {
                     customer_id: user.id,
                     restaurant_id,
@@ -424,15 +425,26 @@ module.exports = {
                     }
                 })
 
+                if(dishAddOn.length!=item.dish_add_on_ids.length){
+                    await models.Cart.destroy({
+                        where:{
+                            id:item.id,
+                        }
+                    })
+
+                    continue;
+                }
+
                 let addOnPrice = 0;
                 
                 const addOns = dishAddOn.map((addOn) => {
-                    addOnPrice = addOnPrice + parseFloat(addOn.price)
+                    let price=addOn.markup_price ? (parseFloat(addOn.price)+parseFloat(addOn.markup_price)).toFixed(2) : addOn.price
+                    addOnPrice = addOnPrice + parseFloat(price)
                     return {
-                            id: addOn.id,
-                            name: addOn.name,
-                            price:addOn.price
-                        }
+                        id: addOn.id,
+                        name: addOn.name,
+                        price,
+                    }
                 })
 
                 cartItems.push({
@@ -441,13 +453,30 @@ module.exports = {
                     itemName: dish.name,
                     itemCount: item.cart_count,
                     itemAddOn: addOns,
-                    itemPrice:(parseFloat(dish.price)*item.cart_count)+addOnPrice                    
+                    itemPrice:dish.markup_price?
+                              (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
+                              (parseFloat(dish.price)*item.cart_count)+addOnPrice                    
                 })
             }
 
+            let taxes= await utilityFunction.convertPromiseToObject(
+                    await models.TAX.findAll({
+                        where:{
+                            type:{
+                                [Op.notIn]:[constants.TAX_TYPE.none]
+                            }
+                        }
+                    })
+            );
+
+            let stripeFee=taxes.find(tax=>tax.type==constants.TAX_TYPE.stripe);
+            let salesTax=taxes.find(tax=>tax.type==constants.TAX_TYPE.sales);
+
             const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice, 0);
 
-            const taxAmount=parseFloat((((totalAmount*constants.STRIPE_TAXRATE.variable_percentage)/100)+(constants.STRIPE_TAXRATE.fixed_amount/100)).toFixed(2));
+            const stripeFeeAmount=parseFloat((((totalAmount*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
+            
+            const salesTaxAmount=parseFloat((((totalAmount*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
             
             if (!cartInfo) {
                 return { cart: null, isDeliveryOnly,isPickupOnly,isBothAvailable };
@@ -459,320 +488,178 @@ module.exports = {
                 cart: { 
                     cartInfo,
                     cartItems,
-                    cooking_instructions:order? order.cooking_instructions : null,
                     totalAmount,
-                    taxAmount,
-                    grandTotal:totalAmount+taxAmount,
+                    regulatoryResponseFee:0,
+                    deliveryFee:0,
+                    serviceFee:0,
+                    processingFee:stripeFeeAmount,
+                    taxes:salesTaxAmount,
+                    grandTotal:totalAmount+stripeFeeAmount+salesTaxAmount,
                 }, 
                 isDeliveryOnly,
                 isPickupOnly,
                 isBothAvailable
             };
-
          
     },
 
     createOrder:async (params,user) => {
 
-            const customer_id = user.id;
-            const restaurant_id = parseInt(params.restaurant_id);
+        const customer_id = user.id;
+        const restaurant_id = parseInt(params.restaurant_id);
 
-             const order = await models.Order.findOne({
+        await models.Order.destroy({
+            where: {
+                customer_id,
+                restaurant_id,
+                status:0,
+            }
+        })
+
+        const order_id = await utilityFunction.getUniqueOrderId();
+        const amount = parseFloat(params.amount);
+        //const tip_amount = params.tip_amount && parseFloat(params.tip_amount);
+        const status = constants.ORDER_STATUS.not_paid;
+        const type = parseInt(params.order_type);
+        const delivery_datetime = params.delivery_datetime ? new Date(params.delivery_datetime) : null;
+        const cart_ids = params.cart_ids;
+
+        const cart = await models.Cart.findAndCountAll({
+            where: {
+                id:cart_ids,
+                status:constants.STATUS.active,
+            }
+        });
+        
+        let ordered_items = [];
+
+        for (const item of cart.rows) {
+
+            const dish = await models.RestaurantDish.findOne({
+                where: {
+                    id: item.restaurant_dish_id,
+                    status:constants.STATUS.active,
+                }
+            })
+
+            if(!dish){
+                throw new Error(constants.MESSAGES.cart_item_not_available)
+            }
+
+            const dishAddOn=await models.DishAddOn.findAll({
+                where: {
+                    id: item.dish_add_on_ids,
+                    status:constants.STATUS.active,
+                }
+            })
+
+            if(dishAddOn.length!=item.dish_add_on_ids.length){
+                throw new Error(constants.MESSAGES.dish_addon_not_available)
+            }
+
+            let addOnPrice = 0;
+            
+            const addOns = dishAddOn.map((addOn) => {
+                let price=addOn.markup_price ? (parseFloat(addOn.price)+parseFloat(addOn.markup_price)).toFixed(2) : addOn.price
+                addOnPrice = addOnPrice + parseFloat(price)
+                return {
+                    id: addOn.id,
+                    name: addOn.name,
+                    price,
+                }
+            })
+
+            ordered_items.push({
+                id: item.id,
+                dishId:item.restaurant_dish_id,
+                itemName: dish.name,
+                itemCount: item.cart_count,
+                itemAddOn: addOns,
+                itemActualPrice:(parseFloat(dish.price)*item.cart_count)+addOnPrice,
+                itemMarkupPrice:dish.markup_price && (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice,
+                itemPrice:dish.markup_price?
+                          (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
+                          (parseFloat(dish.price)*item.cart_count)+addOnPrice                 
+            })
+        }
+
+        const totalActualPrice = cartItems.reduce((result, item) => result + item.itemActualPrice, 0);
+
+        let hotspot = null;
+        let restaurant = null;
+        let customer = await utilityFunction.convertPromiseToObject(await models.Customer.findOne({
+                attributes: ['id', 'name', 'email','phone_no'],
+                where: {
+                    id: customer_id
+                }
+            })
+        );
+
+        if (type == constants.ORDER_TYPE.delivery) {
+
+            const customerFavLocation = await models.CustomerFavLocation.findOne({
                 where: {
                     customer_id,
-                    restaurant_id,
-                    status:0,
+                    is_default: true,
                 }
-             })
-            
-            if (order) {
-                const amount = params.amount? parseFloat(params.amount): parseFloat(order.amount);
-                const tip_amount = params.tip_amount? parseFloat(params.tip_amount): parseFloat(order.tip_amount);
-                const status = params.status?parseInt(params.status):order.status;
-                const type = params.order_type?parseInt(params.order_type):order.type;
-                const cooking_instructions = params.cooking_instructions || order.cooking_instructions;
-                const delivery_datetime = params.delivery_datetime ? new Date(params.delivery_datetime) : order.delivery_datetime;
-                const cart_ids = params.cart_ids;
+            });
 
-                const cart = await models.Cart.findAndCountAll({
+            hotspot = await utilityFunction.convertPromiseToObject(await models.HotspotLocation.findOne({
+                    attributes: ['id', 'name', 'location', 'location_detail'],
                     where: {
-                        id:cart_ids,
-                        status:constants.STATUS.active,
+                        id: customerFavLocation.hotspot_location_id
                     }
-                });
-                
-                let ordered_items = [];
+                })
+            );
 
-                if (!cart_ids) {
-                    ordered_items = order.order_details.ordered_items;
-                }
-                else {
-
-                    for (const item of cart.rows) {
-
-                        const dish = await models.RestaurantDish.findOne({
-                            where: {
-                                id: item.restaurant_dish_id,
-                                status:constants.STATUS.active,
-                            }
-                        })
-
-                        if(!dish){
-                            throw new Error(constants.MESSAGES.cart_item_not_available)
-                        }
-
-                        const dishAddOn = await models.DishAddOn.findAll({
-                            where: {
-                                id: item.dish_add_on_ids,
-                                status:constants.STATUS.active,
-                            }
-                        })
-
-                        let addOnPrice = 0;
-                    
-                        const addOns = dishAddOn.map((addOn) => {
-                            addOnPrice = addOnPrice + parseFloat(addOn.price)
-                            return {
-                                id: addOn.id,
-                                name: addOn.name,
-                                price:addOn.price
-                            }
-                        })
-
-                        ordered_items.push({
-                            id: item.id,
-                            dishId:item.restaurant_dish_id,
-                            itemName: dish.name,
-                            itemCount: item.cart_count,
-                            itemAddOn: addOns,
-                            itemPrice: (parseFloat(dish.price) * item.cart_count) + addOnPrice
-                        })
-                    }
-                }
-
-                let hotspot = null;
-                let restaurant = null;
-                let customer = await utilityFunction.convertPromiseToObject(await models.Customer.findOne({
-                        attributes: ['id', 'name', 'email','phone_no'],
-                        where: {
-                            id: customer_id
-                        }
-                    })
-                );
-
-                if (type == constants.ORDER_TYPE.delivery) {
-
-                    const customerFavLocation = await models.CustomerFavLocation.findOne({
-                        where: {
-                            customer_id,
-                            is_default: true,
-                        }
-                    });
-
-                    hotspot = await utilityFunction.convertPromiseToObject(await models.HotspotLocation.findOne({
-                            attributes: ['id', 'name', 'location', 'location_detail'],
-                            where: {
-                                id: customerFavLocation.hotspot_location_id
-                            }
-                        })
-                    );
-
-                    hotspot.dropoff = await utilityFunction.convertPromiseToObject(await models.HotspotDropoff.findOne({
-                            attributes: ['id', 'dropoff_detail'],
-                            where: {
-                                id: customerFavLocation.hotspot_dropoff_id
-                            }
-                        })
-                    );
-
-                }    
-
-                if (restaurant_id) {
-                    restaurant = await utilityFunction.convertPromiseToObject(await models.Restaurant.findOne({
-                        attributes: ['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
-                            where: {
-                                id: restaurant_id
-                            }
-                        })           
-                    )
-                }  
-
-                
-
-                let order_details = {
-                    customer,
-                    hotspot,
-                    restaurant: {
-                        ...restaurant,
-                        fee:Math.round((((amount - tip_amount) * parseFloat(restaurant.percentage_fee)) / 100)*100)/100,
-                    },
-                    driver:null,
-                    ordered_items
-                }
-
-                await models.Order.update({
-                    hotspot_location_id: hotspot ? hotspot.id : null,
-                    hotspot_dropoff_id: hotspot ? hotspot.dropoff.id : null,
-                    amount,
-                    tip_amount,
-                    status,
-                    type,
-                    cooking_instructions,
-                    delivery_datetime,
-                    order_details,
-                    driver_payment_status: type == constants.ORDER_TYPE.delivery?constants.PAYMENT_STATUS.not_paid:constants.PAYMENT_STATUS.not_applicable,
-                },
-                    {
-                        where: {
-                            order_id:order.order_id,
-                        },
-                        returning: true,
-                    }
-                );
-
-
-                return { order_id:order.order_id };
-            }
-            else {
-                const order_id = await utilityFunction.getUniqueOrderId();
-                const amount = parseFloat(params.amount);
-                const tip_amount = parseFloat(params.tip_amount);
-                const status = constants.ORDER_STATUS.not_paid;
-                const type = parseInt(params.order_type);
-                const cooking_instructions = params.cooking_instructions ? params.cooking_instructions : null;
-                const delivery_datetime = params.delivery_datetime ? new Date(params.delivery_datetime) : null;
-                const cart_ids = params.cart_ids;
-
-                const cart = await models.Cart.findAndCountAll({
+            hotspot.dropoff = await utilityFunction.convertPromiseToObject(await models.HotspotDropoff.findOne({
+                    attributes: ['id', 'dropoff_detail'],
                     where: {
-                        id:cart_ids,
-                        status:constants.STATUS.active,
+                        id: customerFavLocation.hotspot_dropoff_id
                     }
-                });
-                
-                let ordered_items = [];
+                })
+            );
 
-                for (const item of cart.rows) {
+        } 
 
-                    const dish = await models.RestaurantDish.findOne({
-                        where: {
-                            id: item.restaurant_dish_id,
-                            status:constants.STATUS.active,
-                        }
-                    })
-
-                    if(!dish){
-                        throw new Error(constants.MESSAGES.cart_item_not_available)
+        if (restaurant_id) {
+            restaurant = await utilityFunction.convertPromiseToObject(await models.Restaurant.findOne({
+                attributes: ['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
+                    where: {
+                        id: restaurant_id
                     }
+                })           
+            )
+        }  
 
-                    const dishAddOn=await models.DishAddOn.findAll({
-                        where: {
-                            id: item.dish_add_on_ids,
-                            status:constants.STATUS.active,
-                        }
-                    })
-
-                    let addOnPrice = 0;
-                    
-                    const addOns = dishAddOn.map((addOn) => {
-                        addOnPrice = addOnPrice + parseFloat(addOn.price)
-                        return {
-                            id: addOn.id,
-                            name: addOn.name,
-                            price:addOn.price
-                        }
-                    })
-
-                    ordered_items.push({
-                        id: item.id,
-                        dishId:item.restaurant_dish_id,
-                        itemName: dish.name,
-                        itemCount: item.cart_count,
-                        itemAddOn: addOns,
-                        itemPrice:(parseFloat(dish.price)*item.cart_count)+addOnPrice                    
-                    })
-                }
-
-                let hotspot = null;
-                let restaurant = null;
-                let customer = await utilityFunction.convertPromiseToObject(await models.Customer.findOne({
-                        attributes: ['id', 'name', 'email','phone_no'],
-                        where: {
-                            id: customer_id
-                        }
-                    })
-                );
-
-                if (type == constants.ORDER_TYPE.delivery) {
-
-                    const customerFavLocation = await models.CustomerFavLocation.findOne({
-                        where: {
-                            customer_id,
-                            is_default: true,
-                        }
-                    });
-
-                    hotspot = await utilityFunction.convertPromiseToObject(await models.HotspotLocation.findOne({
-                            attributes: ['id', 'name', 'location', 'location_detail'],
-                            where: {
-                                id: customerFavLocation.hotspot_location_id
-                            }
-                        })
-                    );
-
-                    hotspot.dropoff = await utilityFunction.convertPromiseToObject(await models.HotspotDropoff.findOne({
-                            attributes: ['id', 'dropoff_detail'],
-                            where: {
-                                id: customerFavLocation.hotspot_dropoff_id
-                            }
-                        })
-                    );
-
-                } 
-
-                if (restaurant_id) {
-                    restaurant = await utilityFunction.convertPromiseToObject(await models.Restaurant.findOne({
-                        attributes: ['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
-                            where: {
-                                id: restaurant_id
-                            }
-                        })           
-                    )
-                }  
-
-                
-
-                let order_details = {
-                    customer,
-                    hotspot,
-                    restaurant: {
-                        ...restaurant,
-                        fee:Math.round((((amount - tip_amount) * parseFloat(restaurant.percentage_fee)) / 100)*100)/100,
-                    },
-                    driver: null,
-                    ordered_items
-                }
-                const newOrder = await models.Order.create({
-                    order_id,
-                    customer_id,
-                    restaurant_id,
-                    hotspot_location_id: hotspot ? hotspot.id : null,
-                    hotspot_dropoff_id: hotspot ? hotspot.dropoff.id : null,
-                    order_details,
-                    amount,
-                    tip_amount,
-                    status,
-                    type,
-                    cooking_instructions,
-                    delivery_datetime,
-                    driver_payment_status: type == constants.ORDER_TYPE.delivery?constants.PAYMENT_STATUS.not_paid:constants.PAYMENT_STATUS.not_applicable,
-                });
-
-
-                return { order_id:newOrder.order_id };
-            }
         
 
+        let order_details = {
+            customer,
+            hotspot,
+            restaurant: {
+                ...restaurant,
+                fee:Math.round(((totalActualPrice * parseFloat(restaurant.percentage_fee)) / 100)*100)/100,
+            },
+            driver: null,
+            ordered_items
+        }
+        const newOrder = await models.Order.create({
+            order_id,
+            customer_id,
+            restaurant_id,
+            hotspot_location_id: hotspot ? hotspot.id : null,
+            hotspot_dropoff_id: hotspot ? hotspot.dropoff.id : null,
+            order_details,
+            amount,
+            status,
+            type,
+            delivery_datetime,
+            driver_payment_status: type == constants.ORDER_TYPE.delivery?constants.PAYMENT_STATUS.not_paid:constants.PAYMENT_STATUS.not_applicable,
+        });
+
+
+        return { order_id:newOrder.order_id };
          
     },
 
@@ -841,9 +728,26 @@ module.exports = {
                 }
             );
 
-            return true
+            return true         
+    },
 
-         
+    updateTipAmount: async (params) => {
+
+        const order = await models.Order.findOne({
+            where: {
+                order_id:params.order_id,
+            }
+        })
+
+        if (!order) throw new Error(constants.MESSAGES.no_order);
+
+        order.tip_amount=parseFloat(params.tip_amount);
+
+        order.save();
+
+        return {
+            order:utilityFunction.convertPromiseToObject(order),
+        }         
     },
 
     confirmOrderPayment: async (params,user) => {

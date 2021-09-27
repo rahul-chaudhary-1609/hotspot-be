@@ -117,7 +117,8 @@ module.exports = {
     delivery_already_done: 'This delivery already done.',
     no_pickup: 'No pickup found.',
     no_delivery: 'No delivery found.',
-    cart_item_not_available:`Some cart items are no longer available.Please check your cart again.`,
+    cart_item_not_available:`Some cart items are no longer available.\nPlease check your cart again.`,
+    dish_addon_not_available:`Some cart dish addons are no longer available.\nPlease check your cart again.`,
     restaurant_category_already_exist:`A restaurant category with the same name already exist`,
     no_restaurant_category_found:`No restaurant category found`,
     add_on_section_already_exist:`A add on section with the same name already exist`,
@@ -304,6 +305,12 @@ CUSTOM_JOI_MESSAGE : {
   IS_REQUIRED:{
     no:0,
     yes:1,
+  },
+
+  TAX_TYPE:{
+    none:0,
+    stripe:1,
+    sales:2,
   }
 
 }

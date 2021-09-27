@@ -76,10 +76,6 @@ module.exports = (sequelize, DataTypes) => {
         tip_amount: {
             type: DataTypes.DECIMAL(15,2),
         },
-        
-        cooking_instructions: {
-            type: DataTypes.STRING,
-        },
 
         delivery_datetime: {
             type: DataTypes.DATE,

@@ -7738,26 +7738,12 @@
                 "type": "number"
               },
               {
-                "name": "tip_amount",
-                "in": "formData",
-                "description": "enter tip amount (if any)",
-                "required": false,
-                "type": "number"
-              },
-              {
                 "name": "order_type",
                 "in": "formData",
                 "description": "1=> delivery | 2=> pickup",
                 "required": true,
                 "type": "string",
                 "enum":[1,2]
-              },
-              {
-                "name": "cooking_instructions",
-                "in": "formData",
-                "description": "enter cooking_instructions",
-                "required": false,
-                "type": "string"
               },
               {
                 "name": "delivery_datetime",
@@ -7828,6 +7814,40 @@
                 "description": "YYYY-MM-DD HH:MM:SS",
                 "required": true,
                 "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/customer/update-tip-amount": {
+          "put": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to update tip amount",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "order_id",
+                "in": "formData",
+                "description": "enter order id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "tip_amount",
+                "in": "formData",
+                "description": "enter tip amount",
+                "required": true,
+                "type": "number"
               }
             ],
             "responses": {}
