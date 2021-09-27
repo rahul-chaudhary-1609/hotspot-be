@@ -183,22 +183,17 @@ router.get('/getDriverListByHotspot',adminAuthentication.validateAdminToken,joiV
 //Fee Settings
 
 router.post('/addDriverFee',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addDriverFee) ,adminFeeController.addDriverFee);
-
 router.put('/editDriverFee',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editDriverFee) , adminFeeController.editDriverFee);
-
 router.get('/getDriverFeeList',adminAuthentication.validateAdminToken, adminFeeController.getDriverFeeList);
-
 router.get('/getDriverFeeById/:fee_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getDriverFeeById), adminFeeController.getDriverFeeById);
-
 router.put('/editRestaurantFee',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editRestaurantFee) , adminFeeController.editRestaurantFee);
-
 router.delete('/deleteDriverFee/:fee_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.deleteDriverFee), adminFeeController.deleteDriverFee);
-
 router.get('/listTip', adminAuthentication.validateAdminToken, adminFeeController.listTip);
-
 router.get('/getTipById/:tip_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getTipById), adminFeeController.getTipById);
-
 router.put('/editTip',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editTip) , adminFeeController.editTip);
+router.get('/listTax', adminAuthentication.validateAdminToken, adminFeeController.listTax);
+router.get('/getTaxById/:tax_id',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getTaxById), adminFeeController.getTaxById);
+router.put('/editTax',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editTax) , adminFeeController.editTax);
 
 
 //schedule Settings

@@ -57,7 +57,7 @@ module.exports = {
         }
     },
 
-     listTip: async (req, res) => {
+    listTip: async (req, res) => {
        try {
             const responseFromService = await feeService.listTip();
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
@@ -82,4 +82,30 @@ module.exports = {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
+
+    listTax: async (req, res) => {
+        try {
+             const responseFromService = await feeService.listTax();
+             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+         } catch (error) {
+             utilityFunction.errorResponse(res, error, constants.code.error_code);
+         }
+     },
+ 
+      getTaxById: async (req, res) => {
+        try {
+             const responseFromService = await feeService.getTaxById(req.params);
+             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+         } catch (error) {
+             utilityFunction.errorResponse(res, error, constants.code.error_code);
+         }
+     },
+      editTax: async (req, res) => {
+        try {
+             const responseFromService = await feeService.editTax(req.body);
+             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+         } catch (error) {
+             utilityFunction.errorResponse(res, error, constants.code.error_code);
+         }
+     },
 }

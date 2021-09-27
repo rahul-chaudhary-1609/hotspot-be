@@ -645,6 +645,18 @@ module.exports = {
     toggleDishAddOnSectionStatus: Joi.object({
         section_id: Joi.number().required()
     }),
+
+    getTaxById: Joi.object({
+        tax_id: Joi.number().required(),
+    }),
+
+    editTax: Joi.object({
+        tax_id: Joi.number().required(),
+        name:Joi.string().optional(),
+        variable_percentage:Joi.number().optional(),
+        fixed_amount:Joi.number().optional(),
+        description:Joi.string().optional(),
+    }),
 }
 
 

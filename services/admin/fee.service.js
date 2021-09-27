@@ -215,6 +215,40 @@ module.exports = {
         tip.save()
 
         return {tip}
+    },
+
+    listTax: async () => {
+        let taxes = await utility.convertPromiseToObject(
+            await models.Tax.findAndCountAll({
+                order: ["id"]
+            })
+        )
+
+        return {taxes}
+    },
+
+    getTaxById: async (params) => {
+        let tax = await utility.convertPromiseToObject(
+            await models.Tax.findByPk(parseInt(params.tax_id))
+        );
+
+        if (!tax) throw new Error(constants.MESSAGES.no_tax);
+
+        return {tax}
+    },
+
+    editTax: async (params) => {
+      let tax = await models.Tax.findByPk(parseInt(params.tax_id));
+
+        if (!tax) throw new Error(constants.MESSAGES.no_tax);
+
+        tax.name=params.name || tax.name;
+        tax.variable_percentage=parseFloat(params.variable_percentage) || tax.variable_percentage;
+        tax.fixed_amount=parseInt(params.fixed_amount) || tax.fixed_amount;
+        tax.description=params.description || tax.description;
+        tax.save()
+
+        return {tax:await utility.convertPromiseToObject(tax)}
     }
 
 }

@@ -127,6 +127,7 @@ module.exports = {
     no_addon:`No addon found`,
     addon_already_exist:`An addon with the same name already exist`,
     no_cart_item:`No cart item found`,
+    no_tax:`No tax found`,
   },
 
   code: {
