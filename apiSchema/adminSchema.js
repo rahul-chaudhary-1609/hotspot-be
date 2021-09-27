@@ -348,7 +348,6 @@ module.exports = {
         working_hours_from: Joi.string().required(),
         working_hours_to: Joi.string().required(),
         order_type: Joi.number().required(),
-        restaurant_category_ids: Joi.array().required(),
         agreement_doc_url: Joi.string().allow(null, '').optional(),
         hotspot_location_ids: Joi.array(),
         stripe_publishable_key:Joi.string().trim().allow(null, '').optional(),

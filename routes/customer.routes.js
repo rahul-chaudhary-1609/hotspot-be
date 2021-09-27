@@ -122,23 +122,13 @@ router.get('/get-default-hotspot', customerAuthentication.validateCustomerToken,
 //Restaurants Routes
 
 router.post('/set-favorite-restaurant', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.setFavoriteRestaurant),  RestaurantController.setFavoriteRestaurant);
-
 router.get('/get-favorite-restaurant', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getFavoriteRestaurant), RestaurantController.getFavoriteRestaurant);
-
 router.get('/get_quick_filter_list', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getQuickFilterList),  RestaurantController.getQuickFilterList);
-
-router.get('/get-restaurant-category', customerAuthentication.validateCustomerToken, RestaurantController.getRestaurantCategory);
-
 router.get('/get-search-suggestion', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getSearchSuggestion), RestaurantController.getSearchSuggestion);
-
 router.post('/get-hotspot-restaurant-pickup', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.getHotspotRestaurantPickup), RestaurantController.getHotspotRestaurantPickup);
-
 router.post('/get-hotspot-restaurant-delivery', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.getHotspotRestaurantDelivery), RestaurantController.getHotspotRestaurantDelivery);
-
 router.get('/get-offer-banner', customerAuthentication.validateCustomerToken, RestaurantController.getOfferBanner);
-
 router.get('/get-restaurant-details', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getRestaurantDetails), RestaurantController.getRestaurantDetails);
-
 router.get('/get-restaurant-schedule', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getRestaurantSchedule), RestaurantController.getRestaurantSchedule);
 
 

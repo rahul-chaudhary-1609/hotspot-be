@@ -1,10 +1,8 @@
 const { 
     Restaurant,
-    RestaurantCategory,
     RestaurantDishCategory,
     DishAddOnSection,
     HotspotRestaurant,
-    DishCategory,
     RestaurantDish,
     HotspotLocation,
     DishAddOn 

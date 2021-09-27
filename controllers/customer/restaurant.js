@@ -25,16 +25,6 @@ module.exports = {
 
     },
 
-    getRestaurantCategory: async (req, res) => {
-         try {
-            const responseFromService = await restaurantService.getRestaurantCategory();
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-
-    },
-
     getQuickFilterList: async (req, res) => {
          try {
             const responseFromService = await restaurantService.getQuickFilterList(req.query);

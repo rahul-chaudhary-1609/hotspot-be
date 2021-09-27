@@ -246,14 +246,12 @@ module.exports = {
         }),
         customer_location:Joi.array().required(),
         quick_filter_ids:Joi.array().allow(null, '').optional(),
-        restaurant_category_ids:Joi.array().allow(null, '').optional(),
         searchPhrase:Joi.string().trim().allow(null, '').optional(),
     }),
 
     getHotspotRestaurantPickup:Joi.object({
         customer_location:Joi.array().required(),
         quick_filter_ids:Joi.array().allow(null, '').optional(),
-        restaurant_category_ids:Joi.array().allow(null, '').optional(),
         searchPhrase:Joi.string().trim().allow(null, '').optional(),
     }),
 

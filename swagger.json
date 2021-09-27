@@ -1780,17 +1780,6 @@
                   "enum":[1,2,3]
               },
               {
-                  "name": "restaurant_category_ids",
-                  "in": "formData",
-                  "description": "[1,2,3...]",
-                  "required": true,
-                  "type": "array",
-                  "items":{
-                    "type":"number"
-                  },
-                  "minItems": 1
-              },
-              {
                 "name": "agreement_doc_url",
                 "in": "formData",
                 "description": "agreement_doc_url",
@@ -2028,17 +2017,6 @@
                   2,
                   3
                 ]
-              },
-              {
-                "name": "restaurant_category_ids",
-                "in": "formData",
-                "description": "[1,2,3...]",
-                "required": true,
-                "type": "array",
-                "items": {
-                  "type": "number"
-                },
-                "minItems": 1
               },
               {
                 "name": "agreement_doc_url",
@@ -7208,16 +7186,6 @@
                 }
               },
               {
-                "name": "restaurant_category_ids",
-                "in": "formData",
-                "description": "enter restaurant category ids",
-                "required": false,
-                "type": "array",
-                "items": {
-                  "type": "number"
-                }
-              },
-              {
                 "name": "searchPhrase",
                 "in": "formData",
                 "description": "enter the phrase for search",
@@ -7268,16 +7236,6 @@
                 }
               },
               {
-                "name": "restaurant_category_ids",
-                "in": "formData",
-                "description": "enter restaurant category ids",
-                "required": false,
-                "type": "array",
-                "items": {
-                  "type": "number"
-                }
-              },
-              {
                 "name": "searchPhrase",
                 "in": "formData",
                 "description": "enter the phrase for search",
@@ -7295,27 +7253,6 @@
               "Customer Restaurant"
             ],
             "description": "Api to check whether default address available or not",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "security": [
-              {
-                "Bearer": []
-              }
-            ],
-            
-            "parameters": [],
-            "responses": {}
-          }
-        },
-
-        
-        "/customer/get-restaurant-category": {
-          "get": {
-            "tags": [
-              "Customer Restaurant"
-            ],
-            "description": "Api to get all restaurant categories",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],

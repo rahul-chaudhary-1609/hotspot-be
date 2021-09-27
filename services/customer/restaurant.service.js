@@ -251,33 +251,6 @@ module.exports = {
           
     },
 
-    getRestaurantCategory: async () => {
-
-            let restaurantCategories = await models.RestaurantCategory.findAndCountAll();
-
-            if (restaurantCategories.count === 0) {
-                await models.RestaurantCategory.bulkCreate(
-                    [{ name: "Sandwiches" }, { name: "Healthy" }, { name: "Vegan" }, { name: "Mexican" }, { name: "Asian" }, { name: "Deserts" }], { returning: ['id'] },
-                );
-            }
-
-        restaurantCategories = await models.RestaurantCategory.findAll({
-            where: {
-                    status:constants.STATUS.active
-                }
-            });
-
-            const categories = await restaurantCategories.map((restaurantCategory) => {
-                return {
-                    restaurant_category_id: restaurantCategory.id,
-                    name:restaurantCategory.name,
-                }
-            });
-
-            return { categories };
-          
-    },
-
     getQuickFilterList: async (params) => {
 
         console.log(params);
@@ -339,37 +312,7 @@ module.exports = {
             if (!searchSuggestion.restaurantCategories.includes(restaurant.restaurant_name)) {
                 searchSuggestion.restaurantCategories.push(restaurant.restaurant_name)
             }
-        })
-
-        const restaurantCategories = await models.RestaurantCategory.findAll({
-            where: {
-                name: {
-                    [Op.iLike]: `%${searchPhrase}%`,
-                },
-                status:constants.STATUS.active
-            }
-        });
-
-        restaurantCategories.forEach((restaurantCategory) => {
-            if (!searchSuggestion.restaurantCategories.includes(restaurantCategory.name)) {
-                searchSuggestion.restaurantCategories.push(restaurantCategory.name)
-            }
-        })
-
-        const restaurantDishes = await models.RestaurantDish.findAll({
-            where: {
-                name: {
-                    [Op.iLike]: `%${searchPhrase}%`,
-                },
-                status:constants.STATUS.active
-            }
-        });
-
-        restaurantDishes.forEach((restaurantDish) => {
-            if (!searchSuggestion.restaurantCategories.includes(restaurantDish.name)) {
-                searchSuggestion.restaurantCategories.push(restaurantDish.name)
-            }
-        })
+        })      
     
 
         return { searchSuggestion };
@@ -404,98 +347,50 @@ module.exports = {
 
 
         if (params.quick_filter_ids && params.quick_filter_ids.length!=0) {
+
+            models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
+            models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
+            
             let restaurantDishes = await utility.convertPromiseToObject(
                 await models.RestaurantDish.findAll({
                     attributes:['id','restaurant_id'],
                     where: {
                         id: params.quick_filter_ids,
                         status:constants.STATUS.active,
-                    }
+                    },
+                    include:[
+                        {
+                            model:models.RestaurantDishCategory,
+                            require:true,
+                            attributes:['id','name'],
+                            include:[
+                                {
+                                    model:models.Restaurant,
+                                    require:true,
+                                    attributes:['id', 'restaurant_name'],
+                                }
+                            ]
+                        },
+                    ]
                 })
             )
             
             restaurantDishes.forEach((restaurantDish) => {
-                if (!whereCondiition.id.includes(restaurantDish.restaurant_id)) {
-                    whereCondiition.id.push(restaurantDish.restaurant_id)
+                if (!whereCondiition.id.includes(restaurantDish.RestaurantDishCategory.Restaurant.id)) {
+                    whereCondiition.id.push(restaurantDish.RestaurantDishCategory.Restaurant.id)
                 }                
             })
         }
-
-        if (params.restaurant_category_ids && params.restaurant_category_ids.length!=0) {
-            let restaurant_category_ids = [];
-
-            params.restaurant_category_ids.forEach((restaurant_category_id) => {
-                restaurant_category_ids.push({
-                    restaurant_category_ids: {
-                    [Op.contains]:[restaurant_category_id]
-                }
-                })
-            })
-
-            whereCondiition = {
-                ...whereCondiition,
-                [Op.or]:restaurant_category_ids,              
-            }
-        }
-
         
         if (params.searchPhrase) {
-
-            let restaurantDishes = await utility.convertPromiseToObject(
-                await models.RestaurantDish.findAll({
-                    attributes:['id','restaurant_id'],
-                    where: {
-                        name: {
-                                    [Op.iLike]:`%${params.searchPhrase}%`
-                            },
-                        status:constants.STATUS.active
-                        
-                    }
-                })
-            )
-
-            
-            restaurantDishes.forEach((restaurantDish) => {
-                if (!whereCondiition.id.includes(restaurantDish.restaurant_id)) {
-                    whereCondiition.id.push(restaurantDish.restaurant_id)
-                }                
-            })
-
-            let restaurantCategories = await utility.convertPromiseToObject(
-                await models.RestaurantCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]:`%${params.searchPhrase}%`
-                        },
-                        status:constants.STATUS.active
-                    }
-                })
-            )
-
-            let restaurant_category_ids = [];
-
-            restaurantCategories.forEach((restaurantCategory) => {
-                restaurant_category_ids.push({
-                    restaurant_category_ids: {
-                    [Op.contains]:[restaurantCategory.id]
-                }
-                })
-            })
 
             let restaurants = await utility.convertPromiseToObject(
                 await models.Restaurant.findAll({
                     attributes:['id'],
                     where: {
-                        [Op.or]: [
-                            {
-                                restaurant_name: {
-                                    [Op.iLike]:`%${params.searchPhrase}%`
-                                }
-                            },
-                            {
-                                [Op.or]:restaurant_category_ids,
-                            }
-                        ],
+                        restaurant_name: {
+                            [Op.iLike]:`%${params.searchPhrase}%`
+                        },
                         status:constants.STATUS.active
                         
                     }
@@ -543,7 +438,7 @@ module.exports = {
                     restaurant_id,
                     delivery_datetime,
                     status: {
-                        [Op.ne]:constants.ORDER_STATUS.not_paid,
+                        [Op.notIn]:[constants.ORDER_STATUS.not_paid],
                     }
                 }
             })
@@ -566,8 +461,6 @@ module.exports = {
         )
 
         return getRestaurantCard({ restaurants, user, params });
-
-
     },
 
     getHotspotRestaurantPickup: async (params, user) => {
@@ -586,118 +479,49 @@ module.exports = {
 
 
         if (params.quick_filter_ids && params.quick_filter_ids.length!=0) {
+            models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
+            models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
+            
             let restaurantDishes = await utility.convertPromiseToObject(
                 await models.RestaurantDish.findAll({
                     attributes:['id','restaurant_id'],
                     where: {
                         id: params.quick_filter_ids,
                         status:constants.STATUS.active,
-                    }
+                    },
+                    include:[
+                        {
+                            model:models.RestaurantDishCategory,
+                            require:true,
+                            attributes:['id','name'],
+                            include:[
+                                {
+                                    model:models.Restaurant,
+                                    require:true,
+                                    attributes:['id', 'restaurant_name'],
+                                }
+                            ]
+                        },
+                    ]
                 })
             )
             
             restaurantDishes.forEach((restaurantDish) => {
-                if (!whereCondiition.id.includes(restaurantDish.restaurant_id)) {
-                    whereCondiition.id.push(restaurantDish.restaurant_id)
+                if (!whereCondiition.id.includes(restaurantDish.RestaurantDishCategory.Restaurant.id)) {
+                    whereCondiition.id.push(restaurantDish.RestaurantDishCategory.Restaurant.id)
                 }                
             })
-        }
-
-        if (params.restaurant_category_ids && params.restaurant_category_ids.length!=0) {
-            let restaurant_category_ids = [];
-
-            params.restaurant_category_ids.forEach((restaurant_category_id) => {
-                restaurant_category_ids.push({
-                    restaurant_category_ids: {
-                    [Op.contains]:[restaurant_category_id]
-                }
-                })
-            })
-
-            whereCondiition = {
-                ...whereCondiition,
-                [Op.or]:restaurant_category_ids,              
-            }
         }
 
         if (params.searchPhrase) {
-            // let dishCategories = await utility.convertPromiseToObject(
-            //     await models.DishCategory.findAll({
-            //         where: {
-            //             name: {
-            //                 [Op.iLike]:`%${params.searchPhrase}%`
-            //             }
-            //         }
-            //     })
-            // )
-
-            // let dish_category_ids = dishCategories.map((dishCategory) => dishCategory.id);
-
-            let restaurantDishes = await utility.convertPromiseToObject(
-                await models.RestaurantDish.findAll({
-                    attributes:['id','restaurant_id'],
-                    where: {
-                        name: {
-                                    [Op.iLike]:`%${params.searchPhrase}%`
-                            },
-                        // [Op.or]: [
-                        //     {
-                        //         name: {
-                        //             [Op.iLike]:`%${params.searchPhrase}%`
-                        //         }
-                        //     },
-                        //     {
-                        //         dish_category_id:dish_category_ids,
-                        //     }
-                        // ],
-                        status:constants.STATUS.active,
-                        
-                    }
-                })
-            )
-
-            
-            restaurantDishes.forEach((restaurantDish) => {
-                if (!whereCondiition.id.includes(restaurantDish.restaurant_id)) {
-                    whereCondiition.id.push(restaurantDish.restaurant_id)
-                }                
-            })
-
-            let restaurantCategories = await utility.convertPromiseToObject(
-                await models.RestaurantCategory.findAll({
-                    where: {
-                        name: {
-                            [Op.iLike]:`%${params.searchPhrase}%`
-                        },
-                        status:constants.STATUS.active,
-                    }
-                })
-            )
-
-            let restaurant_category_ids = [];
-
-            restaurantCategories.forEach((restaurantCategory) => {
-                restaurant_category_ids.push({
-                    restaurant_category_ids: {
-                    [Op.contains]:[restaurantCategory.id]
-                }
-                })
-            })
 
             let restaurants = await utility.convertPromiseToObject(
                 await models.Restaurant.findAll({
                     attributes:['id'],
                     where: {
-                        [Op.or]: [
-                            {
-                                restaurant_name: {
-                                    [Op.iLike]:`%${params.searchPhrase}%`
-                                }
-                            },
-                            {
-                                [Op.or]:restaurant_category_ids,
-                            }
-                        ],
+                        restaurant_name: {
+                            [Op.iLike]:`%${params.searchPhrase}%`
+                        },
                         status:constants.STATUS.active,                        
                     }
                 })
