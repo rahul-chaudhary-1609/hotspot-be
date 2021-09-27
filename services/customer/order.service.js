@@ -418,14 +418,16 @@ module.exports = {
                     continue;
                 }
 
-                const dishAddOn=await models.DishAddOn.findAll({
-                    where: {
-                        id: item.dish_add_on_ids,
-                        status:constants.STATUS.active,
-                    }
-                })
+                const dishAddOn=await utilityFunction.convertPromiseToObject(
+                    await models.DishAddOn.findAll({
+                        where: {
+                            id: item.dish_add_on_ids,
+                            status:constants.STATUS.active,
+                        }
+                    })
+                )
 
-                if(dishAddOn.length!=item.dish_add_on_ids.length){
+                if(dishAddOn && dishAddOn.length!=item.dish_add_on_ids.length){
                     await models.Cart.destroy({
                         where:{
                             id:item.id,
@@ -460,7 +462,7 @@ module.exports = {
             }
 
             let taxes= await utilityFunction.convertPromiseToObject(
-                    await models.TAX.findAll({
+                    await models.Tax.findAll({
                         where:{
                             type:{
                                 [Op.notIn]:[constants.TAX_TYPE.none]
@@ -544,14 +546,16 @@ module.exports = {
                 throw new Error(constants.MESSAGES.cart_item_not_available)
             }
 
-            const dishAddOn=await models.DishAddOn.findAll({
-                where: {
-                    id: item.dish_add_on_ids,
-                    status:constants.STATUS.active,
-                }
-            })
+            const dishAddOn=await utilityFunction.convertPromiseToObject(
+                await models.DishAddOn.findAll({
+                    where: {
+                        id: item.dish_add_on_ids,
+                        status:constants.STATUS.active,
+                    }
+                })
+            )
 
-            if(dishAddOn.length!=item.dish_add_on_ids.length){
+            if(dishAddOn && dishAddOn.length!=item.dish_add_on_ids.length){
                 throw new Error(constants.MESSAGES.dish_addon_not_available)
             }
 
@@ -581,7 +585,7 @@ module.exports = {
             })
         }
 
-        const totalActualPrice = cartItems.reduce((result, item) => result + item.itemActualPrice, 0);
+        const totalActualPrice = ordered_items.reduce((result, item) => result + item.itemActualPrice, 0);
 
         let hotspot = null;
         let restaurant = null;
