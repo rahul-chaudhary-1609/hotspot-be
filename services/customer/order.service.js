@@ -31,7 +31,7 @@ const getOrderCard =  async (args) => {
                 restaurant: order.order_details.restaurant.restaurant_name,
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 orderItems:order.order_details.ordered_items,
-                amount: parseFloat(order.amount),
+                amount: order.tip_amount? parseFloat(order.amount)+parseFloat(order.tip_amount):parseFloat(order.amount),
                 status,
             }
 
@@ -328,7 +328,7 @@ module.exports = {
                 where: {
                     customer_id: user.id,
                     restaurant_id,
-                    status:0,
+                    status:constants.ORDER_STATUS.not_paid,
                 }
             })
             
@@ -512,14 +512,12 @@ module.exports = {
             where: {
                 customer_id,
                 restaurant_id,
-                status:0,
+                status:constants.ORDER_STATUS.not_paid,
             }
         })
 
         const order_id = await utilityFunction.getUniqueOrderId();
         const amount = parseFloat(params.amount);
-        //const tip_amount = params.tip_amount && parseFloat(params.tip_amount);
-        const status = constants.ORDER_STATUS.not_paid;
         const type = parseInt(params.order_type);
         const delivery_datetime = params.delivery_datetime ? new Date(params.delivery_datetime) : null;
         const cart_ids = params.cart_ids;
@@ -652,7 +650,6 @@ module.exports = {
             hotspot_dropoff_id: hotspot ? hotspot.dropoff.id : null,
             order_details,
             amount,
-            status,
             type,
             delivery_datetime,
             driver_payment_status: type == constants.ORDER_TYPE.delivery?constants.PAYMENT_STATUS.not_paid:constants.PAYMENT_STATUS.not_applicable,
@@ -879,7 +876,7 @@ module.exports = {
                 restaurant: order.order_details.restaurant.restaurant_name,
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 orderItems:order.order_details.ordered_items,
-                amount: parseFloat(order.amount),
+                amount: order.tip_amount? parseFloat(order.amount)+parseFloat(order.tip_amount):parseFloat(order.amount),
                 status,
             }
             

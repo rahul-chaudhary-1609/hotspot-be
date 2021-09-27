@@ -2,7 +2,6 @@ require('dotenv/config');
 const models = require('../../models');
 const {sequelize}=require('../../models');
 const { Op } = require("sequelize");
-const dummyData = require('./dummyData');
 const constants = require('../../constants');
 const utility = require('../../utils/utilityFunctions');
 const geolib = require('geolib');
@@ -357,20 +356,6 @@ module.exports = {
             }
         })
 
-        // const dishCategories = await models.DishCategory.findAll({
-        //     where: {
-        //         name: {
-        //             [Op.iLike]: `%${searchPhrase}%`,
-        //         }
-        //     }
-        // });
-
-        // dishCategories.forEach((dishCategory) => {
-        //     if (!searchSuggestion.restaurantCategories.includes(dishCategory.name)) {
-        //         searchSuggestion.restaurantCategories.push(dishCategory.name)
-        //     }
-        // })
-
         const restaurantDishes = await models.RestaurantDish.findAll({
             where: {
                 name: {
@@ -393,13 +378,6 @@ module.exports = {
     },
     getOfferBanner: async () => {
         let hotspotOffer = await models.HotspotOffer.findAndCountAll();
-
-        if (hotspotOffer.count === 0) {
-            await models.HotspotOffer.bulkCreate(
-                dummyData.hotspotOfferBanners,
-                { returning: ['id'] },
-            );
-        }
 
         hotspotOffer = await models.HotspotOffer.findAll({
             order:[["order"]]
@@ -462,17 +440,6 @@ module.exports = {
 
         
         if (params.searchPhrase) {
-            // let dishCategories = await utility.convertPromiseToObject(
-            //     await models.DishCategory.findAll({
-            //         where: {
-            //             name: {
-            //                 [Op.iLike]:`%${params.searchPhrase}%`
-            //             }
-            //         }
-            //     })
-            // )
-
-            // let dish_category_ids = dishCategories.map((dishCategory) => dishCategory.id);
 
             let restaurantDishes = await utility.convertPromiseToObject(
                 await models.RestaurantDish.findAll({
@@ -481,16 +448,6 @@ module.exports = {
                         name: {
                                     [Op.iLike]:`%${params.searchPhrase}%`
                             },
-                        // [Op.or]: [
-                        //     {
-                        //         name: {
-                        //             [Op.iLike]:`%${params.searchPhrase}%`
-                        //         }
-                        //     },
-                        //     {
-                        //         dish_category_id:dish_category_ids,
-                        //     }
-                        // ],
                         status:constants.STATUS.active
                         
                     }

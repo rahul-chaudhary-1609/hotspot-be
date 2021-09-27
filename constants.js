@@ -134,26 +134,31 @@ module.exports = {
     bad_request: 404
   },
 
-defaultServerResponse : {
-  status: 400,
-  success: false,
-  message: ''
-},
-otp_expiry_time : 60,
-OFFSET_LIMIT : 10,
-ORDER_STATUS: {
-  not_paid: 0,
-  pending: 1,
-  food_being_prepared: 2,
-  food_ready_or_on_the_way: 3,
-  delivered: 4
-},
-ORDER_TYPE: {
- delivery: 1,
- pickup: 2,
- both: 3
-},
-CUSTOM_JOI_MESSAGE : {
+  defaultServerResponse : {
+    status: 400,
+    success: false,
+    message: ''
+  },
+
+  otp_expiry_time : 60,
+
+  OFFSET_LIMIT : 10,
+
+  ORDER_STATUS: {
+    not_paid: 0,
+    pending: 1,
+    food_being_prepared: 2,
+    food_ready_or_on_the_way: 3,
+    delivered: 4
+  },
+
+  ORDER_TYPE: {
+  delivery: 1,
+  pickup: 2,
+  both: 3
+  },
+
+  CUSTOM_JOI_MESSAGE : {
     password_msg : {
       min: "Password must have minimum 8 characters",
       max: "Password can not have more than 15 characters",
@@ -217,6 +222,14 @@ CUSTOM_JOI_MESSAGE : {
     inactive: 0,
     active: 1,
     deleted: 2,
+  },
+
+  CURRENCY:process.env.CURRENCY || "USD",
+
+  STRIPE:{
+    currency:process.env.CURRENCY || "USD",
+    stripe_secret_key:process.env.STRIPE_SECRET_KEY || null,
+    stripe_publishable_key:process.env.STRIPE_PUBLISH_KEY || null,
   },
 
   PAYMENT_STATUS : {

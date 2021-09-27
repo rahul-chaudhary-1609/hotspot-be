@@ -1,7 +1,6 @@
 const models = require('../../models');
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
-const dummyData = require('./dummyData');
 const adminAWS = require('../../utils/aws');
 const constants = require("../../constants");
 const generator = require('generate-password');
@@ -75,44 +74,6 @@ module.exports = {
     
     },
 
-    addDrivers: async () => {
-        
-            let drivers = await models.Driver.findAndCountAll();
-            
-            if (drivers.count === 0) {
-                await models.Driver.bulkCreate(dummyData.drivers);
-            }
-
-            let driverList = await models.Driver.findAll();
-
-            let driverAddress = await models.DriverAddress.findAndCountAll();    
-            
-            if (driverAddress.count === 0 || drivers.count === 0) {
-                var driverAddressList = driverList.map((val, key) => {
-                    dummyData.driver_addresses[key].driver_id = val.id;
-                    return dummyData.driver_addresses[key];
-                });
-                
-                await models.DriverAddress.bulkCreate(driverAddressList);
-            }
-
-            let driverVehicleDetail = await models.DriverVehicleDetail.findAndCountAll();    
-            
-            if (driverVehicleDetail.count === 0 || drivers.count === 0) {
-                var driverVehicleDetailList = driverList.map((val, key) => {
-                    dummyData.driver_vehicle_details[key].driver_id = val.id;
-                    return dummyData.driver_vehicle_details[key];
-                });
-                
-                await models.DriverVehicleDetail.bulkCreate(driverVehicleDetailList);
-            }
-
-            
-
-        return true;
-            
-       
-    },
 
     getDriverDetails: async(params) => {
 

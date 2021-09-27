@@ -1646,29 +1646,6 @@
 
 
 
-
-
-        "/admin/restaurantCategoryList": {
-          "get": {
-            "tags": [
-              "Admin Restaurant Management"
-            ],
-            "description": "Api to get restaurant category list",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
         "/admin/addRestaurant": {
           "post": {
           "tags": [
@@ -2152,27 +2129,9 @@
           }
         },
 
-        "/admin/dishCategoryList": {
-          "get": {
-            "tags": [
-              "Admin Menu Management"
-            ],
-            "description": "Api to add new dish",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
+
+
+        
 
         "/admin/addDish": {
           "post": {

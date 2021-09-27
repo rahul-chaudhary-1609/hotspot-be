@@ -112,24 +112,6 @@ module.exports = {
         }
     },
 
-    restaurantDishCategoryList: async (req, res) => {
-        try {
-            const responseFromService = await restaurantService.restaurantDishCategoryList();
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
-
-    dishCategoryList: async (req, res) => {
-        try {
-            const responseFromService = await restaurantService.dishCategoryList();
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
-
     addDish: async (req, res) => {
         try {
             const responseFromService = await restaurantService.addDish(req.body);

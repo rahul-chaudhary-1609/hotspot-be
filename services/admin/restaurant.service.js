@@ -12,7 +12,6 @@ const {
 const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
 const constants = require("../../constants");
-const dummyData = require("../../services/customer/dummyData");
 
 module.exports = {
     listRestaurant: async(params) => {
@@ -409,48 +408,6 @@ module.exports = {
         return {
             category
         };
-    },
-
-
-    restaurantCategoryList: async () => {
-
-            let restaurantCategory = await RestaurantCategory.findAndCountAll();
-
-                if (restaurantCategory.count === 0) {
-                    await RestaurantCategory.bulkCreate(
-                        [{ name: "Sandwiches" }, { name: "Healthy" }, { name: "Vegan" }, { name: "Mexican" }, { name: "Asian" }, { name: "Deserts" }], { returning: ['id'] },
-                );
-            }
-        
-            let restaurantCategoryList = await RestaurantCategory.findAndCountAll({where:{status:constants.STATUS.active},raw: true});
-            if(restaurantCategoryList)
-                return { restaurantCategoryList };
-        
-    },
-
-    dishCategoryList: async () => {
-
-        let dishCategory = await DishCategory.findAndCountAll();
-
-            if (dishCategory.count === 0) {
-                await DishCategory.bulkCreate(
-                    dummyData.dishCategories,
-                    { returning: ['id'] },
-                );
-            }
-    
-
-             dishCategory = await DishCategory.findAll();
-
-            const dishCategories = await dishCategory.map((val) => {
-                return {
-                    id: val.id,
-                    name: val.name,
-                }
-            });
-
-            return { dishCategories };
-        
     },
 
     addDish: async (params) => {

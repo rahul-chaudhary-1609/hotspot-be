@@ -48,7 +48,6 @@ router.put('/uploadFile',adminAuthentication.validateAdminToken, adminMulter.upl
 
 //Restaurant Management
 
-router.get('/restaurantCategoryList',adminAuthentication.validateAdminToken, adminRestaurantController.restaurantDishCategoryList);
 router.post('/addRestaurant',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.addRestaurant);
 router.get('/listRestaurant',adminAuthentication.validateAdminToken, adminRestaurantController.listRestaurant);
 router.put('/changeRestaurantStatus/:restaurantId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.restaurantIdSchema), adminRestaurantController.changeRestaurantStatus);
@@ -68,7 +67,6 @@ router.put('/toggleRestaurantDishCategoryStatus',adminAuthentication.validateAdm
 
 //Menu Management
 
-router.get('/dishCategoryList',adminAuthentication.validateAdminToken, adminRestaurantController.dishCategoryList);
 router.post('/addDish',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addDish), adminRestaurantController.addDish);
 router.get('/getDish/:dishId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getDish),adminRestaurantController.getDish);
 router.get('/listDishes',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listDishes), adminRestaurantController.listDishes);
@@ -163,17 +161,8 @@ router.put('/approveDriver/:driverId',adminAuthentication.validateAdminToken, ad
 
 router.put('/changeDriverStatus/:driverId',adminAuthentication.validateAdminToken, adminDriverController.changeDriverStatus);
 
-// router.put('/uploadDriverProfileImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadDriverProfileImage);
-
-// router.put('/uploadVehicleImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadVehicleImage);
-
-// router.put('/uploadLicenseImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadLicenseImage);
-
-// router.put('/uploadInsuranceImage',adminAuthentication.validateAdminToken, adminMulter.upload, adminDriverController.uploadInsuranceImage);
-
 router.put('/editDriver/:driverId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.driverSchema), adminDriverController.editDriver);
 
-router.get('/addDrivers',adminDriverController.addDrivers);
 
 
 //order Management

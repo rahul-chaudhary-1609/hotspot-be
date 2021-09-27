@@ -1,7 +1,7 @@
 require('dotenv/config');
 const models = require('../../models');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const constants = require("../../constants");
+const stripe = require('stripe')(constants.STRIPE.stripe_secret_key);
 const utilityFunction=require('../../utils/utilityFunctions')
 
 module.exports = {
@@ -186,8 +186,7 @@ module.exports = {
     },
 
 
-   payment: async (params,user) => {
-       
+   payment: async (params,user) => {       
             
      const customer = await utilityFunction.convertPromiseToObject(
        await models.Customer.findByPk(user.id)
@@ -323,7 +322,7 @@ module.exports = {
 
             const stripePaymentIntent = await stripe.paymentIntents.create({
               amount: parseInt(params.amount*100),
-              currency: "USD",
+              currency: constants.STRIPE.currency,
               customer: stripeCustomer.id,
             });
 

@@ -13,15 +13,6 @@ module.exports = {
         }
     },
 
-    addDrivers: async (req, res) => {
-        try {
-            const responseFromService = await driverService.addDrivers();
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
-        } catch (error) {
-            utilityFunction.errorResponse(res, error, constants.code.error_code);
-        }
-    },
-
     getDriverDetails: async(req, res) => {
         try {
             const responseFromService = await driverService.getDriverDetails(req.params);
