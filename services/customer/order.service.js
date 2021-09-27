@@ -486,7 +486,10 @@ module.exports = {
  
 
             return {
-                restaurant_name:restaurant.restaurant_name,
+                restaurant:{
+                    id:restaurant.id,
+                    name:restaurant.restaurant_name,
+                },
                 cart: { 
                     cartInfo,
                     cartItems,
