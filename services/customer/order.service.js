@@ -269,8 +269,60 @@ module.exports = {
         })
 
         if (cart) {
+            
+            // const dish = await models.RestaurantDish.findOne({
+            //     where: {
+            //         id: cart.restaurant_dish_id,
+            //         status:constants.STATUS.active,
+            //     }
+            // })
+
+            // if(!dish){
+            //     await models.Cart.destroy({
+            //         where:{
+            //             id:cart.id,
+            //         }
+            //     })
+
+            //     continue;
+            // }
+
+            const dishAddOn=await utilityFunction.convertPromiseToObject(
+                await models.DishAddOn.findAll({
+                    where: {
+                        id: cart.dish_add_on_ids,
+                        status:constants.STATUS.active,
+                    }
+                })
+            )
+
+            // if(dishAddOn && cart.dish_add_on_ids && dishAddOn.length!=cart.dish_add_on_ids.length){
+            //     await models.Cart.destroy({
+            //         where:{
+            //             id:cart.id,
+            //         }
+            //     })
+
+            //     continue;
+            // }
+
+            // let addOnPrice = 0;
+            
+            // const addOns = dishAddOn.map((addOn) => {
+            //     let price=addOn.markup_price ? (parseFloat(addOn.price)+parseFloat(addOn.markup_price)).toFixed(2) : addOn.price
+            //     addOnPrice = addOnPrice + parseFloat(price)
+            //     return {
+            //         id: addOn.id,
+            //         name: addOn.name,
+            //         price,
+            //     }
+            // })
+
             return {
-                cart
+                cart:{
+                    ...cart,
+                    dish_add_on_ids:dishAddOn,
+                }
             }
         }else{
             throw new Error(constants.MESSAGES.no_cart_item)
