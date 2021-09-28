@@ -444,7 +444,7 @@ module.exports = {
                     })
                 )
 
-                if(dishAddOn && dishAddOn.length!=item.dish_add_on_ids.length){
+                if(dishAddOn && item.dish_add_on_ids && dishAddOn.length!=item.dish_add_on_ids.length){
                     await models.Cart.destroy({
                         where:{
                             id:item.id,
@@ -576,7 +576,7 @@ module.exports = {
                 })
             )
 
-            if(dishAddOn && dishAddOn.length!=item.dish_add_on_ids.length){
+            if(dishAddOn && item.dish_add_on_ids && dishAddOn.length!=item.dish_add_on_ids.length){
                 throw new Error(constants.MESSAGES.dish_addon_not_available)
             }
 

@@ -392,7 +392,7 @@ module.exports = {
         restaurant_dish_id:Joi.number().required(),
         cart_count:Joi.number().required(),
         dish_add_on_ids:Joi.array().allow(null, '').optional(),
-        special_instructions:Joi.string().optional(),
+        special_instructions:Joi.string().allow(null, '').optional(),
     }),
 
     getCartItemById: Joi.object({     
@@ -403,7 +403,7 @@ module.exports = {
         cart_item_id:Joi.number().required(),   
         cart_count:Joi.number().optional(),
         dish_add_on_ids:Joi.array().allow(null, '').optional(),
-        special_instructions:Joi.string().optional(),
+        special_instructions:Joi.string().allow(null, '').optional(),
     }),
 
     createOrder:Joi.object({
