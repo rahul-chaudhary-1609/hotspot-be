@@ -74,7 +74,7 @@ module.exports = {
 
     getRestaurantDetails: async (req, res) => {
          try {
-            const responseFromService = await restaurantService.getRestaurantDetails(req.query);
+            const responseFromService = await restaurantService.getRestaurantDetails(req.query,req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

@@ -262,11 +262,13 @@ module.exports = {
 
     getCartItemById: async (params) => {
 
-        const cart = await models.Cart.findOne({
-            where: {
-                id:parseInt(params.cart_item_id)
-            }
-        })
+        const cart =await utilityFunction.convertPromiseToObject(
+            await models.Cart.findOne({
+                where: {
+                    id:parseInt(params.cart_item_id)
+                }
+            })
+        )
 
         if (cart) {
             
