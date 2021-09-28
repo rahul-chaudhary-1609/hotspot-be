@@ -96,9 +96,15 @@ module.exports = {
                 where:  {
                       status: [1,2, 3, 4],
                 }
-            });           
+            });
             
-            return {totalRevenue:totalAmount };
+            const totalTipAmount = await models.Order.sum('tip_amount',{
+              where:  {
+                    status: [1,2, 3, 4],
+              }
+          });
+            
+            return {totalRevenue:totalAmount+totalTipAmount };
 
          
     },
@@ -112,10 +118,19 @@ module.exports = {
                         [Op.between]: [params.start_date, params.end_date]
                     }
                 }
-            });              
+            }); 
+            
+            const totalTipAmount = await models.Order.sum('tip_amount',{
+              where:  {
+                      status: [1,2, 3, 4],
+                  created_at:{
+                      [Op.between]: [params.start_date, params.end_date]
+                  }
+              }
+          }); 
 
             
-            return {totalRevenue:totalAmount };
+            return {totalRevenue:totalAmount+totalTipAmount };
 
          
     },
@@ -335,9 +350,16 @@ module.exports = {
                 hotspot_location_id:params.hotspot_id,
             }
         });
+
+        const totalTipAmount = await models.Order.sum('tip_amount',{
+          where: {
+                status: [1,2, 3, 4],
+                hotspot_location_id:params.hotspot_id,
+            }
+        });
        
         
-        return {totalRevenue:totalAmount };
+        return {totalRevenue:totalAmount+totalTipAmount };
 
      
       },

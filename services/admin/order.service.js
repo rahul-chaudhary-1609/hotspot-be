@@ -4,8 +4,7 @@ const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const constants = require("../../constants");
 
-const getOrderRow =  async (args) => {
-   
+const getOrderRow =  async (args) => {  
         
         const orderRows = [];
         for (const val of args.orderList.rows) {
@@ -32,7 +31,7 @@ const getOrderRow =  async (args) => {
                     name: val.order_details.hotspot.name,
                     details: val.order_details.hotspot.location_detail,
                 }:null,
-                amount: parseFloat(val.amount),
+                amount: val.tip_amount? parseFloat(val.amount)+parseFloat(val.tip_amount):parseFloat(val.amount),
                 restaurant:val.order_details.restaurant.restaurant_name,
                 status,
                 delivery_datetime: val.delivery_datetime,
@@ -305,7 +304,7 @@ module.exports = {
                 dropoff:order.order_details.hotspot?order.order_details.hotspot.dropoff:null,
                 orderItems:order.order_details.ordered_items,
                 amount: parseFloat(order.amount),
-                tipAmount:parseFloat(order.tip_amount),
+                tipAmount:order.tip_amount && parseFloat(order.tip_amount),
                 type:order.type,
                 status,
                 driver: order.order_details.driver? `${order.order_details.driver.first_name} ${order.order_details.driver.last_name}`:null,

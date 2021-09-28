@@ -177,7 +177,7 @@ module.exports = {
     const driver_fee = await models.Fee.findOne({
             where: {
                 order_range_from: {
-                    [Op.lte]:parseFloat(currentOrderPickup.amount),
+                    [Op.lte]:parseFloat(currentOrderPickup.amount)+parseFloat(currentOrderPickup.tip_amount),
                 },              
             },
             order:[['order_range_from','DESC']]
@@ -199,7 +199,7 @@ module.exports = {
       })
     )
 
-    const hotspot_fee = parseFloat(currentOrderPickup.amount) - parseFloat(restaurant_fee) - parseFloat(driver_fee.fee);
+    const hotspot_fee = parseFloat(currentOrderPickup.amount) + parseFloat(currentOrderPickup.tip_amount) - parseFloat(restaurant_fee) - parseFloat(driver_fee.fee);
 
     const delivery_id = await utility.getUniqueOrderDeliveryId();
     let orderDeliveryObj = {

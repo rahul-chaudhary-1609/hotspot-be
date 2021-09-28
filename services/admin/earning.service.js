@@ -116,60 +116,6 @@ module.exports = {
         params.whereCondition=whereCondition
         whereCondition=getWhereCondition(params)
 
-        // if (params.start_date && params.end_date) {
-        //     whereCondition = {
-        //         ...whereCondition,
-        //         delivery_datetime: {
-        //             [Op.gte]: new Date(params.start_date+" 00:00:00"),
-        //             [Op.lte]: new Date(params.end_date+" 23:59:59")
-        //         }
-        //     };
-        // }
-        // else if (params.filter_key) {
-        //     let start_date = new Date();
-        //     let end_date = new Date();
-        //     if (params.filter_key == "Daily") {
-        //         start_date.setDate(end_date.getDate() - 1)
-        //         whereCondition = {
-        //             ...whereCondition,
-        //             delivery_datetime: {
-        //                 [Op.gte]: new Date(start_date),
-        //                 [Op.lte]: new Date(end_date)
-        //             }
-        //         };
-        //     }
-        //     else if (params.filter_key == "Weekly") {
-        //         start_date.setDate(end_date.getDate() - 7)
-        //         whereCondition = {
-        //             ...whereCondition,
-        //             delivery_datetime: {
-        //                 [Op.gte]: new Date(start_date),
-        //                 [Op.lte]: new Date(end_date)
-        //             }
-        //         };
-        //     }
-        //     else if (params.filter_key == "Monthly") {
-        //         start_date.setMonth(end_date.getMonth() - 1)
-        //         whereCondition = {
-        //             ...whereCondition,
-        //             delivery_datetime: {
-        //                 [Op.gte]: new Date(start_date),
-        //                 [Op.lte]: new Date(end_date)
-        //             }
-        //         };
-        //     }
-        //     else if (params.filter_key == "Yearly") {
-        //         start_date.setFullYear(end_date.getFullYear() - 1)
-        //         whereCondition = {
-        //             ...whereCondition,
-        //             delivery_datetime: {
-        //                 [Op.gte]: new Date(start_date),
-        //                 [Op.lte]: new Date(end_date)
-        //             }
-        //         };
-        //     }
-        // }
-
         // models.OrderDelivery.hasOne(models.HotspotLocation,{foreignKey:"id",sourceKey:"hotspot_location_id",targetKey:"id"})
 
         let orderDeliveries = await utility.convertPromiseToObject(
@@ -186,7 +132,8 @@ module.exports = {
         let orderDeliveriesRows = []
         
         for (let orderDelivery of orderDeliveries.rows) {
-            orderDelivery.order_amount = (parseFloat(orderDelivery.amount) - parseFloat(orderDelivery.tip_amount)).toFixed(2);
+            //orderDelivery.order_amount = (parseFloat(orderDelivery.amount) - parseFloat(orderDelivery.tip_amount)).toFixed(2);
+            orderDelivery.order_amount = (parseFloat(orderDelivery.amount)).toFixed(2);
             orderDelivery.restaurant_fee = (orderDelivery.delivery_details.restaurants.reduce((result, restaurant) => result + restaurant.fee, 0)).toFixed(2)
             orderDeliveriesRows.push(orderDelivery)
         }
@@ -259,60 +206,6 @@ module.exports = {
         params.whereCondition=whereCondition
         whereCondition=getWhereCondition(params)
 
-        // if (params.start_date && params.end_date) {
-        //     whereCondition = {
-        //         ...whereCondition,
-        //         delivery_datetime: {
-        //             [Op.gte]: new Date(params.start_date+" 00:00:00"),
-        //             [Op.lte]: new Date(params.end_date+" 23:59:59")
-        //         }
-        //     };
-        // }
-        // else if (params.filter_key) {
-        //     let start_date = new Date();
-        //     let end_date = new Date();
-        //     if (params.filter_key == "Daily") {
-        //         start_date.setDate(end_date.getDate() - 1)
-        //         whereCondition = {
-        //             ...whereCondition,
-        //             delivery_datetime: {
-        //                 [Op.gte]: new Date(start_date),
-        //                 [Op.lte]: new Date(end_date)
-        //             }
-        //         };
-        //     }
-        //     else if (params.filter_key == "Weekly") {
-        //         start_date.setDate(end_date.getDate() - 7)
-        //         whereCondition = {
-        //             ...whereCondition,
-        //             delivery_datetime: {
-        //                 [Op.gte]: new Date(start_date),
-        //                 [Op.lte]: new Date(end_date)
-        //             }
-        //         };
-        //     }
-        //     else if (params.filter_key == "Monthly") {
-        //         start_date.setMonth(end_date.getMonth() - 1)
-        //         whereCondition = {
-        //             ...whereCondition,
-        //             delivery_datetime: {
-        //                 [Op.gte]: new Date(start_date),
-        //                 [Op.lte]: new Date(end_date)
-        //             }
-        //         };
-        //     }
-        //     else if (params.filter_key == "Yearly") {
-        //         start_date.setFullYear(end_date.getFullYear() - 1)
-        //         whereCondition = {
-        //             ...whereCondition,
-        //             delivery_datetime: {
-        //                 [Op.gte]: new Date(start_date),
-        //                 [Op.lte]: new Date(end_date)
-        //             }
-        //         };
-        //     }
-        // }
-
         let orders = await utility.convertPromiseToObject(
             await models.Order.findAndCountAll({
                 where: whereCondition,
@@ -328,7 +221,10 @@ module.exports = {
         
         for (let order of orders.rows) {
             order.restaurant_fee = (parseFloat(order.order_details.restaurant.fee)).toFixed(2);
-            order.hotspot_fee = (parseFloat(order.amount) - parseFloat(order.order_details.restaurant.fee)).toFixed(2);
+            order.hotspot_fee = order.tiP_amount?
+                                (parseFloat(order.amount) + parseFloat(order.tip_amount) - parseFloat(order.order_details.restaurant.fee)).toFixed(2):
+                                (parseFloat(order.amount) - parseFloat(order.order_details.restaurant.fee)).toFixed(2)
+
             ordersRows.push(order)
         }
 
@@ -442,118 +338,6 @@ module.exports = {
 
         params.whereCondition=whereCondition
         whereCondition=getWhereCondition(params)
-
-        // if (params.start_date && params.end_date) {
-        //     whereCondition = {
-        //         [Op.and]: [
-        //             {
-        //                 ...whereCondition
-        //             },
-        //             {
-        //                 [Op.or]: [
-        //             {
-        //                 from_date: {
-        //                     [Op.and]: [
-        //                         { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-        //                         {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-        //                     ]                
-        //                 }
-
-        //             },
-        //             {
-        //                 to_date: {
-        //                     [Op.and]: [
-        //                         { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-        //                         {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
-        //                     ]                
-        //                 }
-
-        //             },
-        //         ]
-                
-        //             }
-        //         ]
-                
-        //     };
-        // }
-        // else if (params.filter_key) {
-        //     let start_date = new Date();
-        //     let end_date = new Date();
-        //     if (params.filter_key == "Monthly") {
-        //         start_date.setDate(1)
-        //         end_date.setMonth(start_date.getMonth() + 1)
-        //         end_date.setDate(1)
-        //         end_date.setDate(end_date.getDate() - 1)
-        //         whereCondition = {
-        //             [Op.and]: [
-        //                 {
-        //                     ...whereCondition,
-        //                 },
-        //                 {
-        //                     [Op.or]: [
-        //                         {
-        //                             from_date: {
-        //                                 [Op.and]: [
-        //                                     { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-        //                                     {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
-        //                                 ]                
-        //                             }
-
-        //                         },
-        //                         {
-        //                             to_date: {
-        //                                 [Op.and]: [
-        //                                     { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-        //                                     {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
-        //                                 ]                
-        //                             }
-
-        //                         },
-        //                     ]
-        //                 }
-        //             ]
-                    
-        //         };
-        //     }
-        //     else if (params.filter_key == "Yearly") {
-        //         start_date.setDate(1)
-        //         start_date.setMonth(0)
-        //         end_date.setDate(1)
-        //         end_date.setMonth(0)
-        //         end_date.setFullYear(end_date.getFullYear() + 1)
-        //         end_date.setDate(end_date.getDate()-1)
-        //         whereCondition = {
-        //             [Op.and]: [
-        //                 {
-        //                     ...whereCondition,
-        //                 },
-        //                 {
-        //                     [Op.or]: [
-        //                         {
-        //                             from_date: {
-        //                                 [Op.and]: [
-        //                                     { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-        //                                     {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
-        //                                 ]                
-        //                             }
-
-        //                         },
-        //                         {
-        //                             to_date: {
-        //                                 [Op.and]: [
-        //                                     { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-        //                                     {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
-        //                                 ]                
-        //                             }
-
-        //                         },
-        //                     ]
-        //                 }
-        //             ]
-                    
-        //         };
-        //     }
-        // }
 
 
         let restaurantEarnings= await utility.convertPromiseToObject(await models.RestaurantPayment.findAndCountAll({
