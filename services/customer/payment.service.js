@@ -8,24 +8,44 @@ module.exports = {
 
     addPaymentCard: async (params, user) => {
         
-            params.customer_id = user.id;
+      params.customer_id = user.id;
 
-            let card = await models.CustomerCard.findOne({
-                where: {
-                    customer_id: params.customer_id,
-                    card_number:params.card_number                        
-                    }
-            });
-            
-            if (card && (card.status==constants.STATUS.active)) {
-                throw new Error(constants.MESSAGES.payment_card_already_exist);
-            }
+      let card = await models.CustomerCard.findOne({
+          where: {
+              customer_id: params.customer_id,
+              card_number:params.card_number                        
+              }
+      });
+      
+      if (card && (card.status==constants.STATUS.active)) {
+          throw new Error(constants.MESSAGES.payment_card_already_exist);
+      }
 
-            card = await models.CustomerCard.create(params);
-        
-            if (card) {
-                return true
-            }           
+      card = await models.CustomerCard.create(params);
+
+      let cards = await utilityFunction.convertPromiseToObject(
+          await models.CustomerCard.findAll({
+          where: {
+            customer_id: user.id,
+            status: constants.STATUS.active
+          }
+        })
+      )
+    
+      if(cards.length == 1){
+        await models.CustomerCard.update({
+          is_default:true,
+        },{
+          where:{
+            customer_id: user.id,
+            status: constants.STATUS.active
+          }
+        })
+      }
+  
+      if (card) {
+          return true
+      }           
          
     },
     
@@ -71,6 +91,26 @@ module.exports = {
 
 
       if (cards.length == 0) throw new Error(constants.MESSAGES.no_payment_card);
+
+      if(cards.length == 1){
+        await models.CustomerCard.update({
+          is_default:true,
+        },{
+          where:{
+            customer_id: user.id,
+            status: constants.STATUS.active
+          }
+        })
+
+        cards = await utilityFunction.convertPromiseToObject(
+            await models.CustomerCard.findAll({
+            where: {
+              customer_id: user.id,
+              status: constants.STATUS.active
+            }
+          })
+        )
+      }
 
       let paymentCards = [];
 

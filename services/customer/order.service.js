@@ -1,5 +1,6 @@
 require('dotenv/config');
 const models = require('../../models');
+const {sequelize}=require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const constants = require('../../constants');
 const sendMail = require('../../utils/mail');
@@ -294,7 +295,13 @@ module.exports = {
                     where: {
                         id: cart.dish_add_on_ids,
                         status:constants.STATUS.active,
-                    }
+                    },
+                    attributes: ['id', 'name',
+                                    [ sequelize.literal(
+                                        `COALESCE("DishAddOn"."price", 0) + COALESCE("DishAddOn"."markup_price", 0)`
+                                    ), 'price'
+                                    ],'image_url','dish_add_on_section_id','status','createdAt','updatedAt'
+                                ],
                 })
             )
 
