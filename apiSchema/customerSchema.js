@@ -395,6 +395,10 @@ module.exports = {
         special_instructions:Joi.string().optional(),
     }),
 
+    getCartItemById: Joi.object({     
+        cart_item_id:Joi.number().required(),
+    }),
+
     editCartItem: Joi.object({     
         cart_item_id:Joi.number().required(),   
         cart_count:Joi.number().optional(),

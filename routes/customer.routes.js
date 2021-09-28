@@ -46,59 +46,30 @@ router.post('/customer-google-signup',joiValidation.validateBody(apiSchema.googl
 
 // Route for customer signup with facebook
 router.post('/customer-facebook-signup',joiValidation.validateBody(apiSchema.facebookLogin), customerLoginController.loginWithFacebook);
-
-
 router.post('/customer-apple-signup',joiValidation.validateBody(apiSchema.appleLogin), customerLoginController.loginWithApple);
-
-
-
 router.post('/verify-phone',joiValidation.validateBody(apiSchema.phoneSchema),customerLoginController.generatePhoneOTP);
-
 router.post('/validate-phone', joiValidation.validateBody(apiSchema.phoneSchema),customerLoginController.validatePhoneOTP);
-
-
 router.get('/verify-email', joiValidation.validateQueryParams(apiSchema.emailSchema), customerLoginController.generateEmailOTP);
-
 router.get('/validate-email',  joiValidation.validateQueryParams(apiSchema.emailSchema), customerLoginController.validateEmailOTP);
-
 router.post('/send-password-reset-code', customerLoginController.generatePassResetCode);
-
 router.post('/validate-password-reset-code',customerLoginController.validatePassResetCode);
-
 router.put('/reset-password',customerLoginController.resetPassword);
-
 router.get('/customer-profile', customerAuthentication.validateCustomerToken,  customerLoginController.getCustomerProfile);
-
 router.post('/update-device-token', customerAuthentication.validateCustomerToken, joiValidation.validateBody(apiSchema.update_device_token), customerLoginController.update_device_token);
-
 router.put('/customer-update-name', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.nameSchema),customerLoginController.updateCustomerName);
-
 router.put('/customer-update-email', customerAuthentication.validateCustomerToken, joiValidation.validateBody(apiSchema.emailSchema), customerLoginController.updateCustomerEmail);
-
 router.put('/customer-update-phone', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.phoneSchema),customerLoginController.updateCustomerphone);
-
 router.post('/customer-add-address', customerAuthentication.validateCustomerToken, customerLoginController.addCustomerAddress);
-
 router.get('/customer-get-address', customerAuthentication.validateCustomerToken,customerLoginController.getCustomerAddress);
-
 router.put('/customer-set-default-address', customerAuthentication.validateCustomerToken, customerLoginController.setCustomerDefaultAddress);
- 
 router.put('/customer-change-password', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.passwordSchema), customerLoginController.changeCustomerPassword);
-
 router.get('/check-default-address', customerAuthentication.validateCustomerToken,customerLoginController.checkDefaultAddress);
-
 router.put('/customer-change-profile-picture', customerAuthentication.validateCustomerToken, customerMulter.upload, customerLoginController.changeCustomerPicture);
-
 router.post('/customer-feedback', customerAuthentication.validateCustomerToken, joiValidation.validateBody(apiSchema.feedbackSchema),customerLoginController.feedbackCustomer);
-
 router.put('/customer-toggle-notification', customerAuthentication.validateCustomerToken, customerLoginController.toggleNotification);
-
 router.get('/get-notification-status', customerAuthentication.validateCustomerToken, customerLoginController.getNotificationStatus);
-
 router.get('/get-notifications', customerAuthentication.validateCustomerToken, customerLoginController.getNotifications);
-
 router.get('/get-unread-notification-count', customerAuthentication.validateCustomerToken,customerLoginController.getUnreadNotificationCount);
-
 router.delete('/customer-logout',customerAuthentication.validateCustomerToken, customerLoginController.logoutCustomer);
 
 
@@ -145,6 +116,7 @@ router.get('/get-recomended-slides', customerAuthentication.validateCustomerToke
 //Orders routes
 router.get('/check-cart-item', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.checkCartItem), OrderController.checkCartItem);
 router.post('/add-to-cart', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.addToCart), OrderController.addToCart);
+router.get('/get-cart-item-by-id', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getCartItemById), OrderController.getCartItemById);
 router.put('/edit-cart-item', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.editCartItem), OrderController.editCartItem);
 router.get('/get-cart-item-count', customerAuthentication.validateCustomerToken, OrderController.getCartItemCount);
 router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.validateCustomerToken,  OrderController.getCart)

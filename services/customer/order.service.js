@@ -260,7 +260,24 @@ module.exports = {
              
     },
 
-    editCartItem: async (params,user) => {
+    getCartItemById: async (params) => {
+
+        const cart = await models.Cart.findOne({
+            where: {
+                id:parseInt(params.cart_item_id)
+            }
+        })
+
+        if (cart) {
+            return {
+                cart
+            }
+        }else{
+            throw new Error(constants.MESSAGES.no_cart_item)
+        }         
+    },
+
+    editCartItem: async (params) => {
 
         const cart = await models.Cart.findOne({
             where: {
@@ -454,6 +471,7 @@ module.exports = {
                     dishId:item.restaurant_dish_id,
                     itemName: dish.name,
                     itemCount: item.cart_count,
+                    preference:item.special_instructions,
                     itemAddOn: addOns,
                     itemPrice:dish.markup_price?
                               (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
@@ -579,6 +597,7 @@ module.exports = {
                 dishId:item.restaurant_dish_id,
                 itemName: dish.name,
                 itemCount: item.cart_count,
+                preference:item.special_instructions,
                 itemAddOn: addOns,
                 itemActualPrice:(parseFloat(dish.price)*item.cart_count)+addOnPrice,
                 itemMarkupPrice:dish.markup_price && (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice,

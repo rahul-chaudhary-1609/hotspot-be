@@ -24,9 +24,18 @@ module.exports = {
         }
     },
 
+    getCartItemById: async (req, res) => {
+        try {
+            const responseFromService = await orderService.getCartItemById(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     editCartItem: async (req, res) => {
         try {
-            const responseFromService = await orderService.editCartItem(req.body,req.user);
+            const responseFromService = await orderService.editCartItem(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
