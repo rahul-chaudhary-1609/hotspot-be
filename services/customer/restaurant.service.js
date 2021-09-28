@@ -635,7 +635,7 @@ module.exports = {
     },
     
 
-    getRestaurantDetails: async (params) => {
+    getRestaurantDetails: async (params,user) => {
 
         const restaurantHotspot = await models.HotspotRestaurant.findOne({
             where: {
@@ -668,6 +668,17 @@ module.exports = {
             }
         });
 
+        let isFavorite = false;
+
+        const favFood = await models.FavRestaurant.findOne({
+            where: {
+                restaurant_id:restaurant.id,
+                customer_id:user.id,
+            }
+        });
+
+        if (favFood) isFavorite = true;
+
         const restaurantDetails = {
             id: restaurant.id,
             name: restaurant.restaurant_name,
@@ -682,6 +693,7 @@ module.exports = {
             workingHourTo: restaurant.working_hours_to,
             orderType: restaurant.order_type,
             nextDeliveryTime,
+            isFavorite,
         }
 
         if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
