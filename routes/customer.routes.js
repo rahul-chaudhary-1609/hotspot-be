@@ -120,7 +120,7 @@ router.get('/get-cart-item-by-id', customerAuthentication.validateCustomerToken,
 router.put('/edit-cart-item', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.editCartItem), OrderController.editCartItem);
 router.get('/get-cart-item-count', customerAuthentication.validateCustomerToken, OrderController.getCartItemCount);
 router.get('/get-cart/:restaurant_id/:order_type', customerAuthentication.validateCustomerToken,  OrderController.getCart)
-router.delete('/delete-from-cart/:restaurantDishId', customerAuthentication.validateCustomerToken,OrderController.deleteFromCart)
+router.delete('/delete-from-cart/:cart_item_id', customerAuthentication.validateCustomerToken,OrderController.deleteFromCart)
 router.post('/create-order', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.createOrder), OrderController.createOrder)
 router.get('/get-pre-order-info/:orderId', customerAuthentication.validateCustomerToken, OrderController.getPreOrderInfo)
 router.put('/set-pickup-time/:orderId', customerAuthentication.validateCustomerToken, OrderController.setPickupTime)

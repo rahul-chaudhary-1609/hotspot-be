@@ -7704,7 +7704,7 @@
           }
         },
 
-        "/customer/delete-from-cart/{restaurantDishId}": {
+        "/customer/delete-from-cart/{cart_item_id}": {
           "delete": {
             "tags": [
               "Customer Cart and Order"
@@ -7720,9 +7720,9 @@
             ],
             "parameters": [
               {
-                "name": "restaurantDishId",
+                "name": "cart_item_id",
                 "in": "path",
-                "description": "enter restaurant dish id",
+                "description": "enter cart item id",
                 "required": true,
                 "type": "number"
               }

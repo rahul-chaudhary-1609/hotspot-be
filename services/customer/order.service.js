@@ -372,27 +372,22 @@ module.exports = {
         }
     },
 
-    deleteFromCart: async (params,user) => {            
-            const customer_id = user.id;
-            const restaurant_dish_id = parseInt(params.restaurantDishId);
+    deleteFromCart: async (params) => {
 
             const currentCart = await models.Cart.findOne({
                 where: {
-                    restaurant_dish_id, customer_id
+                    id:parseInt(params.cart_item_id),
                 }
             })
-
+            
             if (currentCart) {
-                await models.Cart.destroy({
-                    where: {
-                        restaurant_dish_id,
-                        customer_id
-                    },
-                    force: true,
-                })
+                currentCart.destroy();
+                return true
+            }else{
+                throw new Error(constants.MESSAGES.no_cart_item)
             }
 
-            return true
+            
        
     },
     
