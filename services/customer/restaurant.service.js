@@ -401,7 +401,7 @@ module.exports = {
 
             let restaurantDishes = await utility.convertPromiseToObject(
                 await models.RestaurantDish.findAll({
-                    attributes:['id','restaurant_id'],
+                    attributes:['id'],
                     where: {
                         name: {
                                     [Op.iLike]:`%${params.searchPhrase}%`
@@ -534,7 +534,7 @@ module.exports = {
         
             let restaurantDishes = await utility.convertPromiseToObject(
                 await models.RestaurantDish.findAll({
-                    attributes:['id','restaurant_id'],
+                    attributes:['id'],
                     where: {
                         id: params.quick_filter_ids,
                         status:constants.STATUS.active,
