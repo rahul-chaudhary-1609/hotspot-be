@@ -763,6 +763,7 @@ module.exports = {
                 orderInfo = {
                     customer_name:order.order_details.customer.name,
                     delivery_address: order.order_details.hotspot.location_detail,
+                    delivery_dropoff:order.order_details.hotspot.dropoff.dropoff_detail,
                     delivery_datetime: order.delivery_datetime,
                 }
             }
