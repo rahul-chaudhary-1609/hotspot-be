@@ -382,3 +382,24 @@ module.exports.getUniqueTypeIdForNotification = async ()=> {
 
     return type_id;
 }
+
+module.exports.getCutOffTime = (time,cut_off_time) => {
+    let ndtHours = parseInt(time.split(':')[0]);
+    let ndtMinutes = parseInt(time.split(':')[1]);
+
+    let cotHours = Math.floor((cut_off_time) / 60);
+    let cotMinutes = (cut_off_time) % 60;
+
+    let displayHours = Math.abs(ndtHours - cotHours);
+    let displayMinutes = Math.abs(ndtMinutes - cotMinutes);
+
+    if ((ndtMinutes - cotMinutes) < 0) {
+        --displayHours;
+        displayMinutes = 60 + (ndtMinutes - cotMinutes)
+    }
+
+    if (displayMinutes < 10 && displayHours < 10) return `0${displayHours}:0${displayMinutes}:00`
+    else if (displayMinutes < 10) return `${displayHours}:0${displayMinutes}:00`
+    else if (displayHours < 10) return `0${displayHours}:${displayMinutes}:00`
+    else return `${displayHours}:${displayMinutes}:00`
+}

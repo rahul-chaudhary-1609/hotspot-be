@@ -67,7 +67,7 @@ const sendRestaurantOrderEmail= async (params) => {
             position: relative;
         ">
        ${params.hotspotLocation.name}<br>
-       DELIVERY TIME ${utilityFunctions.getLocaleTime(new Date(params.deliveryDatetime))}<br><br>
+       DELIVERY PICKUP TIME ${utilityFunctions.getLocaleTime(new Date(params.deliveryPickupDatetime))}<br><br>
     `;
 
     let bottomHTML = `</div><br><br>
@@ -90,10 +90,17 @@ const sendRestaurantOrderEmail= async (params) => {
     bodyHTML += `<table cellpadding=5 style="margin-top:10px;border-collapse: collapse;" border="1"><tr>
         <th style="text-align:center;">Order#</th>
         <th style="text-align:center;">Order ID</th>
-        <th style="text-align:center;">Customer Name<sup>(Label on order)</sup></th>
-        <th style="text-align:center;">Drop-off Location<sup>(Label on order)</sup></th>
+        <th style="text-align:center;">Customer Name<br/>(Label on order)</th>
+        <th style="text-align:center;">Drop-off Location<br/>(Label on order)</th>
         <th style="text-align:center;">Ordered Items<br/>
-            Item / Quantity / Add-ons
+            <table cellpadding="10">
+                    <tr>
+                        <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Item</th>
+                        <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Quantity</th>
+                        <th style="color:rgba(0,0,0,0.6);">Add-Ons</th>
+                        <th style="color:rgba(0,0,0,0.6);">Preference</th>
+                    <tr>
+            </table>
         </th>
     </tr>`
 
@@ -104,21 +111,27 @@ const sendRestaurantOrderEmail= async (params) => {
             <td style="text-align:center;">${order.order_id}</td>
             <td style="text-align:center;">${order.order_details.customer.name}</td>
             <td style="text-align:center;">${order.order_details.hotspot.dropoff.dropoff_detail}</td>
-            <td style="text-align:center;">`
+            <td style="text-align:center;">
+            <div style="display:flex; justify-content:'center';">
+                  <div>
+                    <table cellpadding="10">`
         for (let ordered_item of order.order_details.ordered_items) {
             let itemHTML =`
-                    ${ordered_item.itemName} / ${ordered_item.itemCount} / (`
+            <tr>
+                <td style="border-right:1px solid #ddd;">${ordered_item.itemName}</td>
+                <td style="border-right:1px solid #ddd;">${ordered_item.itemCount}</td>
+                <td>`
                     
             for (let addOn of ordered_item.itemAddOn) {
-                itemHTML+=`${addOn.name}, `
+                itemHTML+=`${addOn.name}<br/>`
             }
-
-            itemHTML +=`)<br>`
             
             rowHTML+=itemHTML
         }
             
         rowHTML +=`</td>
+            <td style="border-right:1px solid #ddd;">${ordered_item.preference || "-"}</td>
+        </tr></table></div></div></td>
         </tr>`
 
         bodyHTML+=rowHTML
@@ -139,7 +152,7 @@ const sendRestaurantOrderEmail= async (params) => {
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to:params.restaurant.owner_email,
-        subject: `Hotspot delivery order(s) ${params.hotspotLocation.name}, delivery time ${utilityFunctions.getLocaleTime(new Date(params.deliveryDatetime))}`,
+        subject: `Hotspot delivery order(s) ${params.hotspotLocation.name}, delivery pickup time ${utilityFunctions.getLocaleTime(new Date(params.deliveryPickupDatetime))}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
         //     {
@@ -199,8 +212,7 @@ const addRestaurantPayment=async(params)=>{
 
 module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
     schedule.scheduleJob('* * * * *', async ()=> {
-        //console.log(`Job Ran ${new Date()}`)
-
+        
         let hotspotLocations = await utilityFunctions.convertPromiseToObject(
             await HotspotLocation.findAll({
                 attributes:["id","name", "delivery_shifts"],
@@ -210,7 +222,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
         for (let hotspotLocation of hotspotLocations) {
             let hotspotRestaurants = await utilityFunctions.convertPromiseToObject(
                 await HotspotRestaurant.findAll({
-                    attributes:["id","restaurant_id"],
+                    attributes:["id","restaurant_id","pickup_time"],
                     where: {
                         hotspot_location_id: hotspotLocation.id,
                     }
@@ -239,33 +251,14 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     return time >= currentTime;
                 });
 
-                let getCutOffTime = (time) => {
-                    let ndtHours = parseInt(time.split(':')[0]);
-                    let ndtMinutes = parseInt(time.split(':')[1]);
-
-                    let cotHours = Math.floor((restaurant.cut_off_time) / 60);
-                    let cotMinutes = (restaurant.cut_off_time) % 60;
-
-                    let displayHours = Math.abs(ndtHours - cotHours);
-                    let displayMinutes = Math.abs(ndtMinutes - cotMinutes);
-
-                    if ((ndtMinutes - cotMinutes) < 0) {
-                        --displayHours;
-                        displayMinutes = 60 + (ndtMinutes - cotMinutes)
-                    }
-
-                    if (displayMinutes < 10 && displayHours < 10) return `0${displayHours}:0${displayMinutes}:00`
-                    else if (displayMinutes < 10) return `${displayHours}:0${displayMinutes}:00`
-                    else if (displayHours < 10) return `0${displayHours}:${displayMinutes}:00`
-                    else return `${displayHours}:${displayMinutes}:00`
-                }
-
                 if(nextDeliveryTime){
 
                     let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}${process.env.TIME_ZONE_OFFSET}`);
                     // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
                     //let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
-                    let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${getCutOffTime(nextDeliveryTime || "00:00:00")}${process.env.TIME_ZONE_OFFSET}`);
+                    let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}${process.env.TIME_ZONE_OFFSET}`);
+                    
+                    let deliveryPickupDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",hotspotRestaurant.pickup_time)}${process.env.TIME_ZONE_OFFSET}`);
 
                     let orders = await utilityFunctions.convertPromiseToObject(
                         await Order.findAll({
@@ -286,7 +279,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     if (orders.length > 0) {
                         let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
                         if (timeDiff > 0) {
-                            await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryDatetime })
+                            await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
                             let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
                             
                             for (let order of orders) {
@@ -299,21 +292,8 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                                     }
                                 })
                             }
-
-                            await Order.destroy({
-                                where: {
-                                    hotspot_location_id:hotspotLocation.id,
-                                    restaurant_id: restaurant.id,
-                                    type: constants.ORDER_TYPE.delivery,
-                                    status:constants.ORDER_STATUS.not_paid,
-                                    delivery_datetime: deliveryDatetime,
-                                    is_restaurant_notified:0,
-                                }
-                            })
                         }
                     }
-
-                    //console.log("orders",hotspotLocation.id,restaurant.id,orders)
                 }
 
                 

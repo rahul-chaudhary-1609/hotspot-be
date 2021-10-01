@@ -20,7 +20,6 @@ const getRestaurantCard =  async (args) => {
         });
 
         let next_delivery_time = null;
-        let getCutOffTime = null;
 
         if (args.params.hotspot_location_id) {
 
@@ -37,29 +36,6 @@ const getRestaurantCard =  async (args) => {
             console.log(hotspotLocation);
 
             next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
-
-
-
-            getCutOffTime = (time) => {
-                let ndtHours = parseInt(time.split(':')[0]);
-                let ndtMinutes = parseInt(time.split(':')[1]);
-
-                let cotHours = Math.floor((restaurant.cut_off_time) / 60);
-                let cotMinutes = (restaurant.cut_off_time) % 60;
-
-                let displayHours = Math.abs(ndtHours - cotHours);
-                let displayMinutes = Math.abs(ndtMinutes - cotMinutes);
-
-                if ((ndtMinutes - cotMinutes) < 0) {
-                    --displayHours;
-                    displayMinutes = 60 + (ndtMinutes - cotMinutes)
-                }
-
-                if (displayMinutes < 10 && displayHours < 10) return `0${displayHours}:0${displayMinutes}:00`
-                else if (displayMinutes < 10) return `${displayHours}:0${displayMinutes}:00`
-                else if (displayHours < 10) return `0${displayHours}:${displayMinutes}:00`
-                else return `${displayHours}:${displayMinutes}:00`
-            }
         }
 
         if (favRestaurant) is_favorite = true;
@@ -83,7 +59,7 @@ const getRestaurantCard =  async (args) => {
             restaurant_image_url: restaurant.restaurant_image_url,
             restaurant_category_ids: restaurant.restaurant_category_ids,
             next_delivery_time:next_delivery_time?next_delivery_time:null,
-            cut_off_time: next_delivery_time?getCutOffTime(next_delivery_time):null,
+            cut_off_time: next_delivery_time?utility.getCutOffTime(next_delivery_time,restaurant.cut_off_time):null,
             is_favorite,
             distance: utility.getDistanceBetweenTwoGeoLocations(distanceCalculationParams, 'miles'),
             location:restaurant.location,
