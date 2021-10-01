@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 module.exports = {
   MESSAGES: {
     log_in: "Logged in successfully",

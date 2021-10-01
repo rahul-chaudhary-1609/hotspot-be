@@ -1,8 +1,10 @@
+require("dotenv").config();
 const models = require('../../models');
 const {sequelize}=require('../../models');
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const constants = require("../../constants");
+const moment = require('moment');
 
 const getOrderRow =  async (args) => {  
         
@@ -331,6 +333,20 @@ module.exports = {
 
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
+        let hotspotRestaurant = await utilityFunctions.convertPromiseToObject(
+            await HotspotRestaurant.findOne({
+                where: {
+                    hotspot_location_id: order.hotspot_location_id,
+                    restaurant_id:order.restaurant_id,
+                }
+            })
+        )
+
+        let deliveryTime=new Date(order.delivery_datetime);
+        deliveryTime=moment(deliveryTime.toLocaleString('en-us',{timeZone:`${process.env.TIME_ZONE}`}),'MM/DD/YYYY, hh:mm:ss A').format('HH:mm:ss');
+
+        let deliveryPickupDatetime = new Date(`${utility.getOnlyDate(new Date())} ${utilityFunctions.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}${process.env.TIME_ZONE_OFFSET}`);
+
         const driver = await utility.convertPromiseToObject(await models.Driver.findOne({
                 attributes: ['id','first_name','last_name'],
                 where: {
@@ -379,6 +395,7 @@ module.exports = {
             }
             else {
                 currentOrder.order_details.restaurant.order_count = 1;
+                currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
                 updatedRestaurant=[...currentOrderPickup.pickup_details.restaurants,currentOrder.order_details.restaurant];
             }
             orderPickup.pickup_details = {
@@ -392,6 +409,7 @@ module.exports = {
         }
         else {
             currentOrder.order_details.restaurant.order_count = 1;
+            currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
             let pickup_datetime=new Date(currentOrder.delivery_datetime);
             pickup_datetime.setMinutes(pickup_datetime.getMinutes()-20);
             let orderPickupObj = {
@@ -412,29 +430,12 @@ module.exports = {
             }
             await models.OrderPickup.create(orderPickupObj)
         }
-    
-
-        // const fee = await models.Fee.findOne({
-        //     where: {
-        //         order_range_from: {
-        //             [Op.lte]:order.amount,
-        //         },
-        //         order_range_to: {
-        //             [Op.gte]:order.amount,
-        //         },
-        //         fee_type: 'driver',             
-                
-        //     }
-        // })
-
-        //delete order.order_details.restaurant.order_count;
 
         await models.Order.update({
             status: constants.ORDER_STATUS.food_being_prepared,            
             order_pickup_id,
             order_details:{ ...order.order_details,driver },
             driver_id: driver.id,
-            //driver_fee:fee?fee.fee:null,
         },
             {
                 where: {

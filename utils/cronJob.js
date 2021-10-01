@@ -1,4 +1,5 @@
 
+require("dotenv").config();
 const schedule = require('node-schedule');
 const constants = require('../constants');
 const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment } = require("../models")
