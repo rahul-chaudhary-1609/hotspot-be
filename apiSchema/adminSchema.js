@@ -303,9 +303,6 @@ module.exports = {
 
     hotspotSchema: Joi.object({
         name: Joi.string().trim().required(),
-        //     regex(/^[a-zA-Z\s]+$/).max(45).messages({
-        //     "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
-        // }),
         location: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
         location_detail: Joi.string().required(),
         city: Joi.string().max(45).required(),
@@ -327,7 +324,10 @@ module.exports = {
             ).length(3)
             .required(),
         
-        restaurant_ids: Joi.array(),
+        restaurant_ids: Joi.array().items(Joi.object().keys({
+            restaurant_id: Joi.number().required(),
+            pickup_time: Joi.number().required(),
+        })).required(),
         driver_ids: Joi.array(),
     }),
 
@@ -349,7 +349,7 @@ module.exports = {
         working_hours_to: Joi.string().required(),
         order_type: Joi.number().required(),
         agreement_doc_url: Joi.string().allow(null, '').optional(),
-        hotspot_location_ids: Joi.array(),
+        hotspot_location_ids: Joi.array().optional(),
         stripe_publishable_key:Joi.string().trim().allow(null, '').optional(),
         stripe_secret_key: Joi.string().trim().allow(null, '').optional(),
     }),

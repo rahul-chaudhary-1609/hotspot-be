@@ -31,6 +31,13 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
+        pickup_time: {
+            type: DataTypes.INTEGER,
+            allowNull:false,
+            defaultValue:20,
+            comment: 'in minutes'
+        },
+
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,

@@ -535,7 +535,7 @@ module.exports = {
                 serviceFee:0,
                 processingFee:stripeFeeAmount,
                 taxes:salesTaxAmount,
-                grandTotal:totalAmount+stripeFeeAmount+salesTaxAmount,
+                grandTotal:parseFloat((totalAmount+stripeFeeAmount+salesTaxAmount).toFixed(2)),
             }, 
             isDeliveryOnly,
             isPickupOnly,

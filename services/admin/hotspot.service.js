@@ -91,16 +91,21 @@ module.exports = {
             }
 
             if (restaurantIds) {
-                const restaurantHotspotRows = restaurantIds.map((id) => {
+                const restaurantHotspotRows = restaurantIds.map((obj) => {
                     return {
                         hotspot_location_id: hotspotLocation.id,
-                        restaurant_id:id,
+                        restaurant_id:obj.restaurant_id,
+                        pickup_time:parseInt(obj.pickup_time),
                     }
                 })
 
                 for (let row of restaurantHotspotRows) {
+                    let where={
+                        hotspot_location_id: row.hotspot_location_id,
+                        restaurant_id:row.restaurant_id,
+                    }
                     await models.HotspotRestaurant.findOrCreate({
-                        where: row,
+                        where,
                         defaults: row
                     })       
                 }
@@ -159,21 +164,6 @@ module.exports = {
 
             if (dropoffs) {
 
-                // await models.HotspotDropoff.destroy({
-                //     where: {
-                //         hotspot_location_id:hotspotLocationId,
-                //     },
-                //     force: true,
-                // })
-
-                // const hotspotDropoffRows = dropoffs.map((dropoff) => {
-                //     return {
-                //         hotspot_location_id: hotspotLocationId,
-                //         dropoff_detail:dropoff,
-                //     }
-                // })
-
-                // await models.HotspotDropoff.bulkCreate(hotspotDropoffRows);
                 for (let dropoff of dropoffs) {
                      await models.HotspotDropoff.findOrCreate({
                             where: {
@@ -228,10 +218,11 @@ module.exports = {
                     force: true,
                 })
 
-                const restaurantHotspotRows = restaurantIds.map((id) => {
+                const restaurantHotspotRows = restaurantIds.map((obj) => {
                     return {
                         hotspot_location_id: hotspotLocationId,
-                        restaurant_id:id,
+                        restaurant_id:obj.restaurant_id,
+                        pickup_time:parseInt(obj.pickup_time),
                     }
                 })
 
@@ -270,16 +261,7 @@ module.exports = {
             let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
             let query = {};
-            //query.where = {};
-            // if (params.searchKey) {
-            //     let searchKey = params.searchKey;
-            //     query.where = {
-            //         ...query.where,
-            //         [Op.or]: [
-            //             { name: { [Op.iLike]: `%${searchKey}%` } }
-            //         ]
-            //     };
-            // }
+
             query.order = [
                 ['id', 'DESC']
             ];
@@ -356,7 +338,13 @@ module.exports = {
                             id:row.restaurant_id
                         }
                     });
-                    restaurants.push(restaurant)
+                    
+                    restaurants.push(
+                        {
+                            restaurant,
+                            pickup_time:row.pickup_time
+                        }
+                    )
                 }
             }
             

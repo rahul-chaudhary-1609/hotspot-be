@@ -4283,7 +4283,7 @@
             ],
             "description": "Api to add hotspot",
             "consumes": [
-              "application/x-www-form-urlencoded"
+              "application/json"
             ],
             "parameters": [
               {
@@ -4294,99 +4294,74 @@
                 "type": "string"
               },
               {
-                "name": "name",
-                "in": "formData",
-                "description": "enter name",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "location",
-                "in": "formData",
-                "description": "latitude,longitude || [latitude,longitude]",
-                "required": true,
-                "type": "array",
-                "items": {
-                  "type": "number"
-                },
-                "minItems": 2,
-                "maxItems": 2
-              },
-              {
-                "name": "location_detail",
-                "in": "formData",
-                "description": "enter location detail",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "city",
-                "in": "formData",
-                "description": "enter city",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "state",
-                "in": "formData",
-                "description": "enter state",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "country",
-                "in": "formData",
-                "description": "enter country",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "postal_code",
-                "in": "formData",
-                "description": "enter postal code",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "dropoffs",
-                "in": "formData",
-                "description": "dropoffs1,dropoffs2,dropoffs3,... || [dropoffs1,dropoffs2,dropoffs3,...]",
-                "required": true,
-                "type": "array",
-                "items": {
-                  "type": "staring"
-                }
-              },
-              {
-                "name": "delivery_shifts",
-                "in": "formData",
-                "description": "HH:MM:SS,HH:MM:SS,HH:MM:SS || [HH:MM:SS,HH:MM:SS,HH:MM:SS]",
-                "required": true,
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "minItems": 3,
-                "maxItems": 3
-              },
-              {
-                "name": "restaurant_ids",
-                "in": "formData",
-                "description": "1,2,3,... || [1,2,3,...]",
-                "required": false,
-                "type": "array",
-                "items": {
-                  "type": "number"
-                }
-              },
-              {
-                "name": "driver_ids",
-                "in": "formData",
-                "description": "1,2,3,... || [1,2,3,...]",
-                "required": false,
-                "type": "array",
-                "items": {
-                  "type": "number"
+                "name":"body",
+                "in":"body",
+                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss\n3. Thsese fields are required:\n\tname\n\tlocation\n\tlocation_detail\n\tcity\n\tstate\n\tcountry\n\tpostal_code\n\tdropoffs\n\tdelivery_shifts\n\trestaurant_ids ",
+                "required":"true",
+                "schema":{
+                  "type":"object",
+                  "properties":{
+                    "name":{
+                      "type":"string"
+                    },
+                    "location":{
+                      "type":"array",
+                      "items":{
+                        "type":"number"
+                      },
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "location_detail":{
+                      "type":"string"
+                    },
+                    "city":{
+                      "type":"string"
+                    },
+                    "state":{
+                      "type":"string"
+                    },
+                    "country":{
+                      "type":"string"
+                    },
+                    "postal_code":{
+                      "type":"string"
+                    },
+                    "dropoffs":{
+                      "type":"array",
+                      "items":{
+                        "type":"string"                        
+                      }
+                    },
+                    "delivery_shifts":{
+                      "type":"array",
+                      "items":{
+                        "type":"string"                        
+                      },
+                      "minItems": 3,
+                      "maxItems": 3
+                    },
+                    "restaurant_ids":{
+                      "type":"array",
+                      "items":{
+                        "type":"object",
+                        "properties":{
+                          "restaurant_id":{
+                            "type":"number"
+                          },
+                          "pickup_time":{
+                            "type":"number"
+                          }
+                        }
+                      }
+                    },
+                    "driver_ids":{
+                      "type":"array",
+                      "items":{
+                        "type":"number"
+                      }
+                    }
+                  }
                 }
               }
             ],
@@ -4400,7 +4375,7 @@
             ],
             "description": "Api to edit hotspot",
             "consumes": [
-              "application/x-www-form-urlencoded"
+              "application/json"
             ],
             "parameters": [
               {
@@ -4418,99 +4393,74 @@
                 "type": "number"
               },
               {
-                "name": "name",
-                "in": "formData",
-                "description": "enter name",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "name": "location",
-                "in": "formData",
-                "description": "latitude,longitude || [latitude,longitude]",
-                "required": false,
-                "type": "array",
-                "items": {
-                  "type": "number"
-                },
-                "minItems": 2,
-                "maxItems": 2
-              },
-              {
-                "name": "location_detail",
-                "in": "formData",
-                "description": "enter location detail",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "name": "city",
-                "in": "formData",
-                "description": "enter city",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "name": "state",
-                "in": "formData",
-                "description": "enter state",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "name": "country",
-                "in": "formData",
-                "description": "enter country",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "name": "postal_code",
-                "in": "formData",
-                "description": "enter postal code",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "name": "dropoffs",
-                "in": "formData",
-                "description": "dropoffs1,dropoffs2,dropoffs3,... || [dropoffs1,dropoffs2,dropoffs3,...]",
-                "required": false,
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
-              {
-                "name": "delivery_shifts",
-                "in": "formData",
-                "description": "HH:MM:SS,HH:MM:SS,HH:MM:SS || [HH:MM:SS,HH:MM:SS,HH:MM:SS]",
-                "required": false,
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "minItems": 3,
-                "maxItems": 3
-              },
-              {
-                "name": "restaurant_ids",
-                "in": "formData",
-                "description": "1,2,3,... || [1,2,3,...]",
-                "required": false,
-                "type": "array",
-                "items": {
-                  "type": "number"
-                }
-              },
-              {
-                "name": "driver_ids",
-                "in": "formData",
-                "description": "1,2,3,... || [1,2,3,...]",
-                "required": false,
-                "type": "array",
-                "items": {
-                  "type": "number"
+                "name":"body",
+                "in":"body",
+                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss",
+                "required":"true",
+                "schema":{
+                  "type":"object",
+                  "properties":{
+                    "name":{
+                      "type":"string"
+                    },
+                    "location":{
+                      "type":"array",
+                      "items":{
+                        "type":"number"
+                      },
+                      "minItems": 2,
+                      "maxItems": 2
+                    },
+                    "location_detail":{
+                      "type":"string"
+                    },
+                    "city":{
+                      "type":"string"
+                    },
+                    "state":{
+                      "type":"string"
+                    },
+                    "country":{
+                      "type":"string"
+                    },
+                    "postal_code":{
+                      "type":"string"
+                    },
+                    "dropoffs":{
+                      "type":"array",
+                      "items":{
+                        "type":"string"                        
+                      }
+                    },
+                    "delivery_shifts":{
+                      "type":"array",
+                      "items":{
+                        "type":"string"                        
+                      },
+                      "minItems": 3,
+                      "maxItems": 3
+                    },
+                    "restaurant_ids":{
+                      "type":"array",
+                      "items":{
+                        "type":"object",
+                        "properties":{
+                          "restaurant_id":{
+                            "type":"number"
+                          },
+                          "pickup_time":{
+                            "type":"number"
+                          }
+                        }
+                      }
+                    },
+                    "driver_ids":{
+                      "type":"array",
+                      "items":{
+                        "type":"number"
+                      }
+                    }
+                  }
                 }
               }
             ],

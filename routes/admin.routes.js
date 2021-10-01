@@ -199,17 +199,11 @@ router.put('/editTax',adminAuthentication.validateAdminToken,joiValidation.valid
 //schedule Settings
 
 router.get('/listAllRestaurant', adminAuthentication.validateAdminToken, adminHotspotController.listAllRestaurant);
-
 router.get('/listAllDriver', adminAuthentication.validateAdminToken, adminHotspotController.listAllDriver);
-
 router.get('/listHotspots',adminAuthentication.validateAdminToken, adminHotspotController.listHotspots);
-
 router.post('/addHotspot',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.addHotspot);
-
 router.put('/editHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.editHotspot);
-
 router.get('/getHotspotDetails/:hotspotLocationId',adminAuthentication.validateAdminToken, adminHotspotController.getHotspotDetails);
-
 router.delete('/deleteHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken, adminHotspotController.deleteHotspot);
 
 
