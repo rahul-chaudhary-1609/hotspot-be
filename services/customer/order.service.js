@@ -272,23 +272,6 @@ module.exports = {
         )
 
         if (cart) {
-            
-            // const dish = await models.RestaurantDish.findOne({
-            //     where: {
-            //         id: cart.restaurant_dish_id,
-            //         status:constants.STATUS.active,
-            //     }
-            // })
-
-            // if(!dish){
-            //     await models.Cart.destroy({
-            //         where:{
-            //             id:cart.id,
-            //         }
-            //     })
-
-            //     continue;
-            // }
 
             const dishAddOn=await utilityFunction.convertPromiseToObject(
                 await models.DishAddOn.findAll({
@@ -304,28 +287,6 @@ module.exports = {
                                 ],
                 })
             )
-
-            // if(dishAddOn && cart.dish_add_on_ids && dishAddOn.length!=cart.dish_add_on_ids.length){
-            //     await models.Cart.destroy({
-            //         where:{
-            //             id:cart.id,
-            //         }
-            //     })
-
-            //     continue;
-            // }
-
-            // let addOnPrice = 0;
-            
-            // const addOns = dishAddOn.map((addOn) => {
-            //     let price=addOn.markup_price ? (parseFloat(addOn.price)+parseFloat(addOn.markup_price)).toFixed(2) : addOn.price
-            //     addOnPrice = addOnPrice + parseFloat(price)
-            //     return {
-            //         id: addOn.id,
-            //         name: addOn.name,
-            //         price,
-            //     }
-            // })
 
             return {
                 cart:{
@@ -391,194 +352,195 @@ module.exports = {
        
     },
     
-    getCart: async (params, user) => {
+    getCart: async (user) => {
         
-        params.order_type = parseInt(params.order_type)
-           
-            const restaurant_id = parseInt(params.restaurant_id);
+        //params.order_type = parseInt(params.order_type)
 
-            await models.Order.destroy({
+        await models.Order.destroy({
+            where: {
+                customer_id: user.id,
+                //restaurant_id,
+                status:constants.ORDER_STATUS.not_paid,
+            }
+        })
+
+        const cart = await utilityFunction.convertPromiseToObject(
+                await models.Cart.findAndCountAll({
                 where: {
                     customer_id: user.id,
-                    restaurant_id,
-                    status:constants.ORDER_STATUS.not_paid,
-                }
-            })
-            
-            let isPickupOnly = false;
-            let isDeliveryOnly = false;
-            let isBothAvailable = false;
-
-            const restaurant = await models.Restaurant.findOne({
-                where: {
-                    id: restaurant_id,
-                }
-            });
-
-            if (restaurant.order_type == 1) isDeliveryOnly = true;
-            else if (restaurant.order_type == 2) isPickupOnly = true;
-            else if(restaurant.order_type==3) isBothAvailable = true;
-
-
-            let cartInfo =null;
-
-            if (params.order_type == constants.ORDER_TYPE.delivery && ((restaurant.order_type==3)||(restaurant.order_type == 1)) ) {
-                const customerFavLocation = await models.CustomerFavLocation.findOne({
-                    where: {
-                        customer_id: user.id,
-                        is_default: true,
-                    }
-                });
-
-                const hotspotLocations = await models.HotspotLocation.findOne({
-                    where: {
-                        id: customerFavLocation.hotspot_location_id
-                    }
-                });
-
-                const hotspotDropoff = await models.HotspotDropoff.findOne({
-                    where: {
-                        id: customerFavLocation.hotspot_dropoff_id
-                    }
-                });
-
-
-                cartInfo = {
-                    hotspot_location_id:hotspotLocations.id,
-                    name: hotspotLocations.name,
-                    address: hotspotLocations.location_detail,
-                    dropoff:hotspotDropoff.dropoff_detail,
-                }
-            }
-            else if (params.order_type == constants.ORDER_TYPE.pickup  && ((restaurant.order_type==3)||(restaurant.order_type == 2))) {
-                
-                cartInfo = {
-                    restaurant_id:restaurant.id,
-                    name: restaurant.restaurant_name,
-                    address:restaurant.address,
-                    location: restaurant.location,
-                }
-            }
-
-            const cart = await models.Cart.findAndCountAll({
-                where: {
-                    customer_id: user.id,
-                    restaurant_id,
+                    //restaurant_id,
                     status:constants.STATUS.active,
                 }
+            })
+        )
+
+        if (cart.count == 0) throw new Error(constants.MESSAGES.no_item);
+        
+        let isPickupOnly = false;
+        let isDeliveryOnly = false;
+        let isBothAvailable = false;
+
+        const restaurant = await models.Restaurant.findOne({
+            where: {
+                id: cart.rows[0].restaurant_id,
+            }
+        });
+
+        if (restaurant.order_type == 1) isDeliveryOnly = true;
+        else if (restaurant.order_type == 2) isPickupOnly = true;
+        else if(restaurant.order_type==3) isBothAvailable = true;
+
+
+        let cartInfo =null;
+
+        // if (params.order_type == constants.ORDER_TYPE.delivery && ((restaurant.order_type==3)||(restaurant.order_type == 1)) ) {
+        if ((restaurant.order_type==3)||(restaurant.order_type == 1)) {    
+            const customerFavLocation = await models.CustomerFavLocation.findOne({
+                where: {
+                    customer_id: user.id,
+                    is_default: true,
+                }
             });
 
-            if (cart.count == 0) throw new Error(constants.MESSAGES.no_item);
-            
-            let cartItems = [];
+            const hotspotLocations = await models.HotspotLocation.findOne({
+                where: {
+                    id: customerFavLocation.hotspot_location_id
+                }
+            });
 
-            for (const item of cart.rows) {
+            const hotspotDropoff = await models.HotspotDropoff.findOne({
+                where: {
+                    id: customerFavLocation.hotspot_dropoff_id
+                }
+            });
 
-                const dish = await models.RestaurantDish.findOne({
+
+            cartInfo = {
+                hotspot_location_id:hotspotLocations.id,
+                name: hotspotLocations.name,
+                address: hotspotLocations.location_detail,
+                dropoff:hotspotDropoff.dropoff_detail,
+            }
+        }
+        // else if (params.order_type == constants.ORDER_TYPE.pickup  && ((restaurant.order_type==3)||(restaurant.order_type == 2))) {
+        else if ((restaurant.order_type==3)||(restaurant.order_type == 2)) {
+            cartInfo = {
+                restaurant_id:restaurant.id,
+                name: restaurant.restaurant_name,
+                address:restaurant.address,
+                location: restaurant.location,
+            }
+        }
+        
+        let cartItems = [];
+
+        for (const item of cart.rows) {
+
+            const dish = await models.RestaurantDish.findOne({
+                where: {
+                    id: item.restaurant_dish_id,
+                    status:constants.STATUS.active,
+                }
+            })
+
+            if(!dish){
+                await models.Cart.destroy({
+                    where:{
+                        id:item.id,
+                    }
+                })
+
+                continue;
+            }
+
+            const dishAddOn=await utilityFunction.convertPromiseToObject(
+                await models.DishAddOn.findAll({
                     where: {
-                        id: item.restaurant_dish_id,
+                        id: item.dish_add_on_ids,
                         status:constants.STATUS.active,
                     }
                 })
+            )
 
-                if(!dish){
-                    await models.Cart.destroy({
-                        where:{
-                            id:item.id,
-                        }
-                    })
-
-                    continue;
-                }
-
-                const dishAddOn=await utilityFunction.convertPromiseToObject(
-                    await models.DishAddOn.findAll({
-                        where: {
-                            id: item.dish_add_on_ids,
-                            status:constants.STATUS.active,
-                        }
-                    })
-                )
-
-                if(dishAddOn && item.dish_add_on_ids && dishAddOn.length!=item.dish_add_on_ids.length){
-                    await models.Cart.destroy({
-                        where:{
-                            id:item.id,
-                        }
-                    })
-
-                    continue;
-                }
-
-                let addOnPrice = 0;
-                
-                const addOns = dishAddOn.map((addOn) => {
-                    let price=addOn.markup_price ? (parseFloat(addOn.price)+parseFloat(addOn.markup_price)).toFixed(2) : addOn.price
-                    addOnPrice = addOnPrice + parseFloat(price)
-                    return {
-                        id: addOn.id,
-                        name: addOn.name,
-                        price,
+            if(dishAddOn && item.dish_add_on_ids && dishAddOn.length!=item.dish_add_on_ids.length){
+                await models.Cart.destroy({
+                    where:{
+                        id:item.id,
                     }
                 })
 
-                cartItems.push({
-                    id: item.id,
-                    dishId:item.restaurant_dish_id,
-                    itemName: dish.name,
-                    itemCount: item.cart_count,
-                    preference:item.special_instructions,
-                    itemAddOn: addOns,
-                    itemPrice:dish.markup_price?
-                              (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
-                              (parseFloat(dish.price)*item.cart_count)+addOnPrice                    
-                })
+                continue;
             }
 
-            let taxes= await utilityFunction.convertPromiseToObject(
-                    await models.Tax.findAll({
-                        where:{
-                            type:{
-                                [Op.notIn]:[constants.TAX_TYPE.none]
-                            }
+            let addOnPrice = 0;
+            
+            const addOns = dishAddOn.map((addOn) => {
+                let price=addOn.markup_price ? (parseFloat(addOn.price)+parseFloat(addOn.markup_price)).toFixed(2) : addOn.price
+                addOnPrice = addOnPrice + parseFloat(price)
+                return {
+                    id: addOn.id,
+                    name: addOn.name,
+                    price,
+                }
+            })
+
+            cartItems.push({
+                id: item.id,
+                dishId:item.restaurant_dish_id,
+                itemName: dish.name,
+                itemCount: item.cart_count,
+                preference:item.special_instructions,
+                itemAddOn: addOns,
+                itemPrice:dish.markup_price?
+                            (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
+                            (parseFloat(dish.price)*item.cart_count)+addOnPrice                    
+            })
+        }
+
+        let taxes= await utilityFunction.convertPromiseToObject(
+                await models.Tax.findAll({
+                    where:{
+                        type:{
+                            [Op.notIn]:[constants.TAX_TYPE.none]
                         }
-                    })
-            );
+                    }
+                })
+        );
 
-            let stripeFee=taxes.find(tax=>tax.type==constants.TAX_TYPE.stripe);
-            let salesTax=taxes.find(tax=>tax.type==constants.TAX_TYPE.sales);
+        let stripeFee=taxes.find(tax=>tax.type==constants.TAX_TYPE.stripe);
+        let salesTax=taxes.find(tax=>tax.type==constants.TAX_TYPE.sales);
 
-            const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice, 0);
+        const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice, 0);
 
-            const stripeFeeAmount=parseFloat((((totalAmount*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
-            
-            const salesTaxAmount=parseFloat((((totalAmount*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
-            
-            if (!cartInfo) {
-                return { cart: null, isDeliveryOnly,isPickupOnly,isBothAvailable };
-            }
- 
+        const stripeFeeAmount=parseFloat((((totalAmount*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
+        
+        const salesTaxAmount=parseFloat((((totalAmount*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
+        
+        if (!cartInfo) {
+            return { cart: null, isDeliveryOnly,isPickupOnly,isBothAvailable };
+        }
 
-            return {
-                restaurant:{
-                    id:restaurant.id,
-                    name:restaurant.restaurant_name,
-                },
-                cart: { 
-                    cartInfo,
-                    cartItems,
-                    totalAmount,
-                    regulatoryResponseFee:0,
-                    deliveryFee:0,
-                    serviceFee:0,
-                    processingFee:stripeFeeAmount,
-                    taxes:salesTaxAmount,
-                    grandTotal:totalAmount+stripeFeeAmount+salesTaxAmount,
-                }, 
-                isDeliveryOnly,
-                isPickupOnly,
-                isBothAvailable
-            };
+
+        return {
+            restaurant:{
+                id:restaurant.id,
+                name:restaurant.restaurant_name,
+            },
+            cart: { 
+                cartInfo,
+                cartItems,
+                totalAmount,
+                regulatoryResponseFee:0,
+                deliveryFee:0,
+                serviceFee:0,
+                processingFee:stripeFeeAmount,
+                taxes:salesTaxAmount,
+                grandTotal:totalAmount+stripeFeeAmount+salesTaxAmount,
+            }, 
+            isDeliveryOnly,
+            isPickupOnly,
+            isBothAvailable
+        };
          
     },
 

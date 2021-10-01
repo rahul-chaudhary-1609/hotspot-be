@@ -1754,7 +1754,7 @@
                   "name": "cut_off_time",
                   "in": "formData",
                   "description": "cut off time in HH:MM:SS",
-                  "required": true,
+                  "required": false,
                   "type": "string"
               },
               {
@@ -1989,7 +1989,7 @@
                 "name": "cut_off_time",
                 "in": "formData",
                 "description": "cut off time in HH:MM:SS",
-                "required": true,
+                "required": false,
                 "type": "string"
               },
               {
@@ -7648,7 +7648,7 @@
             "responses": {}
           }
         },
-        "/customer/get-cart/{restaurant_id}/{order_type}": {
+        "/customer/get-cart": {
           "get": {
             "tags": [
               "Customer Cart and Order"
@@ -7663,23 +7663,7 @@
               }
             ],
             
-            "parameters": [
-              {
-                "name": "restaurant_id",
-                "in": "path",
-                "description": "enter restaurant id",
-                "required": true,
-                "type": "number"
-              },
-              {
-                "name": "order_type",
-                "in": "path",
-                "description": "1=> delivery | 2=> pickup",
-                "required": true,
-                "type": "string",
-                "enum":[1,2]
-              }
-            ],
+            "parameters": [],
             "responses": {}
           }
         },
