@@ -28,6 +28,7 @@ module.exports = {
                 include: [
                     {
                         model: Faq,
+                        separate:true,
                         required:true,
                     }  
                 ],

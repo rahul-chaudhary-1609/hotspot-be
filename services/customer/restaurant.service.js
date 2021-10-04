@@ -770,12 +770,14 @@ module.exports = {
                     {
                         model:models.DishAddOnSection,
                         require:false,
+                        separate:true,
                         where:{
                             status:constants.STATUS.active,
                         },
                         include:[
                             {
                                 model:models.DishAddOn,
+                                separate:true,
                                 require:false,
                                 where:{
                                     status:constants.STATUS.active,
