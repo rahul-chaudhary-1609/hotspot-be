@@ -491,9 +491,12 @@ module.exports = {
                 itemCount: item.cart_count,
                 preference:item.special_instructions,
                 itemAddOn: addOns,
+                // itemPrice:dish.markup_price?
+                //             (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
+                //             (parseFloat(dish.price)*item.cart_count)+addOnPrice
                 itemPrice:dish.markup_price?
-                            (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
-                            (parseFloat(dish.price)*item.cart_count)+addOnPrice                    
+                           parseFloat(((parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))+addOnPrice)*item.cart_count).toFixed(2)):
+                           parseFloat(((parseFloat(dish.price)+addOnPrice)*item.cart_count).toFixed(2))                    
             })
         }
 
@@ -617,11 +620,11 @@ module.exports = {
                 itemCount: item.cart_count,
                 preference:item.special_instructions,
                 itemAddOn: addOns,
-                itemActualPrice:(parseFloat(dish.price)*item.cart_count)+addOnPrice,
-                itemMarkupPrice:dish.markup_price && (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice,
+                itemActualPrice:parseFloat(((parseFloat(dish.price)+addOnPrice)*item.cart_count).toFixed(2)),
+                itemMarkupPrice:dish.markup_price && parseFloat(((parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))+addOnPrice)*item.cart_count).toFixed(2)),
                 itemPrice:dish.markup_price?
-                          (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
-                          (parseFloat(dish.price)*item.cart_count)+addOnPrice                 
+                           parseFloat(((parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))+addOnPrice)*item.cart_count).toFixed(2)):
+                           parseFloat(((parseFloat(dish.price)+addOnPrice)*item.cart_count).toFixed(2))              
             })
         }
 
