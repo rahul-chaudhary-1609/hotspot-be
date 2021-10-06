@@ -32,9 +32,7 @@ module.exports = {
                     ]
                 };
             }
-            query.order = [
-                ['id', 'DESC']
-            ];
+            query.order = [["createdAt","DESC"]];
             query.limit = limit;
             query.offset = offset;
             query.raw = true;
@@ -317,7 +315,8 @@ module.exports = {
         let query={
             where:{
                 restaurant_id:params.restaurant_id
-            }
+            },
+            order:[["createdAt","DESC"]]
         }
 
         if(params.search_key){
@@ -331,7 +330,7 @@ module.exports = {
 
         if(params.is_pagination==constants.IS_PAGINATION.yes){
             let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
-            query.offset=offset,
+            query.offset=offset
             query.limit=limit
             
         }        
@@ -462,6 +461,7 @@ module.exports = {
         query.limit = limit;
         query.offset = offset;
         query.raw = true;
+        query.order=[["createdAt","DESC"]];
 
         let dishes = await RestaurantDish.findAndCountAll(query);
 
@@ -616,7 +616,8 @@ module.exports = {
         let query={
             where:{
                 restaurant_dish_id:params.restaurant_dish_id
-            }
+            },
+            order:[["createdAt","DESC"]]
         }
 
         if(params.search_key){
@@ -771,7 +772,8 @@ module.exports = {
         let query={
             where:{
                 dish_add_on_section_id:params.dish_add_on_section_id
-            }
+            },
+            order:[["createdAt","DESC"]],
         }
 
         if(params.search_key){

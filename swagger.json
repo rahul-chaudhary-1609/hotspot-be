@@ -1551,7 +1551,7 @@
             "responses": {}
           }
         },
-        "/admin/getRestaurantDishCategory": {
+        "/admin/getRestaurantDishCategory/{category_id}": {
           "get": {
             "tags": [
               "Admin Restaurant Dish Category Management"
@@ -1570,7 +1570,7 @@
               },
               {
                 "name": "category_id",
-                "in": "formData",
+                "in": "path",
                 "description": "enter category id",
                 "required": true,
                 "type": "number"

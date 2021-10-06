@@ -370,7 +370,8 @@ module.exports = {
                     customer_id: user.id,
                     //restaurant_id,
                     status:constants.STATUS.active,
-                }
+                },
+                order:[["createdAt","DESC"]]
             })
         )
 
