@@ -147,6 +147,7 @@ module.exports = {
     }),
 
     editDish : Joi.object({
+        dishId: Joi.number().required(),
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
         markup_price: Joi.number().optional(),
