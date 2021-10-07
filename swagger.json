@@ -2386,7 +2386,7 @@
           }
         },
         "/admin/toggleDishStatus": {
-          "delete": {
+          "put": {
             "tags": [
               "Admin Menu Management"
             ],
@@ -2949,7 +2949,7 @@
           }
         },
         "/admin/toggleDishAddonStatus": {
-          "delete": {
+          "put": {
             "tags": [
               "Admin Menu Addon Management"
             ],
