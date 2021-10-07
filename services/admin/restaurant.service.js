@@ -275,7 +275,6 @@ module.exports = {
     editRestaurantDishCategory:async(params)=>{
         let category=await RestaurantDishCategory.findOne({
             where:{
-                restaurant_id:params.restaurant_id,
                 name:{
                     [Op.iLike]:`%${params.name}%`
                 },
@@ -576,7 +575,6 @@ module.exports = {
     editDishAddOnSection:async(params)=>{
         let section=await DishAddOnSection.findOne({
             where:{
-                restaurant_dish_id:params.restaurant_dish_id,
                 name:{
                     [Op.iLike]:`%${params.name}%`
                 },

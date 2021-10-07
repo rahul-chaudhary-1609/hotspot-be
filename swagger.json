@@ -1534,13 +1534,6 @@
                 "type": "number"
               },
               {
-                "name": "restaurant_id",
-                "in": "formData",
-                "description": "enter restaurant id",
-                "required": true,
-                "type": "number"
-              },
-              {
                 "name": "name",
                 "in": "formData",
                 "description": "enetr category name",
@@ -2595,13 +2588,6 @@
                 "name": "section_id",
                 "in": "formData",
                 "description": "enter section id",
-                "required": true,
-                "type": "number"
-              },
-              {
-                "name": "restaurant_dish_id",
-                "in": "formData",
-                "description": "enter restaurant dish id",
                 "required": true,
                 "type": "number"
               },

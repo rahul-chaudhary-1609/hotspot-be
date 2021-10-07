@@ -584,7 +584,6 @@ module.exports = {
 
     editRestaurantDishCategory: Joi.object({
         category_id: Joi.number().required(),
-        restaurant_id:Joi.number().required(),
         name: Joi.string().required(),
     }),
 
@@ -617,7 +616,6 @@ module.exports = {
 
     editDishAddOnSection: Joi.object({
         section_id: Joi.number().required(),
-        restaurant_dish_id:Joi.number().required(),
         name: Joi.string().required(),
         is_required: Joi.number().optional(),  
         is_multiple_choice: Joi.number().optional(), 
