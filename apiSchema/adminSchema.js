@@ -162,6 +162,10 @@ module.exports = {
         dishId: Joi.number().required(),
     }),
 
+    toggleDishStatus : Joi.object({
+        dishId: Joi.number().required(),
+    }),
+
     toggleDishAsRecommended : Joi.object({
         dishId: Joi.number().required(),
     }),
@@ -201,6 +205,10 @@ module.exports = {
 
 
     deleteDishAddon : Joi.object({
+        dish_addon_id: Joi.number().required(),
+    }),
+
+    toggleDishAddonStatus : Joi.object({
         dish_addon_id: Joi.number().required(),
     }),
 

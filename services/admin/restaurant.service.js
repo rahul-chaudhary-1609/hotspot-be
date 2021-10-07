@@ -523,6 +523,26 @@ module.exports = {
         
     },
 
+    toggleDishStatus:async(params)=>{
+        let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
+
+        if(!dish){
+            throw new Error(constants.MESSAGES.no_dish);
+        }
+
+        if(dish.status==constants.STATUS.active){
+            dish.status=constants.STATUS.inactive
+        }else{
+            dish.status=constants.STATUS.active
+        }
+
+        dish.save();
+
+        return {
+            dish
+        };
+    },
+
     toggleDishAsRecommended: async (params) => {
         let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
         if (!dish) throw new Error(constants.MESSAGES.no_dish);
@@ -850,6 +870,23 @@ module.exports = {
         dishAddon.destroy();
 
         return true
+    },
+
+    toggleDishAddonStatus: async (params) => {
+        let dishAddon = await DishAddOn.findByPk(parseInt(params.dish_addon_id));
+        if (!dishAddon) throw new Error(constants.MESSAGES.no_dish_addon);
+
+        if(dishAddon.status==constants.STATUS.active){
+            dishAddon.status=constants.STATUS.inactive
+        }else{
+            dishAddon.status=constants.STATUS.active
+        }
+
+        dishAddon.save();
+
+        return {
+            dishAddon
+        };
     },
 
 

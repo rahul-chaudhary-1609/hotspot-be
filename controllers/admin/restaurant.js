@@ -151,12 +151,21 @@ module.exports = {
 
     deleteDish: async (req, res) => {
        try {
-            const responseFromService = await restaurantService.deleteDish(req.params);
+            const responseFromService = await restaurantService.deleteDish(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
+
+    toggleDishStatus: async (req, res) => {
+        try {
+             const responseFromService = await restaurantService.toggleDishStatus(req.body);
+             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+         } catch (error) {
+             utilityFunction.errorResponse(res, error, constants.code.error_code);
+         }
+     },
 
     toggleDishAsRecommended: async (req, res) => {
        try {
@@ -270,11 +279,20 @@ module.exports = {
 
     deleteDishAddon: async (req, res) => {
        try {
-            const responseFromService = await restaurantService.deleteDishAddon(req.params);
+            const responseFromService = await restaurantService.deleteDishAddon(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
+
+    toggleDishAddonStatus: async (req, res) => {
+        try {
+             const responseFromService = await restaurantService.toggleDishAddonStatus(req.body);
+             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+         } catch (error) {
+             utilityFunction.errorResponse(res, error, constants.code.error_code);
+         }
+     },
 
 }

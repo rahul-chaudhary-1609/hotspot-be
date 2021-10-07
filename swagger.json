@@ -2357,7 +2357,7 @@
             "responses": {}
           }
         },
-        "/admin/deleteDish/{dishId}": {
+        "/admin/deleteDish": {
           "delete": {
             "tags": [
               "Admin Menu Management"
@@ -2376,7 +2376,35 @@
               },
               {
                 "name": "dishId",
-                "in": "path",
+                "in": "formData",
+                "description": "dish Id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/toggleDishStatus": {
+          "delete": {
+            "tags": [
+              "Admin Menu Management"
+            ],
+            "description": "Api to toggle Dish Status",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dishId",
+                "in": "formData",
                 "description": "dish Id",
                 "required": true,
                 "type": "number"
@@ -2892,7 +2920,7 @@
             "responses": {}
           }
         },
-        "/admin/deleteDishAddon/{dish_addon_id}": {
+        "/admin/deleteDishAddon": {
           "delete": {
             "tags": [
               "Admin Menu Addon Management"
@@ -2911,7 +2939,35 @@
               },
               {
                 "name": "dish_addon_id",
-                "in": "path",
+                "in": "formData",
+                "description": "enter dish addon Id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/toggleDishAddonStatus": {
+          "delete": {
+            "tags": [
+              "Admin Menu Addon Management"
+            ],
+            "description": "Api to toggle Dish Addon Status",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dish_addon_id",
+                "in": "formData",
                 "description": "enter dish addon Id",
                 "required": true,
                 "type": "number"
