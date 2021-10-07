@@ -250,7 +250,7 @@ module.exports = {
             where:{
                 restaurant_id:params.restaurant_id,
                 name:{
-                    [Op.iLike]:`%${params.name}%`
+                    [Op.iLike]:`${params.name}`
                 }
             }
         })
@@ -276,7 +276,7 @@ module.exports = {
         let category=await RestaurantDishCategory.findOne({
             where:{
                 name:{
-                    [Op.iLike]:`%${params.name}%`
+                    [Op.iLike]:`${params.name}`
                 },
                 id:{
                     [Op.notIn]:[params.category_id]
@@ -412,7 +412,7 @@ module.exports = {
             where:{
                 restaurant_dish_category_id:params.restaurant_dish_category_id,
                 name:{
-                    [Op.iLike]:`%${params.name}%`
+                    [Op.iLike]:`${params.name}`
                 }
             }
         })
@@ -483,7 +483,7 @@ module.exports = {
             where:{
                 restaurant_dish_category_id:params.restaurant_dish_category_id,
                 name:{
-                    [Op.iLike]:`%${params.name}%`
+                    [Op.iLike]:`${params.name}`
                 },
                 id:{
                     [Op.notIn]:[params.dishId],
@@ -548,7 +548,7 @@ module.exports = {
             where:{
                 restaurant_dish_id:params.restaurant_dish_id,
                 name:{
-                    [Op.iLike]:`%${params.name}%`
+                    [Op.iLike]:`${params.name}`
                 }
             }
         })
@@ -576,7 +576,7 @@ module.exports = {
         let section=await DishAddOnSection.findOne({
             where:{
                 name:{
-                    [Op.iLike]:`%${params.name}%`
+                    [Op.iLike]:`${params.name}`
                 },
                 id:{
                     [Op.notIn]:[params.section_id]
@@ -742,7 +742,7 @@ module.exports = {
             where:{
                 dish_add_on_section_id:params.dish_add_on_section_id,
                 name:{
-                    [Op.iLike]:`%${params.name}%`
+                    [Op.iLike]:`${params.name}`
                 }
             }
         })
@@ -816,7 +816,7 @@ module.exports = {
             where:{
                 dish_add_on_section_id:params.dish_add_on_section_id,
                 name:{
-                    [Op.iLike]:`%${params.name}%`
+                    [Op.iLike]:`${params.name}`
                 },
                 id:{
                     [Op.notIn]:[params.dish_addon_id]
