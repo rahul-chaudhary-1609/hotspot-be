@@ -445,7 +445,9 @@ module.exports = {
         let [offset, limit] =await utilityFunction.pagination(params.page, params.page_size);
 
         let query = {};
-        query.where = { status:constants.STATUS.active, restaurant_dish_category_id:parseInt(params.restaurant_dish_category_id)};
+        query.where = {
+            restaurant_dish_category_id:parseInt(params.restaurant_dish_category_id)
+        };
         if (params.searchKey) {
             let searchKey = params.searchKey;
 
