@@ -137,6 +137,7 @@ module.exports = {
 
     listDishes: Joi.object({
         restaurant_dish_category_id: Joi.number().required(),
+        search_key: Joi.string().allow(null, '').optional(),
         page: Joi.number().required(),        
         page_size: Joi.number().required()
     }),
@@ -180,6 +181,7 @@ module.exports = {
     listDishAddon: Joi.object({
         dish_add_on_section_id: Joi.number().required(),
         is_pagination: Joi.number().default(0).optional(),
+        search_key: Joi.string().allow(null, '').optional(),
         page: Joi.number().optional(),        
         page_size: Joi.number().optional()
     }),
