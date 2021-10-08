@@ -152,7 +152,6 @@ module.exports = {
         price: Joi.number().required(),
         markup_price: Joi.number().optional(),
         description: Joi.string().required(),
-        restaurant_dish_category_id: Joi.number().required(),
         image_url: Joi.string().uri().required(),
         is_recommended: Joi.number().optional(),
         is_quick_filter: Joi.number().optional(),
