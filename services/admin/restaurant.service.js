@@ -701,7 +701,7 @@ module.exports = {
     getDishAddOnSection:async(params)=>{
 
         let section=await utilityFunction.convertPromiseToObject(
-            await DishAddOnSections.findOne({
+            await DishAddOnSection.findOne({
                 where:{
                     id:params.section_id,
                 },
@@ -718,7 +718,7 @@ module.exports = {
     },
 
     deleteDishAddOnSection:async(params)=>{
-        let section=await DishAddOnSections.findOne({
+        let section=await DishAddOnSection.findOne({
             where:{
                 id:params.section_id,
             },
@@ -734,7 +734,7 @@ module.exports = {
     },
 
     toggleDishAddOnSectionStatus:async(params)=>{
-        let section=await DishAddOnSections.findOne({
+        let section=await DishAddOnSection.findOne({
             where:{
                 id:params.section_id,
             },
