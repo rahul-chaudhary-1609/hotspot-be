@@ -82,7 +82,7 @@ router.put('/toggleDishAsQuickFilter',adminAuthentication.validateAdminToken,joi
 router.post('/addDishAddOnSection',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addDishAddOnSection), adminRestaurantController.addDishAddOnSection);
 router.put('/editDishAddOnSection',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editDishAddOnSection), adminRestaurantController.editDishAddOnSection);
 router.get('/listDishAddOnSections',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listDishAddOnSections), adminRestaurantController.listDishAddOnSections);
-router.get('/getDishAddOnSection/:category_id',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getDishAddOnSection),adminRestaurantController.getDishAddOnSection);
+router.get('/getDishAddOnSection/:section_id',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getDishAddOnSection),adminRestaurantController.getDishAddOnSection);
 router.delete('/deleteDishAddOnSection',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.deleteDishAddOnSection), adminRestaurantController.deleteDishAddOnSection);
 router.put('/toggleDishAddOnSectionStatus',adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.toggleDishAddOnSectionStatus),adminRestaurantController.toggleDishAddOnSectionStatus);
 

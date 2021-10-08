@@ -2646,7 +2646,7 @@
             "responses": {}
           }
         },
-        "/admin/getDishAddOnSection": {
+        "/admin/getDishAddOnSection/{section_id}": {
           "get": {
             "tags": [
               "Admin Menu Addon section Management"
@@ -2665,7 +2665,7 @@
               },
               {
                 "name": "section_id",
-                "in": "formData",
+                "in": "path",
                 "description": "enter section id",
                 "required": true,
                 "type": "number"
