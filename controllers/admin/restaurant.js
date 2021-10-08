@@ -257,9 +257,9 @@ module.exports = {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
-    getDishAddonById: async (req, res) => {
+    getDishAddon: async (req, res) => {
         try {
-            const responseFromService = await restaurantService.getDishAddonById(req.params);
+            const responseFromService = await restaurantService.getDishAddon(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

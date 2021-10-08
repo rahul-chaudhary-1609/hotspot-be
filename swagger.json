@@ -2817,6 +2817,13 @@
                 "type": "number"
               },
               {
+                "name": "search_key",
+                "in": "query",
+                "description": "search addon by its name",
+                "required": false,
+                "type": "string"
+              },
+              {
                 "name": "is_pagination",
                 "in": "query",
                 "description": "is_pagination: 0=> no, 1=> yes",
@@ -2829,12 +2836,12 @@
             "responses": {}
           }
         },
-        "/admin/getDishAddonById/{dish_addon_id}": {
+        "/admin/getDishAddon/{dish_addon_id}": {
           "get": {
             "tags": [
               "Admin Menu Addon Management"
             ],
-            "description": "Api to get a dish addon by Id",
+            "description": "Api to get a dish addon",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],

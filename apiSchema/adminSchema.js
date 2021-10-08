@@ -190,7 +190,7 @@ module.exports = {
         page_size: Joi.number().optional()
     }),
 
-    getDishAddonById: Joi.object({
+    getDishAddon: Joi.object({
         dish_addon_id: Joi.number().required(),
     }),
 

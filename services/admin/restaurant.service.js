@@ -825,7 +825,7 @@ module.exports = {
         }
     },
 
-    getDishAddonById: async (params) => {
+    getDishAddon: async (params) => {
         let dishAddon = await utilityFunction.convertPromiseToObject(await DishAddOn.findByPk(parseInt(params.dish_addon_id)));
         if (!dishAddon) throw new Error(constants.MESSAGES.no_dish_addon);
 
