@@ -364,7 +364,7 @@ module.exports = {
         stripe_secret_key: Joi.string().trim().allow(null, '').optional(),
     }),
 
-    addRestaurant: Joi.object({
+    editRestaurant: Joi.object({
         restaurantId:Joi.number().required(),
         restaurant_name: Joi.string().trim().optional(),
         restaurant_image_url: Joi.string().trim().optional(),
