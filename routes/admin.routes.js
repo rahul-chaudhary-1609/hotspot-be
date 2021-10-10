@@ -51,8 +51,8 @@ router.put('/uploadFile',adminAuthentication.validateAdminToken, adminMulter.upl
 router.post('/addRestaurant',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.addRestaurant);
 router.get('/listRestaurant',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listRestaurant), adminRestaurantController.listRestaurant);
 router.put('/toggleRestaurantStatus',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.toggleRestaurantStatus), adminRestaurantController.toggleRestaurantStatus);
-router.get('/getRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.restaurantIdSchema),adminRestaurantController.getRestaurant);
-router.put('/editRestaurant',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.editRestaurant);
+router.get('/getRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getRestaurant),adminRestaurantController.getRestaurant);
+router.put('/editRestaurant',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.editRestaurant), adminRestaurantController.editRestaurant);
 router.delete('/deleteRestaurant',adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.deleteRestaurant),adminRestaurantController.deleteRestaurant);
 
 //Restaurant dish Category Management
