@@ -21,9 +21,9 @@ module.exports = {
         }
     },
 
-    changeRestaurantStatus: async (req, res) => {
+    toggleRestaurantStatus: async (req, res) => {
         try {
-            const responseFromService = await restaurantService.changeRestaurantStatus({ ...req.params,...req.body });
+            const responseFromService = await restaurantService.toggleRestaurantStatus(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.action_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -42,7 +42,7 @@ module.exports = {
 
     editRestaurant: async (req, res) => {
         try {
-            const responseFromService = await restaurantService.editRestaurant({ ...req.params,...req.body });
+            const responseFromService = await restaurantService.editRestaurant(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.update_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -51,7 +51,7 @@ module.exports = {
 
     deleteRestaurant: async (req, res) => { 
         try {
-            const responseFromService = await restaurantService.deleteRestaurant(req.params);
+            const responseFromService = await restaurantService.deleteRestaurant(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.delete_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

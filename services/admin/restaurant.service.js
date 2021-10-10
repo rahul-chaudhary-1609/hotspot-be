@@ -62,7 +62,7 @@ module.exports = {
                 //params.location = point;
                 
 
-                const hotspotLocationIds = params.hotspot_location_ids;
+                //const hotspotLocationIds = params.hotspot_location_ids;
 
                 
                 delete params.hotspot_location_ids;
@@ -70,7 +70,7 @@ module.exports = {
                 
 
                 //params.location = [parseFloat((params.lat).toFixed(7)), parseFloat((params.long).toFixed(7))];
-                params.location = [parseFloat(params.lat), parseFloat(params.long)];
+                //params.location = [parseFloat(params.lat), parseFloat(params.long)];
                 if (params.stripe_publishable_key && params.stripe_secret_key) {
                     params.stripe_publishable_key = utilityFunction.encrypt(params.stripe_publishable_key);
                     params.stripe_secret_key = utilityFunction.encrypt(params.stripe_secret_key);
@@ -78,21 +78,21 @@ module.exports = {
                 
                 let restaurantCreated = await Restaurant.create(params);
                 if (restaurantCreated)
-                    if (hotspotLocationIds) {
-                        const restaurantHotspotRows = hotspotLocationIds.map((id) => {
-                            return {
-                                hotspot_location_id:id,
-                                restaurant_id:restaurantCreated.id,
-                            }
-                        })
+                    // if (hotspotLocationIds) {
+                    //     const restaurantHotspotRows = hotspotLocationIds.map((id) => {
+                    //         return {
+                    //             hotspot_location_id:id,
+                    //             restaurant_id:restaurantCreated.id,
+                    //         }
+                    //     })
                         
-                        for (let row of restaurantHotspotRows) {
-                            await HotspotRestaurant.findOrCreate({
-                                where: row,
-                                defaults:row
-                            })       
-                        }
-                    }
+                    //     for (let row of restaurantHotspotRows) {
+                    //         await HotspotRestaurant.findOrCreate({
+                    //             where: row,
+                    //             defaults:row
+                    //         })       
+                    //     }
+                    // }
                  return {restaurant_id:restaurantCreated.id};
             } else {
                 throw new Error(constants.MESSAGES.email_already_registered);
@@ -100,33 +100,21 @@ module.exports = {
         
     },
 
-    changeRestaurantStatus: async (params) => {
+    toggleRestaurantStatus: async (params) => {
 
-            const restaurantId = params.restaurantId;
-            const status = parseInt(params.status);
+        let restaurant = await Restaurant.findByPk(parseInt(params.restaurantId));
 
-            const restaurant = await Restaurant.findByPk(restaurantId);
+        if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
 
-            if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
+        if(restaurant.status==constants.STATUS.active){
+            restaurant.status=constants.STATUS.inactive
+        }else{
+            restaurant.status=constants.STATUS.active
+        }
 
-
-            console.log("status", status);
-
-            if (!([0, 1].includes(status))) throw new Error(constants.MESSAGES.invalid_status);
-
-            await Restaurant.update({
-                status,
-            },
-                {
-                    where: {
-                        id: restaurantId,
-                    },
-                    returning: true,
-                });
+        restaurant.save();
             
-        return true;
-
-        
+        return restaurant;      
         
     },
 
@@ -172,7 +160,7 @@ module.exports = {
             query.raw = true;
             
 
-            const hotspotLocationIds = params.hotspot_location_ids;
+            //const hotspotLocationIds = params.hotspot_location_ids;
 
             delete params.hotspot_location_ids;
             if (params.stripe_publishable_key && params.stripe_secret_key) {
@@ -183,33 +171,25 @@ module.exports = {
             let updates = params;
             let restaurantExists = await Restaurant.findOne(query);
             if(restaurantExists) {
-                if(params.lat && params.long) {
-                    // const point = { type: 'Point', coordinates: [] };
-                    // point.coordinates.push(params.long);
-                    // point.coordinates.push(params.lat);
-                    // params.location = point;
-                    //params.location = [parseFloat((params.lat).toFixed(7)), parseFloat((params.long).toFixed(7))];
-                    updates.location = [parseFloat(params.lat), parseFloat(params.long)];
-                }
                 await Restaurant.update(updates, query);
 
-                if (hotspotLocationIds) {
-                    await HotspotRestaurant.destroy({
-                        where: {
-                            restaurant_id:parseInt(params.restaurantId),
-                        },
-                        force: true,
-                    })
+                // if (hotspotLocationIds) {
+                //     await HotspotRestaurant.destroy({
+                //         where: {
+                //             restaurant_id:parseInt(params.restaurantId),
+                //         },
+                //         force: true,
+                //     })
                 
-                    const restaurantHotspotRows = hotspotLocationIds.map((id) => {
-                        return {
-                            hotspot_location_id:id,
-                            restaurant_id:parseInt(params.restaurantId),
-                        }
-                    })
+                //     const restaurantHotspotRows = hotspotLocationIds.map((id) => {
+                //         return {
+                //             hotspot_location_id:id,
+                //             restaurant_id:parseInt(params.restaurantId),
+                //         }
+                //     })
     
-                    await HotspotRestaurant.bulkCreate(restaurantHotspotRows);
-                }
+                //     await HotspotRestaurant.bulkCreate(restaurantHotspotRows);
+                // }
                 
                 return true;
             } else {
@@ -220,29 +200,19 @@ module.exports = {
 
     deleteRestaurant: async (params) => { 
 
-            const restaurantId = parseInt(params.restaurantId);
+        let restaurant = await Restaurant.findByPk(parseInt(params.restaurantId));
 
-            const restaurant = await Restaurant.findByPk(restaurantId);
+        if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
 
-            if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
-
-            await Restaurant.update({
-                status:constants.STATUS.deleted,
-                },
-                {
-                    where: {
-                        id: restaurantId,
-                    },
-                    returning: true,
-                })
+        restaurant.destroy();
 
         await HotspotRestaurant.destroy({
             where: {
-                    restaurant_id:restaurantId,
+                    restaurant_id:parseInt(params.restaurantId),
                 }
             })
-        return true;
-        
+
+        return true;        
     },
 
     addRestaurantDishCategory:async(params)=>{

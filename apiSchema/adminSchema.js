@@ -345,17 +345,14 @@ module.exports = {
         driver_ids: Joi.array(),
     }),
 
-    restaurantSchema: Joi.object({
+    addRestaurant: Joi.object({
         restaurant_name: Joi.string().trim().required(),
-        restaurant_image_url: Joi.string().trim().required(),
+        restaurant_image_url: Joi.string().trim().optional(),
         owner_name: Joi.string().trim().required(),
         role: Joi.string().trim().required(),
         owner_email: Joi.string().trim().email().required(),
-        owner_phone: Joi.string().trim().regex(/^\(?\d{10}$/).min(10).max(10).messages({
-            "string.pattern.base":constants.CUSTOM_JOI_MESSAGE.phone_no_msg.pattern,
-        }),       
-        lat: Joi.number().required(),
-        long:Joi.number().required(),
+        owner_phone: Joi.string().trim().required(),
+        location: Joi.array().required(),
         address: Joi.string().required(),
         deliveries_per_shift: Joi.number().required(),
         cut_off_time: Joi.number().required(),
@@ -363,18 +360,48 @@ module.exports = {
         working_hours_to: Joi.string().required(),
         order_type: Joi.number().required(),
         agreement_doc_url: Joi.string().allow(null, '').optional(),
-        hotspot_location_ids: Joi.array().optional(),
         stripe_publishable_key:Joi.string().trim().allow(null, '').optional(),
         stripe_secret_key: Joi.string().trim().allow(null, '').optional(),
     }),
 
-    restaurantIdSchema: Joi.object({
+    addRestaurant: Joi.object({
+        restaurantId:Joi.number().required(),
+        restaurant_name: Joi.string().trim().optional(),
+        restaurant_image_url: Joi.string().trim().optional(),
+        owner_name: Joi.string().trim().optional(),
+        role: Joi.string().trim().optional(),
+        owner_email: Joi.string().trim().email().optional(),
+        owner_phone: Joi.string().trim().optional(),
+        location: Joi.array().optional(),
+        address: Joi.string().optional(),
+        deliveries_per_shift: Joi.number().optional(),
+        cut_off_time: Joi.number().optional(),
+        working_hours_from: Joi.string().optional(),
+        working_hours_to: Joi.string().optional(),
+        order_type: Joi.number().optional(),
+        agreement_doc_url: Joi.string().allow(null, '').optional(),
+        stripe_publishable_key:Joi.string().trim().allow(null, '').optional(),
+        stripe_secret_key: Joi.string().trim().allow(null, '').optional(),
+    }),
+
+    listRestaurant: Joi.object({
+        searchKey: Joi.string().allow(null, '').trim().optional(),
+        page: Joi.number().required(),        
+        page_size: Joi.number().required() 
+    }),
+
+    getRestaurant: Joi.object({
         restaurantId: Joi.number().required(),
     }),
 
-    statusTypeSchema: Joi.object({
-        restaurantId: Joi.number(),
+    toggleRestaurantStatus: Joi.object({
+        restaurantId: Joi.number().required(),
     }),
+
+    deleteRestaurant: Joi.object({
+        restaurantId: Joi.number().required(),
+    }),
+
 
     getDriverEarningDetails : Joi.object({
         driver_id: Joi.number().required(),

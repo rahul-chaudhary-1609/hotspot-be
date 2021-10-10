@@ -1706,18 +1706,14 @@
                   "type": "string"
               },
               {
-                "name": "lat",
+                "name": "location",
                 "in": "formData",
-                "description": "location lattitude",
+                "description": "location",
                 "required": true,
-                "type": "number"
-              },
-              {
-                "name": "long",
-                "in": "formData",
-                "description": "location longitude",
-                "required": true,
-                "type": "number"
+                "type": "array",
+                "items":{
+                  "type":"number"
+                }
               },
               {
                   "name": "address",
@@ -1867,7 +1863,7 @@
             "responses": {}
           }
         },
-        "/admin/editRestaurant/{reataurantId}": {
+        "/admin/editRestaurant": {
           "put": {
           "tags": [
               "Admin Restaurant Management"
@@ -1886,7 +1882,7 @@
               },
               {
                 "name": "reataurantId",
-                "in": "path",
+                "in": "formData",
                 "description": "restaurant id",
                 "required": true,
                 "type": "number"
@@ -1941,18 +1937,14 @@
                 "type": "string"
               },
               {
-                "name": "lat",
+                "name": "location",
                 "in": "formData",
-                "description": "location lattitude",
+                "description": "location",
                 "required": true,
-                "type": "number"
-              },
-              {
-                "name": "long",
-                "in": "formData",
-                "description": "location longitude",
-                "required": true,
-                "type": "number"
+                "type": "array",
+                "items":{
+                  "type":"number"
+                }
               },
               {
                 "name": "address",
@@ -2036,7 +2028,7 @@
               "responses": {}
           }
         },
-        "/admin/changeRestaurantStatus/{restaurantId}": {
+        "/admin/toggleRestaurantStatus": {
           "put": {
             "tags": [
               "Admin Restaurant Management"
@@ -2055,23 +2047,16 @@
               },
               {
                 "name": "restaurantId",
-                "in": "path",
+                "in": "formData",
                 "description": "restaurant id",
                 "required": true,
                 "type": "string"
-              },
-              {
-                "name": "status",
-                "in": "formData",
-                "description": "1 for activate, 0 for deactivate",
-                "required": true,
-                "type": "number"
               }
             ],
             "responses": {}
           }
         },
-        "/admin/deleteRestaurant/{restaurantId}": {
+        "/admin/deleteRestaurant": {
           "delete": {
             "tags": [
               "Admin Restaurant Management"
@@ -2090,7 +2075,7 @@
               },
               {
                 "name": "restaurantId",
-                "in": "path",
+                "in": "formData",
                 "description": "restaurant Id",
                 "required": true,
                 "type": "number"
