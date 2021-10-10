@@ -13,29 +13,30 @@ const constants = require("../../constants");
 
 module.exports = {
     listRestaurant: async(params) => {
-        
 
+        let query = {};
+        query.where = {status:[constants.STATUS.inactive,constants.STATUS.active]};
+        if(params.searchKey) {
+            let searchKey = params.searchKey;
+            query.where = {
+                ...query.where,
+                [Op.or]: [
+                    {restaurant_name: { [Op.iLike]: `%${searchKey}%` }},
+                    {owner_name: { [Op.iLike]: `%${searchKey}%` }},
+                    {owner_email: { [Op.iLike]: `%${searchKey}%` }},
+                    {owner_phone: { [Op.iLike]: `%${searchKey}%` }}
+                ]
+            };
+        }
+        query.order = [["createdAt","DESC"]];
+        query.raw = true;
+
+        if(!params.is_pagination || params.is_pagination==constants.IS_PAGINATION.yes){
             let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
+            query.offset=offset,
+            query.limit=limit
             
-
-            let query = {};
-            query.where = {status:[constants.STATUS.inactive,constants.STATUS.active]};
-            if(params.searchKey) {
-                let searchKey = params.searchKey;
-                query.where = {
-                    ...query.where,
-                    [Op.or]: [
-                        {restaurant_name: { [Op.iLike]: `%${searchKey}%` }},
-                        {owner_name: { [Op.iLike]: `%${searchKey}%` }},
-                        {owner_email: { [Op.iLike]: `%${searchKey}%` }},
-                        {owner_phone: { [Op.iLike]: `%${searchKey}%` }}
-                    ]
-                };
-            }
-            query.order = [["createdAt","DESC"]];
-            query.limit = limit;
-            query.offset = offset;
-            query.raw = true;
+        }   
 
         let restaurantList = await Restaurant.findAndCountAll(query);
 
@@ -297,7 +298,7 @@ module.exports = {
             }
         }
 
-        if(params.is_pagination==constants.IS_PAGINATION.yes){
+        if(!params.is_pagination || params.is_pagination==constants.IS_PAGINATION.yes){
             let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
             query.offset=offset
             query.limit=limit
@@ -648,7 +649,7 @@ module.exports = {
         }
         
 
-        if(params.is_pagination==constants.IS_PAGINATION.yes){
+        if(!params.is_pagination || params.is_pagination==constants.IS_PAGINATION.yes){
             let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
             query.offset=offset,
             query.limit=limit
@@ -775,7 +776,7 @@ module.exports = {
         }
         
 
-        if(params.is_pagination==constants.IS_PAGINATION.yes){
+        if(!params.is_pagination || params.is_pagination==constants.IS_PAGINATION.yes){
             let [offset, limit] = await utilityFunction.pagination(params.page, params.page_size);
             query.offset=offset,
             query.limit=limit

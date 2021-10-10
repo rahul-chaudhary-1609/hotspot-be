@@ -184,7 +184,7 @@ module.exports = {
 
     listDishAddon: Joi.object({
         dish_add_on_section_id: Joi.number().required(),
-        is_pagination: Joi.number().default(0).optional(),
+        is_pagination: Joi.number().optional(),
         search_key: Joi.string().allow(null, '').optional(),
         page: Joi.number().optional(),        
         page_size: Joi.number().optional()
@@ -385,6 +385,7 @@ module.exports = {
     }),
 
     listRestaurant: Joi.object({
+        is_pagination: Joi.number().optional(),
         searchKey: Joi.string().allow(null, '').trim().optional(),
         page: Joi.number().required(),        
         page_size: Joi.number().required() 
@@ -631,7 +632,7 @@ module.exports = {
     listRestaurantDishCategories: Joi.object({        
         restaurant_id: Joi.number().required(),
         search_key: Joi.string().allow(null, '').optional(),
-        is_pagination: Joi.number().default(1).optional(),
+        is_pagination: Joi.number().optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
     }),
@@ -667,7 +668,7 @@ module.exports = {
         search_key: Joi.string().allow(null, '').optional(),
         is_required: Joi.number().optional(),  
         is_multiple_choice: Joi.number().optional(),
-        is_pagination: Joi.number().default(1).optional(),
+        is_pagination: Joi.number().optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
     }),
