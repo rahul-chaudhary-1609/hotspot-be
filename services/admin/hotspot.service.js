@@ -129,7 +129,7 @@ module.exports = {
     },
 
     editHotspot: async (params) => {
-        
+    
 
             const hotspotLocationId = params.hotspotLocationId;
 
@@ -255,39 +255,41 @@ module.exports = {
         
     },
 
-    listHotspots: async (params) => {
+    listHotspot: async (params) => {
         
 
+        let query = {};
+
+        query.order = [
+            ['id', 'DESC']
+        ];
+        query.raw = true;
+
+        if(!params.is_pagination || params.is_pagination==constants.IS_PAGINATION.yes){
             let [offset, limit] = await utility.pagination(params.page, params.page_size);
+            query.offset=offset
+            query.limit=limit                
+        }
 
-            let query = {};
+        let hotspotList = await models.HotspotLocation.findAndCountAll(query);
+        
+        if (hotspotList.count === 0) throw new Error(constants.MESSAGES.no_hotspot);
 
-            query.order = [
-                ['id', 'DESC']
-            ];
-            query.limit = limit;
-            query.offset = offset;
-            query.raw = true;
-
-            let hotspotList = await models.HotspotLocation.findAndCountAll(query);
+        hotspotList.rows = hotspotList.rows.map((val) => {
+            return {
+                id:val.id,
+                name: val.name,
+                location: val.location,
+                locationDetail: val.location_detail,                   
+            }
+        })
             
-            if (hotspotList.count === 0) throw new Error(constants.MESSAGES.no_hotspot);
-
-            hotspotList.rows = hotspotList.rows.map((val) => {
-                return {
-                    id:val.id,
-                    name: val.name,
-                    location: val.location,
-                    locationDetail: val.location_detail,                   
-                }
-            })
-            
-            return { hotspotList };
+        return { hotspotList };
             
         
     },
 
-    getHotspotDetails: async (params) => {
+    getHotspot: async (params) => {
         
 
             const hotspotLocationId = params.hotspotLocationId;

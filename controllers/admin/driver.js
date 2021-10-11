@@ -4,9 +4,9 @@ const constants = require("../../constants");
 
 
 module.exports = {
-    listDrivers: async (req, res) => {
+    listDriver: async (req, res) => {
         try {
-            const responseFromService = await driverService.listDrivers(req.query);
+            const responseFromService = await driverService.listDriver(req.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

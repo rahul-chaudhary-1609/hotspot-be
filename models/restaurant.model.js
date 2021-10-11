@@ -25,8 +25,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         restaurant_image_url: {
-            type: DataTypes.STRING,
-            allowNull: false,
+            type: DataTypes.TEXT,
+            allowNull: true,
         },
         owner_name: {
             type: DataTypes.STRING(45),

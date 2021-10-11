@@ -263,6 +263,13 @@ module.exports = {
 
     }),
 
+    listDriver: Joi.object({
+        is_pagination: Joi.number().optional(),
+        searchKey: Joi.string().allow(null, '').trim().optional(),
+        page: Joi.number().optional(),        
+        page_size: Joi.number().optional() 
+    }),
+
     dateSchema : Joi.object({
         start_date: Joi.string().regex(/^\d{4}-\d{2}-\d{2}$/).messages({
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.start_date_msg.pattern,
@@ -315,7 +322,7 @@ module.exports = {
         percentage_fee:Joi.number().required(),
     }),
 
-    hotspotSchema: Joi.object({
+    addHotspot: Joi.object({
         name: Joi.string().trim().required(),
         location: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).required(),
         location_detail: Joi.string().required(),
@@ -341,15 +348,60 @@ module.exports = {
         restaurant_ids: Joi.array().items(Joi.object().keys({
             restaurant_id: Joi.number().required(),
             pickup_time: Joi.number().required(),
-        })).required(),
+        })).optional(),
         driver_ids: Joi.array(),
+    }),
+
+    editHotspot: Joi.object({
+        hotspotLocationId:Joi.number().required(),
+        name: Joi.string().trim().optional(),
+        location: Joi.array().items(Joi.number().required(), Joi.number().required()).length(2).optional(),
+        location_detail: Joi.string().optional(),
+        city: Joi.string().max(45).optional(),
+        state: Joi.string().max(45).optional(),
+        postal_code: Joi.string().max(45).optional(),
+        country: Joi.string().max(45).optional(),
+        dropoffs: Joi.array().optional(),
+        delivery_shifts: Joi.array()
+            .items(
+                Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
+                    "string.pattern.base":constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
+                }),
+                Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
+                    "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
+                }),
+                Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
+                    "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
+                }),
+            ).length(3)
+            .optional(),
+        
+        restaurant_ids: Joi.array().items(Joi.object().keys({
+            restaurant_id: Joi.number().required(),
+            pickup_time: Joi.number().required(),
+        })).optional(),
+        driver_ids: Joi.array().optional(),
+    }),
+
+    listHotspot: Joi.object({
+        is_pagination: Joi.number().optional(),
+        page: Joi.number().optional(),        
+        page_size: Joi.number().optional(),
+    }),
+
+    getHotspot: Joi.object({
+        hotspotLocationId:Joi.number().required(),
+    }),
+
+    deleteHotspot: Joi.object({
+        hotspotLocationId:Joi.number().required(),
     }),
 
     addRestaurant: Joi.object({
         restaurant_name: Joi.string().trim().required(),
-        restaurant_image_url: Joi.string().trim().optional(),
+        restaurant_image_url: Joi.string().trim().allow(null, '').optional(),
         owner_name: Joi.string().trim().required(),
-        role: Joi.string().trim().required(),
+        role: Joi.string().trim().allow(null, '').optional(),
         owner_email: Joi.string().trim().email().required(),
         owner_phone: Joi.string().trim().required(),
         location: Joi.array().required(),
@@ -367,9 +419,9 @@ module.exports = {
     editRestaurant: Joi.object({
         restaurantId:Joi.number().required(),
         restaurant_name: Joi.string().trim().optional(),
-        restaurant_image_url: Joi.string().trim().optional(),
+        restaurant_image_url: Joi.string().trim().allow(null, '').optional(),
         owner_name: Joi.string().trim().optional(),
-        role: Joi.string().trim().optional(),
+        role: Joi.string().trim().allow(null, '').optional(),
         owner_email: Joi.string().trim().email().optional(),
         owner_phone: Joi.string().trim().optional(),
         location: Joi.array().optional(),
@@ -387,8 +439,8 @@ module.exports = {
     listRestaurant: Joi.object({
         is_pagination: Joi.number().optional(),
         searchKey: Joi.string().allow(null, '').trim().optional(),
-        page: Joi.number().required(),        
-        page_size: Joi.number().required() 
+        page: Joi.number().optional(),     
+        page_size: Joi.number().optional(), 
     }),
 
     getRestaurant: Joi.object({

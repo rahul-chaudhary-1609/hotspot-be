@@ -49,7 +49,7 @@ module.exports = {
 
     addRestaurant: async(params) => {
     
-
+        console.log("params",params)
         let restaurantExists = await Restaurant.findOne({
             where: {
                 owner_email: params.owner_email,
@@ -72,9 +72,12 @@ module.exports = {
 
                 //params.location = [parseFloat((params.lat).toFixed(7)), parseFloat((params.long).toFixed(7))];
                 //params.location = [parseFloat(params.lat), parseFloat(params.long)];
-                if (params.stripe_publishable_key && params.stripe_secret_key) {
+                if (params.stripe_publishable_key && params.stripe_publishable_key.trim()!=""  && params.stripe_secret_key && params.stripe_secret_key.trim()!=="") {
                     params.stripe_publishable_key = utilityFunction.encrypt(params.stripe_publishable_key);
                     params.stripe_secret_key = utilityFunction.encrypt(params.stripe_secret_key);
+                }else{
+                    delete params.stripe_publishable_key
+                    delete params.stripe_secret_key
                 }
                 
                 let restaurantCreated = await Restaurant.create(params);
@@ -120,18 +123,19 @@ module.exports = {
     },
 
     getRestaurant: async (params) => {
+        console.log("params",params)
 
         let restaurantId = parseInt(params.restaurantId);
 
         const restaurant = await Restaurant.findByPk(restaurantId);
         
         if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
+
         
         restaurant.stripe_publishable_key = restaurant.stripe_publishable_key? utilityFunction.decrypt(restaurant.stripe_publishable_key):null;
         restaurant.stripe_secret_key=restaurant.stripe_secret_key? utilityFunction.decrypt(restaurant.stripe_secret_key):null;
 
         let coveringHotspots = [];
-
         
         const restaurantHotspot = await HotspotRestaurant.findAndCountAll({
             where: {
@@ -164,10 +168,13 @@ module.exports = {
             //const hotspotLocationIds = params.hotspot_location_ids;
 
             delete params.hotspot_location_ids;
-            if (params.stripe_publishable_key && params.stripe_secret_key) {
-                    params.stripe_publishable_key = utilityFunction.encrypt(params.stripe_publishable_key);
-                    params.stripe_secret_key = utilityFunction.encrypt(params.stripe_secret_key);
-        }
+            if (params.stripe_publishable_key && params.stripe_publishable_key.trim()!=""  && params.stripe_secret_key && params.stripe_secret_key.trim()!=="") {
+                params.stripe_publishable_key = utilityFunction.encrypt(params.stripe_publishable_key);
+                params.stripe_secret_key = utilityFunction.encrypt(params.stripe_secret_key);
+            }else{
+                delete params.stripe_publishable_key
+                delete params.stripe_secret_key
+            }
         console.log(params)
             let updates = params;
             let restaurantExists = await Restaurant.findOne(query);

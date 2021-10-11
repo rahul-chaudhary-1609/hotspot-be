@@ -25,21 +25,13 @@ const adminMulter = require('../middlewares/multer');
 
 // on boarding API's
 router.post('/login',joiValidation.validateBody(apiSchema.login), adminLoginController.login);
-
 router.post('/addNewAdmin',joiValidation.validateBody(apiSchema.addNewAdmin), adminLoginController.addNewAdmin);
-
 router.post('/forgotPassword',joiValidation.validateBody(apiSchema.forgetPassword), adminLoginController.forgotPassword);
-
 router.post('/resetPassword',joiValidation.validateBody(apiSchema.resetPassword), adminLoginController.resetPassword);
-
 router.get('/logout', adminAuthentication.validateAdminToken, adminLoginController.logout);
-
 router.post('/changePassword', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.changePassword), adminLoginController.changePassword);
-
 router.post('/updateProfile', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.updateProfile), adminLoginController.updateProfile);
-
 router.get('/getAdminProfile', adminAuthentication.validateAdminToken, adminLoginController.getAdminProfile);
-
 router.get('/htmlFileUrlToTextConvert',  adminLoginController.htmlFileUrlToTextConvert);
 
 //for image upload
@@ -48,7 +40,7 @@ router.put('/uploadFile',adminAuthentication.validateAdminToken, adminMulter.upl
 
 //Restaurant Management
 
-router.post('/addRestaurant',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.restaurantSchema), adminRestaurantController.addRestaurant);
+router.post('/addRestaurant',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.addRestaurant), adminRestaurantController.addRestaurant);
 router.get('/listRestaurant',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listRestaurant), adminRestaurantController.listRestaurant);
 router.put('/toggleRestaurantStatus',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.toggleRestaurantStatus), adminRestaurantController.toggleRestaurantStatus);
 router.get('/getRestaurant/:restaurantId',adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getRestaurant),adminRestaurantController.getRestaurant);
@@ -100,13 +92,9 @@ router.put('/toggleDishAddonStatus',adminAuthentication.validateAdminToken,joiVa
 //Customer Management
 
 router.get('/listCustomers',adminAuthentication.validateAdminToken, adminCustomerController.listCustomers);
-
 router.get('/viewCustomerProfile/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.viewCustomerProfile);
-
 router.put('/changeCustomerStatus/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.changeCustomerStatus);
-
 router.put('/editCustomer/:customerId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.customerSchema), adminCustomerController.editCustomer);
-
 router.delete('/deleteCustomer/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.deleteCustomer);
 
 
@@ -114,55 +102,33 @@ router.delete('/deleteCustomer/:customerId',adminAuthentication.validateAdminTok
 //Dashboard Management
 
 router.get('/listAllHotspot', adminAuthentication.validateAdminToken, adminDashboardController.listAllHotspot);
-
 router.get('/getTotalCustomers',adminAuthentication.validateAdminToken, adminDashboardController.getTotalCustomers);
-
 router.get('/getCustomersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getCustomersViaHotspot);
-
 router.get('/getTotalRestaurants',adminAuthentication.validateAdminToken, adminDashboardController.getTotalRestaurants);
-
 router.get('/getTotalDrivers',adminAuthentication.validateAdminToken, adminDashboardController.getTotalDrivers);
-
 router.get('/getDriversViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getDriversViaHotspot);
-
 router.get('/getTotalOrders',adminAuthentication.validateAdminToken, adminDashboardController.getTotalOrders);
-
 router.get('/getHotspotCount',adminAuthentication.validateAdminToken, adminDashboardController.getHotspotCount);
-
 router.get('/getOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getOrdersViaHotspot);
-
 router.get('/getProcessingOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getProcessingOrdersViaHotspot);
-
 router.get('/getCompletedOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getCompletedOrdersViaHotspot);
-
 router.get('/getProcessingOrders',adminAuthentication.validateAdminToken, adminDashboardController.getProcessingOrders);
-
 router.get('/getCompletedOrder',adminAuthentication.validateAdminToken, adminDashboardController.getCompletedOrders);
-
 router.get('/getTotalRevenue',adminAuthentication.validateAdminToken, adminDashboardController.getTotalRevenue);
-
 router.get('/getTotalRevenueByDate',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.dateSchema), adminDashboardController.getTotalRevenueByDate);
-
 router.get('/getOrderStats',adminAuthentication.validateAdminToken,adminDashboardController.getOrderStats);
-
 router.get('/getTotalRevenueViaHotspot/:hotspot_id', adminAuthentication.validateAdminToken,adminDashboardController.getTotalRevenueViaHotspot);
-
 router.get('/getRevenueStats',adminAuthentication.validateAdminToken,adminDashboardController.getRevenueStats);
 
 
 
 //Driver Management
 
-router.get('/listDrivers',adminAuthentication.validateAdminToken, adminDriverController.listDrivers);
-
+router.get('/listDriver',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listDriver), adminDriverController.listDriver);
 router.get('/getDriverDetails/:driverId',adminAuthentication.validateAdminToken, adminDriverController.getDriverDetails);
-
 router.get('/getDriverEarningDetails',adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getDriverEarningDetails), adminDriverController.getDriverEarningDetails);
-
 router.put('/approveDriver/:driverId',adminAuthentication.validateAdminToken, adminDriverController.approveDriver);
-
 router.put('/changeDriverStatus/:driverId',adminAuthentication.validateAdminToken, adminDriverController.changeDriverStatus);
-
 router.put('/editDriver/:driverId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.driverSchema), adminDriverController.editDriver);
 
 
@@ -170,15 +136,10 @@ router.put('/editDriver/:driverId',adminAuthentication.validateAdminToken,joiVal
 //order Management
 
 router.get('/getActiveOrders',adminAuthentication.validateAdminToken, adminOrderController.getActiveOrders);
-
 router.get('/getScheduledOrders',adminAuthentication.validateAdminToken, adminOrderController.getScheduledOrders);
-
 router.get('/getCompletedOrders',adminAuthentication.validateAdminToken, adminOrderController.getCompletedOrders);
-
 router.get('/getOrderDetails/:orderId',adminAuthentication.validateAdminToken, adminOrderController.getOrderDetails);
-
 router.put('/assignDriver/:orderId',adminAuthentication.validateAdminToken, adminOrderController.assignDriver);
-
 router.get('/getDriverListByHotspot',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getDriverListByHotspot), adminOrderController.getDriverListByHotspot);
 
 
@@ -202,11 +163,11 @@ router.put('/editTax',adminAuthentication.validateAdminToken,joiValidation.valid
 
 router.get('/listAllRestaurant', adminAuthentication.validateAdminToken, adminHotspotController.listAllRestaurant);
 router.get('/listAllDriver', adminAuthentication.validateAdminToken, adminHotspotController.listAllDriver);
-router.get('/listHotspots',adminAuthentication.validateAdminToken, adminHotspotController.listHotspots);
-router.post('/addHotspot',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.addHotspot);
-router.put('/editHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.hotspotSchema), adminHotspotController.editHotspot);
-router.get('/getHotspotDetails/:hotspotLocationId',adminAuthentication.validateAdminToken, adminHotspotController.getHotspotDetails);
-router.delete('/deleteHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken, adminHotspotController.deleteHotspot);
+router.get('/listHotspot',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.listHotspot), adminHotspotController.listHotspot);
+router.post('/addHotspot',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.addHotspot), adminHotspotController.addHotspot);
+router.put('/editHotspot',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.editHotspot), adminHotspotController.editHotspot);
+router.get('/getHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getHotspot), adminHotspotController.getHotspot);
+router.delete('/deleteHotspot',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.deleteHotspot), adminHotspotController.deleteHotspot);
 
 
 // notification management

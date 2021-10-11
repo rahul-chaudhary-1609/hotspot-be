@@ -8,9 +8,7 @@ const sendMail = require('../../utils/mail');
 
 
 module.exports = {
-    listDrivers: async (params) => {
-    
-        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+    listDriver: async (params) => {
     
         let query = {};
         query.where = {
@@ -33,19 +31,16 @@ module.exports = {
                 ]
             };
         }
-        query.include = [
-            {
-                model: models.Order,
-                required: false,
-                where: {status: constants.ORDER_STATUS.delivered}
-            }
-        ]
         query.order = [
             ['id', 'DESC']
         ];
-        query.group = ['Driver.id']
-        query.limit = limit;
-        query.offset = offset;
+
+        if(!params.is_pagination || params.is_pagination==constants.IS_PAGINATION.yes){
+            let [offset, limit] = await utility.pagination(params.page, params.page_size);
+            query.offset=offset
+            query.limit=limit
+            
+        }
     
         let driverList = await models.Driver.findAndCountAll(query);
         
@@ -55,17 +50,13 @@ module.exports = {
             return {
                 id:val.id,
                 name: val.first_name+" "+val.last_name,
+                first_name:val.first_name,
+                last_name:val.last_name,
                 email: val.email,
                 phone: val.phone_no ?val.phone_no : null,
                 status: val.status,
                 approval_status:val.approval_status,
-                signupDate: val.createdAt,
-                total_deliveries: val.Orders.length,
-                total_earnings: val.Orders.reduce(
-                    function(sum, current) {
-                        return sum + (parseFloat(current.driver_fee)+parseFloat(current.tip_amount));
-                    }, 
-                0)                         
+                signupDate: val.createdAt,                        
             }
         })
         

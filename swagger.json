@@ -4283,12 +4283,12 @@
           }
         },
 
-        "/admin/listHotspots": {
+        "/admin/listHotspot": {
           "get": {
             "tags": [
               "Admin Schedule Settings"
             ],
-            "description": "Api to list all hotspots",
+            "description": "Api to list all hotspot",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],
@@ -4299,6 +4299,15 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "is_pagination",
+                "in": "query",
+                "description": "is_pagination: 0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "default":1,
+                "enum":[0,1]
               },
               {
                 "name": "page",
@@ -4429,13 +4438,6 @@
                 "type": "string"
               },
               {
-                "name": "hotspotLocationId",
-                "in": "path",
-                "description": "enter hotspot location id",
-                "required": true,
-                "type": "number"
-              },
-              {
                 "name":"body",
                 "in":"body",
                 "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss",
@@ -4443,6 +4445,9 @@
                 "schema":{
                   "type":"object",
                   "properties":{
+                    "hotspotLocationId":{
+                      "type":"number"
+                    },
                     "name":{
                       "type":"string"
                     },
@@ -4511,7 +4516,7 @@
           }
         },        
 
-        "/admin/getHotspotDetails/{hotspotLocationId}": {
+        "/admin/getHotspot/{hotspotLocationId}": {
           "get": {
             "tags": [
               "Admin Schedule Settings"
@@ -4540,7 +4545,7 @@
           }
         },
 
-        "/admin/deleteHotspot/{hotspotLocationId}": {
+        "/admin/deleteHotspot": {
           "delete": {
             "tags": [
               "Admin Schedule Settings"
@@ -4559,7 +4564,7 @@
               },
               {
                 "name": "hotspotLocationId",
-                "in": "path",
+                "in": "formData",
                 "description": "enter hotspot location id",
                 "required": true,
                 "type": "number"
