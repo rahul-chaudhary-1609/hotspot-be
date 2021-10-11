@@ -75,9 +75,6 @@ module.exports = {
                 if (params.stripe_publishable_key && params.stripe_publishable_key.trim()!=""  && params.stripe_secret_key && params.stripe_secret_key.trim()!=="") {
                     params.stripe_publishable_key = utilityFunction.encrypt(params.stripe_publishable_key);
                     params.stripe_secret_key = utilityFunction.encrypt(params.stripe_secret_key);
-                }else{
-                    delete params.stripe_publishable_key
-                    delete params.stripe_secret_key
                 }
                 
                 let restaurantCreated = await Restaurant.create(params);
@@ -171,9 +168,6 @@ module.exports = {
             if (params.stripe_publishable_key && params.stripe_publishable_key.trim()!=""  && params.stripe_secret_key && params.stripe_secret_key.trim()!=="") {
                 params.stripe_publishable_key = utilityFunction.encrypt(params.stripe_publishable_key);
                 params.stripe_secret_key = utilityFunction.encrypt(params.stripe_secret_key);
-            }else{
-                delete params.stripe_publishable_key
-                delete params.stripe_secret_key
             }
         console.log(params)
             let updates = params;
