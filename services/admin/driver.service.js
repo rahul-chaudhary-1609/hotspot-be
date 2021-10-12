@@ -44,8 +44,7 @@ module.exports = {
     
         let driverList = await models.Driver.findAndCountAll(query);
         
-        if (driverList.count.length === 0) throw new Error(constants.MESSAGES.no_driver);
-        driverList.count = driverList.count.length;
+        if (driverList.count === 0) throw new Error(constants.MESSAGES.no_driver);
         driverList.rows = driverList.rows.map((val) => {
             return {
                 id:val.id,
