@@ -148,6 +148,7 @@ module.exports = {
 
     editDish : Joi.object({
         dishId: Joi.number().required(),
+        restaurant_dish_category_id: Joi.number().required(),
         name: Joi.string().trim().required(),
         price: Joi.number().required(),
         markup_price: Joi.number().optional(),
@@ -196,6 +197,7 @@ module.exports = {
 
     editDishAddon: Joi.object({
         dish_addon_id: Joi.number().required(),
+        dish_add_on_section_id: Joi.number().required(),
         name: Joi.string().trim().optional(),
         price: Joi.number().optional(),
         markup_price: Joi.number().optional(),
@@ -678,6 +680,7 @@ module.exports = {
 
     editRestaurantDishCategory: Joi.object({
         category_id: Joi.number().required(),
+        restaurant_id: Joi.number().required(),
         name: Joi.string().required(),
     }),
 
@@ -710,6 +713,7 @@ module.exports = {
 
     editDishAddOnSection: Joi.object({
         section_id: Joi.number().required(),
+        restaurant_dish_id: Joi.number().required(),
         name: Joi.string().required(),
         is_required: Joi.number().optional(),  
         is_multiple_choice: Joi.number().optional(), 

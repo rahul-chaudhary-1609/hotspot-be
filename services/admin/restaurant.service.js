@@ -201,18 +201,83 @@ module.exports = {
     },
 
     deleteRestaurant: async (params) => { 
+        console.log(params);
 
         let restaurant = await Restaurant.findByPk(parseInt(params.restaurantId));
 
         if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
 
-        restaurant.destroy();
+        let categories=await RestaurantDishCategory.findAll({
+            where:{
+                restaurant_id:parseInt(params.restaurantId),
+            },
+        })        
+        console.log("categories",categories)    
+        if(categories){
+            let categoryIds=categories.map(category=>category.id);
+            console.log("categoryIds",categoryIds)
+            let dishes=await RestaurantDish.findAll({
+                where:{
+                    restaurant_dish_category_id:{
+                        [Op.in]:categoryIds || [],
+                    }
+                }
+            })
+            
+            if(dishes){
+                let dishIds=dishes.map(dish=>dish.id);
+                console.log("disheIds",dishIds) 
+                let dishAddonSections=await DishAddOnSection.findAll({
+                    where:{
+                        restaurant_dish_id:{
+                            [Op.in]:dishIds || []
+                        }
+                    }
+                })
+                if(dishAddonSections){
+                    let dishAddonSectionIds=dishAddonSections.map(dishAddonSection=>dishAddonSection.id);
+                    console.log("dishAddonSectionIds",dishAddonSectionIds) 
+                    await DishAddOn.destroy({
+                        where:{
+                            dish_add_on_section_id:{
+                                [Op.in]:dishAddonSectionIds || [],
+                            }
+                        }
+                    })
+
+                    await DishAddOnSection.destroy({
+                        where:{
+                            restaurant_dish_id:{
+                                [Op.in]:dishIds || []
+                            }
+                        }
+                    })
+
+                    await RestaurantDish.destroy({
+                        where:{
+                            restaurant_dish_category_id:{
+                                [Op.in]:categoryIds || [],
+                            }
+                        }
+                    })
+
+                    await RestaurantDishCategory.destroy({
+                        where:{
+                            restaurant_id:parseInt(params.restaurantId),
+                        },
+                    })
+                }
+            }
+        }       
 
         await HotspotRestaurant.destroy({
             where: {
                     restaurant_id:parseInt(params.restaurantId),
-                }
-            })
+            }
+                
+        })
+
+        restaurant.destroy();        
 
         return true;        
     },
@@ -252,7 +317,8 @@ module.exports = {
                 },
                 id:{
                     [Op.notIn]:[params.category_id]
-                }
+                },
+                restaurant_id:params.restaurant_id,
             }
         })
 
@@ -339,6 +405,7 @@ module.exports = {
     },
 
     deleteRestaurantDishCategory:async(params)=>{
+        console.log(params)
         let category=await RestaurantDishCategory.findOne({
             where:{
                 id:params.category_id,
@@ -460,7 +527,8 @@ module.exports = {
                 },
                 id:{
                     [Op.notIn]:[params.dishId],
-                }
+                },
+                restaurant_dish_category_id:params.restaurant_dish_category_id
             }
         })
 
@@ -573,7 +641,8 @@ module.exports = {
                 },
                 id:{
                     [Op.notIn]:[params.section_id]
-                }
+                },
+                restaurant_dish_id:params.restaurant_dish_id,
             }
         })
 
@@ -587,8 +656,8 @@ module.exports = {
             if(section){
 
                 section.name=params.name;
-                section.is_required=params.is_required || section.is_required;
-                section.is_multiple_choice=params.is_multiple_choice || section.is_multiple_choice
+                section.is_required=[0,1].includes(params.is_required)?params.is_required: section.is_required;
+                section.is_multiple_choice=[0,1].includes(params.is_multiple_choice)?params.is_multiple_choice: section.is_multiple_choice
                 section.save();
 
                 return {
@@ -812,7 +881,8 @@ module.exports = {
                 },
                 id:{
                     [Op.notIn]:[params.dish_addon_id]
-                }
+                },
+                dish_add_on_section_id:params.dish_add_on_section_id,
             }
         })
 

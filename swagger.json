@@ -1534,6 +1534,13 @@
                 "type": "number"
               },
               {
+                "name": "restaurant_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
                 "name": "name",
                 "in": "formData",
                 "description": "enetr category name",
@@ -2287,6 +2294,13 @@
                 "type": "number"
               },
               {
+                "name": "restaurant_dish_category_id",
+                "in": "formData",
+                "description": "enter restaurant dish category id,",
+                "required": true,
+                "type": "number"
+              },
+              {
                 "name": "name",
                 "in": "formData",
                 "description": "enter dish name",
@@ -2614,6 +2628,13 @@
                 "type": "number"
               },
               {
+                "name": "restaurant_dish_id",
+                "in": "formData",
+                "description": "enter restaurant id",
+                "required": true,
+                "type": "number"
+              },
+              {
                 "name": "name",
                 "in": "formData",
                 "description": "enetr section name",
@@ -2880,6 +2901,13 @@
                 "in": "formData",
                 "description": "dish addon id",
                 "required": false,
+                "type": "number"
+              },
+              {
+                "name": "dish_add_on_section_id",
+                "in": "formData",
+                "description": "enter dish add on section id",
+                "required": true,
                 "type": "number"
               },
               {
