@@ -530,12 +530,12 @@ module.exports = {
         query.where = {
             restaurant_dish_category_id:parseInt(params.restaurant_dish_category_id)
         };
-        if (params.searchKey) {
-            let searchKey = params.searchKey;
+        if (params.search_key) {
+            let search_key = params.search_key;
 
             query.where = {
                 ...query.where,
-                name: { [Op.iLike]: `%${searchKey}%` },
+                name: { [Op.iLike]: `%${search_key}%` },
             };
         }
         query.order = [

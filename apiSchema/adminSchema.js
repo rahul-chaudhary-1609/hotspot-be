@@ -137,7 +137,7 @@ module.exports = {
 
     listDishes: Joi.object({
         restaurant_dish_category_id: Joi.number().required(),
-        searchKey: Joi.string().allow(null, '').optional(),
+        search_key: Joi.string().allow(null, '').optional(),
         page: Joi.number().required(),        
         page_size: Joi.number().required()
     }),
