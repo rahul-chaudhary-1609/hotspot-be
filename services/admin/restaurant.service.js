@@ -416,6 +416,49 @@ module.exports = {
             throw new Error(constants.MESSAGES.no_restaurant_category_found);
         }
 
+        let dishes=await RestaurantDish.findAll({
+            where:{
+                restaurant_dish_category_id:params.category_id,
+            }
+        })
+            
+        if(dishes){
+            let dishIds=dishes.map(dish=>dish.id);
+            console.log("disheIds",dishIds) 
+            let dishAddonSections=await DishAddOnSection.findAll({
+                where:{
+                    restaurant_dish_id:{
+                        [Op.in]:dishIds || []
+                    }
+                }
+            })
+            if(dishAddonSections){
+                let dishAddonSectionIds=dishAddonSections.map(dishAddonSection=>dishAddonSection.id);
+                console.log("dishAddonSectionIds",dishAddonSectionIds) 
+                await DishAddOn.destroy({
+                    where:{
+                        dish_add_on_section_id:{
+                            [Op.in]:dishAddonSectionIds || [],
+                        }
+                    }
+                })
+
+                await DishAddOnSection.destroy({
+                    where:{
+                        restaurant_dish_id:{
+                            [Op.in]:dishIds || []
+                        }
+                    }
+                })
+
+                await RestaurantDish.destroy({
+                    where:{
+                        restaurant_dish_category_id:params.category_id,
+                    }
+                })
+            }
+        }
+
         category.destroy();
 
         return true;
@@ -559,6 +602,30 @@ module.exports = {
         
         let dish = await RestaurantDish.findByPk(parseInt(params.dishId));
         if (!dish) throw new Error(constants.MESSAGES.no_dish);
+
+        let dishAddonSections=await DishAddOnSection.findAll({
+            where:{
+                restaurant_dish_id:parseInt(params.dishId),
+            }
+        })
+        if(dishAddonSections){
+            let dishAddonSectionIds=dishAddonSections.map(dishAddonSection=>dishAddonSection.id);
+            console.log("dishAddonSectionIds",dishAddonSectionIds) 
+            await DishAddOn.destroy({
+                where:{
+                    dish_add_on_section_id:{
+                        [Op.in]:dishAddonSectionIds || [],
+                    }
+                }
+            })
+
+            await DishAddOnSection.destroy({
+                where:{
+                    restaurant_dish_id:parseInt(params.dishId),
+                }
+            })
+        }
+
         dish.destroy();
         return true;
         
@@ -768,6 +835,12 @@ module.exports = {
         if(!section){
             throw new Error(constants.MESSAGES.no_add_on_section_found);
         }
+
+        await DishAddOn.destroy({
+            where:{
+                dish_add_on_section_id:params.section_id,
+            }
+        })
 
         section.destroy();
 
