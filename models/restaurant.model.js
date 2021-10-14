@@ -86,6 +86,9 @@ module.exports = (sequelize, DataTypes) => {
         agreement_doc_url: {
             type: DataTypes.STRING,
         },
+        agreement_documents: {
+            type: DataTypes.ARRAY(DataTypes.JSON),
+        },
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,
