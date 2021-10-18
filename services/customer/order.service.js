@@ -48,6 +48,11 @@ const getOrderCard =  async (args) => {
                 orderDetails,
             })
         }
+
+        if(args.params.is_pagination && args.params.is_pagination==constants.IS_PAGINATION.yes){
+            let [offset, limit] = await utilityFunction.pagination(args.params.page, args.params.page_size);
+            orderCards=orderCards.slice(offset,offset+limit);             
+        }  
         
         return {orderCards};   
 
@@ -873,7 +878,7 @@ module.exports = {
          
     },
 
-    getOrders: async (user) => {
+    getOrders: async (user,params) => {
 
             const orders = await models.Order.findAll({
                 where: {
@@ -888,7 +893,7 @@ module.exports = {
             if (orders.length==0) throw new Error(constants.MESSAGES.no_order);           
             
 
-            return getOrderCard({ orders });
+            return getOrderCard({ orders,params });
 
          
     },

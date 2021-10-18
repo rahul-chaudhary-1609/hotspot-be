@@ -419,5 +419,11 @@ module.exports = {
         tip_amount:Joi.number().required(),
     }),
 
+    getOrders:Joi.object({
+        is_pagination: Joi.number().optional(),
+        page: Joi.number().allow(null).optional(),
+        page_size: Joi.number().allow(null).optional(),
+    })
+
 }
 
