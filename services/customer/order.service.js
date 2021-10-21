@@ -807,6 +807,7 @@ module.exports = {
 
     confirmOrderPayment: async (params,user) => {
         console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
+        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",user)
         
         const order_id = params.orderId;
 
