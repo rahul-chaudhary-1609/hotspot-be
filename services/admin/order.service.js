@@ -333,8 +333,8 @@ module.exports = {
 
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
-        let hotspotRestaurant = await utilityFunctions.convertPromiseToObject(
-            await HotspotRestaurant.findOne({
+        let hotspotRestaurant = await utility.convertPromiseToObject(
+            await models.HotspotRestaurant.findOne({
                 where: {
                     hotspot_location_id: order.hotspot_location_id,
                     restaurant_id:order.restaurant_id,
@@ -345,7 +345,7 @@ module.exports = {
         let deliveryTime=new Date(order.delivery_datetime);
         deliveryTime=moment(deliveryTime.toLocaleString('en-us',{timeZone:`${process.env.TIME_ZONE}`}),'MM/DD/YYYY, hh:mm:ss A').format('HH:mm:ss');
 
-        let deliveryPickupDatetime = new Date(`${utility.getOnlyDate(new Date())} ${utilityFunctions.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}${process.env.TIME_ZONE_OFFSET}`);
+        let deliveryPickupDatetime = new Date(`${utility.getOnlyDate(new Date())} ${utility.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}${process.env.TIME_ZONE_OFFSET}`);
 
         const driver = await utility.convertPromiseToObject(await models.Driver.findOne({
                 attributes: ['id','first_name','last_name'],
