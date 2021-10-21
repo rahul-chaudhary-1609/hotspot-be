@@ -5,6 +5,7 @@ const utilityFunction = require('../../utils/utilityFunctions');
 const constants = require('../../constants');
 const sendMail = require('../../utils/mail');
 const { Op } = require("sequelize");
+const moment =require("moment");
 
 const getOrderCard =  async (args) => {
     
@@ -571,7 +572,7 @@ module.exports = {
         const order_id = await utilityFunction.getUniqueOrderId();
         const amount = parseFloat(params.amount);
         const type = parseInt(params.order_type);
-        const delivery_datetime = params.delivery_datetime || null; //? moment(params.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss") : null;
+        const delivery_datetime = params.delivery_datetime ? moment(params.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss") : null;
         const cart_ids = params.cart_ids;
 
         const cart = await models.Cart.findAndCountAll({
@@ -760,7 +761,7 @@ module.exports = {
     setPickupTime: async (params) => {
 
             const order_id = params.orderId;
-            const delivery_datetime = params.pickup_datetime || null;//? moment(params.pickup_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss") : null;
+            const delivery_datetime = params.pickup_datetime ? moment(params.pickup_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss") : null;
 
             const order = await models.Order.findOne({
                 where: {
