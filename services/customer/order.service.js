@@ -361,7 +361,7 @@ module.exports = {
         
         //params.order_type = parseInt(params.order_type)
 
-        console.log("getCart:,getCart:getCart:,getCart:,",params)
+        console.log("getCart:,getCart:getCart:,getC,",user)
 
         await models.Order.destroy({
             where: {
