@@ -813,13 +813,17 @@ module.exports = {
         console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
         console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
         
-        const order_id = params.order_id;
+        let order_id = params.order_id;
+
+        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",order_id)
 
         const order = await models.Order.findOne({
             where: {
                 order_id
             }
         })
+
+        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",order)
 
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
@@ -828,6 +832,9 @@ module.exports = {
                 order_id:order.order_id,
             }
         })
+
+        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",orderPayment)
+
 
         if (!orderPayment || !orderPayment.payment_status) throw new Error(constants.MESSAGES.no_payment);
 
