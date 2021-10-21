@@ -9,7 +9,7 @@ const { Op } = require("sequelize");
 const getOrderCard =  async (args) => {
     
         
-        const orderCards = [];
+        let orderCards = [];
         for (const order of args.orders) {
             
             //const restaurant = await models.Restaurant.findByPk(order.restaurant_id);
