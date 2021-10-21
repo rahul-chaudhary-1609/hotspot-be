@@ -415,7 +415,7 @@ module.exports = {
               }
           );
 
-          orderService.confirmOrderPayment(params);
+          await orderService.confirmOrderPayment(params);
           
           return true
       }    
