@@ -392,9 +392,9 @@ module.exports = {
           }
       });
       
-      if (orderPayment[1]) {
-          return true
-      }
+      // if (orderPayment[1]) {
+      //     return true
+      // }
       
       if (orderPayment[0]) {
           await models.OrderPayment.update({
@@ -414,11 +414,11 @@ module.exports = {
                   returning: true,
               }
           );
-
-          await orderService.confirmOrderPayment(params);
-          
-          return true
       }    
+
+      await orderService.confirmOrderPayment(params);
+          
+      return true
            
    } 
 }
