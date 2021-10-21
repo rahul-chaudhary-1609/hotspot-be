@@ -813,7 +813,7 @@ module.exports = {
         console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
         console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
         
-        const order_id = params.orderId;
+        const order_id = params.order_id;
 
         const order = await models.Order.findOne({
             where: {
