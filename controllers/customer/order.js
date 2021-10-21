@@ -109,7 +109,7 @@ module.exports = {
 
     confirmOrderPayment:async (req, res) => {
         try {
-            const responseFromService = await orderService.confirmOrderPayment(req.params,req.user);
+            const responseFromService = await orderService.confirmOrderPaymentTest(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.confirm_payment);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

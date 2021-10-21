@@ -805,9 +805,13 @@ module.exports = {
         }         
     },
 
-    confirmOrderPayment: async (params,user) => {
+    confirmOrderPaymentTest: async (params) => {
+        return true
+    },
+
+    confirmOrderPayment: async (params) => {
         console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
-        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",user)
+        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
         
         const order_id = params.orderId;
 
@@ -847,7 +851,7 @@ module.exports = {
                 force: true,
         })
         
-        let customer=await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(parseInt(user.id)))    
+        let customer=await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
     
     
         // add notification for employee
@@ -855,8 +859,8 @@ module.exports = {
             type_id: order_id,                
             title: 'Order Confirmed',
             description: `Order - ${order_id} is confirmed`,
-            sender_id: user.id,
-            reciever_ids: [user.id],
+            sender_id: order.customer_id,
+            reciever_ids: [order.customer_id],
             type: constants.NOTIFICATION_TYPE.order_confirmed,
         }
 
@@ -880,7 +884,6 @@ module.exports = {
         }
 
         return true
-
          
     },
 

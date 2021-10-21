@@ -3,6 +3,7 @@ const models = require('../../models');
 const constants = require("../../constants");
 const stripe = require('stripe')(constants.STRIPE.stripe_secret_key);
 const utilityFunction=require('../../utils/utilityFunctions')
+const orderService = require("./order.service")
 
 module.exports = {
 
@@ -375,47 +376,49 @@ module.exports = {
       console.log("paymentSuccess,paymentSuccess,paymentSuccess",params)
       console.log("paymentSuccess,paymentSuccess",params)
            
-           const orderPayment = await models.OrderPayment.findOrCreate({
-                where: {
-                    order_id:params.order_id,
-                },
-                defaults: {
-                  order_id: params.order_id,
-                  transaction_reference_id: params.payment_intent.id,
-                  payment_status: 1,
-                  payment_details: {
-                    stripePaymentDetails: {
-                      payment_intent:params.payment_intent
-                    }
+      const orderPayment = await models.OrderPayment.findOrCreate({
+          where: {
+              order_id:params.order_id,
+          },
+          defaults: {
+            order_id: params.order_id,
+            transaction_reference_id: params.payment_intent.id,
+            payment_status: 1,
+            payment_details: {
+              stripePaymentDetails: {
+                payment_intent:params.payment_intent
+              }
+            }
+          }
+      });
+      
+      if (orderPayment[1]) {
+          return true
+      }
+      
+      if (orderPayment[0]) {
+          await models.OrderPayment.update({
+                order_id: params.order_id,
+                transaction_reference_id: params.payment_intent.id,
+                payment_status: 1,
+                payment_details: {
+                  stripePaymentDetails: {
+                    payment_intent:params.payment_intent
                   }
                 }
-           });
-           
-           if (orderPayment[1]) {
-                return true
-            }
-            
-            if (orderPayment[0]) {
-                await models.OrderPayment.update({
-                      order_id: params.order_id,
-                      transaction_reference_id: params.payment_intent.id,
-                      payment_status: 1,
-                      payment_details: {
-                        stripePaymentDetails: {
-                          payment_intent:params.payment_intent
-                        }
-                      }
-                    },
-                    {
-                        where: {
-                            order_id:params.order_id,
-                        },
-                        returning: true,
-                    }
-                );
-                
-                return true
-            }    
+              },
+              {
+                  where: {
+                      order_id:params.order_id,
+                  },
+                  returning: true,
+              }
+          );
+
+          orderService.confirmOrderPayment(params);
+          
+          return true
+      }    
            
    } 
 }
