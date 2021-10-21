@@ -49,12 +49,14 @@ const getOrderCard =  async (args) => {
             })
         }
 
+        let orderCardCount=orderCards.length;
+
         if(args.params.is_pagination && args.params.is_pagination==constants.IS_PAGINATION.yes){
             let [offset, limit] = await utilityFunction.pagination(args.params.page, args.params.page_size);
             orderCards=orderCards.slice(offset,offset+limit);             
         }  
         
-        return {orderCards};   
+        return {orderCardCount,orderCards};   
 
 
 };
