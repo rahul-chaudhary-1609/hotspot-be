@@ -2,7 +2,9 @@
 const {
     Model
 } = require('sequelize');
+const withDateNoTz = require('sequelize-date-no-tz-postgres');
 module.exports = (sequelize, DataTypes) => {
+    const CustomDataTypes = withDateNoTz(DataTypes);
     class OrderDelivery extends Model {
         /**
          * Helper method for defining associations.
@@ -49,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         delivery_datetime: {
-            type: DataTypes.DATE,
+            type: CustomDataTypes.DATE_NO_TZ,
         },
         delivery_image_urls: {
             type: DataTypes.ARRAY(DataTypes.STRING),

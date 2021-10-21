@@ -2,7 +2,9 @@
 const {
   Model
 } = require('sequelize');
+const withDateNoTz = require('sequelize-date-no-tz-postgres');
 module.exports = (sequelize, DataTypes) => {
+  const CustomDataTypes = withDateNoTz(DataTypes);
   class Customer extends Model {
     /**
      * Helper method for defining associations.
@@ -61,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
     },
 
     phone_verification_otp_expiry: {
-      type: DataTypes.DATE,
+      type:CustomDataTypes.DATE_NO_TZ,
     },
     password: {
       type: DataTypes.STRING,
@@ -75,13 +77,13 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
     email_verification_otp_expiry: {
-      type: DataTypes.DATE,
+      type:CustomDataTypes.DATE_NO_TZ,
     },
     reset_pass_otp: {
       type: DataTypes.STRING(45),
     },
     reset_pass_expiry: {
-      type: DataTypes.DATE,
+      type:CustomDataTypes.DATE_NO_TZ,
     },
     apple_id: {
       type: DataTypes.STRING(45),

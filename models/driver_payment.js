@@ -2,7 +2,9 @@
 const {
     Model
 } = require('sequelize');
+const withDateNoTz = require('sequelize-date-no-tz-postgres');
 module.exports = (sequelize, DataTypes) => {
+    const CustomDataTypes = withDateNoTz(DataTypes);
     class DriverPayment extends Model {
         /**
          * Helper method for defining associations.
@@ -61,7 +63,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
         },
         payment_date: {
-            type: DataTypes.STRING,
+            type:CustomDataTypes.DATE_NO_TZ,
         },
         status: {
             type: DataTypes.INTEGER,

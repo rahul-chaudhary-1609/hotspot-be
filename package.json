@@ -43,6 +43,7 @@
     "pg-hstore": "^2.3.3",
     "randomstring": "^1.2.1",
     "sequelize": "^6.3.5",
+    "sequelize-date-no-tz-postgres": "^1.0.0",
     "stripe": "^8.137.0",
     "swagger-ui-express": "^4.1.6",
     "twilio": "^3.54.2"

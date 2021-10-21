@@ -2,7 +2,9 @@
 const {
     Model
 } = require('sequelize');
+const withDateNoTz = require('sequelize-date-no-tz-postgres');
 module.exports = (sequelize, DataTypes) => {
+    const CustomDataTypes = withDateNoTz(DataTypes);
     class Cart extends Model {
         /**
          * Helper method for defining associations.
@@ -48,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
         },
         expire_datetime: {
-            type: DataTypes.DATE,
+            type:CustomDataTypes.DATE_NO_TZ,
         },
 
         status: {
