@@ -361,6 +361,8 @@ module.exports = {
         
         //params.order_type = parseInt(params.order_type)
 
+        console.log("getCart:,getCart:getCart:,getCart:,",params)
+
         await models.Order.destroy({
             where: {
                 customer_id: user.id,
@@ -554,6 +556,8 @@ module.exports = {
     },
 
     createOrder:async (params,user) => {
+
+        console.log("createOrder,createOrder,createOrder,createOrder,createOrder,",params)
 
         const customer_id = user.id;
         const restaurant_id = parseInt(params.restaurant_id);
@@ -802,6 +806,7 @@ module.exports = {
     },
 
     confirmOrderPayment: async (params,user) => {
+        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
         
         const order_id = params.orderId;
 
