@@ -830,7 +830,7 @@ module.exports = {
 
         await models.Order.update({
             status: 1,
-            payment_datetime:new Date(),
+            payment_datetime:moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
         },
             {
                 where: {
