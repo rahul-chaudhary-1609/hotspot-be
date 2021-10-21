@@ -361,8 +361,6 @@ module.exports = {
         
         //params.order_type = parseInt(params.order_type)
 
-        console.log("getCart:,getCart:getCart:,getC,",user)
-
         await models.Order.destroy({
             where: {
                 customer_id: user.id,
@@ -556,8 +554,6 @@ module.exports = {
     },
 
     createOrder:async (params,user) => {
-
-        console.log("createOrder,createOrder,createOrder,createOrder,createOrder,",params)
 
         const customer_id = user.id;
         const restaurant_id = parseInt(params.restaurant_id);
@@ -810,20 +806,14 @@ module.exports = {
     },
 
     confirmOrderPayment: async (params) => {
-        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
-        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",params)
         
         let order_id = params.order_id;
-
-        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",order_id)
 
         const order = await models.Order.findOne({
             where: {
                 order_id
             }
         })
-
-        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",order)
 
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
@@ -832,8 +822,6 @@ module.exports = {
                 order_id:order.order_id,
             }
         })
-
-        console.log("Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm,Confirm",orderPayment)
 
 
         if (!orderPayment || !orderPayment.payment_status) throw new Error(constants.MESSAGES.no_payment);

@@ -372,9 +372,6 @@ module.exports = {
     },
    
     paymentSuccess: async (params) => {
-
-      console.log("paymentSuccess,paymentSuccess,paymentSuccess",params)
-      console.log("paymentSuccess,paymentSuccess",params)
            
       const orderPayment = await models.OrderPayment.findOrCreate({
           where: {
