@@ -9,8 +9,21 @@ const levels = {
   fatal: 60,
 };
 
-module.exports = pino(
-  {
+// module.exports = pino(
+//   {
+//     customLevels: levels, // our defined levels
+//     useOnlyCustomLevels: true,
+//     level: 'http',
+//     prettyPrint: {
+//       colorize: true, // colorizes the log
+//       levelFirst: true,
+//       translateTime: 'yyyy-dd-mm, h:MM:ss TT',
+//     },
+//   },
+//   pino.destination(`${__dirname}/logger.log`)
+// )
+
+module.exports = pino({
     customLevels: levels, // our defined levels
     useOnlyCustomLevels: true,
     level: 'http',
@@ -19,6 +32,4 @@ module.exports = pino(
       levelFirst: true,
       translateTime: 'yyyy-dd-mm, h:MM:ss TT',
     },
-  },
-  pino.destination(`${__dirname}/logger.log`)
-)
+  })
