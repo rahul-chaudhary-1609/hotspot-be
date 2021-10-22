@@ -1,6 +1,5 @@
 const pino = require('pino')
 
-const pino = require('pino')
 const levels = {
   http: 10,
   debug: 20,
@@ -9,6 +8,7 @@ const levels = {
   error: 50,
   fatal: 60,
 };
+
 module.exports = pino(
   {
     customLevels: levels, // our defined levels
