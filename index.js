@@ -14,7 +14,7 @@ const logger = require('./services/loggerService');
 const app=express();
 const loggerMidlleware = expressPinoLogger({
     logger: logger,
-    autoLogging: true,
+    autoLogging: false,
   });
   
 app.use(loggerMidlleware);
