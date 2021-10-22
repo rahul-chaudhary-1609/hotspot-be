@@ -3,6 +3,8 @@ const utilityFunction = require('../../utils/utilityFunctions');
 const orderService = require("../../services/customer/order.service")
 const constants = require("../../constants");
 
+const logger = require('../../services/loggerService')
+
 
 module.exports = {
     
@@ -71,6 +73,7 @@ module.exports = {
 
     createOrder:async (req, res) => {
        try {
+            logger.info('createOrder route is accessed')
             const responseFromService = await orderService.createOrder(req.body,req.user);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {

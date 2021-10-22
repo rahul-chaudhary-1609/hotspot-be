@@ -8,8 +8,16 @@ const swaggerDocument = require('./swagger.json');
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 5000;
 const cronJob = require("./utils/cronJob");
+const expressPinoLogger = require('express-pino-logger');
+const logger = require('./services/loggerService');
 
 const app=express();
+const loggerMidlleware = expressPinoLogger({
+    logger: logger,
+    autoLogging: true,
+  });
+  
+app.use(loggerMidlleware);
 
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: false}));
