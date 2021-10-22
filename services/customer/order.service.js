@@ -740,7 +740,7 @@ module.exports = {
                     customer_name:order.order_details.customer.name,
                     delivery_address: order.order_details.hotspot.location_detail,
                     delivery_dropoff:order.order_details.hotspot.dropoff.dropoff_detail,
-                    delivery_datetime: order.delivery_datetime,
+                    delivery_datetime: order.delivery_datetime? moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"):null,
                 }
             }
             else if (order.type == constants.ORDER_TYPE.pickup) {
@@ -749,7 +749,7 @@ module.exports = {
                     pickup_address:order.order_details.restaurant.address,
                     working_hours_from: order.order_details.restaurant.working_hours_from,
                     working_hours_to: order.order_details.restaurant.working_hours_to,
-                    pickup_datetime: order.order_details.restaurant.delivery_datetime,
+                    pickup_datetime: order.delivery_datetime? moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"):null,
                 }
             }
 
