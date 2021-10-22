@@ -811,6 +811,8 @@ module.exports = {
     },
 
     confirmOrderPayment: async (params) => {
+
+        console.log("confirmOrderPayment",params,params)
         
         let order_id = params.order_id;
 

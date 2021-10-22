@@ -7202,6 +7202,13 @@
                 "maxItems": 2
               },
               {
+                "name": "datetime",
+                "in": "formData",
+                "description": "enter payment datetime Format: YYYY-MM-DD HH:mm:ss",
+                "required": true,
+                "type": "string"
+              },
+              {
                 "name": "quick_filter_ids",
                 "in": "formData",
                 "description": "enter quick filter ids",
@@ -7250,6 +7257,13 @@
                 },
                 "minItems":2,
                 "maxItems":2
+              },
+              {
+                "name": "datetime",
+                "in": "formData",
+                "description": "enter payment datetime Format: YYYY-MM-DD HH:mm:ss",
+                "required": true,
+                "type": "string"
               },
               {
                 "name": "quick_filter_ids",
@@ -7315,6 +7329,13 @@
                 "description": "enter restaurant id",
                 "required": true,
                 "type": "number"
+              },
+              {
+                "name": "datetime",
+                "in": "formData",
+                "description": "enter payment datetime Format: YYYY-MM-DD HH:mm:ss",
+                "required": true,
+                "type": "string"
               }
             ],
             "responses": {}
@@ -8364,6 +8385,13 @@
                 "name": "payment_intent",
                 "in": "formData",
                 "description": "enter payment intent",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "payment_datetime",
+                "in": "formData",
+                "description": "enter payment datetime Format: YYYY-MM-DD HH:mm:ss",
                 "required": true,
                 "type": "string"
               }

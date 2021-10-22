@@ -324,6 +324,8 @@ module.exports = {
 
     getHotspotRestaurantDelivery: async (params, user) => {
 
+        console.log("getHotspotRestaurantPickup",params,params);
+
         models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
         models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
             
@@ -489,6 +491,7 @@ module.exports = {
     },
 
     getHotspotRestaurantPickup: async (params, user) => {
+        console.log("get Hotspot Restaurant Pickup",params,params)
 
         models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
         models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
@@ -612,6 +615,8 @@ module.exports = {
     
 
     getRestaurantDetails: async (params,user) => {
+
+        console.log("getRestaurantDetails",params,user)
 
         const restaurantHotspot = await models.HotspotRestaurant.findOne({
             where: {

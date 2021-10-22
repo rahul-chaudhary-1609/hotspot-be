@@ -245,12 +245,14 @@ module.exports = {
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
         }),
         customer_location:Joi.array().required(),
+        datetime:Joi.string().trim().required(),
         quick_filter_ids:Joi.array().allow(null, '').optional(),
         searchPhrase:Joi.string().trim().allow(null, '').optional(),
     }),
 
     getHotspotRestaurantPickup:Joi.object({
         customer_location:Joi.array().required(),
+        datetime:Joi.string().trim().required(),
         quick_filter_ids:Joi.array().allow(null, '').optional(),
         searchPhrase:Joi.string().trim().allow(null, '').optional(),
     }),
@@ -261,6 +263,7 @@ module.exports = {
 
     getRestaurantDetails:Joi.object({
         restaurant_id: Joi.number().required(),
+        datetime:Joi.string().trim().required(),
     }),
 
     getRestaurantSchedule:Joi.object({
@@ -354,7 +357,8 @@ module.exports = {
 
     paymentSuccess: Joi.object({
         order_id: Joi.string().required(),
-        payment_intent: Joi.object().required(),        
+        payment_intent: Joi.object().required(), 
+        payment_datetime:Joi.string().trim().required(),       
     }),
 
     getStaticContent: Joi.object({
