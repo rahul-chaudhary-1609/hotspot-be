@@ -7332,7 +7332,7 @@
               },
               {
                 "name": "datetime",
-                "in": "formData",
+                "in": "query",
                 "description": "enter payment datetime Format: YYYY-MM-DD HH:mm:ss",
                 "required": true,
                 "type": "string"
