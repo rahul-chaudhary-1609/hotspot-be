@@ -404,6 +404,18 @@ module.exports = {
     },
    
     paymentSuccess: async (params) => {
+
+      let stripePaymentDetails={};
+
+      stripePaymentDetails.paymentIntent = await stripe.paymentIntents.retrieve(
+        params.payment_intent.id
+      );
+
+      if(stripePaymentDetails.paymentIntent){
+        stripePaymentDetails.paymentMethod = await stripe.paymentMethods.retrieve(
+          res.paymentIntent.payment_method
+        );
+      }     
            
       const orderPayment = await models.OrderPayment.findOrCreate({
           where: {
@@ -414,16 +426,10 @@ module.exports = {
             transaction_reference_id: params.payment_intent.id,
             payment_status: 1,
             payment_details: {
-              stripePaymentDetails: {
-                payment_intent:params.payment_intent
-              }
+              stripePaymentDetails,
             }
           }
       });
-      
-      // if (orderPayment[1]) {
-      //     return true
-      // }
       
       if (orderPayment[0]) {
           await models.OrderPayment.update({
@@ -431,9 +437,7 @@ module.exports = {
                 transaction_reference_id: params.payment_intent.id,
                 payment_status: 1,
                 payment_details: {
-                  stripePaymentDetails: {
-                    payment_intent:params.payment_intent
-                  }
+                  stripePaymentDetails,
                 }
               },
               {
@@ -449,5 +453,5 @@ module.exports = {
           
       return true
            
-   } 
+   }
 }
