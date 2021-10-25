@@ -165,6 +165,158 @@ const sendRestaurantOrderEmail= async (params) => {
     return true;
 }
 
+const sendOrderPaymentEmail= async (params) => {
+
+    let bodyHTML = `<div style="background-color:#d6d6d6;border-radius: 5px;padding: 10px;">
+    <div style="text-align: center;">
+        <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" alt="">
+    </div>
+    <div>
+        <h1>Thanks for your order, Greg</h1>
+    </div>
+    <div>
+        <p>The estimated delivery time for your order is 2:00pm. Track your order in Hotspot app.</p>
+    </div>
+
+    <div style="background-color:#fff; border-radius: 25px;padding: 20px;">
+        <div>
+            Paid with visa Ending in 3816 <br>
+            Denny's
+        </div>
+        <div style="display: flex; flex-direction: column;margin-top: 40px;">
+            <div style="line-height: 0%;">
+                <h2>Your Receipt</h2>
+            </div>
+            <div>
+                4206 Buena Vista St. Dalas, TX 25205, USA
+            </div>
+
+            <div style="display: flex;flex-direction: column ;margin-top: 40px;justify-content:start; align-items: start;">
+                <div>
+                    -For: Greg Leach
+                </div>
+    `;
+
+    
+    bodyHTML += `<div style="margin-top: 10px;width: 100%;">
+    <table style="width: 100%;">`
+
+    for (let ordered_item of params.order.order_details.ordered_items) {
+        let itemHTML =`<tr style="vertical-align: top;">
+                            <td style="text-align: left;">
+                                <div>
+                                    ${ordered_item.itemCount}
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    ${ordered_item.itemName}`
+                
+        for (let addOn of ordered_item.itemAddOn) {
+            itemHTML+=`<li>${addOn.name}</li>`
+        }
+
+        itemHTML += `</div>
+            </td>
+            <td style="text-align: right;">
+                <div>
+                    ${ordered_item.itemPrice}
+                </div>
+            </td>
+        </tr>`
+        
+        bodyHTML+=itemHTML
+    }
+        
+    bodyHTML +=`</table>
+    </div>`
+
+    bottomHTML+=`<div style="margin-top: 10px;width: 100%;">
+    <table style="width: 100%;">
+        <tr style="text-align: left; vertical-align: top; ">
+            <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <div>
+                    Subtotal
+                </div>
+                </td>
+                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                    <div>
+                        ${params.order.order_details.amount_details.totalOrderAmount}
+                    </div>
+                </td>
+            </tr>
+            <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <div>
+                    Taxes
+                </div>
+                </td>
+                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                    <div>
+                        ${params.order.order_details.amount_details.salesTaxAmount}
+                    </div>
+                </td>
+            </tr>
+            <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <div>
+                    Delivery Fee
+                </div>
+                </td>
+                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                    <div>
+                        $0.00
+                    </div>
+                </td>
+            </tr>
+            <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <div>
+                    Subtotal
+                </div>
+                </td>
+                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                    <div>
+                        ${params.order.order_details.amount_details.totalOrderAmount}
+                    </div>
+                </td>
+            </tr>`
+
+    
+    
+    // fs.writeFile('mail.html', headerHTML + bodyHTML + bottomHTML, function (err) {
+    //     if (err) return console.log(err);
+    //     console.log('Hello World > helloworld.txt');
+    // });
+
+    // let attachment = fs.readFileSync('mail.html').toString('base64');
+        
+    let mailOptions = {
+        from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
+        to: params.order.order_details.restaurant.owner_email,
+        subject:  `Hotspot pickup order ${utilityFunction.getLocaleTime(new Date(params.order.delivery_datetime))}`,
+        html: bodyHTML,
+        // attachments: [
+        //     {
+        //         content: attachment,
+        //         filename: "mail.html",
+        //         type: "text/html",
+        //         disposition: "attachment"
+        //     },
+        //     {
+        //         content: attachment,
+        //         filename: "mail.html",
+        //         type: "text/html",
+        //         disposition: "attachment"
+        //     }
+        // ]
+    };
+
+    console.log(mailOptions)    
+    
+    
+    await sendMail.send(mailOptions);
+    
+    return true;
+}
+
 const addRestaurantPayment=async(params)=>{
     let order={};
     order.restaurant_id=params.order.restaurant_id;
@@ -641,6 +793,25 @@ module.exports = {
 
         const totalActualPrice = ordered_items.reduce((result, item) => result + item.itemActualPrice, 0);
 
+        const totalOrderAmount = ordered_items.reduce((result, item) => result + item.itemPrice, 0);
+
+        let taxes= await utilityFunction.convertPromiseToObject(
+                await models.Tax.findAll({
+                    where:{
+                        type:{
+                            [Op.notIn]:[constants.TAX_TYPE.none]
+                        }
+                    }
+                })
+        );
+
+        let stripeFee=taxes.find(tax=>tax.type==constants.TAX_TYPE.stripe);
+        let salesTax=taxes.find(tax=>tax.type==constants.TAX_TYPE.sales);
+
+        const stripeFeeAmount=parseFloat((((totalOrderAmount*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
+        
+        const salesTaxAmount=parseFloat((((totalOrderAmount*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
+
         let hotspot = null;
         let restaurant = null;
         let customer = await utilityFunction.convertPromiseToObject(await models.Customer.findOne({
@@ -698,7 +869,14 @@ module.exports = {
                 fee:Math.round(((totalActualPrice * parseFloat(restaurant.percentage_fee)) / 100)*100)/100,
             },
             driver: null,
-            ordered_items
+            ordered_items,
+            amount_details:{
+                totalActualPrice,
+                totalOrderAmount,
+                stripeFeeAmount,
+                salesTaxAmount,
+                grandTotal:parseFloat((totalOrderAmount+stripeFeeAmount+salesTaxAmount).toFixed(2)),
+            }
         }
         const newOrder = await models.Order.create({
             order_id,
