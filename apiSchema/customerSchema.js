@@ -296,6 +296,10 @@ module.exports = {
         card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg.pattern,
         }),
+
+        card_cvv: Joi.string().trim().min(4).max(3).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_cvc_msg.pattern,
+        }),
     }),
 
     updatePaymentCard: Joi.object({
@@ -313,6 +317,10 @@ module.exports = {
         }),
         card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg.pattern,
+        }),
+
+        card_cvv: Joi.string().trim().min(4).max(3).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_cvc_msg.pattern,
         }),
     }),
 

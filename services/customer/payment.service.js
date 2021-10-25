@@ -24,16 +24,14 @@ module.exports = {
 
       card = await models.CustomerCard.create(params);
 
-      let cards = await utilityFunction.convertPromiseToObject(
-          await models.CustomerCard.findAll({
-          where: {
-            customer_id: user.id,
-            status: constants.STATUS.active
-          }
-        })
-      )
+      let cardCount=await models.CustomerCard.count({
+            where: {
+              customer_id: user.id,
+              status: constants.STATUS.active
+            }
+          })
     
-      if(cards.length == 1){
+      if(cardCount == 1){
         await models.CustomerCard.update({
           is_default:true,
         },{
@@ -73,7 +71,25 @@ module.exports = {
                   },
                   returning: true,
               }
-          );
+      );
+
+      let cardCount=await models.CustomerCard.count({
+        where: {
+          customer_id: user.id,
+          status: constants.STATUS.active
+        }
+      })
+
+      if(cardCount == 1){
+        await models.CustomerCard.update({
+          is_default:true,
+        },{
+          where:{
+            customer_id: user.id,
+            status: constants.STATUS.active
+          }
+        })
+      }
       
       return true                 
          
@@ -147,7 +163,6 @@ module.exports = {
 
     getPaymentCard: async (params,user) => {
 
-
       let card = await models.CustomerCard.findOne({
         where: {
           id: params.payment_card_id,
@@ -220,9 +235,26 @@ module.exports = {
       }
 
       card.destroy();
+
+      let cardCount=await models.CustomerCard.count({
+        where: {
+          customer_id: user.id,
+          status: constants.STATUS.active
+        }
+      })
+
+      if(cardCount == 1){
+        await models.CustomerCard.update({
+          is_default:true,
+        },{
+          where:{
+            customer_id: user.id,
+            status: constants.STATUS.active
+          }
+        })
+      }
       
-      return true
-            
+      return true            
          
     },
 

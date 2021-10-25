@@ -8122,6 +8122,13 @@
                 "description": "enter card expiry year eg: 2030",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "card_cvv",
+                "in": "formData",
+                "description": "enter card cvv",
+                "required": true,
+                "type": "string"
               }
             ],
             "responses": {}
@@ -8226,6 +8233,13 @@
                 "name": "card_exp_year",
                 "in": "formData",
                 "description": "enter card expiry year eg: 2030",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "card_cvv",
+                "in": "formData",
+                "description": "enter card cvv",
                 "required": true,
                 "type": "string"
               }

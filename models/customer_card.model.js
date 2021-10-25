@@ -40,6 +40,11 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
 
+        card_cvv: {
+            type: DataTypes.STRING(4),
+            allowNull: false,
+        },
+
         name_on_card: {
             type: DataTypes.STRING,
             allowNull: false,
