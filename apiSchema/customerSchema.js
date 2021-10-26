@@ -297,7 +297,7 @@ module.exports = {
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg.pattern,
         }),
 
-        card_cvv: Joi.string().trim().min(4).max(3).required().messages({
+        card_cvv: Joi.string().trim().min(3).max(4).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_cvc_msg.pattern,
         }),
     }),
@@ -319,7 +319,7 @@ module.exports = {
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg.pattern,
         }),
 
-        card_cvv: Joi.string().trim().min(4).max(3).required().messages({
+        card_cvv: Joi.string().trim().min(3).max(4).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_cvc_msg.pattern,
         }),
     }),
