@@ -2329,13 +2329,6 @@
                 "type": "string"
               },
               {
-                "name": "restaurant_dish_category_id",
-                "in": "formData",
-                "description": "enter restaurant dish category id,",
-                "required": false,
-                "type": "number"
-              },
-              {
                 "name": "image_url",
                 "in": "formData",
                 "description": "enter dish image url",
@@ -2937,13 +2930,6 @@
                 "description": "enter dish addon image url",
                 "required": false,
                 "type": "string"
-              },
-              {
-                "name": "dish_add_on_section_id",
-                "in": "formData",
-                "description": "enter dish add on section id",
-                "required": false,
-                "type": "number"
               }
             ],
             "responses": {}
