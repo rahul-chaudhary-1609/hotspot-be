@@ -313,7 +313,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right;">
                     <div>
-                        $${params.order.order_details.amount_details.stripeFeeAmount}
+                        $0.00
                     </div>
                 </td>
             </tr>
@@ -325,7 +325,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right;">
                     <div>
-                        $${params.order.order_details.amount_details.salesTaxAmount}
+                        $0.00
                     </div>
                 </td>
             </tr>
