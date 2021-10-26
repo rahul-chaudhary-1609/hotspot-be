@@ -417,7 +417,7 @@ module.exports = {
 
       if(stripePaymentDetails.paymentIntent){
         stripePaymentDetails.paymentMethod = await stripe.paymentMethods.retrieve(
-          res.paymentIntent.payment_method
+          stripePaymentDetails.paymentIntent.payment_method
         );
       }  
 
