@@ -6,6 +6,7 @@ const constants = require('../../constants');
 const sendMail = require('../../utils/mail');
 const { Op } = require("sequelize");
 const moment =require("moment");
+const fs =require("fs");
 
 const getOrderCard =  async (args) => {
     
@@ -169,7 +170,7 @@ const sendOrderPaymentEmail= async (params) => {
 
     console.log("send Order Payment Email", params)
 
-    let bodyHTML = `<div style="background-color:#d6d6d6;border-radius: 5px;padding: 10px;">
+    let bodyHTML = `<div style="background-color:#e6e8e6;border-radius: 5px;padding: 15px;">
     <div style="text-align: center;">
         <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" alt="">
     </div>
@@ -180,12 +181,12 @@ const sendOrderPaymentEmail= async (params) => {
         <p>The estimated delivery time for your order is ${moment(params.order.delivery_datetime).format("H:mma")}. Track your order in Hotspot app.</p>
     </div>
 
-    <div style="background-color:#fff; border-radius: 25px;padding: 20px;">
+    <div style="background-color:#fff; border-radius: 25px;padding: 20px;margin: 15px;">
         <div>
             Paid with ${params.orderPayment.payment_details.stripePaymentDetails.paymentMethod.card.brand} Ending in ${params.orderPayment.payment_details.stripePaymentDetails.paymentMethod.card.last4} <br>
             ${params.order.order_details.restaurant.restaurant_name}
         </div>
-        <div style="display: flex; flex-direction: column;margin-top: 40px;">
+        <div style="margin-top: 40px;">
             <div style="line-height: 0%;">
                 <h2>Your Receipt</h2>
             </div>
@@ -193,14 +194,14 @@ const sendOrderPaymentEmail= async (params) => {
                 ${params.order.order_details.hotspot.name}
             </div>
 
-            <div style="display: flex;flex-direction: column ;margin-top: 40px;justify-content:start; align-items: start;">
+            <div style="margin-top: 40px;">
                 <div>
                     -For: ${params.order.order_details.customer.name}
                 </div>
     `;
 
     
-    bodyHTML += `<div style="margin-top: 10px;width: 100%;">
+    bodyHTML += `<div style="margin-top: 10px;">
     <table style="width: 100%;">`
 
     for (let ordered_item of params.order.order_details.ordered_items) {
@@ -242,87 +243,87 @@ const sendOrderPaymentEmail= async (params) => {
     bodyHTML +=`</table>
     </div>`
 
-    bottomHTML+=`<div style="margin-top: 10px;width: 100%;">
+    bodyHTML+=`<div style="margin-top: 10px;">
         <table style="width: 100%;">
             <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <td style="text-align: left; border-top:2px solid #e6e8e6;">
                     <div>
                         Subtotal
                     </div>
                 </td>
-                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                <td style="text-align: right; border-top:2px solid #e6e8e6;">
                     <div>
                         $${params.order.order_details.amount_details.totalOrderAmount}
                     </div>
                 </td>
             </tr>
             <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <td style="text-align: left;">
                     <div>
                         Regulatory Response Fee
                     </div>
                 </td>
-                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                <td style="text-align: right;">
                     <div>
                         $0.00
                     </div>
                 </td>
             </tr>
             <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <td style="text-align: left;">
                     <div>
                         Delivery Fee
                     </div>
                 </td>
-                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                <td style="text-align: right;">
                     <div>
                         $0.00
                     </div>
                 </td>
             </tr>
             <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <td style="text-align: left;">
                     <div>
                         Service Fee
                     </div>
                 </td>
-                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                <td style="text-align: right;">
                     <div>
                         $0.00
                     </div>
                 </td>
             </tr>
             <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <td style="text-align: left;">
                     <div>
                         Tip
                     </div>
                 </td>
-                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                <td style="text-align: right;">
                     <div>
-                        $${params.order.tip_amount}
+                        $${params.order.tip_amount || "0.00"}
                     </div>
                 </td>
             </tr>
             <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <td style="text-align: left;">
                     <div>
                         Processing Fee
                     </div>
                 </td>
-                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                <td style="text-align: right;">
                     <div>
                         $${params.order.order_details.amount_details.stripeFeeAmount}
                     </div>
                 </td>
             </tr>
             <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <td style="text-align: left;">
                     <div>
                         Taxes
                     </div>
                 </td>
-                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                <td style="text-align: right;">
                     <div>
                         $${params.order.order_details.amount_details.salesTaxAmount}
                     </div>
@@ -331,17 +332,17 @@ const sendOrderPaymentEmail= async (params) => {
         </table>
     </div>`
 
-    bodyHTML+=`<div style="margin-top: 10px;width: 100%;">
+    bodyHTML+=`<div style="margin-top: 10px;">
         <table style="width: 100%;">
             <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                <td style="text-align: left; border-top:2px solid #e6e8e6;">
                     <div>
                         <strong>Total Charged </strong> 
                     </div>
                 </td>
-                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                <td style="text-align: right; border-top:2px solid #e6e8e6;">
                    <div>
-                       <strong>$${params.order.amount+params.order.tip_amount}</strong>
+                       <strong>$${params.order.tip_amount? params.order.amount+params.order.tip_amount:params.order.amount}</strong>
                     </div>
                 </td>
             </tr>
@@ -355,7 +356,7 @@ const sendOrderPaymentEmail= async (params) => {
 
     
     
-    // fs.writeFile('mail.html', headerHTML + bodyHTML + bottomHTML, function (err) {
+    // fs.writeFile('mail.html', bodyHTML, function (err) {
     //     if (err) return console.log(err);
     //     console.log('Hello World > helloworld.txt');
     // });
