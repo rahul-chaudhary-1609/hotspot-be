@@ -194,7 +194,7 @@ const sendOrderPaymentEmail= async (params) => {
                 ${params.order.order_details.hotspot.location_detail}
             </div>
 
-            <div style="margin-top: 40px;">
+            <div style="margin-top: 30px;">
                 <div>
                     -For: ${params.order.order_details.customer.name} -
                 </div>
@@ -253,7 +253,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right; border-top:2px solid #e6e8e6;">
                     <div>
-                        $${params.order.order_details.amount_details.totalOrderAmount}
+                        $${params.order.order_details.amount_details.totalOrderAmount.toFixed(2)}
                     </div>
                 </td>
             </tr>
