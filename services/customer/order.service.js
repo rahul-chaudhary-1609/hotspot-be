@@ -183,7 +183,7 @@ const sendOrderPaymentEmail= async (params) => {
 
     <div style="background-color:#fff; border-radius: 25px;padding: 20px;margin: 15px;">
         <div>
-            Paid with ${params.orderPayment.payment_details.stripePaymentDetails.paymentMethod.card.brand} Ending in ${params.orderPayment.payment_details.stripePaymentDetails.paymentMethod.card.last4} <br>
+            Paid with ${params.orderPayment.payment_details.stripePaymentDetails.paymentMethod.card.brand} ending in ${params.orderPayment.payment_details.stripePaymentDetails.paymentMethod.card.last4} <br>
             ${params.order.order_details.restaurant.restaurant_name}
         </div>
         <div style="margin-top: 40px;">
@@ -191,12 +191,12 @@ const sendOrderPaymentEmail= async (params) => {
                 <h2>Your Receipt</h2>
             </div>
             <div>
-                ${params.order.order_details.hotspot.name}
+                ${params.order.order_details.hotspot.location_detail}
             </div>
 
             <div style="margin-top: 40px;">
                 <div>
-                    -For: ${params.order.order_details.customer.name}
+                    -For: ${params.order.order_details.customer.name} -
                 </div>
     `;
 
@@ -216,13 +216,13 @@ const sendOrderPaymentEmail= async (params) => {
                                     ${ordered_item.itemName}`
                 
         for (let addOn of ordered_item.itemAddOn) {
-            itemHTML+=`<li style="font-size: 0.9rem;">${addOn.name}</li>`
+            itemHTML+=`<li style="font-size: 13px;">${addOn.name}</li>`
         }
 
         if(ordered_item.preference && ordered_item.preference.trim()!==""){
             itemHTML+=`<div>
                 <i>Preference: </i>
-                    <span style="font-size: 0.85rem;">
+                    <span style="font-size: 13px;">
                         ${ordered_item.preference}
                     </span>
             </div>`
