@@ -581,8 +581,8 @@ module.exports = {
             if (!dish) throw new Error(constants.MESSAGES.no_dish);
             
             dish.name = params.name || dish.name;
-            dish.price = parseFloat(params.price) || dish.price;
-            dish.markup_price=parseFloat(params.markup_price) || dish.markup_price,
+            dish.price = parseFloat(params.price);
+            dish.markup_price=parseFloat(params.markup_price);
             dish.description = params.description || dish.description;
             dish.restaurant_dish_category_id = params.restaurant_dish_category_id || dish.restaurant_dish_category_id ;
             dish.image_url = params.image_url;
@@ -964,8 +964,8 @@ module.exports = {
             if (!dishAddon) throw new Error(constants.MESSAGES.no_dish_addon);
 
             dishAddon.name = params.name || dishAddon.name;
-            dishAddon.price =parseFloat(params.price) || parseFloat(dishAddon.price);
-            dishAddon.markup_price=parseFloat(params.markup_price) || dishAddon.markup_price;
+            dishAddon.price =parseFloat(params.price);
+            dishAddon.markup_price=parseFloat(params.markup_price);
             dishAddon.image_url = params.image_url|| dishAddon.image_url;
             dishAddon.dish_add_on_section_id = params.dish_add_on_section_id || dishAddon.dish_add_on_section_id;
 
