@@ -172,28 +172,28 @@ const sendOrderPaymentEmail= async (params) => {
         <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" alt="">
     </div>
     <div>
-        <h1>Thanks for your order, Greg</h1>
+        <h1>Thanks for your order, ${params.order.order_details.customer.name.split(" ")[0]}</h1>
     </div>
     <div>
-        <p>The estimated delivery time for your order is 2:00pm. Track your order in Hotspot app.</p>
+        <p>The estimated delivery time for your order is ${moment(params.order.delivery_datetime).format("H:mma")}. Track your order in Hotspot app.</p>
     </div>
 
     <div style="background-color:#fff; border-radius: 25px;padding: 20px;">
         <div>
-            Paid with visa Ending in 3816 <br>
-            Denny's
+            Paid with ${params.orderPayment.payment_details.stripePaymentDetails.paymentMethod.card.brand} Ending in ${params.orderPayment.payment_details.stripePaymentDetails.paymentMethod.card.last4} <br>
+            ${params.order.order_details.restaurant.restaurant_name}
         </div>
         <div style="display: flex; flex-direction: column;margin-top: 40px;">
             <div style="line-height: 0%;">
                 <h2>Your Receipt</h2>
             </div>
             <div>
-                4206 Buena Vista St. Dalas, TX 25205, USA
+                ${params.order.order_details.hotspot.name}
             </div>
 
             <div style="display: flex;flex-direction: column ;margin-top: 40px;justify-content:start; align-items: start;">
                 <div>
-                    -For: Greg Leach
+                    -For: ${params.order.order_details.customer.name}
                 </div>
     `;
 
@@ -213,14 +213,23 @@ const sendOrderPaymentEmail= async (params) => {
                                     ${ordered_item.itemName}`
                 
         for (let addOn of ordered_item.itemAddOn) {
-            itemHTML+=`<li>${addOn.name}</li>`
+            itemHTML+=`<li style="font-size: 0.9rem;">${addOn.name}</li>`
+        }
+
+        if(ordered_item.preference && ordered_item.preference.trim()!==""){
+            itemHTML+=`<div>
+                <i>Preference: </i>
+                    <span style="font-size: 0.85rem;">
+                        ${ordered_item.preference}
+                    </span>
+            </div>`
         }
 
         itemHTML += `</div>
             </td>
             <td style="text-align: right;">
                 <div>
-                    ${ordered_item.itemPrice}
+                    $${ordered_item.itemPrice}
                 </div>
             </td>
         </tr>`
@@ -232,34 +241,24 @@ const sendOrderPaymentEmail= async (params) => {
     </div>`
 
     bottomHTML+=`<div style="margin-top: 10px;width: 100%;">
-    <table style="width: 100%;">
-        <tr style="text-align: left; vertical-align: top; ">
-            <td style="text-align: left; border-top:2px solid #d6d6d6;">
-                <div>
-                    Subtotal
-                </div>
+        <table style="width: 100%;">
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                    <div>
+                        Subtotal
+                    </div>
                 </td>
                 <td style="text-align: right; border-top:2px solid #d6d6d6;">
                     <div>
-                        ${params.order.order_details.amount_details.totalOrderAmount}
+                        $${params.order.order_details.amount_details.totalOrderAmount}
                     </div>
                 </td>
             </tr>
-            <td style="text-align: left; border-top:2px solid #d6d6d6;">
-                <div>
-                    Taxes
-                </div>
-                </td>
-                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left; border-top:2px solid #d6d6d6;">
                     <div>
-                        ${params.order.order_details.amount_details.salesTaxAmount}
+                        Regulatory Response Fee
                     </div>
-                </td>
-            </tr>
-            <td style="text-align: left; border-top:2px solid #d6d6d6;">
-                <div>
-                    Delivery Fee
-                </div>
                 </td>
                 <td style="text-align: right; border-top:2px solid #d6d6d6;">
                     <div>
@@ -267,17 +266,90 @@ const sendOrderPaymentEmail= async (params) => {
                     </div>
                 </td>
             </tr>
-            <td style="text-align: left; border-top:2px solid #d6d6d6;">
-                <div>
-                    Subtotal
-                </div>
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                    <div>
+                        Delivery Fee
+                    </div>
                 </td>
                 <td style="text-align: right; border-top:2px solid #d6d6d6;">
                     <div>
-                        ${params.order.order_details.amount_details.totalOrderAmount}
+                        $0.00
                     </div>
                 </td>
-            </tr>`
+            </tr>
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                    <div>
+                        Service Fee
+                    </div>
+                </td>
+                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                    <div>
+                        $0.00
+                    </div>
+                </td>
+            </tr>
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                    <div>
+                        Tip
+                    </div>
+                </td>
+                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                    <div>
+                        $${params.order.tip_amount}
+                    </div>
+                </td>
+            </tr>
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                    <div>
+                        Processing Fee
+                    </div>
+                </td>
+                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                    <div>
+                        $${params.order.order_details.amount_details.stripeFeeAmount}
+                    </div>
+                </td>
+            </tr>
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                    <div>
+                        Taxes
+                    </div>
+                </td>
+                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                    <div>
+                        $${params.order.order_details.amount_details.salesTaxAmount}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>`
+
+    bodyHTML+=`<div style="margin-top: 10px;width: 100%;">
+        <table style="width: 100%;">
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left; border-top:2px solid #d6d6d6;">
+                    <div>
+                        <strong>Total Charged </strong> 
+                    </div>
+                </td>
+                <td style="text-align: right; border-top:2px solid #d6d6d6;">
+                   <div>
+                       <strong>$${params.order.amount+params.order.tip_amount}</strong>
+                    </div>
+                </td>
+            </tr>
+        </table>                        
+    </div>`
+
+    bodyHTML+=`</div>                
+            </div>
+        </div>
+    </div>`
 
     
     
@@ -290,8 +362,8 @@ const sendOrderPaymentEmail= async (params) => {
         
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
-        to: params.order.order_details.restaurant.owner_email,
-        subject:  `Hotspot pickup order ${utilityFunction.getLocaleTime(new Date(params.order.delivery_datetime))}`,
+        to: params.order.order_details.customer.email,
+        subject:  `Order Receipt #${params.order.order_id}`,
         html: bodyHTML,
         // attachments: [
         //     {
@@ -1033,6 +1105,10 @@ module.exports = {
         
         let customer=await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
     
+        await sendOrderPaymentEmail({
+            order:await utilityFunction.convertPromiseToObject(order),
+            orderPayment:await utilityFunction.convertPromiseToObject(orderPayment),
+        })
     
         // add notification for employee
         let notificationObj = {
