@@ -208,7 +208,7 @@ const sendOrderPaymentEmail= async (params) => {
         let itemHTML =`<tr style="vertical-align: top;">
                             <td style="text-align: left;">
                                 <div>
-                                    ${ordered_item.itemCount}
+                                    ${ordered_item.itemCount}x
                                 </div>
                             </td>
                             <td>
