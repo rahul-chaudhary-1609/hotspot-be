@@ -405,17 +405,23 @@ module.exports = {
    
     paymentSuccess: async (params) => {
 
+      console.log("payment Success", params)
+
       let stripePaymentDetails={};
 
       stripePaymentDetails.paymentIntent = await stripe.paymentIntents.retrieve(
         params.payment_intent.id
       );
 
+      console.log("payment Success", stripePaymentDetails)
+
       if(stripePaymentDetails.paymentIntent){
         stripePaymentDetails.paymentMethod = await stripe.paymentMethods.retrieve(
           res.paymentIntent.payment_method
         );
-      }     
+      }  
+
+      console.log("payment Success", stripePaymentDetails)
            
       const orderPayment = await models.OrderPayment.findOrCreate({
           where: {

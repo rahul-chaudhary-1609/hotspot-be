@@ -167,6 +167,8 @@ const sendRestaurantOrderEmail= async (params) => {
 
 const sendOrderPaymentEmail= async (params) => {
 
+    console.log("send Order Payment Email", params)
+
     let bodyHTML = `<div style="background-color:#d6d6d6;border-radius: 5px;padding: 10px;">
     <div style="text-align: center;">
         <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" alt="">
