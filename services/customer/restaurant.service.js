@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const constants = require('../../constants');
 const utility = require('../../utils/utilityFunctions');
 const geolib = require('geolib');
+const moment = require('moment');
 
 const getRestaurantCard =  async (args) => {
         
@@ -458,7 +459,8 @@ module.exports = {
                 await models.Restaurant.findByPk(restaurant_id)
             )
 
-            let delivery_datetime=new Date(utility.getOnlyDate(new Date())+" "+params.delivery_shift)
+            //let delivery_datetime=new Date(utility.getOnlyDate(new Date())+" "+params.delivery_shift)
+            let delivery_datetime=moment(params.datetime).format("YYYY-MM-DD")+" "+params.delivery_shift
 
             let order_count = await models.Order.count({
                 where: {

@@ -5,6 +5,7 @@ const models = require("../../models");
 const Sequelize  = require("sequelize");
 const constants = require("../../constants");
 const utility = require('../../utils/utilityFunctions');
+const moment = require('moment');
 
 const getWhereCondition = (params,user)=>{
   let whereCondition = {
@@ -211,7 +212,7 @@ module.exports = {
       tip_amount:parseFloat(currentOrderPickup.tip_amount),
       driver_id:currentOrderPickup.driver_id,
       driver_fee:parseFloat(driver_fee.fee),
-      delivery_datetime:currentOrderPickup.delivery_datetime,
+      delivery_datetime:moment(currentOrderPickup.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
       delivery_details: {
         ...currentOrderPickup.pickup_details,
         dropOffs:orderDropoffs,
@@ -222,7 +223,7 @@ module.exports = {
       driver_id: user.id,
       delivery_id,
       driver_fee: parseFloat(driver_fee.fee),
-      delivery_datetime:currentOrderPickup.delivery_datetime,
+      delivery_datetime:moment(currentOrderPickup).format("YYYY-MM-DD HH:mm:ss"),
     }
     
     await models.Order.update({

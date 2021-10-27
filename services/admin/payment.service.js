@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const sendMail = require('../../utils/mail');
 const constants = require("../../constants");
+const moment = require("moment");
 
 const sendDriverPaymentEmail= async (params) => {
 
@@ -76,7 +77,7 @@ const sendDriverPaymentEmail= async (params) => {
             <td style="text-align:center;">${snCounter++}</td>
             <td style="text-align:center;">${orderDelivery.delivery_id}</td>
             <td style="text-align:center;">${orderDelivery.hotspot_name}</td>
-            <td style="text-align:center;">${utility.getDateInUSFormat(orderDelivery.delivery_datetime)}</td>
+            <td style="text-align:center;">${moment(orderDelivery.delivery_datetime).format("MM/DD/YYYY")}</td>
             <td style="text-align:center;">${orderDelivery.driver_fee}</td>
         </tr>`
     }
@@ -176,7 +177,7 @@ const sendRestaurantPaymentEmail= async (params) => {
             <td style="text-align:center;">${order.order_id}</td>
             <td style="text-align:center;">${order.customer_name}</td>
             <td style="text-align:center;">${order.type==1?'Delivery':'Pickup'}</td>
-            <td style="text-align:center;">${utility.getDateInUSFormat(order.delivery_datetime)}</td>
+            <td style="text-align:center;">${moment(order.delivery_datetime).format("MM/DD/YYYY")}</td>
             <td style="text-align:center;">${order.restaurant_fee}</td>
         </tr>`
     }

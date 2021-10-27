@@ -36,7 +36,7 @@ const getOrderRow =  async (args) => {
                 amount: val.tip_amount? parseFloat(val.amount)+parseFloat(val.tip_amount):parseFloat(val.amount),
                 restaurant:val.order_details.restaurant.restaurant_name,
                 status,
-                delivery_datetime: val.delivery_datetime,
+                delivery_datetime: moment(val.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 driver: val.order_details.driver? `${val.order_details.driver.first_name} ${val.order_details.driver.last_name}`:null,
                 createdAt:val.createdAt,
             })
@@ -295,7 +295,7 @@ module.exports = {
             const orderDetails = {
                 orderId: orderId,
                 createdAt: order.createdAt,
-                deliveryDateTime: order.delivery_datetime,
+                deliveryDateTime: moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 customer: order.order_details.customer.name,
                 restaurant: order.order_details.restaurant.restaurant_name,
                 hotspotLocation: order.order_details.hotspot ? {
@@ -342,8 +342,8 @@ module.exports = {
             })
         )
 
-        let deliveryTime=new Date(order.delivery_datetime);
-        deliveryTime=moment(deliveryTime.toLocaleString('en-us',{timeZone:`${process.env.TIME_ZONE}`}),'MM/DD/YYYY, hh:mm:ss A').format('HH:mm:ss');
+        let deliveryTime=moment(order.delivery_datetime).format("HH:mm:ss");
+        //deliveryTime=moment(deliveryTime.toLocaleString('en-us',{timeZone:`${process.env.TIME_ZONE}`}),'MM/DD/YYYY, hh:mm:ss A').format('HH:mm:ss');
 
         let deliveryPickupDatetime = new Date(`${utility.getOnlyDate(new Date())} ${utility.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}${process.env.TIME_ZONE_OFFSET}`);
 
@@ -369,7 +369,7 @@ module.exports = {
         const orderPickup = await models.OrderPickup.findOne({
             where: {
                 hotspot_location_id: currentOrder.hotspot_location_id,
-                delivery_datetime: currentOrder.delivery_datetime,
+                delivery_datetime: moment(currentOrder.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 driver_id:driver.id
                 }
         })
@@ -410,7 +410,7 @@ module.exports = {
         else {
             currentOrder.order_details.restaurant.order_count = 1;
             currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
-            let pickup_datetime=new Date(currentOrder.delivery_datetime);
+            let pickup_datetime=moment(currentOrder.delivery_datetime).format("YYYY-MM-DD HH:mm:ss");
             pickup_datetime.setMinutes(pickup_datetime.getMinutes()-20);
             let orderPickupObj = {
                 pickup_id: order_pickup_id,
@@ -420,7 +420,7 @@ module.exports = {
                 tip_amount:parseFloat(currentOrder.tip_amount),
                 driver_id:driver.id,
                 pickup_datetime,
-                delivery_datetime:currentOrder.delivery_datetime,
+                delivery_datetime:moment(currentOrder.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 pickup_details: {
                     hotspot:currentOrder.order_details.hotspot,
                     restaurants:[currentOrder.order_details.restaurant],

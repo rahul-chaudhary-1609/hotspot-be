@@ -68,7 +68,7 @@ const sendRestaurantOrderEmail= async (params) => {
             position: relative;
         ">
        ${params.hotspotLocation.name}<br>
-       DELIVERY PICKUP TIME ${utilityFunctions.getLocaleTime(new Date(params.deliveryPickupDatetime))}<br><br>
+       DELIVERY PICKUP TIME ${moment(params.deliveryPickupDatetime).format("h:mma")}<br><br>
     `;
 
     let bottomHTML = `</div><br><br>
@@ -153,7 +153,7 @@ const sendRestaurantOrderEmail= async (params) => {
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to:params.restaurant.owner_email,
-        subject: `Hotspot delivery order(s) ${params.hotspotLocation.name}, delivery pickup time ${utilityFunctions.getLocaleTime(new Date(params.deliveryPickupDatetime))}`,
+        subject: `Hotspot delivery order(s) ${params.hotspotLocation.name}, delivery pickup time ${moment(params.deliveryPickupDatetime).format("h:mma")}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
         //     {
@@ -192,7 +192,7 @@ const addRestaurantPayment=async(params)=>{
         payment_id: await utilityFunctions.getUniqueRestaurantPaymentId(),
         from_date: utilityFunctions.getOnlyDate(params.deliveryDatetime),
         to_date: utilityFunctions.getOnlyDate(params.deliveryDatetime),
-        delivery_datetime:params.deliveryDatetime,
+        delivery_datetime:moment(params.deliveryDatetime).format("YYYY-MM-DD HH:mm:ss"),
         restaurant_name:params.restaurant.restaurant_name,
         order_type:constants.ORDER_TYPE.delivery,
         payment_details: {
@@ -241,9 +241,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     })
                 )
 
-                var currentTime = new Date();
-
-                currentTime=moment(currentTime.toLocaleString('en-us',{timeZone:`${process.env.TIME_ZONE}`}),'MM/DD/YYYY, hh:mm:ss A').format('HH:mm:ss');
+                var currentTime=moment(new Date()).format('HH:mm:ss');
 
                 console.log("moment",currentTime)
 
@@ -254,12 +252,13 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
                 if(nextDeliveryTime){
 
-                    let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}${process.env.TIME_ZONE_OFFSET}`);
+                    // let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}${process.env.TIME_ZONE_OFFSET}`);
+                    let deliveryDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${nextDeliveryTime}}`;
                     // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
                     //let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
-                    let cutOffTime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}${process.env.TIME_ZONE_OFFSET}`);
+                    let cutOffTime = `${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}`;
                     
-                    let deliveryPickupDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",hotspotRestaurant.pickup_time)}${process.env.TIME_ZONE_OFFSET}`);
+                    let deliveryPickupDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",hotspotRestaurant.pickup_time)}`;
 
                     let orders = await utilityFunctions.convertPromiseToObject(
                         await Order.findAll({
