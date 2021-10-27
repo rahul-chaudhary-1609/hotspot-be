@@ -503,7 +503,7 @@ module.exports = {
             let dishObj={
                 name:params.name,
                 price:parseFloat(params.price),
-                markup_price:params.markup_price && parseFloat(params.markup_price),
+                markup_price:(params.markup_price!=null && params.markup_price!=undefined)?parseFloat(params.markup_price):null,
                 restaurant_dish_category_id:params.restaurant_dish_category_id,
                 description:params.description,
                 image_url:params.image_url,
@@ -582,7 +582,7 @@ module.exports = {
             
             dish.name = params.name || dish.name;
             dish.price = parseFloat(params.price);
-            dish.markup_price=(params.markup_price ?? parseFloat(params.markup_price))|| dish.markup_price;
+            dish.markup_price=(params.markup_price!=null && params.markup_price!=undefined)?parseFloat(params.markup_price): dish.markup_price;
             dish.description = params.description || dish.description;
             dish.restaurant_dish_category_id = params.restaurant_dish_category_id || dish.restaurant_dish_category_id ;
             dish.image_url = params.image_url;
@@ -886,7 +886,7 @@ module.exports = {
             let dishAddonObj={
                 name:params.name,
                 price:parseFloat(params.price),
-                markup_price:params.markup_price && parseFloat(params.markup_price),
+                markup_price:(params.markup_price!=null && params.markup_price!=undefined)?parseFloat(params.markup_price):null,
                 dish_add_on_section_id:params.dish_add_on_section_id,
                 image_url:params.image_url,
             }
@@ -965,7 +965,7 @@ module.exports = {
 
             dishAddon.name = params.name || dishAddon.name;
             dishAddon.price =parseFloat(params.price);
-            dishAddon.markup_price=(params.markup_price ?? parseFloat(params.markup_price)) || dishAddon.markup_price;
+            dishAddon.markup_price=(params.markup_price!=null && params.markup_price!=undefined)?parseFloat(params.markup_price): dishAddon.markup_price;
             dishAddon.image_url = params.image_url|| dishAddon.image_url;
             dishAddon.dish_add_on_section_id = params.dish_add_on_section_id || dishAddon.dish_add_on_section_id;
 
