@@ -46,7 +46,7 @@ const getOrderCard =  async (args) => {
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 status,
                 createdAt: order.createdAt,
-                updatedAt: order.payment_datetime || order.updatedAt,
+                updatedAt: moment(order.payment_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 orderDetails,
             })
         }
