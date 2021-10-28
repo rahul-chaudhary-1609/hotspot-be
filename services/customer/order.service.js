@@ -342,7 +342,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right; border-top:2px solid #e6e8e6;">
                    <div>
-                       <strong>$${params.order.tip_amount? (parseFloat(params.order.amount)).toFixed(2)+parseFloat(params.order.tip_amount):params.order.amount}</strong>
+                       <strong>$${params.order.tip_amount? (parseFloat(params.order.amount)+parseFloat(params.order.tip_amount)).toFixed(2):params.order.amount}</strong>
                     </div>
                 </td>
             </tr>
