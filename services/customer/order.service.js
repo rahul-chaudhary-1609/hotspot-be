@@ -232,7 +232,7 @@ const sendOrderPaymentEmail= async (params) => {
             </td>
             <td style="text-align: right;">
                 <div>
-                    $${ordered_item.itemPrice}
+                    $${(parseFloat(ordered_item.itemPrice)).toFixed(2)}
                 </div>
             </td>
         </tr>`
