@@ -411,7 +411,7 @@ module.exports = {
             currentOrder.order_details.restaurant.order_count = 1;
             currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
             let pickup_datetime=moment(currentOrder.delivery_datetime).format("YYYY-MM-DD HH:mm:ss");
-            pickup_datetime.setMinutes(pickup_datetime.getMinutes()-20);
+            pickup_datetime.setMinutes(new Date(pickup_datetime).getMinutes()-20);
             let orderPickupObj = {
                 pickup_id: order_pickup_id,
                 hotspot_location_id: currentOrder.hotspot_location_id,
