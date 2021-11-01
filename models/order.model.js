@@ -77,6 +77,8 @@ module.exports = (sequelize, DataTypes) => {
 
         tip_amount: {
             type: DataTypes.DECIMAL(15,2),
+            allowNull: false,
+            defaultValue: 0.00,
         },
 
         // delivery_datetime: {

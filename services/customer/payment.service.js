@@ -404,7 +404,9 @@ module.exports = {
            
 
             const stripePaymentIntent = await stripe.paymentIntents.create({
-              amount: parseInt(parseFloat(((parseFloat(order.amount)+parseFloat(order.tip_amount)).toFixed(2)))*100),
+              amount: order.tip_amount?
+                      parseInt(parseFloat(((parseFloat(order.amount)+parseFloat(order.tip_amount)).toFixed(2)))*100):
+                      parseInt(parseFloat(((parseFloat(order.amount)).toFixed(2)))*100),
               currency: constants.STRIPE.currency,
               customer: stripeCustomer.id,
             });
