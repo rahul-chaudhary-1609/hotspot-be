@@ -394,10 +394,17 @@ module.exports = {
             });   
            }
              
+           let order= await utilityFunction.convertPromiseToObject(
+            await models.Order.findOne({
+                where: {
+                    order_id:params.order_id,                       
+                }
+            })
+           )
            
 
             const stripePaymentIntent = await stripe.paymentIntents.create({
-              amount: parseInt(params.amount*100),
+              amount: parseInt(parseFloat(((parseFloat(order.amount)+parseFloat(order.tip_amount)).toFixed(2)))*100),
               currency: constants.STRIPE.currency,
               customer: stripeCustomer.id,
             });
