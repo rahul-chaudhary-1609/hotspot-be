@@ -260,6 +260,9 @@ module.exports = {
 
 
    payment: async (params,user) => {       
+
+    console.log("Payment",params)
+    console.log("Payment",params)
             
      const customer = await utilityFunction.convertPromiseToObject(
        await models.Customer.findByPk(user.id)
