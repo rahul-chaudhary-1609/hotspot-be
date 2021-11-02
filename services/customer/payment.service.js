@@ -425,15 +425,11 @@ module.exports = {
         params.payment_intent.id
       );
 
-      console.log("payment Success", stripePaymentDetails)
-
       if(stripePaymentDetails.paymentIntent){
         stripePaymentDetails.paymentMethod = await stripe.paymentMethods.retrieve(
           stripePaymentDetails.paymentIntent.payment_method
         );
       }  
-
-      console.log("payment Success", stripePaymentDetails)
            
       const orderPayment = await models.OrderPayment.findOrCreate({
           where: {

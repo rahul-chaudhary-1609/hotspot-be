@@ -1065,7 +1065,7 @@ module.exports = {
 
     confirmOrderPayment: async (params) => {
 
-        console.log("confirmOrderPayment",params,params)
+        console.log("confirmOrderPayment 1",params,params)
         
         let order_id = params.order_id;
 
@@ -1086,6 +1086,8 @@ module.exports = {
 
         if (!orderPayment || !orderPayment.payment_status) throw new Error(constants.MESSAGES.no_payment);
 
+        console.log("confirmOrderPayment 2",params,params)
+
         await models.Order.update({
             status: 1,
             payment_datetime:moment(params.payment_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
@@ -1098,6 +1100,8 @@ module.exports = {
             }
         );
 
+        console.log("confirmOrderPayment 3",params,params)
+
         await models.Cart.destroy({
                 where: {
                     customer_id: order.customer_id,
@@ -1105,14 +1109,20 @@ module.exports = {
                 },
                 force: true,
         })
+
+        console.log("confirmOrderPayment 4",params,params)
         
         let customer=await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
     
+        console.log("confirmOrderPayment 5",params,params)
+
         await sendOrderPaymentEmail({
             order:await utilityFunction.convertPromiseToObject(order),
             orderPayment:await utilityFunction.convertPromiseToObject(orderPayment),
         })
     
+        console.log("confirmOrderPayment 6",params,params)
+
         // add notification for employee
         let notificationObj = {
             type_id: order_id,                
@@ -1123,7 +1133,8 @@ module.exports = {
             type: constants.NOTIFICATION_TYPE.order_confirmed,
         }
 
-        console.log("notificationObj",notificationObj)
+        console.log("notificationObj ",notificationObj)
+
         await models.Notification.create(notificationObj);
 
         if (customer.notification_status && customer.device_token) {
@@ -1134,6 +1145,8 @@ module.exports = {
             }
             await utilityFunction.sendFcmNotification([customer.device_token], notificationData);
         }
+
+        console.log("confirmOrderPayment 7",params,params)
 
         if (order.type == constants.ORDER_TYPE.pickup) {
             await sendRestaurantOrderEmail({ order })
