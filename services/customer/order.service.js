@@ -790,13 +790,13 @@ module.exports = {
         const customer_id = user.id;
         const restaurant_id = parseInt(params.restaurant_id);
 
-        await models.Order.destroy({
-            where: {
-                customer_id,
-                restaurant_id,
-                status:constants.ORDER_STATUS.not_paid,
-            }
-        })
+        // await models.Order.destroy({
+        //     where: {
+        //         customer_id,
+        //         restaurant_id,
+        //         status:constants.ORDER_STATUS.not_paid,
+        //     }
+        // })
 
         const order_id = await utilityFunction.getUniqueOrderId();
         const amount = parseFloat(params.amount);
