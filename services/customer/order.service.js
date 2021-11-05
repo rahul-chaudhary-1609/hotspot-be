@@ -1090,6 +1090,7 @@ module.exports = {
 
         await models.Order.update({
             status: 1,
+            order_payment_id:params.payment_id,
             payment_datetime:moment(params.payment_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
         },
             {

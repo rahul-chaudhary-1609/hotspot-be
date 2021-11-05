@@ -250,16 +250,19 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     return time >= currentTime;
                 });
 
+                console.log("\nnextDeliveryTime",nextDeliveryTime)
+
                 if(nextDeliveryTime){
 
                     // let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}${process.env.TIME_ZONE_OFFSET}`);
-                    let deliveryDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${nextDeliveryTime}}`;
-                    // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}+00`);
-                    //let deliveryDatetime = new Date(`2021-06-29 12:30:00+00`);
+                    let deliveryDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${nextDeliveryTime}`;
+                    // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}`);
+                    //let deliveryDatetime = new Date(`2021-06-29 12:30:00`);
                     let cutOffTime = `${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}`;
                     
                     let deliveryPickupDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",hotspotRestaurant.pickup_time)}`;
 
+                    console.log("\ndeliveryDatetime:",deliveryDatetime,"\ncutOffTime:",cutOffTime,"\ndeliveryPickupDatetime:",deliveryPickupDatetime)
                     let orders = await utilityFunctions.convertPromiseToObject(
                         await Order.findAll({
                             where: {
@@ -275,13 +278,16 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                         })
                     )
 
+                    console.log("orders Count:",orders.length, orders.map(order=>order.order_id))
+
 
                     if (orders.length > 0) {
                         let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
+                        console.log("timeDiff:",timeDiff)
                         if (timeDiff > 0) {
                             await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
                             let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
-                            
+                            console.log("restaurant_payment_id:",restaurant_payment_id)
                             for (let order of orders) {
                                 await Order.update({
                                     is_restaurant_notified:1,
