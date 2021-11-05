@@ -8,7 +8,6 @@ const sendMail = require('./mail');
 const fs = require('fs');
 const moment = require('moment');
 const { Op } = require("sequelize");
-const {sequelize}=require('../models');
 
 
 // let order_details = {
@@ -222,7 +221,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                 attributes:["id","name", "delivery_shifts"],
                 where:{
                     id:1,
-                }
+                }            
             })
         )
 
@@ -247,13 +246,13 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     })
                 )
 
-                var currentTime=moment(new Date()).utc().format('HH:mm:ss');
+                var currentTime=moment(new Date()).format('HH:mm:ss');
 
                 console.log("moment",currentTime)
 
                 
                 let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                    return moment(time,"HH:mm:ss").utc().format('HH:mm:ss') >= currentTime;
+                    return time >= currentTime;
                 });
 
                 console.log("\nnextDeliveryTime",nextDeliveryTime)
@@ -276,35 +275,21 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                                 hotspot_location_id:hotspotLocation.id,
                                 restaurant_id: restaurant.id,
                                 type: constants.ORDER_TYPE.delivery,
-                                status:{
-                                    [Op.notIn]:[constants.ORDER_STATUS.not_paid]
-                                },
-                                delivery_datetime: deliveryDatetime,
+                                // status:{
+                                //     [Op.notIn]:[constants.ORDER_STATUS.not_paid]
+                                // },
+                                // delivery_datetime: deliveryDatetime,
                                 // is_restaurant_notified:0,
                             }
                         })
                     )
 
-                    // let rawQuery = `SELECT order_id,delivery_datetime as dt,timezone('UTC', delivery_datetime) as delivery_datetime FROM "orders" AS "orders" 
-                    //     WHERE "orders"."hotspot_location_id" = ${hotspotLocation.id} AND
-                    //      "orders"."restaurant_id" =${restaurant.id} AND
-                    //      "orders"."type"=${constants.ORDER_TYPE.delivery}
-                    //       `
-
-                    // let orders =await utilityFunctions.convertPromiseToObject(
-                    //     await sequelize.query(rawQuery, {
-                    //         raw: true
-                    //     })
-                    // )
-
-                    console.log("orders Count:", orders.length, orders.map(order=>order.order_id),orders)
+                    console.log("orders Count:",orders.length, orders.map(order=>order.order_id),orders)
 
 
                     if (orders.length > 0) {
-                        let timeDiff1 = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
-                        console.log(cutOffTime,moment(new Date()).utc().format("HH:mm:ss"),moment(cutOffTime).utc().format("HH:mm:ss"),moment(new Date(cutOffTime)).utc().format("HH:mm:ss"))
-                        let timeDiff = moment.duration(moment(new Date()).utc().diff(moment(cutOffTime).utc()))//Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
-                        console.log("timeDiff:",Math.floor(timeDiff.asSeconds()),timeDiff1)
+                        let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
+                        console.log("timeDiff:",timeDiff)
                         // if (timeDiff > 0) {
                         //     await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
                         //     let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
