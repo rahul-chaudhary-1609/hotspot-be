@@ -300,37 +300,37 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     console.log("orders Count:", orders.length, orders.map(order=>order.order_id),orders)
 
 
-                    // if (orders.length > 0) {
-                    //     let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
-                    //     console.log("timeDiff:",timeDiff)
-                    //     if (timeDiff > 0) {
-                    //         await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
-                    //         let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
-                    //         console.log("restaurant_payment_id:",restaurant_payment_id)
-                    //         for (let order of orders) {
-                    //             await Order.update({
-                    //                 is_restaurant_notified:1,
-                    //                 restaurant_payment_id,
-                    //             }, {
-                    //                 where: {
-                    //                     id:order.id,
-                    //                 }
-                    //             })
-                    //         }
+                    if (orders.length > 0) {
+                        let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
+                        console.log("timeDiff:",timeDiff)
+                        // if (timeDiff > 0) {
+                        //     await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
+                        //     let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
+                        //     console.log("restaurant_payment_id:",restaurant_payment_id)
+                        //     for (let order of orders) {
+                        //         await Order.update({
+                        //             is_restaurant_notified:1,
+                        //             restaurant_payment_id,
+                        //         }, {
+                        //             where: {
+                        //                 id:order.id,
+                        //             }
+                        //         })
+                        //     }
 
-                    //         await Order.destroy({
-                    //             where: {
-                    //                 hotspot_location_id:hotspotLocation.id,
-                    //                 restaurant_id: restaurant.id,
-                    //                 type: constants.ORDER_TYPE.delivery,
-                    //                 status:{
-                    //                     [Op.in]:[constants.ORDER_STATUS.not_paid]
-                    //                 },
-                    //                 delivery_datetime: deliveryDatetime,
-                    //             }
-                    //         })
-                    //     }
-                    // }
+                        //     await Order.destroy({
+                        //         where: {
+                        //             hotspot_location_id:hotspotLocation.id,
+                        //             restaurant_id: restaurant.id,
+                        //             type: constants.ORDER_TYPE.delivery,
+                        //             status:{
+                        //                 [Op.in]:[constants.ORDER_STATUS.not_paid]
+                        //             },
+                        //             delivery_datetime: deliveryDatetime,
+                        //         }
+                        //     })
+                        // }
+                    }
                 }
 
                 
