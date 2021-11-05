@@ -465,6 +465,14 @@ module.exports = {
 
     addToCart: async (params,user) => {
 
+            await models.Order.destroy({
+                where: {
+                    customer_id: user.id,
+                    //restaurant_id,
+                    status:constants.ORDER_STATUS.not_paid,
+                }
+            })
+
             const currentCart = await models.Cart.findOne({
                 where: {
                     restaurant_id:parseInt(params.restaurant_id),
@@ -591,13 +599,13 @@ module.exports = {
         
         //params.order_type = parseInt(params.order_type)
 
-        await models.Order.destroy({
-            where: {
-                customer_id: user.id,
-                //restaurant_id,
-                status:constants.ORDER_STATUS.not_paid,
-            }
-        })
+        // await models.Order.destroy({
+        //     where: {
+        //         customer_id: user.id,
+        //         //restaurant_id,
+        //         status:constants.ORDER_STATUS.not_paid,
+        //     }
+        // })
 
         const cart = await utilityFunction.convertPromiseToObject(
                 await models.Cart.findAndCountAll({
