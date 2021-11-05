@@ -1077,6 +1077,8 @@ module.exports = {
 
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
+        console.log("confirmOrderPayment 1.5",params,params)
+
         const orderPayment = await models.OrderPayment.findOne({
             where: {
                 order_id:order.order_id,
