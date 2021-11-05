@@ -121,18 +121,20 @@ const sendRestaurantOrderEmail= async (params) => {
             <tr>
                 <td style="border-right:1px solid #ddd;">${ordered_item.itemName}</td>
                 <td style="border-right:1px solid #ddd;">${ordered_item.itemCount}</td>
-                <td>`
+                <td style="border-right:1px solid #ddd;">`
                     
             for (let addOn of ordered_item.itemAddOn) {
                 itemHTML+=`${addOn.name}<br/>`
             }
+
+            itemHTML+=`</td>
+                <td>${ordered_item.preference || "-"}</td>
+            </tr>`
             
             rowHTML+=itemHTML
         }
             
-        rowHTML +=`</td>
-            <td style="border-right:1px solid #ddd;">${ordered_item.preference || "-"}</td>
-        </tr></table></div></div></td>
+        rowHTML +=`</table></div></div></td>
         </tr>`
 
         bodyHTML+=rowHTML
@@ -190,8 +192,8 @@ const addRestaurantPayment=async(params)=>{
     let restaurantPaymentObj={
         ...order,
         payment_id: await utilityFunctions.getUniqueRestaurantPaymentId(),
-        from_date: utilityFunctions.getOnlyDate(params.deliveryDatetime),
-        to_date: utilityFunctions.getOnlyDate(params.deliveryDatetime),
+        from_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
+        to_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
         delivery_datetime:moment(params.deliveryDatetime).format("YYYY-MM-DD HH:mm:ss"),
         restaurant_name:params.restaurant.restaurant_name,
         order_type:constants.ORDER_TYPE.delivery,
@@ -298,6 +300,18 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                                     }
                                 })
                             }
+
+                            await Order.destroy({
+                                where: {
+                                    hotspot_location_id:hotspotLocation.id,
+                                    restaurant_id: restaurant.id,
+                                    type: constants.ORDER_TYPE.delivery,
+                                    status:{
+                                        [Op.in]:[constants.ORDER_STATUS.not_paid]
+                                    },
+                                    delivery_datetime: deliveryDatetime,
+                                }
+                            })
                         }
                     }
                 }
