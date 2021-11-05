@@ -264,7 +264,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     let deliveryDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${nextDeliveryTime}`;
                     // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}`);
                     //let deliveryDatetime = new Date(`2021-06-29 12:30:00`);
-                    let cutOffTime = moment(`${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}`).format("YYYY-MM-DD HH:mm:ssZ");
+                    let cutOffTime = moment(`${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}`).utc().format("YYYY-MM-DD HH:mm:ss");
                     
                     let deliveryPickupDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",hotspotRestaurant.pickup_time)}`;
 
@@ -303,7 +303,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     if (orders.length > 0) {
                         let timeDiff1 = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
                         console.log(cutOffTime,moment(new Date()).utc().format("HH:mm:ss"),moment(cutOffTime).utc().format("HH:mm:ss"),moment(new Date(cutOffTime)).utc().format("HH:mm:ss"))
-                        let timeDiff = moment.duration(moment(new Date()).utc().diff(moment(cutOffTime).utc()))//Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
+                        let timeDiff = moment.duration(moment(cutOffTime).diff(moment(new Date()).utc()))//Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
                         console.log("timeDiff:",Math.floor(timeDiff.asSeconds()),timeDiff1)
                         // if (timeDiff > 0) {
                         //     await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
