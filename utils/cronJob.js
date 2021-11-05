@@ -288,7 +288,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
 
                     if (orders.length > 0) {
-                        let timeDiff = Math.floor(((new Date()).getTime() - (new Date(cutOffTime)).getTime()) / 1000)
+                        let timeDiff = Math.floor(((new Date(moment().tz(process.env.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss'))).getTime() - (new Date(moment(cutOffTime).format('YYYY-MM-DD HH:mm:ss'))).getTime()) / 1000)
                         console.log("timeDiff:",timeDiff,moment().tz(process.env.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss'),moment(cutOffTime).format('YYYY-MM-DD HH:mm:ss'),moment().tz(process.env.TIME_ZONE).diff(moment(cutOffTime),"seconds"))
                         // if (timeDiff > 0) {
                         //     await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
