@@ -264,7 +264,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     let deliveryDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${nextDeliveryTime}`;
                     // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}`);
                     //let deliveryDatetime = new Date(`2021-06-29 12:30:00`);
-                    let cutOffTime = moment(`${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}`).utc().format("YYYY-MM-DD HH:mm:ss");
+                    let cutOffTime = moment(`${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}`,"YYYY-MM-DD HH:mm:ss").utc().format("YYYY-MM-DD HH:mm:ss");
                     
                     let deliveryPickupDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",hotspotRestaurant.pickup_time)}`;
 
