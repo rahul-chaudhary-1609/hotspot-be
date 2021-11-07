@@ -17,8 +17,14 @@ const getOrderRow =  async (args) => {
                 if(val.type===constants.ORDER_TYPE.pickup) status="Pickup"
                 else status = "Pending"
             }
-            else if ([2, 3].includes(val.status)) {
-                status="Driver Allocated"
+            // else if ([2, 3].includes(val.status)) {
+            //     status="Sprinting" //"Driver Allocated"
+            // }
+            else if (val.status === 2) {
+                status="Preparing food"//"Food is being prepared"
+            }
+            else if (val.status === 3) {
+                status="Sprinting"//"Food is on the way"
             }
             else if (val.status === 4) {
                 if(val.type===constants.ORDER_TYPE.pickup) status="Completed"
@@ -277,10 +283,10 @@ module.exports = {
                 else status = "Pending"
             }
             else if (order.status === 2) {
-                status="Food is being prepared"
+                status="Preparing food"//"Food is being prepared"
             }
             else if (order.status === 3) {
-                status="Food is on the way"
+                status="Sprinting"//"Food is on the way"
             }
             else if (order.status === 4) {
                 if(order.type===constants.ORDER_TYPE.pickup) status="Completed"
@@ -306,7 +312,7 @@ module.exports = {
                 dropoff:order.order_details.hotspot?order.order_details.hotspot.dropoff:null,
                 orderItems:order.order_details.ordered_items,
                 amount: parseFloat(order.amount),
-                tipAmount:order.tip_amount && parseFloat(order.tip_amount),
+                tipAmount:parseFloat(order.tip_amount),
                 type:order.type,
                 status,
                 driver: order.order_details.driver? `${order.order_details.driver.first_name} ${order.order_details.driver.last_name}`:null,
@@ -432,7 +438,7 @@ module.exports = {
         }
 
         await models.Order.update({
-            status: constants.ORDER_STATUS.food_being_prepared,            
+            status: constants.ORDER_STATUS.food_ready_or_on_the_way,            
             order_pickup_id,
             order_details:{ ...order.order_details,driver },
             driver_id: driver.id,

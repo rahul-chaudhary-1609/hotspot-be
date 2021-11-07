@@ -21,8 +21,17 @@ const getOrderCard =  async (args) => {
             if (order.status == 1 && order.type == constants.ORDER_TYPE.pickup) {
                 status="Pickup"
             }
-            else if ([1,2, 3].includes(order.status)) {
+            // else if ([1,2,3].includes(order.status)) {
+            //     status="Confirmed"
+            // }
+            else if (order.status === 1) {
                 status="Confirmed"
+            }
+            else if (order.status === 2) {
+                status="Preparing food"//"Food is being prepared"
+            }
+            else if (order.status === 3) {
+                status="Sprinting"//"Food is on the way"
             }
             else if (order.status == 4) {
                 if(order.type==constants.ORDER_TYPE.pickup) status="Completed"
@@ -1265,13 +1274,13 @@ module.exports = {
             let trackStatus = null;
 
             if (order.status==1) {
-                trackStatus="Confirming order with restaurant!"
+                trackStatus="Confirming order with restaurant"
             }
             else if (order.status == 2) {
-                trackStatus="Food is being Prepared!"
+                trackStatus="Preparing food"//"Food is being Prepared!"
             }
             else if (order.status == 3) {
-                trackStatus="Food is on the way!"
+                trackStatus="Sprinting"//"Food is on the way!"
             }
             else if (order.status == 4) {
                 if(order.type==constants.ORDER_TYPE.pickup) trackStatus="Completed"
