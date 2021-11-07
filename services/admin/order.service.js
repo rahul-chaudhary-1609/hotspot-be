@@ -68,7 +68,7 @@ module.exports = {
         let query = {};
         let status = null;
         if (params.status || params.status==0) {
-            if (!([0, 1, 2].includes(params.status))) throw new Error(constants.MESSAGES.invalid_status);
+            if (!([0, 1, 2, 3].includes(params.status))) throw new Error(constants.MESSAGES.invalid_status);
             status = params.status;
         }
         else {
