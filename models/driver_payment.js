@@ -65,6 +65,12 @@ module.exports = (sequelize, DataTypes) => {
         payment_date: {
             type:CustomDataTypes.DATE_NO_TZ,
         },
+        type: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=>none, 1=>online, 2=>offline'
+        },
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,

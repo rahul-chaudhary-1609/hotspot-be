@@ -5,6 +5,7 @@ const utility = require('../../utils/utilityFunctions');
 const sendMail = require('../../utils/mail');
 const constants = require("../../constants");
 const moment = require("moment");
+const stripe = require('stripe')(constants.STRIPE.stripe_secret_key);
 
 const sendDriverPaymentEmail= async (params) => {
 
@@ -370,14 +371,29 @@ module.exports = {
             }
         })
 
-        delete params.payment_id;
+        let stripePaymentDetails={};
 
-        driverPayment.transaction_reference_id = params.payment_intent.id;
-        driverPayment.payment_details = {
-            ...currentDriverPayment.payment_details,
-            stripePaymentDetails: params
-        };
+        if(params.payment_type==constants.PAYMENT_TYPE.online){
+
+            stripePaymentDetails.paymentIntent = await stripe.paymentIntents.retrieve(
+                params.payment_intent.id
+            );
+    
+            if(stripePaymentDetails.paymentIntent){
+                stripePaymentDetails.paymentMethod = await stripe.paymentMethods.retrieve(
+                stripePaymentDetails.paymentIntent.payment_method
+                );
+            }
+
+            driverPayment.transaction_reference_id = params.payment_intent.id;
+            driverPayment.payment_details = {
+                ...currentDriverPayment.payment_details,
+                stripePaymentDetails,
+            };
+        }
+
         driverPayment.status = constants.PAYMENT_STATUS.paid;
+        driverPayment.type = params.payment_type==constants.PAYMENT_TYPE.online?constants.PAYMENT_TYPE.online:constants.PAYMENT_TYPE.offline;
 
         driverPayment.save();
 
@@ -391,7 +407,10 @@ module.exports = {
             }
         )
 
-        await sendDriverPaymentEmail(currentDriverPayment);
+        
+        if(params.payment_type==constants.PAYMENT_TYPE.online){
+            await sendDriverPaymentEmail(currentDriverPayment);
+        }
 
         return {driverPayment:await utility.convertPromiseToObject(driverPayment)}
     },
@@ -518,15 +537,29 @@ module.exports = {
         })
 
         let currentRestaurantPayment = await utility.convertPromiseToObject(restaurantPayment);
+        
+        let stripePaymentDetails={};
 
-        delete params.payment_id;
-
-        restaurantPayment.transaction_reference_id = params.payment_intent.id;
-        restaurantPayment.payment_details = {
-            ...currentRestaurantPayment.payment_details,
-            stripePaymentDetails: params
-        };
+        if(params.payment_type==constants.PAYMENT_TYPE.online){
+            stripePaymentDetails.paymentIntent = await stripe.paymentIntents.retrieve(
+                params.payment_intent.id
+            );
+    
+            if(stripePaymentDetails.paymentIntent){
+                stripePaymentDetails.paymentMethod = await stripe.paymentMethods.retrieve(
+                stripePaymentDetails.paymentIntent.payment_method
+                );
+            }
+    
+            restaurantPayment.transaction_reference_id = params.payment_intent.id;
+            restaurantPayment.payment_details = {
+                ...currentRestaurantPayment.payment_details,
+                stripePaymentDetails,
+            };
+        }
+        
         restaurantPayment.status = constants.PAYMENT_STATUS.paid;
+        restaurantPayment.type = params.payment_type==constants.PAYMENT_TYPE.online?constants.PAYMENT_TYPE.online:constants.PAYMENT_TYPE.offline;
 
         restaurantPayment.save();
 
@@ -540,7 +573,9 @@ module.exports = {
             }
         )
 
-        await sendRestaurantPaymentEmail(currentRestaurantPayment);
+        if(params.payment_type==constants.PAYMENT_TYPE.online){
+            await sendRestaurantPaymentEmail(currentRestaurantPayment);
+        }        
 
         return {restaurantPayment:await utility.convertPromiseToObject(restaurantPayment)}
     },

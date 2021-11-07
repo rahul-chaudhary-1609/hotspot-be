@@ -40,6 +40,12 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue:0,
         },
+        type: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=>none, 1=>online, 2=>offline'
+        },
         payment_details: {
             type: DataTypes.JSON,
         },

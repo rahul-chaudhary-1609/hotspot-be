@@ -100,6 +100,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        online_payment: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '1=>on, 2=>off'
+        },
         stripe_publishable_key: {
             type: DataTypes.TEXT,
             allowNull:true

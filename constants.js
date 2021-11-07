@@ -241,6 +241,17 @@ module.exports = {
     not_applicable:2,
   },
 
+  PAYMENT_TYPE : {
+    none: 0,
+    online: 1,
+    offline: 2,
+  },
+
+  ONLINE_PAYMENT_MODE : {
+    on: 1,
+    off: 2,
+  },
+
   DRIVER_ORDER_STATUS : {
     pickedup: 1,
     delivered: 2,

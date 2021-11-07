@@ -417,6 +417,7 @@ module.exports = {
         agreement_documents: Joi.array().allow(null).optional(),
         stripe_publishable_key:Joi.string().trim().allow(null, '').optional(),
         stripe_secret_key: Joi.string().trim().allow(null, '').optional(),
+        online_payment: Joi.number().optional(),
     }),
 
     editRestaurant: Joi.object({
@@ -438,6 +439,7 @@ module.exports = {
         agreement_documents: Joi.array().allow(null).optional(),
         stripe_publishable_key:Joi.string().trim().allow(null, '').optional(),
         stripe_secret_key: Joi.string().trim().allow(null, '').optional(),
+        online_payment: Joi.number().optional(),
     }),
 
     listRestaurant: Joi.object({

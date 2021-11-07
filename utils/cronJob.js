@@ -197,6 +197,8 @@ const addRestaurantPayment=async(params)=>{
         delivery_datetime:moment(params.deliveryDatetime).format("YYYY-MM-DD HH:mm:ss"),
         restaurant_name:params.restaurant.restaurant_name,
         order_type:constants.ORDER_TYPE.delivery,
+        status:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
+        type:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_TYPE.offline:constants.PAYMENT_TYPE.none,
         payment_details: {
             restaurnat:{
                 ...params.restaurant
@@ -235,7 +237,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
             for (let hotspotRestaurant of hotspotRestaurants) {
                 let restaurant = await utilityFunctions.convertPromiseToObject(
                     await Restaurant.findOne({
-                        attributes:["id","restaurant_name", "cut_off_time","status","order_type","owner_email","owner_phone"],
+                        attributes:["id","restaurant_name", "cut_off_time","status","order_type","owner_email","owner_phone","online_payment"],
                         where: {
                             id:hotspotRestaurant.restaurant_id,
                             status: constants.STATUS.active,
@@ -294,6 +296,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                                 await Order.update({
                                     is_restaurant_notified:1,
                                     restaurant_payment_id,
+                                    restaurant_payment_status:restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
                                 }, {
                                     where: {
                                         id:order.id,

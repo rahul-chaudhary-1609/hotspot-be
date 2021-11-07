@@ -442,6 +442,7 @@ module.exports = {
             order_id: params.order_id,
             transaction_reference_id: params.payment_intent.id,
             payment_status: 1,
+            type:constants.PAYMENT_TYPE.online,
             payment_details: {
               stripePaymentDetails,
             }
