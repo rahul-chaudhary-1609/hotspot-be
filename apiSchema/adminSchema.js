@@ -554,6 +554,7 @@ module.exports = {
     }),
 
     getOrderDeliveries: Joi.object({
+        current_date:Joi.string().required(),
         search_key: Joi.string().allow(null, '').trim().optional(),
         start_date: Joi.date().allow(null, '').optional(),
         end_date: Joi.date().allow(null, '').optional(),
@@ -563,6 +564,7 @@ module.exports = {
     }),
 
     getPickupOrders: Joi.object({
+        current_date:Joi.string().required(),
         search_key: Joi.string().allow(null, '').optional(),
         start_date: Joi.date().allow(null, '').optional(),
         end_date: Joi.date().allow(null, '').optional(),
@@ -572,6 +574,7 @@ module.exports = {
     }),
 
     getRestaurantEarnings: Joi.object({
+        current_date:Joi.string().required(),
         search_key: Joi.string().allow(null, '').optional(),
         start_date: Joi.date().allow(null, '').optional(),
         end_date: Joi.date().allow(null, '').optional(),
@@ -589,6 +592,7 @@ module.exports = {
     }),
 
     getDriverEarnings: Joi.object({
+        current_date:Joi.string().required(),
         search_key: Joi.string().allow(null, '').optional(),
         start_date: Joi.date().allow(null, '').optional(),
         end_date: Joi.date().allow(null, '').optional(),

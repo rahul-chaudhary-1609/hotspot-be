@@ -10,6 +10,7 @@ const geolib = require('geolib');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
 const { Order, OrderPayment, OrderPickup, OrderDelivery, DriverPayment, RestaurantPayment, Notification } = require('../models');
+const moment=require("moment");
 
 
 /* function for sending the error response */
@@ -225,6 +226,30 @@ module.exports.getMonday = (params) => {
     let day = date.getDay();
     let diff =date.getDate() - day + (day == 0 ? -6 : 1);
     return new Date(date.setDate(diff));
+}
+
+module.exports.getStartDate = (currentDate,type) => {
+    if(type=="week"){
+        return moment(currentDate).startOf('isoweek').format("YYYY-MM-DD")
+    }else if(type=="month"){
+        return moment(currentDate).startOf('month').format("YYYY-MM-DD")
+    }else if(type=="year"){
+        return moment(currentDate).startOf('year').format("YYYY-MM-DD")
+    }else{
+        return currentDate;
+    }
+}
+
+module.exports.getEndDate = (currentDate,type) => {
+    if(type=="week"){
+        return moment(currentDate).endOf('isoweek').format("YYYY-MM-DD")
+    }else if(type=="month"){
+        return moment(currentDate).endOf('month').format("YYYY-MM-DD")
+    }else if(type=="year"){
+        return moment(currentDate).endOf('year').format("YYYY-MM-DD")
+    }else{
+        return currentDate;
+    }
 }
 
 module.exports.getOnlyDate = (params) => {

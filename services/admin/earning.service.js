@@ -3,17 +3,18 @@ const {sequelize}=require('../../models');
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const constants = require("../../constants");
+const moment =require("moment");
 
 const getStartAndEndDate = (params) => {
-    let startDate = utility.getMonday(new Date(params.now))
-    let endDate = utility.getMonday(new Date(params.now))        
-    endDate.setDate(startDate.getDate() + 6);
+    let startDate = utility.getStartDate(params.now,"week");
+    let endDate = utility.getEndDate(params.now,"week");
     return {startDate,endDate}
 }
 
 const getWhereCondition = (params)=>{
-  let whereCondition = {
-        ...params.whereCondition     
+    console.log("getWhereCondition",params);
+    let whereCondition = {
+            ...params.whereCondition     
     };
     
 
@@ -23,67 +24,60 @@ const getWhereCondition = (params)=>{
                 {
                     ...whereCondition,                      
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(params.start_date))),
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(params.end_date))),
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', params.start_date),
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', params.end_date),
             ]
         };
     }else if (params.filter_key) {
-      let start_date = new Date();
-      let end_date = new Date();
+      let start_date = params.current_date;
+      let end_date = params.current_date;
       if (params.filter_key == "Daily") {
           whereCondition = {
             [Op.and]: [
               {
                   ...whereCondition,                      
               },
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date())),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date),
             ]
           };
       }
       else if (params.filter_key == "Weekly") {
-        start_date = utility.getMonday(start_date);
-        end_date = utility.getMonday(start_date);
-        end_date.setDate(start_date.getDate() + 6);
+        start_date = utility.getStartDate(params.current_date,"week");
+        end_date = utility.getEndDate(params.current_date,"week");
           whereCondition = {
             [Op.and]: [
               {
                   ...whereCondition,                      
               },
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', start_date),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', end_date),
             ]
           };
       }
       else if (params.filter_key == "Monthly") {
-          start_date.setDate(1)
-          end_date.setMonth(start_date.getMonth() + 1)
-          end_date.setDate(1)
-          end_date.setDate(end_date.getDate() - 1)
+        start_date = utility.getStartDate(params.current_date,"month");
+        end_date = utility.getEndDate(params.current_date,"month");
         
           whereCondition = {
             [Op.and]: [
               {
                   ...whereCondition,                      
               },
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', start_date),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', end_date),
             ]
           };
       }
       else if (params.filter_key == "Yearly") {
-          start_date.setDate(1)
-          start_date.setMonth(0)
-          end_date.setDate(1)
-          end_date.setMonth(0)
-          end_date.setFullYear(end_date.getFullYear() + 1)
-          end_date.setDate(end_date.getDate()-1)
+        start_date = utility.getStartDate(params.current_date,"year");
+        end_date = utility.getEndDate(params.current_date,"year");
           whereCondition = {
             [Op.and]: [
               {
                   ...whereCondition,                      
               },
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', start_date),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', end_date),
             ]
           };
     }
@@ -366,8 +360,8 @@ module.exports = {
                     // status: constants.ORDER_STATUS.delivered,
                     // delivery_datetime: {
                     //     [Op.and]: [
-                    //         { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                    //         {[Op.lte]:utility.getOnlyDate(new Date(params.end_date))}
+                    //         { [Op.gte]: params.start_date },
+                    //         {[Op.lte]:params.end_date}
                     //     ]
                     // }
                 },
@@ -403,21 +397,23 @@ module.exports = {
 
     getDriverEarnings: async (params) => {
 
+        console.log("params",params)
+
         let driverPayment = await models.DriverPayment.findAndCountAll({
             order:[['to_date','DESC']]
         });
 
-        let now = driverPayment.count > 0 ? (new Date(driverPayment.rows[0].to_date)) : new Date(process.env.PAYMENT_CALCULATION_START_DATE);
-        now = new Date(now)
-        now.setDate(now.getDate()+1)
+        let now = driverPayment.count > 0 ? moment(driverPayment.rows[0].to_date,"YYYY-MM-DD").add(1,"days").format("YYYY-MM-DD") : moment(process.env.PAYMENT_CALCULATION_START_DATE).add(1,"days").format("YYYY-MM-DD");
+
 
         let date = getStartAndEndDate({ now })
+
 
         let newDriverPayment = [];
 
         models.Driver.hasOne(models.DriverBankDetail,{foreignKey:'driver_id',sourceKey:'id',targetKey:'driver_id'})
         
-        while (date.endDate < (new Date())) {
+        while (date.endDate < params.current_date) {
             let orderDeliveries = await utility.convertPromiseToObject(
             await models.OrderDelivery.findAll({
                 attributes: [
@@ -429,8 +425,8 @@ module.exports = {
                 ],
                 where: {
                     [Op.and]: [
-                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
-                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', date.startDate),
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', date.endDate),
                     ]
                     // delivery_datetime: {
                     //     [Op.and]: [
@@ -465,8 +461,8 @@ module.exports = {
                 let orderDeliveryObj= {
                     ...orderDelivery,
                     payment_id:await utility.getUniqueDriverPaymentId(),
-                    from_date: utility.getOnlyDate(date.startDate),
-                    to_date: utility.getOnlyDate(date.endDate),
+                    from_date: date.startDate,
+                    to_date: date.endDate,
                     driver_name:`${driver.first_name} ${driver.last_name}`,
                     payment_details: {
                         driver:{
@@ -482,8 +478,8 @@ module.exports = {
                         where: {
                             driver_id:orderDelivery.driver_id,
                             [Op.and]: [
-                            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
-                            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
+                            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', date.startDate),
+                            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', date.endDate),
                         ]
                         }
                     }
@@ -495,8 +491,8 @@ module.exports = {
                     where: {
                         driver_id:orderDelivery.driver_id,
                         [Op.and]: [
-                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
-                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', date.startDate),
+                        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', date.endDate),
                     ]
                     }
                 })
@@ -505,9 +501,8 @@ module.exports = {
 
             }
 
-            newDriverPayment.push(...formattedOrderDeliveries)            
-            date.endDate.setDate(date.endDate.getDate() + 1)
-            now = utility.getOnlyDate(date.endDate);
+            newDriverPayment.push(...formattedOrderDeliveries) 
+            now = moment(date.endDate,"YYYY-MM-DD").add(1,"days").format("YYYY-MM-DD")
             date=getStartAndEndDate({ now })
         }
 
@@ -548,8 +543,8 @@ module.exports = {
                             {
                                 from_date: {
                                     [Op.and]: [
-                                        { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                        {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        { [Op.gte]: params.start_date },
+                                        {[Op.lte]: params.end_date}
                                     ]                
                                 }
 
@@ -557,8 +552,8 @@ module.exports = {
                             {
                                 to_date: {
                                     [Op.and]: [
-                                        { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                                        {[Op.lte]: utility.getOnlyDate(new Date(params.end_date))}
+                                        { [Op.gte]: params.start_date },
+                                        {[Op.lte]: params.end_date}
                                     ]                
                                 }
 
@@ -572,13 +567,11 @@ module.exports = {
             };
         }
         else if (params.filter_key) {
-            let start_date = new Date();
-            let end_date = new Date();
+            let start_date = params.current_date;
+            let end_date = params.current_date;
             if (params.filter_key == "Monthly") {
-                start_date.setDate(1)
-                end_date.setMonth(start_date.getMonth() + 1)
-                end_date.setDate(1)
-                end_date.setDate(end_date.getDate() - 1)
+                start_date = utility.getStartDate(params.current_date,"month");
+                end_date = utility.getEndDate(params.current_date,"month");
                 whereCondition = {
                     [Op.and]: [
                         {
@@ -589,8 +582,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
+                                            { [Op.gte]: start_date },
+                                            {[Op.lte]: end_date}
                                         ]                
                                     }
 
@@ -598,8 +591,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
+                                            { [Op.gte]: start_date},
+                                            {[Op.lte]: end_date}
                                         ]                
                                     }
 
@@ -611,12 +604,9 @@ module.exports = {
                 };
             }
             else if (params.filter_key == "Yearly") {
-                start_date.setDate(1)
-                start_date.setMonth(0)
-                end_date.setDate(1)
-                end_date.setMonth(0)
-                end_date.setFullYear(end_date.getFullYear() + 1)
-                end_date.setDate(end_date.getDate()-1)
+                start_date = utility.getStartDate(params.current_date,"year");
+                end_date = utility.getEndDate(params.current_date,"year");
+                console.log("start",start_date,end_date)
                 whereCondition = {
                     [Op.and]: [
                         {
@@ -627,8 +617,8 @@ module.exports = {
                                 {
                                     from_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
+                                            { [Op.gte]: start_date },
+                                            {[Op.lte]: end_date}
                                         ]                
                                     }
 
@@ -636,8 +626,8 @@ module.exports = {
                                 {
                                     to_date: {
                                         [Op.and]: [
-                                            { [Op.gte]: utility.getOnlyDate(new Date(start_date)) },
-                                            {[Op.lte]: utility.getOnlyDate(new Date(end_date))}
+                                            { [Op.gte]: start_date },
+                                            {[Op.lte]: end_date}
                                         ]                
                                     }
 
@@ -677,8 +667,8 @@ module.exports = {
                     // status: constants.ORDER_STATUS.delivered,
                     // delivery_datetime: {
                     //     [Op.and]: [
-                    //         { [Op.gte]: utility.getOnlyDate(new Date(params.start_date)) },
-                    //         {[Op.lte]:utility.getOnlyDate(new Date(params.end_date))}
+                    //         { [Op.gte]: params.start_date },
+                    //         {[Op.lte]:params.end_date}
                     //     ]
                     // }
                 },
