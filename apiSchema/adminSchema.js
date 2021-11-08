@@ -649,11 +649,13 @@ module.exports = {
     }),
    
     driverPaymentSuccess: Joi.object({
+        payment_type:Joi.number().required(),
         payment_id: Joi.string().trim().required(),
         payment_intent:Joi.object().optional(),
     }),
 
     restaurantPaymentSuccess: Joi.object({
+        payment_type:Joi.number().required(),
         payment_id: Joi.string().trim().required(),
         payment_intent:Joi.object().optional(),
     }),
