@@ -81,7 +81,7 @@ module.exports = {
                 {
                     ...query.where,
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date())),
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', params.current_date),
             
             ]
         }
@@ -164,7 +164,7 @@ module.exports = {
                 {
                     ...query.where,
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>', utility.getOnlyDate(new Date())),
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>', params.current_date),
             
             ]
         }
@@ -349,10 +349,9 @@ module.exports = {
         )
 
         let deliveryTime=moment(order.delivery_datetime).format("HH:mm:ss");
-        //deliveryTime=moment(deliveryTime.toLocaleString('en-us',{timeZone:`${process.env.TIME_ZONE}`}),'MM/DD/YYYY, hh:mm:ss A').format('HH:mm:ss');
-
-        let deliveryPickupDatetime = new Date(`${utility.getOnlyDate(new Date())} ${utility.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}${process.env.TIME_ZONE_OFFSET}`);
-
+        let deliveryDate=moment(order.delivery_datetime).format("YYYY-MM-DD");
+        
+        let deliveryPickupDatetime = `${deliveryDate} ${utilityFunctions.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}`;
         const driver = await utility.convertPromiseToObject(await models.Driver.findOne({
                 attributes: ['id','first_name','last_name'],
                 where: {
@@ -416,8 +415,8 @@ module.exports = {
         else {
             currentOrder.order_details.restaurant.order_count = 1;
             currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
-            let pickup_datetime=moment(currentOrder.delivery_datetime).subtract(20, "minutes").format("YYYY-MM-DD HH:mm:ss");
-            //pickup_datetime.setMinutes(new Date(pickup_datetime).getMinutes()-20);
+            let pickup_datetime=deliveryPickupDatetime;//moment(currentOrder.delivery_datetime).subtract(20, "minutes").format("YYYY-MM-DD HH:mm:ss");
+            
             let orderPickupObj = {
                 pickup_id: order_pickup_id,
                 hotspot_location_id: currentOrder.hotspot_location_id,

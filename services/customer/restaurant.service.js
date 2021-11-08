@@ -459,7 +459,6 @@ module.exports = {
                 await models.Restaurant.findByPk(restaurant_id)
             )
 
-            //let delivery_datetime=new Date(utility.getOnlyDate(new Date())+" "+params.delivery_shift)
             let delivery_datetime=moment(params.datetime).format("YYYY-MM-DD")+" "+params.delivery_shift
 
             let order_count = await models.Order.count({
@@ -636,8 +635,10 @@ module.exports = {
                 }
             });
 
+            var currentTime=moment(params.datetime).format('HH:mm:ss');
+
             nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                return parseInt(((new Date()).toTimeString().slice(0, 8)).replace(/:/g, '')) <= parseInt(time.replace(/:/g, ''));
+                return time >= currentTime;
             });
 
             if (!nextDeliveryTime) nextDeliveryTime = hotspotLocation.delivery_shifts[0];

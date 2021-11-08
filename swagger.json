@@ -3306,6 +3306,13 @@
                 "type": "string"
               },
               {
+                "name": "current_date",
+                "in": "query",
+                "description": "Enter current date",
+                "required": true,
+                "type": "string"
+              },
+              {
                 "name": "searchKey",
                 "in": "query",
                 "description": "search by name, category",
@@ -3352,6 +3359,13 @@
                 "name": "Authorization",
                 "in": "header",
                 "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "current_date",
+                "in": "query",
+                "description": "Enter current date",
                 "required": true,
                 "type": "string"
               },
@@ -3489,7 +3503,7 @@
           }
         },
 
-        "/admin/assignDriver/{orderId}": {
+        "/admin/assignDriver": {
           "put": {
             "tags": [
               "Admin Order Management"
@@ -3508,7 +3522,7 @@
               },
               {
                 "name": "orderId",
-                "in": "path",
+                "in": "formData",
                 "description": "enter order id",
                 "required": true,
                 "type": "string"
@@ -4319,6 +4333,13 @@
                 "type": "string"
               },
               {
+                "name": "current_date",
+                "in": "query",
+                "description": "Enter current date",
+                "required": true,
+                "type": "string"
+              },
+              {
                 "name": "search_key",
                 "in": "query",
                 "description": "search key",
@@ -4426,6 +4447,13 @@
                 "type": "string"
               },
               {
+                "name": "current_date",
+                "in": "query",
+                "description": "Enter current date",
+                "required": true,
+                "type": "string"
+              },
+              {
                 "name": "search_key",
                 "in": "query",
                 "description": "search key",
@@ -4491,6 +4519,13 @@
                 "name": "Authorization",
                 "in": "header",
                 "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "current_date",
+                "in": "query",
+                "description": "Enter current date",
                 "required": true,
                 "type": "string"
               },
@@ -4616,6 +4651,13 @@
               "name": "Authorization",
               "in": "header",
               "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "current_date",
+              "in": "query",
+              "description": "Enter current date",
               "required": true,
               "type": "string"
             },
@@ -9018,6 +9060,13 @@
             "type": "string"
           },
           {
+            "name": "current_date",
+            "in": "query",
+            "description": "Enter current date",
+            "required": true,
+            "type": "string"
+          },
+          {
             "name": "date",
             "in": "query",
             "description": "date- format: YYYY-DD-MM",
@@ -9115,6 +9164,13 @@
         "name": "Authorization",
         "in": "header",
         "description": "Enter jwt token for authentication",
+        "required": true,
+        "type": "string"
+      },
+      {
+        "name": "current_date",
+        "in": "query",
+        "description": "Enter current date",
         "required": true,
         "type": "string"
       },

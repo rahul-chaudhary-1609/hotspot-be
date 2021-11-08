@@ -778,6 +778,37 @@ module.exports = {
     getRevenueStats:Joi.object({
         current_date: Joi.string().required(),
     }),
+
+    getActiveOrders:Joi.object({
+        current_date: Joi.string().required(),
+        searchKey: Joi.string().allow(null, '').optional(),
+        status_filter: Joi.string().optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
+    }),
+
+    getScheduledOrders:Joi.object({
+        current_date: Joi.string().required(),
+        searchKey: Joi.string().allow(null, '').optional(),
+        status_filter: Joi.string().optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
+    }),
+
+    getCompletedOrders:Joi.object({
+        searchKey: Joi.string().allow(null, '').optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
+    }),
+
+    getOrderDetails:Joi.object({
+        orderId: Joi.string().required(),
+    }),
+
+    assignDriver:Joi.object({
+        orderId: Joi.string().required(),
+        driverId: Joi.number().required(),
+    }),
 }
 
 

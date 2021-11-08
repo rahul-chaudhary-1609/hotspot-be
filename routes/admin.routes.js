@@ -122,11 +122,11 @@ router.put('/editDriver/:driverId',adminAuthentication.validateAdminToken,joiVal
 
 //order Management
 
-router.get('/getActiveOrders',adminAuthentication.validateAdminToken, adminOrderController.getActiveOrders);
-router.get('/getScheduledOrders',adminAuthentication.validateAdminToken, adminOrderController.getScheduledOrders);
-router.get('/getCompletedOrders',adminAuthentication.validateAdminToken, adminOrderController.getCompletedOrders);
-router.get('/getOrderDetails/:orderId',adminAuthentication.validateAdminToken, adminOrderController.getOrderDetails);
-router.put('/assignDriver/:orderId',adminAuthentication.validateAdminToken, adminOrderController.assignDriver);
+router.get('/getActiveOrders',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getActiveOrders), adminOrderController.getActiveOrders);
+router.get('/getScheduledOrders',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getScheduledOrders), adminOrderController.getScheduledOrders);
+router.get('/getCompletedOrders',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getCompletedOrders), adminOrderController.getCompletedOrders);
+router.get('/getOrderDetails/:orderId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getOrderDetails), adminOrderController.getOrderDetails);
+router.put('/assignDriver',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.assignDriver), adminOrderController.assignDriver);
 router.get('/getDriverListByHotspot',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getDriverListByHotspot), adminOrderController.getDriverListByHotspot);
 
 
