@@ -760,6 +760,24 @@ module.exports = {
         fixed_amount:Joi.number().optional(),
         description:Joi.string().optional(),
     }),
+
+    getSiteStatistics:Joi.object({
+        current_date: Joi.string().required(),
+        hotspot_id:Joi.number().optional(),
+    }),
+
+    getOrderStatistics:Joi.object({
+        current_date: Joi.string().required(),
+        hotspot_id:Joi.number().optional(),
+    }),
+
+    getOrderStats:Joi.object({
+        current_date: Joi.string().required(),
+    }),
+
+    getRevenueStats:Joi.object({
+        current_date: Joi.string().required(),
+    }),
 }
 
 

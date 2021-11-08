@@ -986,414 +986,108 @@
       }
     },
 
-        "/admin/getTotalCustomers": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of customers",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
+    "/admin/getSiteStatistics": {
+      "get": {
+        "tags": [
+          "Admin Dashboard"
+        ],
+        "description": "Api to get Site Statistics",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "current_date",
+            "in": "query",
+            "description": "Enter current date",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "hotspot_id",
+            "in": "query",
+            "description": "Enter hotspot id",
+            "required": false,
+            "type": "number"
           }
-        },
-
-
-        "/admin/getCustomersViaHotspot/{hotspot_id}": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of customers via hotspot",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },          {
-                "name": "hotspot_id",
-                "in": "path",
-                "description": "hostspot  id to get customer count",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
+        ],
+        "responses": {}
+      }
+    },
+    
+    "/admin/getOrderStatistics": {
+      "get": {
+        "tags": [
+          "Admin Dashboard"
+        ],
+        "description": "Api to get order Statistics",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter jwt token for authentication",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "current_date",
+            "in": "query",
+            "description": "Enter current date",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "hotspot_id",
+            "in": "query",
+            "description": "Enter hotspot id",
+            "required": false,
+            "type": "number"
           }
-        },
+        ],
+        "responses": {}
+      }
+    },
+          
 
-        "/admin/getTotalRestaurants": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of restaurants",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
+      "/admin/getOrderStats": {
+        "get": {
+          "tags": [
+            "Admin Dashboard"
+          ],
+          "description": "Api to get total current day month year orders",
+          "consumes": [
+            "application/x-www-form-urlencoded"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "description": "Enter jwt token for authentication",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "current_date",
+              "in": "query",
+              "description": "Enter current date",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {}
+        }
+      },
 
-        "/admin/getTotalDrivers": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of drivers",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-
-        "/admin/getDriversViaHotspot/{hotspot_id}": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of drivers via hotspot",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },          {
-                "name": "hotspot_id",
-                "in": "path",
-                "description": "hostspot  id to get drivers count ",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/getTotalOrders": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of orders",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/getHotspotCount": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of hotspot",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-
-        "/admin/getOrdersViaHotspot/{hotspot_id}": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of orders via hotspot",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },          {
-                "name": "hotspot_id",
-                "in": "path",
-                "description": "hostspot  id to get order count",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/getProcessingOrdersViaHotspot/{hotspot_id}": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of  preprocessing orders via hotspot",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },          {
-                "name": "hotspot_id",
-                "in": "path",
-                "description": "hostspot  id to get order count",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/getCompletedOrdersViaHotspot/{hotspot_id}": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of completed orders via hotspot",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },          {
-                "name": "hotspot_id",
-                "in": "path",
-                "description": "hostspot  id to get order count",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/getProcessingOrders": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of  preprocessing orders",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/getCompletedOrder": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total number of completed orders ",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/getTotalRevenue": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total revenue",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-        "/admin/getTotalRevenueByDate": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total revenue by date",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "start_date",
-                "in": "query",
-                "description": "YYYY-MM-DD",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "end_date",
-                "in": "query",
-                "description": "YYYY-MM-DD",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-
-        "/admin/getOrderStats": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total current day month year orders",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
-
-
-
-        "/admin/getTotalRevenueViaHotspot/{hotspot_id}": {
-          "get": {
-            "tags": [
-              "Admin Dashboard"
-            ],
-            "description": "Api to get total revenue",
-            "consumes": [
-              "application/x-www-form-urlencoded"
-            ],
-            "parameters": [
-              {
-                "name": "Authorization",
-                "in": "header",
-                "description": "Enter jwt token for authentication",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "name": "hotspot_id",
-                "in": "path",
-                "description": "hotspot to get revenue of",
-                "required": true,
-                "type": "string"
-              }
-            ],
-            "responses": {}
-          }
-        },
 
         "/admin/getRevenueStats": {
           "get": {
@@ -1409,6 +1103,13 @@
                 "name": "Authorization",
                 "in": "header",
                 "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "current_date",
+                "in": "query",
+                "description": "Enter current date",
                 "required": true,
                 "type": "string"
               }

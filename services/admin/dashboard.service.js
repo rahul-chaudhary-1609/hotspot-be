@@ -30,478 +30,447 @@ module.exports = {
             
             return { hotspotList };         
   },
-  
-    getTotalCustomers: async () => {
 
-            const customers = await models.Customer.findAndCountAll({
-                where: {
-                    status:constants.STATUS.active,
-                }
-            });
-
-            return { numberOfCustomer:customers.count };
-
-         
-    },
-  
-
-    getTotalRestaurants: async () => {
-
-            const restaurants = await models.Restaurant.findAndCountAll({
-                where: {
-                    status:constants.STATUS.active,
-                }
-            });
-
-            return {numberOfRestaurants:restaurants.count };
-
-         
-    },
-
-    getTotalDrivers: async () => {
-        
-
-            const drivers = await models.Driver.findAndCountAll({
-                where: {
-                    status: constants.STATUS.active,
-                    approval_status:constants.DRIVER_APPROVAL_STATUS.approved
-                }
-            });
-
-            return { numberOfDrivers:drivers.count };
-
-         
-    },
-
-    getTotalOrders: async () => {
-            const orders = await models.Order.findAndCountAll({
-                where: {
-                    [Op.and]: [
-                      {
-                        status:[1,2,3,4],
-                      },
-                      sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-                    ] 
-                }
-            });
-
-            return { numberOfOrders:orders.count };
-
-         
-    },
-
-    getTotalRevenue: async () => {
-                
-            const totalAmount = await models.Order.sum('amount',{
-                where:  {
-                      status: [1,2, 3, 4],
-                }
-            });
-            
-            const totalTipAmount = await models.Order.sum('tip_amount',{
-              where:  {
-                    status: [1,2, 3, 4],
-              }
-          });
-            
-            return {totalRevenue:totalAmount+totalTipAmount };
-
-         
-    },
-
-    getTotalRevenueByDate: async (params) => {
-
-            const totalAmount = await models.Order.sum('amount',{
-                where:  {
-                        status: [1,2, 3, 4],
-                    created_at:{
-                        [Op.between]: [params.start_date, params.end_date]
-                    }
-                }
-            }); 
-            
-            const totalTipAmount = await models.Order.sum('tip_amount',{
-              where:  {
-                      status: [1,2, 3, 4],
-                  created_at:{
-                      [Op.between]: [params.start_date, params.end_date]
-                  }
-              }
-          }); 
-
-            
-            return {totalRevenue:totalAmount+totalTipAmount };
-
-         
-    },
-
-    getHotspotCount: async () => {
-
-      const hotspots = await models.HotspotLocation.findAndCountAll();
-
-      return { numberOfHotspots:hotspots.count };
-
-   
-     },
-
-     getProcessingOrders: async () => {
-      const orders = await models.Order.findAndCountAll({
-        where: {
-          [Op.and]: [
-            {
-              status:[1,2,3],
-            },
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-          ] 
-      }
-      });
-
-      return { numberOfProcessingOrders:orders.count };
-
-   
-    },
-
-    getCompletedOrders: async () => {
-      const deliveryOrders = await models.Order.findAndCountAll({
-        where: {
-          [Op.and]: [
-            {
-              status:constants.ORDER_STATUS.delivered,
-              //type:constants.ORDER_TYPE.delivery,
-            },
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-          ] 
-      }
-     });
-     
-    return { numberOfCompletedOrders:deliveryOrders.count };
-
-   
-    },
-
-
-    /***************************recent code for admin dashboard***************************/
-    getCustomersViaHotspot: async (params) => {
-
-        const customers = await models.CustomerFavLocation.findAndCountAll({
+  getSiteStatistics:async(params)=>{
+      let customerCount=0;
+      if(params.hotspot_id){
+        customerCount=await models.CustomerFavLocation.count({
             where: {
-            hotspot_location_id: params.hotspot_id,
+              hotspot_location_id: params.hotspot_id,
               is_default:true,
             }
-        });
+        })
+      }else{
+        customerCount=await models.Customer.count({
+            where:{
+              status:constants.STATUS.active,
+            }
+        })
+      }
 
-        return { numberOfCustomer:customers.count };
-
-     
-     },
-
-
-     
-     getDriversViaHotspot: async (params) => {
-
-        const drivers = await models.HotspotDriver.findAndCountAll({
+      let driverCount=0;
+      if(params.hotspot_id){
+        driverCount=await models.HotspotDriver.count({
             where: {
                 hotspot_location_id:params.hotspot_id,
             }
-        });
+        })
+      }else{
+        driverCount=await models.Driver.count({
+            where:{
+              status: constants.STATUS.active,
+              approval_status:constants.DRIVER_APPROVAL_STATUS.approved
+            }
+        })
+      }
 
-        return { numberOfDriver:drivers.count };
-
-     
-     },
-
-
-     getOrdersViaHotspot: async (params) => {
-        const orders = await models.Order.findAndCountAll({
-            where: {
-              [Op.and]: [
-                {
-                  status:[1,2,3,4],
+      let totalRevenue=0;
+      if(params.hotspot_id){
+        const totalAmount = await models.Order.sum('amount',{
+            where:  {
+                  status:{
+                    [Op.in]:[
+                      constants.ORDER_STATUS.pending,
+                      constants.ORDER_STATUS.food_being_prepared,
+                      constants.ORDER_STATUS.food_ready_or_on_the_way,
+                      constants.ORDER_STATUS.delivered,
+                    ]
+                  },
                   hotspot_location_id:params.hotspot_id,
+            }
+        });
+          
+        const totalTipAmount = await models.Order.sum('tip_amount',{
+          where:  {
+                status:{
+                  [Op.in]:[
+                    constants.ORDER_STATUS.pending,
+                    constants.ORDER_STATUS.food_being_prepared,
+                    constants.ORDER_STATUS.food_ready_or_on_the_way,
+                    constants.ORDER_STATUS.delivered,
+                  ]
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-              ] 
+                hotspot_location_id:params.hotspot_id,
           }
         });
-
-        return { numberOfOrders:orders.count };
-     
-      },
-
-      getProcessingOrdersViaHotspot: async (params) => {
-        const orders = await models.Order.findAndCountAll({
-            where: {
-              [Op.and]: [
-                {
-                  status:[1,2,3],
-                  hotspot_location_id:params.hotspot_id,
+        totalRevenue=totalAmount+totalTipAmount;
+      }else{
+        const totalAmount = await models.Order.sum('amount',{
+          where:  {
+                status:{
+                  [Op.in]:[
+                    constants.ORDER_STATUS.pending,
+                    constants.ORDER_STATUS.food_being_prepared,
+                    constants.ORDER_STATUS.food_ready_or_on_the_way,
+                    constants.ORDER_STATUS.delivered,
+                  ]
                 },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-              ] 
-          }
-      
-        });
-
-        return { numberOfProcessingOrders:orders.count };
-
-     
-      },
-
-      getCompletedOrdersViaHotspot: async (params) => {
-        const deliveryOrders = await models.Order.findAndCountAll({
-            where: {
-              [Op.and]: [
-                {
-                  status:constants.ORDER_STATUS.delivered,
-                  hotspot_location_id:params.hotspot_id,
-                },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-              ] 
           }
         });
-        
-        return { numberOfCompletedOrders:deliveryOrders.count };
+          
+        const totalTipAmount = await models.Order.sum('tip_amount',{
+          where:  {
+                status:{
+                  [Op.in]:[
+                    constants.ORDER_STATUS.pending,
+                    constants.ORDER_STATUS.food_being_prepared,
+                    constants.ORDER_STATUS.food_ready_or_on_the_way,
+                    constants.ORDER_STATUS.delivered,
+                  ]
+                },
+          }
+        });
+        totalRevenue=totalAmount+totalTipAmount;
+      }
 
-     
-      },
+      let hotspotCount=0;
+      if(!params.hotspot_id){
+        hotspotCount=await models.HotspotLocation.count();
+      }
 
+      return {
+        customerCount,
+        driverCount,
+        totalRevenue,
+        hotspotCount,
+      }
+  },
 
-      getOrderStats: async () => {
-        const monthStartDate = new Date();
-        monthStartDate.setDate(1)
-        const monthEndDate = new Date();
-        monthEndDate.setMonth(monthStartDate.getMonth() + 1)
-        monthEndDate.setDate(1)
-        monthEndDate.setDate(monthEndDate.getDate()-1)
-        const yearStartDate = new Date();
-        yearStartDate.setDate(1)
-        yearStartDate.setMonth(0)
-        const yearEndDate = new Date();
-        yearEndDate.setDate(1)
-        yearEndDate.setMonth(0)
-        yearEndDate.setFullYear(yearEndDate.getFullYear() + 1)
-        yearEndDate.setDate(yearEndDate.getDate()-1)
-        
-        
-
-        const totalOrders = await models.Order.findAndCountAll({
+  getOrderStatistics:async(params)=>{
+    let orderCount=0;
+    if(params.hotspot_id){
+      orderCount=await models.Order.count({
           where: {
-              status:[1,2,3,4]
-          }
-         });
-
-         const completedOrders = await models.Order.findAndCountAll({
-          where: {
-              status:constants.ORDER_STATUS.delivered,
-          }
-         });
-         const completedPercent = Math.floor((completedOrders.count / totalOrders.count) * 100)
-
-        const todayOrders = await models.Order.findAndCountAll({
-            where: {
-              [Op.and]: [
-                {
-                  status:[1,2,3,4],
-                },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-              ] 
-          }
-        });
-        const monthOrders = await models.Order.findAndCountAll({
-          where:{
-            // status:[1,2,3,4],
-            // delivery_datetime: {
-            //   [Op.between]: [monthStartDate, monthEndDate]
-            // },
             [Op.and]: [
               {
-                status:[1,2,3,4],
+                status:{
+                  [Op.in]:[
+                    constants.ORDER_STATUS.pending,
+                    constants.ORDER_STATUS.food_being_prepared,
+                    constants.ORDER_STATUS.food_ready_or_on_the_way,
+                    constants.ORDER_STATUS.delivered,
+                  ]
+                },
+                hotspot_location_id:params.hotspot_id,
               },
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(monthStartDate)),
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(monthEndDate))
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
+            ] 
+        }
+      });
+    }else{
+      orderCount=await models.Order.count({
+          where: {
+            [Op.and]: [
+              {
+                status:{
+                  [Op.in]:[
+                    constants.ORDER_STATUS.pending,
+                    constants.ORDER_STATUS.food_being_prepared,
+                    constants.ORDER_STATUS.food_ready_or_on_the_way,
+                    constants.ORDER_STATUS.delivered,
+                  ]
+                },
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
+            ] 
+        }
+      });
+    }
+
+    let proccessingOrderCount=0;
+    if(params.hotspot_id){
+      proccessingOrderCount=await models.Order.count({
+          where: {
+            [Op.and]: [
+              {
+                status:{
+                  [Op.in]:[
+                    constants.ORDER_STATUS.pending,
+                    constants.ORDER_STATUS.food_being_prepared,
+                    constants.ORDER_STATUS.food_ready_or_on_the_way,
+                  ]
+                },
+                hotspot_location_id:params.hotspot_id,
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
+            ] 
+        }
+      });
+    }else{
+      proccessingOrderCount=await models.Order.count({
+          where: {
+            [Op.and]: [
+              {
+                status:{
+                  [Op.in]:[
+                    constants.ORDER_STATUS.pending,
+                    constants.ORDER_STATUS.food_being_prepared,
+                    constants.ORDER_STATUS.food_ready_or_on_the_way,
+                  ]
+                },
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
+            ] 
+        }
+      });
+    }
+
+    let completedOrderCount=0;
+    if(params.hotspot_id){
+      completedOrderCount=await models.Order.count({
+          where: {
+            [Op.and]: [
+              {
+                status:{
+                  [Op.in]:[
+                    constants.ORDER_STATUS.delivered,
+                  ]
+                },
+                hotspot_location_id:params.hotspot_id,
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
+            ] 
+        }
+      });
+    }else{
+      completedOrderCount=await models.Order.count({
+          where: {
+            [Op.and]: [
+              {
+                status:{
+                  [Op.in]:[
+                    constants.ORDER_STATUS.delivered,
+                  ]
+                },
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
+            ] 
+        }
+      });
+    }
+
+    return {
+      orderCount,
+      proccessingOrderCount,
+      completedOrderCount,
+    }
+  },
+
+
+    getOrderStats: async (params) => {
+      const monthStartDate = utility.getStartDate(params.current_date,"month")
+      const monthEndDate = utility.getEndDate(params.current_date,"month")
+     
+      const yearStartDate = utility.getStartDate(params.current_date,"year")
+      const yearEndDate = utility.getEndDate(params.current_date,"year")     
+
+      const totalOrders = await models.Order.count({
+        where: {
+          status:{
+            [Op.in]:[
+              constants.ORDER_STATUS.pending,
+              constants.ORDER_STATUS.food_being_prepared,
+              constants.ORDER_STATUS.food_ready_or_on_the_way,
+              constants.ORDER_STATUS.delivered,
+            ]
+          },
+        }
+        });
+
+        const completedOrders = await models.Order.count({
+        where: {
+            status:constants.ORDER_STATUS.delivered,
+        }
+        });
+
+        const completedPercent = Math.floor((completedOrders / totalOrders) * 100)
+
+        const todayOrders = await models.Order.count({
+            where: {
+              [Op.and]: [
+                {
+                  status:{
+                    [Op.in]:[
+                      constants.ORDER_STATUS.pending,
+                      constants.ORDER_STATUS.food_being_prepared,
+                      constants.ORDER_STATUS.food_ready_or_on_the_way,
+                      constants.ORDER_STATUS.delivered,
+                    ]
+                  },
+                },
+                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
+              ] 
+          }
+        });
+        const monthOrders = await models.Order.count({
+          where:{
+            [Op.and]: [
+              {
+                status:{
+                    [Op.in]:[
+                      constants.ORDER_STATUS.pending,
+                      constants.ORDER_STATUS.food_being_prepared,
+                      constants.ORDER_STATUS.food_ready_or_on_the_way,
+                      constants.ORDER_STATUS.delivered,
+                    ]
+                  },
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', monthStartDate),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', monthEndDate)
             ] 
           }
       });
 
-      const yearOrders = await models.Order.findAndCountAll({
+      const yearOrders = await models.Order.count({
         where: {
-          // status:[1,2,3,4],
-          // delivery_datetime: {
-          //   [Op.between]: [yearStartDate, yearEndDate]
-          // },
           [Op.and]: [
             {
-              status:[1,2,3,4],
+              status:{
+                [Op.in]:[
+                  constants.ORDER_STATUS.pending,
+                  constants.ORDER_STATUS.food_being_prepared,
+                  constants.ORDER_STATUS.food_ready_or_on_the_way,
+                  constants.ORDER_STATUS.delivered,
+                ]
+              },
             },
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(yearStartDate)),
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(yearEndDate))
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', yearStartDate),
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', yearEndDate)
           ]
         }
-     });
-    return { completedOrderPercentage:completedPercent,numberOfTotalOrders:totalOrders.count,numberOfTodayOrders:todayOrders.count,numberOfMonthlyOrders:monthOrders.count,numberOfYearlyOrders:yearOrders.count };
-     },
+      });
+      return { 
+        completedOrderPercentage:completedPercent,
+        numberOfTotalOrders:totalOrders,
+        numberOfTodayOrders:todayOrders,
+        numberOfMonthlyOrders:monthOrders,
+        numberOfYearlyOrders:yearOrders 
+      };
+  },
 
-
-      getTotalRevenueViaHotspot: async (params) => {
-                
-        const totalAmount = await models.Order.sum('amount',{
-          where: {
-                status: [1,2, 3, 4],
-                hotspot_location_id:params.hotspot_id,
-            }
-        });
-
-        const totalTipAmount = await models.Order.sum('tip_amount',{
-          where: {
-                status: [1,2, 3, 4],
-                hotspot_location_id:params.hotspot_id,
-            }
-        });
-       
-        
-        return {totalRevenue:totalAmount+totalTipAmount };
-
-     
-      },
-
-      getRevenueStats: async () => {
-        const monthStartDate = new Date();
-        monthStartDate.setDate(1)
-        const monthEndDate = new Date();
-        monthEndDate.setMonth(monthStartDate.getMonth() + 1)
-        monthEndDate.setDate(1)
-        monthEndDate.setDate(monthEndDate.getDate()-1)
-        const yearStartDate = new Date();
-        yearStartDate.setDate(1)
-        yearStartDate.setMonth(0)
-        const yearEndDate = new Date();
-        yearEndDate.setDate(1)
-        yearEndDate.setMonth(0)
-        yearEndDate.setFullYear(yearEndDate.getFullYear() + 1)
-        yearEndDate.setDate(yearEndDate.getDate()-1)
-        
-        let TotalAmount = await models.OrderDelivery.sum('hotspot_fee');
-        
-        let allPickupTypeOrders = await utility.convertPromiseToObject(
-          await models.Order.findAll({
-            where: {
-              type: constants.ORDER_TYPE.pickup,
-              status:constants.ORDER_STATUS.delivered,
-             }
-          })
-        )
-
-        TotalAmount += allPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-          return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-        }, 0)
-
-        let todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-            where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-        });
-        
-        let todayPickupTypeOrders = await utility.convertPromiseToObject(
-          await models.Order.findAll({
-            where: {
-              [Op.and]: [
-                {
-                  type: constants.ORDER_TYPE.pickup,
-                },
-                {
-                  status:constants.ORDER_STATUS.delivered,
-                },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date()))
-              ]
-              
-              
-            }
-          })
-        )
-
-        todayTotalAmount += todayPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-          return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-        }, 0)
-        
+  getRevenueStats: async (params) => {
+    const monthStartDate = utility.getStartDate(params.current_date,"month")
+    const monthEndDate = utility.getEndDate(params.current_date,"month")
     
-          let monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-            where: {
-              // delivery_datetime: {
-              //   [Op.between]: [monthStartDate, monthEndDate]
-              // },
-              [Op.and]: [
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(monthStartDate)),
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(monthEndDate))
-              ]
-            }
-          });
-        
-        let monthPickupTypeOrders = await utility.convertPromiseToObject(
-          await models.Order.findAll({
-            where: {
-              [Op.and]: [
-                {
-                  type: constants.ORDER_TYPE.pickup,
-                },
-                {
-                  status:constants.ORDER_STATUS.delivered,
-                },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(monthStartDate)),
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(monthEndDate))
-              ]
-              
-              
-            }
-          })
-        )
-
-        monthTotalAmount += monthPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-          return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-        }, 0)
+    const yearStartDate = utility.getStartDate(params.current_date,"year")
+    const yearEndDate = utility.getEndDate(params.current_date,"year")
     
-          let yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-            where:  {
-                // delivery_datetime: {
-                //   [Op.between]: [yearStartDate, yearEndDate]
-                // },
-              [Op.and]: [
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(yearStartDate)),
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(yearEndDate))
-              ]
-            }
-          });
-        
-        let yearPickupTypeOrders = await utility.convertPromiseToObject(
-          await models.Order.findAll({
-            where: {
-              [Op.and]: [
-                {
-                  type: constants.ORDER_TYPE.pickup,
-                },
-                {
-                  status:constants.ORDER_STATUS.delivered,
-                },
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(yearStartDate)),
-                sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(yearEndDate))
-              ]
-              
-              
-            }
-          })
-        )
+    let TotalAmount = await models.OrderDelivery.sum('hotspot_fee');
+    
+    // let allPickupTypeOrders = await utility.convertPromiseToObject(
+    //   await models.Order.findAll({
+    //     where: {
+    //       type: constants.ORDER_TYPE.pickup,
+    //       status:constants.ORDER_STATUS.delivered,
+    //       }
+    //   })
+    // )
 
-        yearTotalAmount += yearPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-          return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-        }, 0)
+    // TotalAmount += allPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+    //   return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
+    // }, 0)
+
+    let todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+        where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
+    });
+    
+    // let todayPickupTypeOrders = await utility.convertPromiseToObject(
+    //   await models.Order.findAll({
+    //     where: {
+    //       [Op.and]: [
+    //         {
+    //           type: constants.ORDER_TYPE.pickup,
+    //         },
+    //         {
+    //           status:constants.ORDER_STATUS.delivered,
+    //         },
+    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
+    //       ]
+          
+          
+    //     }
+    //   })
+    // )
+
+    // todayTotalAmount += todayPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+    //   return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
+    // }, 0)
+    
+
+      let monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+        where: {
+          [Op.and]: [
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', monthStartDate),
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', monthEndDate)
+          ]
+        }
+      });
+    
+    // let monthPickupTypeOrders = await utility.convertPromiseToObject(
+    //   await models.Order.findAll({
+    //     where: {
+    //       [Op.and]: [
+    //         {
+    //           type: constants.ORDER_TYPE.pickup,
+    //         },
+    //         {
+    //           status:constants.ORDER_STATUS.delivered,
+    //         },
+    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', monthStartDate),
+    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', monthEndDate)
+    //       ]
+          
+          
+    //     }
+    //   })
+    // )
+
+    // monthTotalAmount += monthPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+    //   return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
+    // }, 0)
+
+      let yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+        where:  {
+          [Op.and]: [
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', yearStartDate),
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', yearEndDate)
+          ]
+        }
+      });
+    
+    // let yearPickupTypeOrders = await utility.convertPromiseToObject(
+    //   await models.Order.findAll({
+    //     where: {
+    //       [Op.and]: [
+    //         {
+    //           type: constants.ORDER_TYPE.pickup,
+    //         },
+    //         {
+    //           status:constants.ORDER_STATUS.delivered,
+    //         },
+    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', yearStartDate),
+    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', yearEndDate)
+    //       ]
+          
+          
+    //     }
+    //   })
+    // )
+
+    // yearTotalAmount += yearPickupTypeOrders.reduce((result, pickupTypeOrder) => {
+    //   return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
+    // }, 0)
 
 
-        return {
-          totalRevenue: parseFloat(TotalAmount.toFixed(2)),
-          todayRevenue: parseFloat(todayTotalAmount.toFixed(2)),
-          monthlyRevenue: parseFloat(monthTotalAmount.toFixed(2)),
-          yearlyRevenue: parseFloat(yearTotalAmount.toFixed(2)),
-        };
+    return {
+      totalRevenue: parseFloat(TotalAmount.toFixed(2)),
+      todayRevenue: parseFloat(todayTotalAmount.toFixed(2)),
+      monthlyRevenue: parseFloat(monthTotalAmount.toFixed(2)),
+      yearlyRevenue: parseFloat(yearTotalAmount.toFixed(2)),
+    };
 
-      
-      },
+  
+  },
 
               
         

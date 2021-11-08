@@ -102,23 +102,10 @@ router.delete('/deleteCustomer/:customerId',adminAuthentication.validateAdminTok
 //Dashboard Management
 
 router.get('/listAllHotspot', adminAuthentication.validateAdminToken, adminDashboardController.listAllHotspot);
-router.get('/getTotalCustomers',adminAuthentication.validateAdminToken, adminDashboardController.getTotalCustomers);
-router.get('/getCustomersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getCustomersViaHotspot);
-router.get('/getTotalRestaurants',adminAuthentication.validateAdminToken, adminDashboardController.getTotalRestaurants);
-router.get('/getTotalDrivers',adminAuthentication.validateAdminToken, adminDashboardController.getTotalDrivers);
-router.get('/getDriversViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getDriversViaHotspot);
-router.get('/getTotalOrders',adminAuthentication.validateAdminToken, adminDashboardController.getTotalOrders);
-router.get('/getHotspotCount',adminAuthentication.validateAdminToken, adminDashboardController.getHotspotCount);
-router.get('/getOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getOrdersViaHotspot);
-router.get('/getProcessingOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getProcessingOrdersViaHotspot);
-router.get('/getCompletedOrdersViaHotspot/:hotspot_id',adminAuthentication.validateAdminToken, adminDashboardController.getCompletedOrdersViaHotspot);
-router.get('/getProcessingOrders',adminAuthentication.validateAdminToken, adminDashboardController.getProcessingOrders);
-router.get('/getCompletedOrder',adminAuthentication.validateAdminToken, adminDashboardController.getCompletedOrders);
-router.get('/getTotalRevenue',adminAuthentication.validateAdminToken, adminDashboardController.getTotalRevenue);
-router.get('/getTotalRevenueByDate',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.dateSchema), adminDashboardController.getTotalRevenueByDate);
-router.get('/getOrderStats',adminAuthentication.validateAdminToken,adminDashboardController.getOrderStats);
-router.get('/getTotalRevenueViaHotspot/:hotspot_id', adminAuthentication.validateAdminToken,adminDashboardController.getTotalRevenueViaHotspot);
-router.get('/getRevenueStats',adminAuthentication.validateAdminToken,adminDashboardController.getRevenueStats);
+router.get('/getSiteStatistics',adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getSiteStatistics),adminDashboardController.getSiteStatistics);
+router.get('/getOrderStatistics',adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getOrderStatistics),adminDashboardController.getOrderStatistics);
+router.get('/getOrderStats',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrderStats),adminDashboardController.getOrderStats);
+router.get('/getRevenueStats',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getRevenueStats),adminDashboardController.getRevenueStats);
 
 
 
