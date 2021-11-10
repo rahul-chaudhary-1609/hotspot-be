@@ -17,8 +17,8 @@ module.exports = {
             where = {
                 ...where,
                 [Op.and]: [
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utilityFunction.getOnlyDate(new Date(params.start_date))),
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utilityFunction.getOnlyDate(new Date(params.end_date)))
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', params.start_date),
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', params.end_date)
                 ]
                 
             }
@@ -49,8 +49,8 @@ module.exports = {
             where = {
                 ...where,
                 [Op.and]: [
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utilityFunction.getOnlyDate(new Date(params.start_date))),
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utilityFunction.getOnlyDate(new Date(params.end_date)))
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', params.start_date),
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', params.end_date)
                 ]
                 
             }
@@ -80,8 +80,8 @@ module.exports = {
             where = {
                 ...where,
                 [Op.and]: [
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utilityFunction.getOnlyDate(new Date(params.start_date))),
-                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utilityFunction.getOnlyDate(new Date(params.end_date)))
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', params.start_date),
+                    sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', params.end_date)
                 ]
                 
             }
