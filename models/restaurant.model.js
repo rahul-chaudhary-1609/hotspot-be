@@ -104,7 +104,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1,
-            comment: '1=>on, 2=>off'
+            comment: '0=>off, 1=>on'
         },
         stripe_publishable_key: {
             type: DataTypes.TEXT,
