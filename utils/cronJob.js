@@ -297,7 +297,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                                     is_restaurant_notified:1,
                                     restaurant_payment_id,
                                     restaurant_payment_status:restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
-                                    status:order.status==constants.ORDER_STATUS.pending?constants.ORDER_STATUS.food_being_prepared:order.status,
+                                    // status:order.status==constants.ORDER_STATUS.pending?constants.ORDER_STATUS.food_being_prepared:order.status,
                                 }, {
                                     where: {
                                         id:order.id,

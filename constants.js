@@ -248,8 +248,8 @@ module.exports = {
   },
 
   ONLINE_PAYMENT_MODE : {
+    off: 0,
     on: 1,
-    off: 2,
   },
 
   DRIVER_ORDER_STATUS : {
@@ -261,8 +261,6 @@ module.exports = {
     off: 0,
     on: 1,
   },
-
-
   
   DRIVER_APPROVAL_STATUS : {
     pending: 0,
