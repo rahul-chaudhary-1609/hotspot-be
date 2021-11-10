@@ -315,6 +315,7 @@ module.exports = {
                 tipAmount:parseFloat(order.tip_amount),
                 type:order.type,
                 status,
+                order_status:order.status,
                 driver: order.order_details.driver? `${order.order_details.driver.first_name} ${order.order_details.driver.last_name}`:null,
                 delivery_image_urls:order.delivery_image_urls,
             }
@@ -404,6 +405,8 @@ module.exports = {
                 updatedRestaurant=[...currentOrderPickup.pickup_details.restaurants,currentOrder.order_details.restaurant];
             }
             orderPickup.pickup_details = {
+                actual_amount: parseFloat(orderPickup.pickup_details.actual_amount)+parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
+                markup_amount: parseFloat(orderPickup.pickup_details.markup_amount)+parseFloat(currentOrder.amount)-parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
                 hotspot:currentOrderPickup.pickup_details.hotspot,
                 restaurants: updatedRestaurant,
                 driver:currentOrderPickup.pickup_details.driver,
@@ -427,6 +430,8 @@ module.exports = {
                 pickup_datetime,
                 delivery_datetime:moment(currentOrder.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 pickup_details: {
+                    actual_amount: parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
+                    markup_amount: parseFloat(currentOrder.amount)-parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
                     hotspot:currentOrder.order_details.hotspot,
                     restaurants:[currentOrder.order_details.restaurant],
                     driver,
