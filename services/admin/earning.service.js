@@ -496,6 +496,8 @@ module.exports = {
 
         }
 
+        return {params}
+
     },
 
     generateRestaurantOrderEmail:async(params)=>{
