@@ -351,7 +351,7 @@ module.exports = {
         let deliveryTime=moment(order.delivery_datetime).format("HH:mm:ss");
         let deliveryDate=moment(order.delivery_datetime).format("YYYY-MM-DD");
         
-        let deliveryPickupDatetime = `${deliveryDate} ${utilityFunctions.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}`;
+        let deliveryPickupDatetime = `${deliveryDate} ${utility.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}`;
         const driver = await utility.convertPromiseToObject(await models.Driver.findOne({
                 attributes: ['id','first_name','last_name'],
                 where: {
