@@ -200,7 +200,7 @@ const addRestaurantPayment=async(params)=>{
         status:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
         type:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_TYPE.offline:constants.PAYMENT_TYPE.none,
         payment_details: {
-            restaurnat:{
+            restaurant:{
                 ...params.restaurant
             },
             hotspot:{

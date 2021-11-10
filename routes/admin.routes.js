@@ -192,6 +192,8 @@ module.exports = router;
 router.get('/getOrderDeliveries',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrderDeliveries), earningController.getOrderDeliveries);
 router.get('/getOrderDeliveryDetails',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrderDeliveryDetails), earningController.getOrderDeliveryDetails);
 router.get('/getPickupOrders',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getPickupOrders), earningController.getPickupOrders);
+router.post('/generateRestaurantEarnings',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.generateRestaurantEarnings), earningController.generateRestaurantEarnings);
+router.post('/generateRestaurantOrderEmail',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.generateRestaurantOrderEmail), earningController.generateRestaurantOrderEmail);
 router.get('/getRestaurantEarnings',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getRestaurantEarnings), earningController.getRestaurantEarnings);
 router.get('/getOrdersByRestaurantIdAndDateRange',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getOrdersByRestaurantIdAndDateRange), earningController.getOrdersByRestaurantIdAndDateRange);
 router.get('/getDriverEarnings',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getDriverEarnings), earningController.getDriverEarnings);

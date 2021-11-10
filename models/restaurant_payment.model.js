@@ -85,6 +85,11 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0,
             comment: '0=>not_paid,1=>paid'
         },
+        email_count: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+        },
 
     }, {
         sequelize,

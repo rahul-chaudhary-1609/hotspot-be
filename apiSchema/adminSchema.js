@@ -573,6 +573,14 @@ module.exports = {
         page_size: Joi.number().allow(null, '').optional(),
     }),
 
+    generateRestaurantEarnings: Joi.object({
+        datetime:Joi.string().required(),
+    }),
+
+    generateRestaurantOrderEmail: Joi.object({
+        payment_id:Joi.string().required(),
+    }),
+
     getRestaurantEarnings: Joi.object({
         current_date:Joi.string().required(),
         search_key: Joi.string().allow(null, '').optional(),

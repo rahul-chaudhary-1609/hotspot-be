@@ -418,7 +418,7 @@ const addRestaurantPayment=async(params)=>{
         restaurant_name:params.order.order_details.restaurant.restaurant_name,
         order_type:constants.ORDER_TYPE.pickup,
         payment_details: {
-            restaurnat:{
+            restaurant:{
                 ...params.order.order_details.restaurant
             },
             hotspot:{

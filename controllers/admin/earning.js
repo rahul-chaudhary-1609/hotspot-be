@@ -30,6 +30,24 @@ module.exports = {
         }
     },
 
+    generateRestaurantEarnings: async (req, res) => {
+        try {
+           const responseFromService = await earningService.generateRestaurantEarnings(req.body);
+           utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+       } catch (error) {
+           utilityFunction.errorResponse(res, error, constants.code.error_code);
+       }
+    },
+
+    generateRestaurantOrderEmail: async (req, res) => {
+        try {
+           const responseFromService = await earningService.generateRestaurantOrderEmail(req.body);
+           utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+       } catch (error) {
+           utilityFunction.errorResponse(res, error, constants.code.error_code);
+       }
+    },
+
     getRestaurantEarnings: async (req, res) => {
          try {
             const responseFromService = await earningService.getRestaurantEarnings(req.query);

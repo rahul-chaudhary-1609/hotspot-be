@@ -1,9 +1,167 @@
 const models = require('../../models');
 const {sequelize}=require('../../models');
+const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment } = require("../../models")
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
+const sendMail = require('../../utils/mail');
 const constants = require("../../constants");
 const moment =require("moment");
+
+const sendRestaurantOrderEmail= async (params) => {
+
+
+    let headerHTML = `<div
+        style="
+            position: relative;
+        ">
+       ${params.hotspotLocation.name}<br>
+       DELIVERY PICKUP TIME ${moment(params.deliveryPickupDatetime).format("h:mma")}<br><br>
+    `;
+
+    let bottomHTML = `</div><br><br>
+    <div
+        style="
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        ">
+        <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" 
+            style="
+                    opacity:0.5;
+                    margin-top:5px;;
+                "/>
+    </div><br>`;
+
+    let bodyHTML = `<p>${params.restaurant.restaurant_name}</p>`;
+
+    
+    bodyHTML += `<table cellpadding=5 style="margin-top:10px;border-collapse: collapse;" border="1"><tr>
+        <th style="text-align:center;">Order#</th>
+        <th style="text-align:center;">Order ID</th>
+        <th style="text-align:center;">Customer Name<br/>(Label on order)</th>
+        <th style="text-align:center;">Drop-off Location<br/>(Label on order)</th>
+        <th style="text-align:center;">Ordered Items<br/>
+            <table cellpadding="10">
+                    <tr>
+                        <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Item</th>
+                        <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Quantity</th>
+                        <th style="color:rgba(0,0,0,0.6);">Add-Ons</th>
+                        <th style="color:rgba(0,0,0,0.6);">Preference</th>
+                    <tr>
+            </table>
+        </th>
+    </tr>`
+
+    let snCounter = 1;
+    for (let order of params.orders) {
+        let rowHTML = `<tr>
+            <td style="text-align:center;">${snCounter++}</td>
+            <td style="text-align:center;">${order.order_id}</td>
+            <td style="text-align:center;">${order.order_details.customer.name}</td>
+            <td style="text-align:center;">${order.order_details.hotspot.dropoff.dropoff_detail}</td>
+            <td style="text-align:center;">
+            <div style="display:flex; justify-content:'center';">
+                  <div>
+                    <table cellpadding="10">`
+        for (let ordered_item of order.order_details.ordered_items) {
+            let itemHTML =`
+            <tr>
+                <td style="border-right:1px solid #ddd;">${ordered_item.itemName}</td>
+                <td style="border-right:1px solid #ddd;">${ordered_item.itemCount}</td>
+                <td style="border-right:1px solid #ddd;">`
+                    
+            for (let addOn of ordered_item.itemAddOn) {
+                itemHTML+=`${addOn.name}<br/>`
+            }
+
+            itemHTML+=`</td>
+                <td>${ordered_item.preference || "-"}</td>
+            </tr>`
+            
+            rowHTML+=itemHTML
+        }
+            
+        rowHTML +=`</table></div></div></td>
+        </tr>`
+
+        bodyHTML+=rowHTML
+    }
+
+
+    bodyHTML += `</table>`
+
+    
+    
+    // fs.writeFile('mail.html', headerHTML + bodyHTML + bottomHTML, function (err) {
+    //     if (err) return console.log(err);
+    //     console.log('Hello World > helloworld.txt');
+    // });
+
+    // let attachment = fs.readFileSync('mail.html').toString('base64');
+        
+    let mailOptions = {
+        from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
+        to:params.restaurant.owner_email,
+        subject: `Hotspot delivery order(s) ${params.hotspotLocation.name}, delivery pickup time ${moment(params.deliveryPickupDatetime).format("h:mma")}`,
+        html: headerHTML + bodyHTML + bottomHTML,
+        // attachments: [
+        //     {
+        //         content: attachment,
+        //         filename: "mail.html",
+        //         type: "text/html",
+        //         disposition: "attachment"
+        //     },
+        //     {
+        //         content: attachment,
+        //         filename: "mail.html",
+        //         type: "text/html",
+        //         disposition: "attachment"
+        //     }
+        // ]
+    };
+
+    console.log(mailOptions)    
+    
+    
+    await sendMail.send(mailOptions);
+    
+    return true;
+}
+
+const addRestaurantPayment=async(params)=>{
+    let order={};
+    order.restaurant_id=params.restaurant.id;
+    order.restaurant_fee=parseFloat((params.orders.reduce((result,order)=>result+order.order_details.restaurant.fee,0)).toFixed(2));
+    order.order_count=params.orders.length;
+    order.amount=parseFloat((params.orders.reduce((result,order)=>result+parseFloat(order.amount),0)).toFixed(2));
+    order.tip_amount=parseFloat((params.orders.reduce((result,order)=>result+parseFloat(order.tip_amount),0)).toFixed(2));
+
+    let restaurantPaymentObj={
+        ...order,
+        payment_id: await utility.getUniqueRestaurantPaymentId(),
+        from_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
+        to_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
+        delivery_datetime:moment(params.deliveryDatetime).format("YYYY-MM-DD HH:mm:ss"),
+        restaurant_name:params.restaurant.restaurant_name,
+        order_type:constants.ORDER_TYPE.delivery,
+        status:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
+        type:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_TYPE.offline:constants.PAYMENT_TYPE.none,
+        payment_details: {
+            deliveryPickupDatetime:params.deliveryPickupDatetime,
+            restaurant:{
+                ...params.restaurant
+            },
+            hotspot:{
+                ...params.hotspotLocation
+            }
+        },
+    }
+
+    await RestaurantPayment.create(restaurantPaymentObj);
+
+    return restaurantPaymentObj.payment_id;
+
+}
 
 const getStartAndEndDate = (params) => {
     let startDate = utility.getStartDate(params.now,"week");
@@ -227,8 +385,172 @@ module.exports = {
         return {orders};
     },
 
+    generateRestaurantEarnings:async(params)=>{
+        let hotspotLocations = await utility.convertPromiseToObject(
+            await HotspotLocation.findAll({
+                attributes:["id","name", "delivery_shifts"],      
+            })
+        )
+
+        for (let hotspotLocation of hotspotLocations) {
+            let hotspotRestaurants = await utility.convertPromiseToObject(
+                await HotspotRestaurant.findAll({
+                    attributes:["id","restaurant_id","pickup_time"],
+                    where: {
+                        hotspot_location_id: hotspotLocation.id,
+                    }
+                })
+            )
+
+            for (let hotspotRestaurant of hotspotRestaurants) {
+                let restaurant = await utility.convertPromiseToObject(
+                    await Restaurant.findOne({
+                        attributes:["id","restaurant_name", "cut_off_time","status","order_type","owner_email","owner_phone","online_payment"],
+                        where: {
+                            id:hotspotRestaurant.restaurant_id,
+                            status: constants.STATUS.active,
+                        }
+                    })
+                )
+
+                var currentTime=moment(params.datetime).format('HH:mm:ss');
+
+                console.log("moment",currentTime)
+
+                
+                let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                    return time >= currentTime;
+                });
+
+                console.log("\nnextDeliveryTime",nextDeliveryTime)
+
+                if(nextDeliveryTime){
+
+                    let deliveryDatetime = `${moment(params.datetime).format("YYYY-MM-DD")} ${nextDeliveryTime}`;
+                    
+                    let cutOffTime = `${moment(params.datetime).format("YYYY-MM-DD")} ${utility.getCutOffTime(nextDeliveryTime,restaurant.cut_off_time)}`;
+                    
+                    let deliveryPickupDatetime = `${moment(params.datetime).format("YYYY-MM-DD")} ${utility.getCutOffTime(nextDeliveryTime,hotspotRestaurant.pickup_time)}`;
+
+                    console.log("\ndeliveryDatetime:",deliveryDatetime,"\ncutOffTime:",cutOffTime,"\ndeliveryPickupDatetime:",deliveryPickupDatetime)
+                    
+                    let orders = await utility.convertPromiseToObject(
+                        await Order.findAll({
+                            where: {
+                                hotspot_location_id:hotspotLocation.id,
+                                restaurant_id: restaurant.id,
+                                type: constants.ORDER_TYPE.delivery,
+                                status:{
+                                    [Op.notIn]:[constants.ORDER_STATUS.not_paid]
+                                },
+                                delivery_datetime: deliveryDatetime,
+                                is_restaurant_payment_generated:0,
+                            }
+                        })
+                    )
+
+                    console.log("orders Count:",orders.length, orders.map(order=>order.order_id))
+
+
+                    if (orders.length > 0) {
+                        let startTime = moment(cutOffTime, "YYYY-MM-DD HH:mm:ss");
+                        let endTime = moment(params.datetime, "YYYY-MM-DD HH:mm:ss");
+
+                        // calculate total duration
+                        var duration = moment.duration(endTime.diff(startTime));
+                        var timeDiff = duration.asSeconds();
+                        console.log("timeDiff:",timeDiff)
+                        
+                        if (timeDiff > 0) {
+                            let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime, deliveryPickupDatetime })
+                            
+                            for (let order of orders) {
+                                await Order.update({
+                                    is_restaurant_payment_generated:1,
+                                    restaurant_payment_id,
+                                    restaurant_payment_status:restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
+                                }, {
+                                    where: {
+                                        id:order.id,
+                                    }
+                                })
+                            }
+
+                            await Order.destroy({
+                                where: {
+                                    hotspot_location_id:hotspotLocation.id,
+                                    restaurant_id: restaurant.id,
+                                    type: constants.ORDER_TYPE.delivery,
+                                    status:{
+                                        [Op.in]:[constants.ORDER_STATUS.not_paid]
+                                    },
+                                    delivery_datetime: deliveryDatetime,
+                                }
+                            })
+                        }
+                    }
+                }
+
+                
+            }
+
+        }
+
+    },
+
+    generateRestaurantOrderEmail:async(params)=>{
+
+        let restaurantPayment=await utility.convertPromiseToObject(
+            await RestaurantPayment.findOne({
+                where:{
+                    payment_id:params.payment_id,
+                }
+            })
+        )
+
+        let orders = await utility.convertPromiseToObject(
+            await Order.findAll({
+                where: {
+                    restaurant_payment_id:params.payment_id,
+                }
+            })
+        )
+
+        if (orders.length > 0) {
+
+            await sendRestaurantOrderEmail({
+                    orders,
+                    restaurant:restaurantPayment.payment_details.restaurant,
+                    hotspotLocation:restaurantPayment.payment_details.hotspot,
+                    deliveryPickupDatetime:restaurantPayment.payment_details.deliveryPickupDatetime
+                 })
+
+            for (let order of orders) {
+                await Order.update({
+                    is_restaurant_notified:1,
+                    status:order.status=constants.ORDER_STATUS.food_being_prepared,
+                }, {
+                    where: {
+                        id:order.id,
+                    }
+                })
+            }
+
+            await RestaurantPayment.update({
+                email_count:restaurantPayment.email_count+1,
+            },{
+                where:{
+                    payment_id:params.payment_id,
+                }
+            })
+        }
+
+        return true;
+    },
+
     getRestaurantEarnings: async (params) => {
 
+        
         // let restaurantPayment = await models.RestaurantPayment.findAndCountAll({
         //     order:[['to_date','DESC']]
         // });
@@ -288,7 +610,7 @@ module.exports = {
         //             to_date: utility.getOnlyDate(date.endDate),
         //             restaurant_name:restaurant.restaurant_name,
         //             payment_details: {
-        //                 restaurnat:{
+        //                 restaurant:{
         //                     ...restaurant
         //                 }
         //             }

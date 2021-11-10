@@ -119,6 +119,13 @@ module.exports = (sequelize, DataTypes) => {
             comment: '0=> no, 1=> yes,'
         },
 
+        is_restaurant_payment_generated: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=> no, 1=> yes,'
+        },
+
         restaurant_payment_status: {
             type: DataTypes.INTEGER,
             allowNull: false,

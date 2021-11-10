@@ -4505,6 +4505,62 @@
             "responses": {}
           }
         },
+        "/admin/generateRestaurantEarnings": {
+          "post": {
+            "tags": [
+              "Admin Earning Management"
+            ],
+            "description": "Api to generate Restaurant Earnings",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "datetime",
+                "in": "formData",
+                "description": "YYYY-MM-DD HH:MM:SS",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/generateRestaurantOrderEmail": {
+          "post": {
+            "tags": [
+              "Admin Earning Management"
+            ],
+            "description": "Api to generate Restaurant Order Email",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "payment_id",
+                "in": "formData",
+                "description": "payment id",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
         "/admin/getRestaurantEarnings": {
           "get": {
             "tags": [
