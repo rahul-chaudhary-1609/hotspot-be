@@ -857,14 +857,18 @@ module.exports = {
             }
 
             let addOnPrice = 0;
+            let actualAddOnPrice = 0;
             
-            const addOns = dishAddOn.map((addOn) => {
+            const addOns = dishAddOn.map((addOn) => {                
                 let price=addOn.markup_price ? (parseFloat(addOn.price)+parseFloat(addOn.markup_price)).toFixed(2) : addOn.price
                 addOnPrice = addOnPrice + parseFloat(price)
+                let actualPrice=addOn.price;
+                actualAddOnPrice=actualAddOnPrice+parseFloat(actualPrice)
                 return {
                     id: addOn.id,
                     name: addOn.name,
                     price,
+                    actualAddOnPrice,
                 }
             })
 
@@ -875,7 +879,7 @@ module.exports = {
                 itemCount: item.cart_count,
                 preference:item.special_instructions,
                 itemAddOn: addOns,
-                itemActualPrice:parseFloat(((parseFloat(dish.price)+addOnPrice)*item.cart_count).toFixed(2)),
+                itemActualPrice:parseFloat(((parseFloat(dish.price)+actualAddOnPrice)*item.cart_count).toFixed(2)),
                 itemMarkupPrice:dish.markup_price && parseFloat(((parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))+addOnPrice)*item.cart_count).toFixed(2)),
                 itemPrice:dish.markup_price?
                            parseFloat(((parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))+addOnPrice)*item.cart_count).toFixed(2)):
