@@ -106,6 +106,12 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 1,
             comment: '0=>off, 1=>on'
         },
+        dish_preference: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '0=>off, 1=>on'
+        },
         stripe_publishable_key: {
             type: DataTypes.TEXT,
             allowNull:true
