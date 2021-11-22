@@ -39,6 +39,7 @@ const getOrderRow =  async (args) => {
                     name: val.order_details.hotspot.name,
                     details: val.order_details.hotspot.location_detail,
                 }:null,
+                dropoff:val.order_details.hotspot.dropoff,
                 amount: val.tip_amount? parseFloat(val.amount)+parseFloat(val.tip_amount):parseFloat(val.amount),
                 restaurant:val.order_details.restaurant.restaurant_name,
                 status,
