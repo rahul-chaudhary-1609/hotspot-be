@@ -57,6 +57,8 @@ const getOrderCard =  async (args) => {
                 createdAt: order.createdAt,
                 updatedAt: moment(order.payment_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 orderDetails,
+                description:order.order_details.ordered_items[0].itemName,
+                
             })
         }
 
