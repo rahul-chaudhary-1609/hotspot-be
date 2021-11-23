@@ -57,7 +57,14 @@ const getOrderCard =  async (args) => {
                 createdAt: order.createdAt,
                 updatedAt: moment(order.payment_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 orderDetails,
-                description:order.order_details.ordered_items[0].itemName,
+                totalAmount:order.amount+order.tip_amount,
+                description:order.order_details.ordered_items.reduce((result,item,index)=>{
+                                    if(index==0){
+                                        return result+item.itemName
+                                    }else{
+                                        return result+", "+item.itemName
+                                    }
+                                },""),
                 
             })
         }
@@ -1230,6 +1237,76 @@ module.exports = {
                 if(order.type==constants.ORDER_TYPE.pickup) status="Completed"
                 else status="Delivered"
             }
+
+            let orderedItems=order.order_details.ordered_items.map((item)=>{
+                return {
+                    name:item.itemName,
+                    count:item.itemCount,
+                    totalAmount:item.itemPrice,
+                    description:item.itemAddOn.reduce((result,addonItem,index)=>{
+                                    if(index==0){
+                                        return result+addonItem.name
+                                    }else{
+                                        return result+", "+addonItem.name
+                                    }
+                                },""),
+                    preference:item.preference,
+                    
+                }
+            })
+
+            let trackInfo = null;
+
+            if (order.type == constants.ORDER_TYPE.delivery) {
+                trackInfo = {
+                    orderId,
+                    name: order.order_details.hotspot.name,
+                    address: order.order_details.hotspot.location_detail,
+                    delivery_datetime: moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+                    dropoff: order.order_details.hotspot.dropoff.dropoff_detail,
+                }
+            }
+            else if (order.type == constants.ORDER_TYPE.pickup) {
+                trackInfo = {
+                    orderId,
+                    name: order.order_details.restaurant.restaurant_name,
+                    address:order.order_details.restaurant.address,
+                    pickup_datetime: moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+                }
+            }
+
+            let trackStatus = null;
+
+            if (order.status==1) {
+                trackStatus="Confirming order with restaurant"
+            }
+            else if (order.status == 2) {
+                trackStatus="Preparing food"//"Food is being Prepared!"
+            }
+            else if (order.status == 3) {
+                trackStatus="Sprinting"//"Food is on the way!"
+            }
+            else if (order.status == 4) {
+                if(order.type==constants.ORDER_TYPE.pickup) trackStatus="Completed"
+                else trackStatus="Delivered"
+            }
+
+            trackStatus = {
+                    order_type:order.type,
+                    status: order.status,
+                    message:trackStatus,
+                }
+
+            let orderAmountDetail={
+                subtotal:parseFloat(order.order_details.amount_details.totalOrderAmount.toFixed(2)),
+                regulatory_response_fee:0.00,
+                delivery_fee:0.00,
+                service_fee:0.00,
+                tip:order.tip_amount || 0.00,
+                processing_fee:parseFloat(order.order_details.amount_details.stripeFeeAmount.toFixed(2)),
+                taxes:parseFloat(order.order_details.amount_details.salesTaxAmount.toFixed(2)),
+                grandTotal:parseFloat(order.order_details.amount_details.grandTotal.toFixed(2)),
+            }
             
             const orderDetails = {
                 orderId: orderId,
@@ -1237,8 +1314,12 @@ module.exports = {
                 restaurant: order.order_details.restaurant.restaurant_name,
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 orderItems:order.order_details.ordered_items,
+                orderedItems,
+                orderAmountDetail,
                 amount: order.tip_amount? parseFloat(order.amount)+parseFloat(order.tip_amount):parseFloat(order.amount),
                 status,
+                trackInfo,
+                trackStatus,
             }
             
             return {orderDetails };
