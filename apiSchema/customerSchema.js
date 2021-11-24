@@ -435,6 +435,12 @@ module.exports = {
         is_pagination: Joi.number().optional(),
         page: Joi.number().allow(null).optional(),
         page_size: Joi.number().allow(null).optional(),
+    }),
+
+    getOrdersHelp:Joi.object({
+        is_pagination: Joi.number().optional(),
+        page: Joi.number().allow(null).optional(),
+        page_size: Joi.number().allow(null).optional(),
     })
 
 }

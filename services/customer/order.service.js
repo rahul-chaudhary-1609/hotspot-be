@@ -1400,5 +1400,24 @@ module.exports = {
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
         return {order}
-    }
+    },
+
+    getOrdersHelp: async (user,params) => {
+
+        const orders = await models.Order.findAll({
+            where: {
+                customer_id: user.id,
+                status: constants.ORDER_STATUS.delivered,
+            },
+            order: [
+                ['payment_datetime', 'DESC']
+            ]
+        })
+
+        if (orders.length==0) throw new Error(constants.MESSAGES.no_order);           
+        
+
+        return getOrderCard({ orders,params });
+     
+},
 }

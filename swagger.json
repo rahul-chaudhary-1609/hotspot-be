@@ -7771,6 +7771,48 @@
           }
         },
 
+        "/customer/get-orders-help": {
+          "get": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to get completed orders help of a customer",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "is_pagination",
+                "in": "query",
+                "description": "is_pagination: 0=> no, 1=> yes",
+                "required": false,
+                "type": "number",
+                "enum":[0,1]
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access: Required if is_pagination is 1",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page: Required if is_pagination is 1",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
         "/customer/get-order-details/{orderId}": {
           "get": {
             "tags": [
