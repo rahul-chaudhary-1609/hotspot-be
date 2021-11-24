@@ -1224,21 +1224,8 @@ module.exports = {
 
             if (!order) throw new Error(constants.MESSAGES.no_order);
 
-            
-            let status = null;
 
-             if (order.status == 1 && order.type == constants.ORDER_TYPE.pickup) {
-                status="Pickup"
-            }
-            else if ([1,2, 3].includes(order.status)) {
-                status="Confirmed"
-            }
-            else if (order.status == 4) {
-                if(order.type==constants.ORDER_TYPE.pickup) status="Completed"
-                else status="Delivered"
-            }
-
-            let orderedItems=order.order_details.ordered_items.map((item)=>{
+            let orderItems=order.order_details.ordered_items.map((item)=>{
                 return {
                     name:item.itemName,
                     count:item.itemCount,
@@ -1254,6 +1241,17 @@ module.exports = {
                     
                 }
             })
+
+            let orderAmountDetail={
+                subtotal:parseFloat(order.order_details.amount_details.totalOrderAmount.toFixed(2)),
+                regulatory_response_fee:0.00,
+                delivery_fee:0.00,
+                service_fee:0.00,
+                tip:order.tip_amount || 0.00,
+                processing_fee:parseFloat(order.order_details.amount_details.stripeFeeAmount.toFixed(2)),
+                taxes:parseFloat(order.order_details.amount_details.salesTaxAmount.toFixed(2)),
+                grandTotal:parseFloat(order.order_details.amount_details.grandTotal.toFixed(2)),
+            }
 
             let trackInfo = null;
 
@@ -1274,52 +1272,19 @@ module.exports = {
                     pickup_datetime: moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 }
             }
-
-            let trackStatus = null;
-
-            if (order.status==1) {
-                trackStatus="Confirming order with restaurant"
-            }
-            else if (order.status == 2) {
-                trackStatus="Preparing food"//"Food is being Prepared!"
-            }
-            else if (order.status == 3) {
-                trackStatus="Sprinting"//"Food is on the way!"
-            }
-            else if (order.status == 4) {
-                if(order.type==constants.ORDER_TYPE.pickup) trackStatus="Completed"
-                else trackStatus="Delivered"
-            }
-
-            trackStatus = {
-                    order_type:order.type,
-                    status: order.status,
-                    message:trackStatus,
-                }
-
-            let orderAmountDetail={
-                subtotal:parseFloat(order.order_details.amount_details.totalOrderAmount.toFixed(2)),
-                regulatory_response_fee:0.00,
-                delivery_fee:0.00,
-                service_fee:0.00,
-                tip:order.tip_amount || 0.00,
-                processing_fee:parseFloat(order.order_details.amount_details.stripeFeeAmount.toFixed(2)),
-                taxes:parseFloat(order.order_details.amount_details.salesTaxAmount.toFixed(2)),
-                grandTotal:parseFloat(order.order_details.amount_details.grandTotal.toFixed(2)),
-            }
             
             const orderDetails = {
                 orderId: orderId,
                 createdAt: order.createdAt,
+                updatedAt: moment(order.payment_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 restaurant: order.order_details.restaurant.restaurant_name,
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
-                orderItems:order.order_details.ordered_items,
-                orderedItems,
+                orderItems,
                 orderAmountDetail,
                 amount: order.tip_amount? parseFloat(order.amount)+parseFloat(order.tip_amount):parseFloat(order.amount),
-                status,
+                status: order.status,
+                order_type:order.type,
                 trackInfo,
-                trackStatus,
             }
             
             return {orderDetails };
