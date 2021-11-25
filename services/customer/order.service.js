@@ -16,26 +16,26 @@ const getOrderCard =  async (args) => {
             
             //const restaurant = await models.Restaurant.findByPk(order.restaurant_id);
 
-            let status = null;
+            let statusInfo = null;
 
             if (order.status == 1 && order.type == constants.ORDER_TYPE.pickup) {
-                status="Pickup"
+                statusInfo="Pickup"
             }
             // else if ([1,2,3].includes(order.status)) {
             //     status="Confirmed"
             // }
             else if (order.status === 1) {
-                status="Confirmed"
+                statusInfo="Confirmed"
             }
             else if (order.status === 2) {
-                status="Preparing food"//"Food is being prepared"
+                statusInfo="Preparing food"//"Food is being prepared"
             }
             else if (order.status === 3) {
-                status="Sprinting"//"Food is on the way"
+                statusInfo="Sprinting"//"Food is on the way"
             }
             else if (order.status == 4) {
                 if(order.type==constants.ORDER_TYPE.pickup) status="Completed"
-                else status="Delivered"
+                else statusInfo="Delivered"
             }
             
             const orderDetails = {
@@ -44,7 +44,7 @@ const getOrderCard =  async (args) => {
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 orderItems:order.order_details.ordered_items,
                 amount: order.tip_amount? parseFloat(order.amount)+parseFloat(order.tip_amount):parseFloat(order.amount),
-                status,
+                statusInfo,
             }
 
             orderCards.push({
@@ -53,7 +53,8 @@ const getOrderCard =  async (args) => {
                 restaurant_id:order.restaurant_id,
                 restaurant: order.order_details.restaurant.restaurant_name,
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
-                status,
+                status:order.status,
+                statusInfo,
                 createdAt: order.createdAt,
                 updatedAt: moment(order.payment_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 orderDetails,
@@ -1370,7 +1371,7 @@ module.exports = {
     getCompletedOrders: async (user,params) => {
 
         const orders = await models.Order.findAll({
-            where: {
+            where: {        
                 customer_id: user.id,
                 status: constants.ORDER_STATUS.delivered,
             },
@@ -1384,5 +1385,6 @@ module.exports = {
 
         return getOrderCard({ orders,params });
      
-},
+    },
+
 }
