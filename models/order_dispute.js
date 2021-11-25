@@ -25,7 +25,6 @@ module.exports = (sequelize, DataTypes) => {
         order_id: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique:true,
         },
         customer_id: {
             type: DataTypes.INTEGER,
