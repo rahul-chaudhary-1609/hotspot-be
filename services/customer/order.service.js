@@ -1464,7 +1464,7 @@ module.exports = {
             await models.OrderDispute.create(orderDisputeObj)
         )
 
-        sendOrderDisputeEmail({order,...params});
+        await sendOrderDisputeEmail({order,...params});
 
         return {dispute};
      
