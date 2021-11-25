@@ -44,7 +44,7 @@ const getOrderCard =  async (args) => {
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 orderItems:order.order_details.ordered_items,
                 amount: order.tip_amount? parseFloat(order.amount)+parseFloat(order.tip_amount):parseFloat(order.amount),
-                statusInfo,
+                statusInfo:statusInfo,
             }
 
             orderCards.push({
@@ -53,7 +53,7 @@ const getOrderCard =  async (args) => {
                 restaurant_id:order.restaurant_id,
                 restaurant: order.order_details.restaurant.restaurant_name,
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
-                status:order.status,
+                status:statusInfo,//order.status,
                 statusInfo,
                 createdAt: order.createdAt,
                 updatedAt: moment(order.payment_datetime).format("YYYY-MM-DD HH:mm:ss"),
