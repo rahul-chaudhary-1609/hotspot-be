@@ -463,6 +463,8 @@ const sendOrderDisputeEmail= async (params) => {
     
     
     await sendMail.send(mailOptions);
+
+    console.log("Email sent") 
     
     return true;
 }
@@ -1464,7 +1466,7 @@ module.exports = {
             await models.OrderDispute.create(orderDisputeObj)
         )
 
-        await sendOrderDisputeEmail({order,...params});
+        //await sendOrderDisputeEmail({order,...params});
 
         return {dispute};
      
