@@ -155,9 +155,9 @@ module.exports = {
         }
     },
 
-    getOrdersHelp: async (req, res) => {
+    getCompletedOrders: async (req, res) => {
         try {
-            const responseFromService = await orderService.getOrdersHelp(req.user,req.query);
+            const responseFromService = await orderService.getCompletedOrders(req.user,req.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

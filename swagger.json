@@ -7771,7 +7771,7 @@
           }
         },
 
-        "/customer/get-orders-help": {
+        "/customer/get-completed-orders": {
           "get": {
             "tags": [
               "Customer Cart and Order"

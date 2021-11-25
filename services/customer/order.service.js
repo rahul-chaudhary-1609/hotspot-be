@@ -1367,7 +1367,7 @@ module.exports = {
         return {order}
     },
 
-    getOrdersHelp: async (user,params) => {
+    getCompletedOrders: async (user,params) => {
 
         const orders = await models.Order.findAll({
             where: {

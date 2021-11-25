@@ -127,7 +127,7 @@ router.put('/set-pickup-time/:orderId', customerAuthentication.validateCustomerT
 router.put('/update-tip-amount', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.updateTipAmount), OrderController.updateTipAmount)
 router.put('/confirm-order-payment/:orderId', customerAuthentication.validateCustomerToken, OrderController.confirmOrderPayment)
 router.get('/get-orders', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getOrders),  OrderController.getOrders)
-router.get('/get-orders-help', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getOrdersHelp),  OrderController.getOrdersHelp)
+router.get('/get-completed-orders', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getCompletedOrders),  OrderController.getCompletedOrders)
 router.get('/get-order-details/:orderId', customerAuthentication.validateCustomerToken, OrderController.getOrderDetails)
 router.get('/get-track-status/:orderId', customerAuthentication.validateCustomerToken, OrderController.getTrackStatusOfOrder)
 router.get('/get-order-delivery-image/:order_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.getOrderDeliveryImage), OrderController.getOrderDeliveryImage)
