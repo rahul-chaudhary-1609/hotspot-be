@@ -128,6 +128,7 @@ router.put('/update-tip-amount', customerAuthentication.validateCustomerToken,jo
 router.put('/confirm-order-payment/:orderId', customerAuthentication.validateCustomerToken, OrderController.confirmOrderPayment)
 router.get('/get-orders', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getOrders),  OrderController.getOrders)
 router.get('/get-completed-orders', customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getCompletedOrders),  OrderController.getCompletedOrders)
+router.post('/raise-dispute', customerAuthentication.validateCustomerToken, joiValidation.validateBody(apiSchema.raiseDispute),  OrderController.raiseDispute)
 router.get('/get-order-details/:orderId', customerAuthentication.validateCustomerToken, OrderController.getOrderDetails)
 router.get('/get-track-status/:orderId', customerAuthentication.validateCustomerToken, OrderController.getTrackStatusOfOrder)
 router.get('/get-order-delivery-image/:order_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.getOrderDeliveryImage), OrderController.getOrderDeliveryImage)

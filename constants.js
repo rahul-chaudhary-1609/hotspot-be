@@ -336,6 +336,24 @@ module.exports = {
     none:0,
     stripe:1,
     sales:2,
+  },
+
+  DISPUTE_STATUS:{
+    new:1,
+    under_review:2,
+    closed:3,
+  },
+
+  DISPUTE_RESULT:{
+    none:0,
+    accepted:1,
+    partially_accepted:2,
+    rejected:3,
+  },
+
+  DISPUTE_TYPE:{
+    customer:1,
+    driver:2,
   }
 
 }

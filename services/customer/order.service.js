@@ -411,6 +411,62 @@ const sendOrderPaymentEmail= async (params) => {
     return true;
 }
 
+const sendOrderDisputeEmail= async (params) => {
+
+    let headerHTML = `<div
+        style="
+            position: relative;
+        ">
+        Hi,<br>
+        Have some dispute with order ${params.order.order_id}<br><br>
+    `;
+
+    let bottomHTML = `</div><br><br>
+    <div
+        style="
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        ">
+        <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" 
+            style="
+                    opacity:0.5;
+                    margin-top:5px;;
+                "/>
+    </div><br>`;
+
+    let bodyHTML = `<p><strong>${params.title}</strong></p><br><br>
+        <p>${params.description}</p>`;
+        
+    let mailOptions = {
+        from: `${params.order.order_details.customer.name} <${params.order.order_details.customer.email}>`,
+        to: 'rahulchaudhary99r@gmail.com',
+        subject:  `Help #${params.order.order_id}`,
+        html:headerHTML+bodyHTML+bottomHTML,
+        // attachments: [
+        //     {
+        //         content: attachment,
+        //         filename: "mail.html",
+        //         type: "text/html",
+        //         disposition: "attachment"
+        //     },
+        //     {
+        //         content: attachment,
+        //         filename: "mail.html",
+        //         type: "text/html",
+        //         disposition: "attachment"
+        //     }
+        // ]
+    };
+
+    console.log(mailOptions)    
+    
+    
+    await sendMail.send(mailOptions);
+    
+    return true;
+}
+
 const addRestaurantPayment=async(params)=>{
     let order={};
     order.restaurant_id=params.order.restaurant_id;
@@ -1384,6 +1440,33 @@ module.exports = {
         
 
         return getOrderCard({ orders,params });
+     
+    },
+
+    raiseDispute: async (user,params) => {
+
+        let order=await utilityFunction.convertPromiseToObject(
+            await models.Order.findOne({
+                order_id:params.order_id,
+            })
+        )
+
+        let orderDisputeObj={
+            order_id:params.order_id,
+            customer_id:user.id,
+            title:params.title,
+            description:params.description,
+            type:constants.DISPUTE_TYPE.customer,
+            raised_at:params.datetime,
+        }
+
+        let dispute=await utilityFunction.convertPromiseToObject(
+            await models.OrderDispute.create(orderDisputeObj)
+        )
+
+        sendOrderDisputeEmail({order,...params});
+
+        return {dispute};
      
     },
 

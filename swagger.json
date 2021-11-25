@@ -7813,6 +7813,54 @@
           }
         },
 
+        "/customer/raise-dispute": {
+          "post": {
+            "tags": [
+              "Customer Cart and Order"
+            ],
+            "description": "Api to raise dispute",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "order_id",
+                "in": "formData",
+                "description": "order id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "title",
+                "in": "formData",
+                "description": "title",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "datetime",
+                "in": "formData",
+                "description": "eg: YYYY-MM-DD HH:mm:ss",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "description",
+                "in": "formData",
+                "description": "description",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
         "/customer/get-order-details/{orderId}": {
           "get": {
             "tags": [

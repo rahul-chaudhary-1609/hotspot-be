@@ -441,6 +441,13 @@ module.exports = {
         is_pagination: Joi.number().optional(),
         page: Joi.number().allow(null).optional(),
         page_size: Joi.number().allow(null).optional(),
+    }),
+
+    raiseDispute:Joi.object({
+        order_id: Joi.string().required(),
+        title: Joi.string().required(),
+        description: Joi.string().optional(),
+        datetime: Joi.string().required(),
     })
 
 }
