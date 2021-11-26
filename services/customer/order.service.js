@@ -1435,7 +1435,9 @@ module.exports = {
 
         let order=await utilityFunction.convertPromiseToObject(
             await models.Order.findOne({
-                order_id:params.order_id,
+                where:{
+                    order_id:params.order_id,
+                }
             })
         )
 
