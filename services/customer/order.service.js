@@ -418,7 +418,7 @@ const sendOrderDisputeEmail= async (params) => {
             position: relative;
         ">
         Hi,<br>
-        Have some dispute with order ${params.order.order_id}<br><br>
+        There is some dispute with the order ${params.order.order_id}<br>
     `;
 
     let bottomHTML = `</div><br><br>
@@ -435,28 +435,14 @@ const sendOrderDisputeEmail= async (params) => {
                 "/>
     </div><br>`;
 
-    let bodyHTML = `<p><strong>${params.title}</strong></p><br><br>
+    let bodyHTML = `<p><strong>${params.title}</strong></p><br>
         <p>${params.description}</p>`;
         
     let mailOptions = {
-        from: `${params.order.order_details.customer.name} <${params.order.order_details.customer.email}>`,
-        to: 'rahulchaudhary99r@gmail.com',
+        from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
+        to: params.order.order_details.customer.email,
         subject:  `Help #${params.order.order_id}`,
         html:headerHTML+bodyHTML+bottomHTML,
-        // attachments: [
-        //     {
-        //         content: attachment,
-        //         filename: "mail.html",
-        //         type: "text/html",
-        //         disposition: "attachment"
-        //     },
-        //     {
-        //         content: attachment,
-        //         filename: "mail.html",
-        //         type: "text/html",
-        //         disposition: "attachment"
-        //     }
-        // ]
     };
 
     console.log(mailOptions)    
@@ -1466,7 +1452,7 @@ module.exports = {
             await models.OrderDispute.create(orderDisputeObj)
         )
 
-        //await sendOrderDisputeEmail({order,...params});
+        sendOrderDisputeEmail({order,...params});
 
         return {dispute};
      
