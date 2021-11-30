@@ -113,7 +113,12 @@ module.exports = (sequelize, DataTypes) => {
       comment: '0=> off, 1=> on'
     },
     location: {
-            type: DataTypes.ARRAY(DataTypes.FLOAT),
+      type: DataTypes.ARRAY(DataTypes.FLOAT),
+    },
+    hotspot_credit: {
+      type: DataTypes.DECIMAL(15,2),
+      allowNull: false,
+      defaultValue:0.00,
     },
     device_token: {
       type: DataTypes.STRING,

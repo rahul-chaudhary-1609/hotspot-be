@@ -7,6 +7,15 @@ const constants = require("../../constants");
 
 module.exports = {
 
+    getCredit: async (req, res) => {
+        try {
+            const responseFromService = await paymentService.getCredit(req.user);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
     addPaymentCard: async (req, res) => {
         try {
             const responseFromService = await paymentService.addPaymentCard(req.body,req.user);

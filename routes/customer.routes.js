@@ -137,6 +137,7 @@ router.get('/get-order-delivery-image/:order_id', customerAuthentication.validat
 
 
 //payment routes
+router.get('/get-credit', customerAuthentication.validateCustomerToken, PaymentController.getCredit); 
 router.post('/add-payment-card', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.addPaymentCard), PaymentController.addPaymentCard); 
 router.put('/update-payment-card', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.updatePaymentCard),PaymentController.updatePaymentCard)
 router.get('/get-payment-card/:payment_card_id', customerAuthentication.validateCustomerToken,joiValidation.validateParams(apiSchema.getPaymentCard), PaymentController.getPaymentCard)

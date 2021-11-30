@@ -7952,7 +7952,25 @@
 
 
 
-
+        "/customer/get-credit": {
+          "get": {
+            "tags": [
+              "Customer Payment"
+            ],
+            "description": "Api to get customer credit",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [],
+            "responses": {}
+          }
+        },
 
         "/customer/add-payment-card": {
           "post": {
