@@ -9,7 +9,7 @@ module.exports = {
 
     getCredit:async(user)=>{
         let credit=await utilityFunction.convertPromiseToObject(
-          models.Customer.findOne({
+          await models.Customer.findOne({
             attributes:['id','email','hotspot_credit'],
             where:{
               id:user.id,
