@@ -5,7 +5,7 @@ const {
 const withDateNoTz = require('sequelize-date-no-tz-postgres');
 module.exports = (sequelize, DataTypes) => {
     const CustomDataTypes = withDateNoTz(DataTypes);
-    class OrderDispute extends Model {
+    class Refund extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
         }
     }
-    OrderDispute.init({
+    Refund.init({
         id: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -26,42 +26,30 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        dispute_id: {
+            type: DataTypes.STRING,
+        },
         customer_id: {
             type: DataTypes.INTEGER,
-            allowNull: false,
         },
 
-        title: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-        },
-
-        description: {
-            type: DataTypes.TEXT,
-        },        
-
-        status: {
+        driver_id: {
             type: DataTypes.INTEGER,
+        },       
+
+        refund_value: {
+            type: DataTypes.DECIMAL(15,2),
             allowNull: false,
-            defaultValue: 1,
-            comment: '1=> new, 2=> under_review, 3=> closed'
         },
 
         type: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1,
-            comment: '1=> customer, 2=> driver'
+            comment: '1=> add_credit, 2=> refund_amount'
         },
 
-        result: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 0,
-            comment: '0=> none, 1=> accepted, 2=> partially_accepted, 3=>rejected'
-        },
-
-        raised_at:{
+        refunded_on:{
             type:CustomDataTypes.DATE_NO_TZ,
         },
 
@@ -69,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.TEXT,
         },
 
-        dispute_details: {
+        refund_details: {
             type: DataTypes.JSON,
         },
 
@@ -77,8 +65,8 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         sequelize,
         underscored: true,
-        tableName: 'order_disputes',
-        modelName: 'OrderDispute',
+        tableName: 'refunds',
+        modelName: 'Refund',
     });
-    return OrderDispute;
+    return Refund;
 };

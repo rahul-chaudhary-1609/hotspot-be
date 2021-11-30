@@ -354,7 +354,12 @@ module.exports = {
   DISPUTE_TYPE:{
     customer:1,
     driver:2,
-  }
+  },
+
+  REFUND_TYPE:{
+    add_credit:1,
+    refund_amount:2,
+  },
 
 }
 

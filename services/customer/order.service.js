@@ -1441,7 +1441,7 @@ module.exports = {
             })
         )
 
-        let orderDisputeObj={
+        let disputeObj={
             order_id:params.order_id,
             customer_id:user.id,
             title:params.title,
@@ -1451,7 +1451,7 @@ module.exports = {
         }
 
         let dispute=await utilityFunction.convertPromiseToObject(
-            await models.OrderDispute.create(orderDisputeObj)
+            await models.Dispute.create(disputeObj)
         )
 
         sendOrderDisputeEmail({order,...params});
