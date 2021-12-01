@@ -767,9 +767,9 @@ module.exports = {
 
     editTax: Joi.object({
         tax_id: Joi.number().required(),
-        name:Joi.string().optional(),
-        variable_percentage:Joi.number().optional(),
-        fixed_amount:Joi.number().optional(),
+        name:Joi.string().required(),
+        variable_percentage:Joi.number().required(),
+        fixed_amount:Joi.number().required(),
         description:Joi.string().optional(),
     }),
 

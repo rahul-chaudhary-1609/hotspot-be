@@ -3928,21 +3928,21 @@
                 "name": "name",
                 "in": "formData",
                 "description": "name",
-                "required": false,
+                "required": true,
                 "type": "string"
               },
               {
                 "name": "variable_percentage",
                 "in": "formData",
                 "description": "variable_percentage",
-                "required": false,
+                "required": true,
                 "type": "number"
               },
               {
                 "name": "fixed_amount",
                 "in": "formData",
                 "description": "fixed_amount",
-                "required": false,
+                "required": true,
                 "type": "number"
               },
               {

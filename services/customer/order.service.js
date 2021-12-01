@@ -272,7 +272,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right; border-top:2px solid #e6e8e6;">
                     <div>
-                        $${params.order.order_details.amount_details.totalOrderAmount.toFixed(2)}
+                        $${params.order.order_details.amount_details.subtotal.toFixed(2)}
                     </div>
                 </td>
             </tr>
@@ -284,7 +284,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right;">
                     <div>
-                        $0.00
+                        $${params.order.order_details.amount_details.regulatory_response_fee.toFixed(2)}
                     </div>
                 </td>
             </tr>
@@ -296,7 +296,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right;">
                     <div>
-                        $0.00
+                        $${params.order.order_details.amount_details.delivery_fee.toFixed(2)}
                     </div>
                 </td>
             </tr>
@@ -308,7 +308,43 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right;">
                     <div>
-                        $0.00
+                        $${params.order.order_details.amount_details.service_fee.toFixed(2)}
+                    </div>
+                </td>
+            </tr>
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left;">
+                    <div>
+                        Processing Fee
+                    </div>
+                </td>
+                <td style="text-align: right;">
+                    <div>
+                        $${params.order.order_details.amount_details.processing_fee.toFixed(2)}
+                    </div>
+                </td>
+            </tr>
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left;">
+                    <div>
+                        Taxes
+                    </div>
+                </td>
+                <td style="text-align: right;">
+                    <div>
+                        $${params.order.order_details.amount_details.taxes.toFixed(2)}
+                    </div>
+                </td>
+            </tr>
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left;">
+                    <div>
+                        Credits Applied
+                    </div>
+                </td>
+                <td style="text-align: right;">
+                    <div>
+                        -$${params.order.order_details.amount_details.credits_applied.toFixed(2)}
                     </div>
                 </td>
             </tr>
@@ -321,30 +357,6 @@ const sendOrderPaymentEmail= async (params) => {
                 <td style="text-align: right;">
                     <div>
                         $${params.order.tip_amount || "0.00"}
-                    </div>
-                </td>
-            </tr>
-            <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left;">
-                    <div>
-                        Processing Fee
-                    </div>
-                </td>
-                <td style="text-align: right;">
-                    <div>
-                        $0.00
-                    </div>
-                </td>
-            </tr>
-            <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left;">
-                    <div>
-                        Taxes
-                    </div>
-                </td>
-                <td style="text-align: right;">
-                    <div>
-                        $0.00
                     </div>
                 </td>
             </tr>
@@ -361,7 +373,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right; border-top:2px solid #e6e8e6;">
                    <div>
-                       <strong>$${params.order.tip_amount? (parseFloat(params.order.amount)+parseFloat(params.order.tip_amount)).toFixed(2):params.order.amount}</strong>
+                       <strong>$${params.order.order_details.amount_details.grandTotal.toFixed(2)}</strong>
                     </div>
                 </td>
             </tr>
@@ -817,14 +829,49 @@ module.exports = {
                 })
         );
 
+        let customer = await utilityFunction.convertPromiseToObject(await models.Customer.findOne({
+                attributes: ['id', 'name', 'email','hotspot_credit'],
+                where: {
+                    id: user.id,
+                }
+            })
+        );
+
         let stripeFee=taxes.find(tax=>tax.type==constants.TAX_TYPE.stripe);
         let salesTax=taxes.find(tax=>tax.type==constants.TAX_TYPE.sales);
 
-        const totalAmount = cartItems.reduce((result, item) => result + item.itemPrice, 0);
+        const subtotal = cartItems.reduce((result, item) => result + item.itemPrice, 0);
 
-        const stripeFeeAmount=parseFloat((((totalAmount*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
+        let stripeFeeAmount=0.00;
+
+        if(stripeFee.variable_percentage && stripeFee.fixed_amount){
+            stripeFeeAmount=parseFloat((((subtotal*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
+        }else if(stripeFee.variable_percentage){
+            stripeFeeAmount=parseFloat(((subtotal*stripeFee.variable_percentage)/100).toFixed(2));
+        }else if(stripeFee.fixed_amount){
+            stripeFeeAmount=parseFloat((stripeFee.fixed_amount/100).toFixed(2));
+        }else{
+            stripeFeeAmount=0.00;
+        }
+        // parseFloat((((subtotal*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
         
-        const salesTaxAmount=parseFloat((((totalAmount*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
+        let salesTaxAmount=0.00;
+
+        if(salesTax.variable_percentage && salesTax.fixed_amount){
+            salesTaxAmount=parseFloat((((subtotal*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
+        }else if(salesTax.variable_percentage){
+            salesTaxAmount=parseFloat(((subtotal*salesTax.variable_percentage)/100).toFixed(2));
+        }else if(salesTax.fixed_amount){
+            salesTaxAmount=parseFloat((salesTax.fixed_amount/100).toFixed(2));
+        }else{
+            salesTaxAmount=0.00;
+        }
+
+        // parseFloat((((subtotal*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
+
+        const credits_applied=parseFloat(customer.hotspot_credit);
+
+
         
         if (!cartInfo) {
             return { cart: null, isDeliveryOnly,isPickupOnly,isBothAvailable };
@@ -839,13 +886,19 @@ module.exports = {
             cart: { 
                 cartInfo,
                 cartItems,
-                totalAmount,
-                regulatoryResponseFee:0,
-                deliveryFee:0,
-                serviceFee:0,
-                processingFee:stripeFeeAmount,
+                subtotal,
+                regulatory_response_fee:0.00,
+                delivery_fee:0.00,
+                service_fee:0.00,
+                processing_fee:stripeFeeAmount,
+                // totalAmount,
+                // regulatoryResponseFee:0,
+                // deliveryFee:0,
+                // serviceFee:0,
+                // processingFee:stripeFeeAmount,
                 taxes:salesTaxAmount,
-                grandTotal:parseFloat((totalAmount+stripeFeeAmount+salesTaxAmount).toFixed(2)),
+                credits_applied,
+                grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount-credits_applied).toFixed(2)),
             }, 
             isDeliveryOnly,
             isPickupOnly,
@@ -943,34 +996,63 @@ module.exports = {
 
         const totalActualPrice = ordered_items.reduce((result, item) => result + item.itemActualPrice, 0);
 
-        const totalOrderAmount = ordered_items.reduce((result, item) => result + item.itemPrice, 0);
+        const subtotal = ordered_items.reduce((result, item) => result + item.itemPrice, 0);
 
         let taxes= await utilityFunction.convertPromiseToObject(
-                await models.Tax.findAll({
-                    where:{
-                        type:{
-                            [Op.notIn]:[constants.TAX_TYPE.none]
-                        }
+            await models.Tax.findAll({
+                where:{
+                    type:{
+                        [Op.notIn]:[constants.TAX_TYPE.none]
                     }
-                })
+                }
+            })
         );
 
         let stripeFee=taxes.find(tax=>tax.type==constants.TAX_TYPE.stripe);
         let salesTax=taxes.find(tax=>tax.type==constants.TAX_TYPE.sales);
 
-        const stripeFeeAmount=parseFloat((((totalOrderAmount*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
+        // const stripeFeeAmount=parseFloat((((subtotal*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
         
-        const salesTaxAmount=parseFloat((((totalOrderAmount*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
+        // const salesTaxAmount=parseFloat((((subtotal*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
+
+        let stripeFeeAmount=0.00;
+
+        if(stripeFee.variable_percentage && stripeFee.fixed_amount){
+            stripeFeeAmount=parseFloat((((subtotal*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
+        }else if(stripeFee.variable_percentage){
+            stripeFeeAmount=parseFloat(((subtotal*stripeFee.variable_percentage)/100).toFixed(2));
+        }else if(stripeFee.fixed_amount){
+            stripeFeeAmount=parseFloat((stripeFee.fixed_amount/100).toFixed(2));
+        }else{
+            stripeFeeAmount=0.00;
+        }
+        // parseFloat((((subtotal*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
+        
+        let salesTaxAmount=0.00;
+
+        if(salesTax.variable_percentage && salesTax.fixed_amount){
+            salesTaxAmount=parseFloat((((subtotal*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
+        }else if(salesTax.variable_percentage){
+            salesTaxAmount=parseFloat(((subtotal*salesTax.variable_percentage)/100).toFixed(2));
+        }else if(salesTax.fixed_amount){
+            salesTaxAmount=parseFloat((salesTax.fixed_amount/100).toFixed(2));
+        }else{
+            salesTaxAmount=0.00;
+        }
+
+        // parseFloat((((subtotal*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
 
         let hotspot = null;
         let restaurant = null;
         let customer = await utilityFunction.convertPromiseToObject(await models.Customer.findOne({
-                attributes: ['id', 'name', 'email','phone_no'],
+                attributes: ['id', 'name', 'email','phone_no','hotspot_credit'],
                 where: {
                     id: customer_id
                 }
             })
         );
+
+        const credits_applied=parseFloat(customer.hotspot_credit);
 
         if (type == constants.ORDER_TYPE.delivery) {
 
@@ -1022,10 +1104,15 @@ module.exports = {
             ordered_items,
             amount_details:{
                 totalActualPrice,
-                totalOrderAmount,
-                stripeFeeAmount,
-                salesTaxAmount,
-                grandTotal:parseFloat((totalOrderAmount+stripeFeeAmount+salesTaxAmount).toFixed(2)),
+                totalOrderAmount:subtotal,
+                subtotal,
+                regulatory_response_fee:0.00,
+                delivery_fee:0.00,
+                service_fee:0.00,
+                processing_fee:stripeFeeAmount,
+                taxes:salesTaxAmount,
+                credits_applied,
+                grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount-credits_applied).toFixed(2)),
             }
         }
         const newOrder = await models.Order.create({
@@ -1126,6 +1213,14 @@ module.exports = {
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
         order.tip_amount=parseFloat(params.tip_amount);
+        order.order_details={
+            ...order.order_details,
+            amount_details:{
+                ...order.order_details.amount_details,
+                tip:parseFloat(params.tip_amount),
+                grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)).toFixed(2)),
+            }
+        }
 
         order.save();
 
@@ -1288,14 +1383,15 @@ module.exports = {
             })
 
             let orderAmountDetail={
-                subtotal:parseFloat(order.order_details.amount_details.totalOrderAmount.toFixed(2)),
-                regulatory_response_fee:0.00,
-                delivery_fee:0.00,
-                service_fee:0.00,
-                tip:order.tip_amount || 0.00,
-                processing_fee:parseFloat(order.order_details.amount_details.stripeFeeAmount.toFixed(2)),
-                taxes:parseFloat(order.order_details.amount_details.salesTaxAmount.toFixed(2)),
-                grandTotal:parseFloat(order.order_details.amount_details.grandTotal.toFixed(2)),
+                ...order.order_details.amount_details,
+                // subtotal:parseFloat(order.order_details.amount_details.subtotal.toFixed(2)),
+                // regulatory_response_fee:0.00,
+                // delivery_fee:0.00,
+                // service_fee:0.00,
+                // tip:parseFloat(order.tip_amount) || 0.00,
+                // processing_fee:parseFloat(order.order_details.amount_details.processing_fee.toFixed(2)),
+                // taxes:parseFloat(order.order_details.amount_details.taxes.toFixed(2)),
+                // grandTotal:parseFloat(order.order_details.amount_details.grandTotal.toFixed(2)),
             }
 
             let trackInfo = null;

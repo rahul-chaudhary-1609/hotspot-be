@@ -243,8 +243,8 @@ module.exports = {
         if (!tax) throw new Error(constants.MESSAGES.no_tax);
 
         tax.name=params.name || tax.name;
-        tax.variable_percentage=parseFloat(params.variable_percentage) || tax.variable_percentage;
-        tax.fixed_amount=parseInt(params.fixed_amount) || tax.fixed_amount;
+        tax.variable_percentage=parseFloat(params.variable_percentage);
+        tax.fixed_amount=parseInt(params.fixed_amount);
         tax.description=params.description || tax.description;
         tax.save()
 
