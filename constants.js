@@ -130,6 +130,7 @@ module.exports = {
     addon_already_exist:`An addon with the same name already exist`,
     no_cart_item:`No cart item found`,
     no_tax:`No tax found`,
+    dish_not_available:`One or more than one dish of current order is unavailable for now`
   },
 
   code: {

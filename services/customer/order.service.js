@@ -563,6 +563,15 @@ module.exports = {
                     force: true,
                 })
             }
+
+            const dish = await models.RestaurantDish.findOne({
+                where: {
+                    id: parseInt(params.restaurant_dish_id),
+                    status:constants.STATUS.active,
+                }
+            })
+
+            if(!dish) return {infoMessage:constants.MESSAGES.dish_not_available};
             
             return {
                 cart:await utilityFunction.convertPromiseToObject(
@@ -818,6 +827,8 @@ module.exports = {
                            parseFloat(((parseFloat(dish.price)+addOnPrice)*item.cart_count).toFixed(2))                    
             })
         }
+
+        if (cartItems.count == 0) throw new Error(constants.MESSAGES.no_item);
 
         let taxes= await utilityFunction.convertPromiseToObject(
                 await models.Tax.findAll({
