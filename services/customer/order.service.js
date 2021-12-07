@@ -58,7 +58,7 @@ const getOrderCard =  async (args) => {
                 createdAt: order.createdAt,
                 updatedAt: moment(order.payment_datetime).format("YYYY-MM-DD HH:mm:ss"),
                 orderDetails,
-                totalAmount:parseFloat(order.amount)+parseFloat(order.tip_amount),
+                totalAmount:parseFloat((parseFloat(order.amount)+parseFloat(order.tip_amount)).toFixed(2)),
                 description:order.order_details.ordered_items.reduce((result,item,index)=>{
                                     if(index==0){
                                         return result+item.itemName
