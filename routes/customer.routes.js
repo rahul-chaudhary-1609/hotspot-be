@@ -97,6 +97,7 @@ router.get('/get-favorite-restaurant', customerAuthentication.validateCustomerTo
 router.get('/get_quick_filter_list', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getQuickFilterList),  RestaurantController.getQuickFilterList);
 router.get('/get-search-suggestion', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getSearchSuggestion), RestaurantController.getSearchSuggestion);
 router.post('/get-hotspot-restaurant-pickup', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.getHotspotRestaurantPickup), RestaurantController.getHotspotRestaurantPickup);
+router.post('/get-available-restaurants', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.getAvailableRestaurants), RestaurantController.getAvailableRestaurants);
 router.post('/get-hotspot-restaurant-delivery', customerAuthentication.validateCustomerToken,parseStringToArray,joiValidation.validateBody(apiSchema.getHotspotRestaurantDelivery), RestaurantController.getHotspotRestaurantDelivery);
 router.get('/get-offer-banner', customerAuthentication.validateCustomerToken, RestaurantController.getOfferBanner);
 router.get('/get-restaurant-details', customerAuthentication.validateCustomerToken,joiValidation.validateQueryParams(apiSchema.getRestaurantDetails), RestaurantController.getRestaurantDetails);

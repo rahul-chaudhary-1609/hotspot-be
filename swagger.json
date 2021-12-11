@@ -6943,6 +6943,40 @@
           }
         },
         
+        "/customer/get-available-restaurants": {
+          "post": {
+            "tags": [
+              "Customer Restaurant"
+            ],
+            "description": "Api to get delivery type restaurants in a hotspot with filter",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "security": [
+              {
+                "Bearer": []
+              }
+            ],
+            
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "formData",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "delivery_shift",
+                "in": "formData",
+                "description": "enter delivery shift HH:MM:SS",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
         
         "/customer/get-hotspot-restaurant-delivery": {
           "post": {

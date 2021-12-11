@@ -63,8 +63,18 @@ module.exports = {
         }
  
     },
+
+    getAvailableRestaurants: async (req, res) => {
+        try {
+                const responseFromService = await restaurantService.getAvailableRestaurants(req.body);
+                utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+            } catch (error) {
+                utilityFunction.errorResponse(res, error, constants.code.error_code);
+            }
+    },
+
     getHotspotRestaurantDelivery: async (req, res) => {
-    try {
+        try {
                 const responseFromService = await restaurantService.getHotspotRestaurantDelivery(req.body,req.user);
                 utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
             } catch (error) {

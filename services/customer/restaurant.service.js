@@ -34,8 +34,6 @@ const getRestaurantCard =  async (args) => {
                 return args.params.delivery_shift === time;
             });
 
-            console.log(hotspotLocation);
-
             next_delivery_time = nextDeliveryTime || hotspotLocation.delivery_shifts[0];
         }
 
@@ -73,9 +71,9 @@ const getRestaurantCard =  async (args) => {
 
     if (restaurants.length === 0) throw new Error(constants.MESSAGES.no_restaurant);
 
-    return { restaurants };
-     
+    console.log("restaurants",restaurants)
 
+    return { restaurants };
 
 };
 
@@ -230,8 +228,6 @@ module.exports = {
 
     getQuickFilterList: async (params) => {
 
-        console.log(params);
-
         let where = {
             status:constants.STATUS.active,
             is_quick_filter:1,
@@ -323,9 +319,57 @@ module.exports = {
         return { hotspot_offers };         
     },
 
-    getHotspotRestaurantDelivery: async (params, user) => {
+    getAvailableRestaurants:async(params)=>{
 
-        console.log("getHotspotRestaurantPickup",params,params);
+        let whereCondiition = {
+            id: [],
+            status: constants.STATUS.active,
+            order_type:[constants.ORDER_TYPE.delivery,constants.ORDER_TYPE.both]
+        };
+
+        const hotspotLocation = await models.HotspotLocation.findOne({
+            where: {
+                id: params.hotspot_location_id,
+            }
+        });
+
+        let nextDeliveryTimeIndex =1;
+        
+        hotspotLocation.delivery_shifts.forEach((time,index) => {
+            if(params.delivery_shift == time){
+                nextDeliveryTimeIndex=index+1;
+            }
+        });
+        
+
+        let hotspotRestaurants = await utility.convertPromiseToObject(
+            await models.HotspotRestaurant.findAll({
+                attributes:['id','restaurant_id'],
+                where: {
+                    hotspot_location_id: parseInt(params.hotspot_location_id),
+                    available_for_shifts:{
+                        [Op.contains]:[nextDeliveryTimeIndex]
+                    },
+                }
+            })
+        )
+
+        whereCondiition.id=hotspotRestaurants.map(hotspotRestaurant=>hotspotRestaurant.restaurant_id);
+
+        let restaurants = await utility.convertPromiseToObject(
+            await models.Restaurant.findAll({
+                attributes:['id','restaurant_name'],
+                where:whereCondiition,
+            })
+        )
+
+        let restaurantNames=restaurants.map(restaurant=>restaurant.restaurant_name);
+
+        return { restaurantNames }
+
+    },
+
+    getHotspotRestaurantDelivery: async (params, user) => {
 
         models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
         models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
@@ -433,7 +477,7 @@ module.exports = {
 
         }
 
-        let hotspotRestaurants = await utility.convertPromiseToObject(
+        let allHotspotRestaurants = await utility.convertPromiseToObject(
             await models.HotspotRestaurant.findAll({
                 where: {
                     hotspot_location_id: parseInt(params.hotspot_location_id),
@@ -441,8 +485,8 @@ module.exports = {
             })
         )
         
-        let include_restaurant_ids = hotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id);
-        console.log("whereCondiition", whereCondiition, include_restaurant_ids)
+        let include_restaurant_ids = allHotspotRestaurants.map((hotspotRestaurant) => hotspotRestaurant.restaurant_id);
+
         if (whereCondiition.id.length == 0) {
             whereCondiition.id=include_restaurant_ids
         }
@@ -480,19 +524,63 @@ module.exports = {
 
         whereCondiition.id = whereCondiition.id.filter((restaurant_id) => !(exclude_restaurant_ids.includes(restaurant_id)));
 
-        console.log("whereCondiition",whereCondiition,include_restaurant_ids)
-
         let restaurants = await utility.convertPromiseToObject(
             await models.Restaurant.findAll({
                 where:whereCondiition,
             })
         )
 
-        return getRestaurantCard({ restaurants, user, params });
+        let allRestaurants=(await getRestaurantCard({ restaurants, user, params })).restaurants;
+
+        console.log("allRestaurants",allRestaurants)
+
+        const hotspotLocation = await models.HotspotLocation.findOne({
+            where: {
+                id: params.hotspot_location_id,
+            }
+        });
+
+        let nextDeliveryTimeIndex =1;
+        
+        hotspotLocation.delivery_shifts.forEach((time,index) => {
+            if(params.delivery_shift == time){
+                nextDeliveryTimeIndex==index+1;
+            }
+        });
+
+        let availableHotspotRestaurants = await utility.convertPromiseToObject(
+            await models.HotspotRestaurant.findAll({
+                attributes:['id','restaurant_id'],
+                where: {
+                    hotspot_location_id: parseInt(params.hotspot_location_id),
+                    available_for_shifts:{
+                        [Op.contains]:[nextDeliveryTimeIndex]
+                    },
+                }
+            })
+        )
+
+        let availableHotspotRestaurantIds=availableHotspotRestaurants.map(availableHotspotRestaurant=>availableHotspotRestaurant.restaurant_id);
+
+        let availableRestaurants=[];
+        let unavailableRestaurants=[];
+
+        for(let restaurant of allRestaurants){
+            if(availableHotspotRestaurantIds.includes(restaurant.restaurant_id)){
+                restaurant.is_available=1;
+                availableRestaurants.push(restaurant);
+            }else{
+                restaurant.is_available=0;
+                unavailableRestaurants.push(restaurant);
+            }
+
+        }
+
+        return {restaurants:[...availableRestaurants,...unavailableRestaurants]}
+
     },
 
     getHotspotRestaurantPickup: async (params, user) => {
-        console.log("get Hotspot Restaurant Pickup",params,params)
 
         models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
         models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
@@ -617,7 +705,6 @@ module.exports = {
 
     getRestaurantDetails: async (params,user) => {
 
-        console.log("getRestaurantDetails",params,user)
 
         const restaurantHotspot = await models.HotspotRestaurant.findOne({
             where: {
