@@ -350,6 +350,7 @@ module.exports = {
         restaurant_ids: Joi.array().items(Joi.object().keys({
             restaurant_id: Joi.number().required(),
             pickup_time: Joi.number().required(),
+            available_for_shifts:Joi.array().required(),
         })).optional(),
         driver_ids: Joi.array(),
     }),
@@ -381,6 +382,7 @@ module.exports = {
         restaurant_ids: Joi.array().items(Joi.object().keys({
             restaurant_id: Joi.number().required(),
             pickup_time: Joi.number().required(),
+            available_for_shifts:Joi.array().required(),
         })).optional(),
         driver_ids: Joi.array().optional(),
     }),

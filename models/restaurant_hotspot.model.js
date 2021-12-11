@@ -38,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
             comment: 'in minutes'
         },
 
+        available_for_shifts: {
+            type: DataTypes.ARRAY(DataTypes.TIME),
+        },
+
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,

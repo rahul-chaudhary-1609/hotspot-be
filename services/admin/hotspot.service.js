@@ -96,6 +96,7 @@ module.exports = {
                         hotspot_location_id: hotspotLocation.id,
                         restaurant_id:obj.restaurant_id,
                         pickup_time:parseInt(obj.pickup_time),
+                        available_for_shifts:obj.available_for_shifts,
                     }
                 })
 
@@ -223,6 +224,7 @@ module.exports = {
                         hotspot_location_id: hotspotLocationId,
                         restaurant_id:obj.restaurant_id,
                         pickup_time:parseInt(obj.pickup_time),
+                        available_for_shifts:obj.available_for_shifts,
                     }
                 })
 
