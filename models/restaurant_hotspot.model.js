@@ -40,6 +40,8 @@ module.exports = (sequelize, DataTypes) => {
 
         available_for_shifts: {
             type: DataTypes.ARRAY(DataTypes.INTEGER),
+            allowNull:false,
+            defaultValue:'{1,2,3}',
             comment: 'this restaurant available for these slots'
         },
 
