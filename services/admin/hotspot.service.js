@@ -346,7 +346,8 @@ module.exports = {
                     restaurants.push(
                         {
                             restaurant,
-                            pickup_time:row.pickup_time
+                            pickup_time:row.pickup_time,
+                            available_for_shifts:row.available_for_shifts,
                         }
                     )
                 }
