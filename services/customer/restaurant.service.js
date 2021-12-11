@@ -71,8 +71,6 @@ const getRestaurantCard =  async (args) => {
 
     if (restaurants.length === 0) throw new Error(constants.MESSAGES.no_restaurant);
 
-    console.log("restaurants",restaurants)
-
     return { restaurants };
 
 };
@@ -531,8 +529,6 @@ module.exports = {
         )
 
         let allRestaurants=(await getRestaurantCard({ restaurants, user, params })).restaurants;
-
-        console.log("allRestaurants",allRestaurants)
 
         const hotspotLocation = await models.HotspotLocation.findOne({
             where: {
