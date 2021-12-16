@@ -454,11 +454,7 @@ module.exports = {
         })
       )
 
-      let order_details={
-        ordered_items:order.order_details.ordered_items,
-        amount_details:order.order_details.amount_details,
-        is_refunded:false,
-      }
+      let order_details={...order.order_details}
 
       for(let order_item of order_details.ordered_items){
         order_item.is_refunded=false;
