@@ -445,40 +445,59 @@ module.exports = {
       }  
 
       params.payment_id=await utilityFunction.getUniqueOrderPaymentId();
-           
-      const orderPayment = await models.OrderPayment.findOrCreate({
-          where: {
-              order_id:params.order_id,
-          },
-          defaults: {
+
+      let order=await utilityFunction.convertPromiseToObject(
+        await models.Order.findOne({
+          where:{
+            order_id:params.order_id,
+          }
+        })
+      )
+
+      let order_details={
+        ordered_items=order.order_details.ordered_items,
+        amount_details=order.order_details.amount_details,
+        is_refunded:false,
+      }
+
+      for(let order_item of order_details.ordered_items){
+        order_item.is_refunded=false;
+        for(let addon of order_item.itemAddOn){
+          addon.is_refunded=false;
+        }
+      }
+
+      await models.OrderPayment.create(
+          {
             payment_id:params.payment_id,
             order_id: params.order_id,
             transaction_reference_id: params.payment_intent.id,
             payment_status: 1,
             type:constants.PAYMENT_TYPE.online,
+            order_details,
             payment_details: {
               stripePaymentDetails,
-            }
+            
           }
       });
       
-      if (orderPayment[0]) {
-          await models.OrderPayment.update({
-                order_id: params.order_id,
-                transaction_reference_id: params.payment_intent.id,
-                payment_status: 1,
-                payment_details: {
-                  stripePaymentDetails,
-                }
-              },
-              {
-                  where: {
-                      order_id:params.order_id,
-                  },
-                  returning: true,
-              }
-          );
-      }    
+      // if (orderPayment[0]) {
+      //     await models.OrderPayment.update({
+      //           order_id: params.order_id,
+      //           transaction_reference_id: params.payment_intent.id,
+      //           payment_status: 1,
+      //           payment_details: {
+      //             stripePaymentDetails,
+      //           }
+      //         },
+      //         {
+      //             where: {
+      //                 order_id:params.order_id,
+      //             },
+      //             returning: true,
+      //         }
+      //     );
+      // }    
 
       await orderService.confirmOrderPayment(params);
           

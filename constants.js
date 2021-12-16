@@ -362,5 +362,11 @@ module.exports = {
     refund_amount:2,
   },
 
+  ORDER_PAYMENT_REFUND_TYPE:{
+    none:0,
+    partial:1,
+    complete:2,
+  }
+
 }
 

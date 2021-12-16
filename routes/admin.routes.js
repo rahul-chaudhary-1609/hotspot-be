@@ -18,6 +18,7 @@ const staticContentController = require('../controllers/admin/static_content');
 const bannerController = require('../controllers/admin/banner');
 const earningController = require('../controllers/admin/earning');
 const paymentController = require('../controllers/admin/payment');
+const refundController = require('../controllers/admin/refund');
 
 const adminAuthentication = require('../middlewares/jwt');
 const adminMulter = require('../middlewares/multer');
@@ -206,3 +207,7 @@ router.post('/paymentDriver', adminAuthentication.validateAdminToken, joiValidat
 router.post('/driverPaymentSuccess', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.driverPaymentSuccess), paymentController.driverPaymentSuccess);
 router.post('/paymentRestaurant', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.paymentRestaurant), paymentController.paymentRestaurant);
 router.post('/restaurantPaymentSuccess', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.restaurantPaymentSuccess), paymentController.restaurantPaymentSuccess);
+
+//refund management
+router.get('/listOrderPayments', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.listOrderPayments), refundController.listOrderPayments);
+router.get('/getOrderPaymentDetails', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getOrderPaymentDetails), refundController.getOrderPaymentDetails);

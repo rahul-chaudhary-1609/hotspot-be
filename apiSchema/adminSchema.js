@@ -823,6 +823,15 @@ module.exports = {
         orderId: Joi.string().required(),
         driverId: Joi.number().required(),
     }),
+    
+    listOrderPayments:Joi.object({
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
+    }),
+
+    getOrderPaymentDetails:Joi.object({
+        payment_id: Joi.string().required(),
+    }),
 }
 
 

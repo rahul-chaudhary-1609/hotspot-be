@@ -46,6 +46,15 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0,
             comment: '0=>none, 1=>online, 2=>offline'
         },
+        refund_type: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=>none, 1=>partial, 2=>complete'
+        },
+        order_details: {
+            type: DataTypes.JSON,
+        },
         payment_details: {
             type: DataTypes.JSON,
         },
