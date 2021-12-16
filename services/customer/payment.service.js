@@ -455,8 +455,8 @@ module.exports = {
       )
 
       let order_details={
-        ordered_items=order.order_details.ordered_items,
-        amount_details=order.order_details.amount_details,
+        ordered_items:order.order_details.ordered_items,
+        amount_details:order.order_details.amount_details,
         is_refunded:false,
       }
 
