@@ -4,6 +4,7 @@ const geolib = require('geolib');
 const utility = require('../../utils/utilityFunctions');
 const constants = require('../../constants');
 
+let { getAvailableRestaurants }=require('../../services/customer/restaurant.service');
 
 
 module.exports = {
@@ -203,6 +204,15 @@ module.exports = {
                 }
             });
 
+            let slots=[];
+
+            for(let shift of hotspotLocations.delivery_shifts){
+                slots.push({
+                    slot:shift,
+                    restaurants:(await getAvailableRestaurants({hotspot_location_id:hotspotLocations.id,delivery_shift:shift,})).restaurantNames,
+                })
+            }
+
             const hotspotDropoff = await models.HotspotDropoff.findOne({
                 where: {
                     id: customerFavLocation.hotspot_dropoff_id
@@ -216,7 +226,8 @@ module.exports = {
                 name: hotspotLocations.name,
                 formatted_address: hotspotLocations.location_detail,
                 default_dropoff:hotspotDropoff.dropoff_detail,
-                delivery_shifts: hotspotLocations.delivery_shifts
+                delivery_shifts: hotspotLocations.delivery_shifts,
+                slots,
             }
 
             return { hotspotLocationDetails };

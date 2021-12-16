@@ -792,7 +792,7 @@ module.exports = {
          
     },
 
-    getRestaurantDishCategories:async(params)=>{        
+    getRestaurantDishCategories:async(params,user)=>{        
         let query={
             where:{
                 restaurant_id:params.restaurant_id,
@@ -800,6 +800,14 @@ module.exports = {
             }
         }      
 
+        let restaurant=await utility.convertPromiseToObject(
+            await models.Restaurant.findOne({
+                where:{
+                    id:params.restaurant_id,
+                    status:constants.STATUS.active,
+                }
+            })
+        )
         let categories=await utility.convertPromiseToObject(
             await models.RestaurantDishCategory.findAndCountAll(query)
         )
@@ -807,6 +815,24 @@ module.exports = {
         if(categories.count==0){
             throw new Error(constants.MESSAGES.no_restaurant_category_found);
         }
+
+        for(let category of categories.rows){
+            category.foodCards=[];
+
+            let restaurantDish = await models.RestaurantDish.findAll({
+                where: {
+                    restaurant_dish_category_id:parseInt(category.id),
+                    status:constants.STATUS.active,
+                }
+            });
+
+            if(restaurantDish){
+                category.foodCards= (await getDishCard({ restaurantDish,customer_id:user.id})).foodCards;
+            }
+            
+        }
+
+        categories.dish_preference=restaurant.dish_preference;
 
         return {
             categories,
