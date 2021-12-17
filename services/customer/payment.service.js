@@ -276,6 +276,18 @@ module.exports = {
 
     console.log("Payment",params)
     console.log("Payment",params)
+
+    let order= await utilityFunction.convertPromiseToObject(
+      await models.Order.findOne({
+          where: {
+              order_id:params.order_id,                       
+          }
+      })
+     )
+
+     if(order.status<=constants.ORDER_STATUS.not_paid){
+       throw new Error(constants.MESSAGES.payment_already_done(order.order_id))
+     }
             
      const customer = await utilityFunction.convertPromiseToObject(
        await models.Customer.findByPk(user.id)
