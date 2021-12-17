@@ -20,4 +20,31 @@ module.exports = {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
+
+    refund: async (req, res) => {
+        try {
+            const responseFromService = await refundService.refund(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    listRefunds: async (req, res) => {
+        try {
+            const responseFromService = await refundService.listRefunds(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getRefundDetails: async (req, res) => {
+        try {
+            const responseFromService = await refundService.getRefundDetails(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 }

@@ -5503,6 +5503,161 @@
             "responses": {}
           }
         },
+        "/admin/refund": {
+          "post": {
+            "tags": [
+              "Admin Refund Management"
+            ],
+            "description": "Api to refund",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "type",
+                "in": "formData",
+                "description": "1=> add_credit, 2=> refund_amount",
+                "required": true,
+                "type": "number",
+                "enum":[1,2]
+              },
+              {
+                "name": "order_details",
+                "in": "formData",
+                "description": "order_details object",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "transaction_reference_id",
+                "in": "formData",
+                "description": "transaction reference id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "refund_amount",
+                "in": "formData",
+                "description": "refund amount",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "payment_id",
+                "in": "formData",
+                "description": "payment id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dispute_id",
+                "in": "formData",
+                "description": "dispute id",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "driver_id",
+                "in": "formData",
+                "description": "driver id",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "datetime",
+                "in": "formData",
+                "description": "datetime Format: YYYY-MM-DD HH:mm:ss",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "admin_comment",
+                "in": "formData",
+                "description": "admin comment",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/listRefunds": {
+          "get": {
+            "tags": [
+              "Admin Refund Management"
+            ],
+            "description": "Api to list Refunds",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "search_key",
+                "in": "query",
+                "description": "search key",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/getRefundDetails": {
+          "get": {
+            "tags": [
+              "Admin Refund Management"
+            ],
+            "description": "Api to get Refund Details",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "refund_id",
+                "in": "query",
+                "description": "payment id",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
 
 
 

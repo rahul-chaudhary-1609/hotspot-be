@@ -832,6 +832,27 @@ module.exports = {
     getOrderPaymentDetails:Joi.object({
         payment_id: Joi.string().required(),
     }),
+
+    refund:Joi.object({
+        type:Joi.number().required(),
+        order_details:Joi.object().required,
+        transaction_reference_id:Joi.string().required,
+        refund_amount:Joi.number().required(),
+        payment_id:Joi.string().required,
+        dispute_id:Joi.string().optional(),
+        driver_id:Joi.string().optional(),
+        datetime:Joi.string().required(),
+        admin_comment:Joi.string().optional(),
+    }),
+
+    listRefunds:Joi.object({
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
+    }),
+
+    getRefundDetails:Joi.object({
+        refund_id: Joi.string().required(),
+    }),
 }
 
 
