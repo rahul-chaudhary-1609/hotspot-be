@@ -419,13 +419,13 @@ module.exports = {
             });   
            }
              
-           let order= await utilityFunction.convertPromiseToObject(
-            await models.Order.findOne({
-                where: {
-                    order_id:params.order_id,                       
-                }
-            })
-           )
+          //  let order= await utilityFunction.convertPromiseToObject(
+          //   await models.Order.findOne({
+          //       where: {
+          //           order_id:params.order_id,                       
+          //       }
+          //   })
+          //  )
            
 
             const stripePaymentIntent = await stripe.paymentIntents.create({
