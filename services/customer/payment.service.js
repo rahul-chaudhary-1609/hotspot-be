@@ -475,39 +475,26 @@ module.exports = {
         }
       }
 
-      await models.OrderPayment.create(
-          {
-            payment_id:params.payment_id,
-            order_id: params.order_id,
-            transaction_reference_id: params.payment_intent.id,
-            payment_status: 1,
-            type:constants.PAYMENT_TYPE.online,
-            order_details,
-            payment_details: {
-              stripePaymentDetails,
-            
-          }
-      });
-      
-      // if (orderPayment[0]) {
-      //     await models.OrderPayment.update({
-      //           order_id: params.order_id,
-      //           transaction_reference_id: params.payment_intent.id,
-      //           payment_status: 1,
-      //           payment_details: {
-      //             stripePaymentDetails,
-      //           }
-      //         },
-      //         {
-      //             where: {
-      //                 order_id:params.order_id,
-      //             },
-      //             returning: true,
-      //         }
-      //     );
-      // }    
-
-      await orderService.confirmOrderPayment(params);
+     let [orderPayment,created]= await models.OrderPayment.findOrCreate({
+       where:{
+        order_id: params.order_id,
+       },
+       default:{
+          payment_id:params.payment_id,
+          order_id: params.order_id,
+          transaction_reference_id: params.payment_intent.id,
+          payment_status: 1,
+          type:constants.PAYMENT_TYPE.online,
+          order_details,
+          payment_details: {
+            stripePaymentDetails,            
+        }
+       }
+     });
+     
+     if(created){
+        await orderService.confirmOrderPayment(params);
+     }
           
       return true
            

@@ -1258,7 +1258,6 @@ module.exports = {
 
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
-        console.log("confirmOrderPayment 1.5",params,params)
 
         const orderPayment = await models.OrderPayment.findOne({
             where: {
@@ -1269,7 +1268,6 @@ module.exports = {
 
         if (!orderPayment || !orderPayment.payment_status) throw new Error(constants.MESSAGES.no_payment);
 
-        console.log("confirmOrderPayment 2",params,params)
 
         await models.Order.update({
             status: 1,
@@ -1284,7 +1282,6 @@ module.exports = {
             }
         );
 
-        console.log("confirmOrderPayment 3",params,params)
 
         await models.Cart.destroy({
                 where: {
@@ -1294,18 +1291,16 @@ module.exports = {
                 force: true,
         })
 
-        console.log("confirmOrderPayment 4",params,params)
         
         let customer=await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
     
-        console.log("confirmOrderPayment 5",params,params)
+        
 
         await sendOrderPaymentEmail({
             order:await utilityFunction.convertPromiseToObject(order),
             orderPayment:await utilityFunction.convertPromiseToObject(orderPayment),
         })
     
-        console.log("confirmOrderPayment 6",params,params)
 
         // add notification for employee
         let notificationObj = {
@@ -1317,7 +1312,6 @@ module.exports = {
             type: constants.NOTIFICATION_TYPE.order_confirmed,
         }
 
-        console.log("notificationObj ",notificationObj)
 
         await models.Notification.create(notificationObj);
 
@@ -1330,7 +1324,6 @@ module.exports = {
             await utilityFunction.sendFcmNotification([customer.device_token], notificationData);
         }
 
-        console.log("confirmOrderPayment 7",params,params)
 
         if (order.type == constants.ORDER_TYPE.pickup) {
             await sendRestaurantOrderEmail({ order })
