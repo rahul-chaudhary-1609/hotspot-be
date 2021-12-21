@@ -442,7 +442,7 @@ module.exports = {
    
     paymentSuccess: async (params) => {
 
-      console.log("payment Success==========> 1 ============================> ", params)
+      console.log("payment Success", params)
 
       let stripePaymentDetails={};
 
@@ -475,13 +475,11 @@ module.exports = {
         }
       }
 
-    console.log("payment Success==========> 2 ============================> ", params)
-
      let [orderPayment,created]= await models.OrderPayment.findOrCreate({
        where:{
         order_id: params.order_id,
        },
-       defaults:{
+       default:{
           payment_id:params.payment_id,
           order_id: params.order_id,
           transaction_reference_id: params.payment_intent.id,
@@ -493,9 +491,8 @@ module.exports = {
         }
        }
      });
-     console.log("payment Success==========> 3 ============================> ", params)
+     
      if(created){
-      console.log("payment Success==========> 4 ============================> ", params)
         await orderService.confirmOrderPayment(params);
      }
           

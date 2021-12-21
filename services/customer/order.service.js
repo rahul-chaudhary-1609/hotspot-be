@@ -187,7 +187,7 @@ const sendRestaurantOrderEmail= async (params) => {
 
 const sendOrderPaymentEmail= async (params) => {
 
-    console.log("send Order Payment Email=========================>1============================>", params)
+    console.log("send Order Payment Email", params)
 
     let bodyHTML = `<div style="background-color:#e6e8e6;border-radius: 5px;padding: 15px;">
     <div style="text-align: center;">
@@ -417,11 +417,9 @@ const sendOrderPaymentEmail= async (params) => {
 
     console.log(mailOptions)    
     
-    console.log("send Order Payment Email=========================>2============================>", params)
     
     await sendMail.send(mailOptions);
     
-    console.log("send Order Payment Email=========================>3============================>", params)
     return true;
 }
 
@@ -1250,7 +1248,7 @@ module.exports = {
 
     confirmOrderPayment: async (params) => {
 
-        console.log("confirmOrderPayment ==========================>1 =======================>",params,params)
+        console.log("confirmOrderPayment 1",params,params)
         
         let order_id = params.order_id;
 
@@ -1262,18 +1260,17 @@ module.exports = {
 
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
-        console.log("confirmOrderPayment ==========================>2 =======================>",params,params)
+
         const orderPayment = await models.OrderPayment.findOne({
             where: {
                 order_id:order.order_id,
             }
         })
 
-        console.log("confirmOrderPayment ==========================>3 =======================>",params,params)
 
         if (!orderPayment || !orderPayment.payment_status) throw new Error(constants.MESSAGES.no_payment);
 
-        console.log("confirmOrderPayment ==========================>4 =======================>",params,params)
+
         await models.Order.update({
             status: 1,
             order_payment_id:params.payment_id,
@@ -1286,7 +1283,7 @@ module.exports = {
                 returning: true,
             }
         );
-        console.log("confirmOrderPayment ==========================>5 =======================>",params,params)
+
 
         await models.Cart.destroy({
                 where: {
@@ -1296,7 +1293,7 @@ module.exports = {
                 force: true,
         })
 
-        console.log("confirmOrderPayment ==========================>6 =======================>",params,params)
+        
         let customer=await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
     
         
@@ -1306,7 +1303,6 @@ module.exports = {
             orderPayment:await utilityFunction.convertPromiseToObject(orderPayment),
         })
     
-        console.log("confirmOrderPayment ==========================>7 =======================>",params,params)
 
         // add notification for employee
         let notificationObj = {
@@ -1337,7 +1333,6 @@ module.exports = {
             order.is_restaurant_notified = 1;
             order.save();
         }
-        console.log("confirmOrderPayment ==========================>8 =======================>",params,params)
 
         return true
          
