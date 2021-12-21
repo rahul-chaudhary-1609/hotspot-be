@@ -36,7 +36,7 @@ module.exports = {
     },
 
     getOrderPaymentDetails:async(params)=>{
-        models.OrderPayment.hasOne(models.Order,{foriegnKey:'order_id',sourceKey:'order_id',targetKey:'order_id'})
+        models.OrderPayment.belongsTo(models.Order,{foriegnKey:'order_id',sourceKey:'order_id',targetKey:'order_id'})
 
         let payment=await utility.convertPromiseToObject(
             await models.OrderPayment.findOne({
@@ -51,6 +51,8 @@ module.exports = {
                 ]
             })
         )
+
+
 
         return {payment}
 
@@ -161,7 +163,7 @@ module.exports = {
     },
     
     getRefundDetails:async(params)=>{
-        models.Refund.hasOne(models.OrderPayment,{foriegnKey:'payment_id',sourceKey:'payment_id',targetKey:'payment_id'})
+        models.Refund.belongsTo(models.OrderPayment,{foriegnKey:'payment_id',sourceKey:'payment_id',targetKey:'payment_id'})
 
         let refund=await utility.convertPromiseToObject(
             await models.OrderPayment.findOne({

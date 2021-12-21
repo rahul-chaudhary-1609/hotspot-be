@@ -210,7 +210,7 @@ router.post('/restaurantPaymentSuccess', adminAuthentication.validateAdminToken,
 
 //refund management
 router.get('/listOrderPayments', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.listOrderPayments), refundController.listOrderPayments);
-router.get('/getOrderPaymentDetails', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getOrderPaymentDetails), refundController.getOrderPaymentDetails);
+router.get('/getOrderPaymentDetails/:payment_id', adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getOrderPaymentDetails), refundController.getOrderPaymentDetails);
 router.post('/refund', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.refund), refundController.refund);
 router.get('/listRefunds', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.listRefunds), refundController.listRefunds);
-router.get('/getRefundDetails', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.getRefundDetails), refundController.getRefundDetails);
+router.get('/getRefundDetails/:refund_id', adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getRefundDetails), refundController.getRefundDetails);

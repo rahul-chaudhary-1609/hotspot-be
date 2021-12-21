@@ -825,6 +825,7 @@ module.exports = {
     }),
     
     listOrderPayments:Joi.object({
+        search_key: Joi.string().allow(null, '').optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
     }),
@@ -846,6 +847,7 @@ module.exports = {
     }),
 
     listRefunds:Joi.object({
+        search_key: Joi.string().allow(null, '').optional(),
         page: Joi.number().allow(null, '').optional(),
         page_size: Joi.number().allow(null, '').optional(),
     }),

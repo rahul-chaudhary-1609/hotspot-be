@@ -5475,7 +5475,7 @@
             "responses": {}
           }
         },
-        "/admin/getOrderPaymentDetails": {
+        "/admin/getOrderPaymentDetails/{payment_id}": {
           "get": {
             "tags": [
               "Admin Refund Management"
@@ -5494,7 +5494,7 @@
               },
               {
                 "name": "payment_id",
-                "in": "query",
+                "in": "path",
                 "description": "payment id",
                 "required": false,
                 "type": "string"
@@ -5630,7 +5630,7 @@
             "responses": {}
           }
         },
-        "/admin/getRefundDetails": {
+        "/admin/getRefundDetails/{refund_id}": {
           "get": {
             "tags": [
               "Admin Refund Management"
@@ -5649,7 +5649,7 @@
               },
               {
                 "name": "refund_id",
-                "in": "query",
+                "in": "path",
                 "description": "payment id",
                 "required": false,
                 "type": "string"

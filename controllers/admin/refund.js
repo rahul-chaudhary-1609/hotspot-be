@@ -14,7 +14,7 @@ module.exports = {
 
     getOrderPaymentDetails: async (req, res) => {
         try {
-            const responseFromService = await refundService.getOrderPaymentDetails(req.query);
+            const responseFromService = await refundService.getOrderPaymentDetails(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
@@ -41,7 +41,7 @@ module.exports = {
 
     getRefundDetails: async (req, res) => {
         try {
-            const responseFromService = await refundService.getRefundDetails(req.query);
+            const responseFromService = await refundService.getRefundDetails(req.params);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
