@@ -818,6 +818,7 @@ module.exports = {
                 itemName: dish.name,
                 itemCount: item.cart_count,
                 price:dish.price,
+                markupPrice:dish.markup_price,
                 preference:item.special_instructions,
                 itemAddOn: addOns,
                 // itemPrice:dish.markup_price?
@@ -997,6 +998,7 @@ module.exports = {
                 itemName: dish.name,
                 itemCount: item.cart_count,
                 price:dish.price,
+                markupPrice:dish.markup_price,
                 preference:item.special_instructions,
                 itemAddOn: addOns,
                 itemActualPrice:parseFloat(((parseFloat(dish.price)+actualAddOnPrice)*item.cart_count).toFixed(2)),
