@@ -442,7 +442,7 @@ module.exports = {
    
     paymentSuccess: async (params) => {
 
-      console.log("payment Success", params)
+      console.log("payment Success==========> 1 ============================> ", params)
 
       let stripePaymentDetails={};
 
@@ -475,26 +475,29 @@ module.exports = {
         }
       }
 
-    //  let [orderPayment,created]= await models.OrderPayment.findOrCreate({
-    //    where:{
-    //     order_id: params.order_id,
-    //    },
-    //    default:{
-    //       payment_id:params.payment_id,
-    //       order_id: params.order_id,
-    //       transaction_reference_id: params.payment_intent.id,
-    //       payment_status: 1,
-    //       type:constants.PAYMENT_TYPE.online,
-    //       order_details,
-    //       payment_details: {
-    //         stripePaymentDetails,            
-    //     }
-    //    }
-    //  });
-     
-    //  if(created){
-    //     await orderService.confirmOrderPayment(params);
-    //  }
+    console.log("payment Success==========> 2 ============================> ", params)
+
+     let [orderPayment,created]= await models.OrderPayment.findOrCreate({
+       where:{
+        order_id: params.order_id,
+       },
+       default:{
+          payment_id:params.payment_id,
+          order_id: params.order_id,
+          transaction_reference_id: params.payment_intent.id,
+          payment_status: 1,
+          type:constants.PAYMENT_TYPE.online,
+          order_details,
+          payment_details: {
+            stripePaymentDetails,            
+        }
+       }
+     });
+     console.log("payment Success==========> 3 ============================> ", params)
+     if(created){
+      console.log("payment Success==========> 4 ============================> ", params)
+        await orderService.confirmOrderPayment(params);
+     }
           
       return true
            
