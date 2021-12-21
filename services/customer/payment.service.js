@@ -479,7 +479,7 @@ module.exports = {
        where:{
         order_id: params.order_id,
        },
-       default:{
+       defaults:{
           payment_id:params.payment_id,
           order_id: params.order_id,
           transaction_reference_id: params.payment_intent.id,
