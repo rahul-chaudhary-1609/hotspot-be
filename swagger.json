@@ -5523,7 +5523,7 @@
               {
                 "name": "type",
                 "in": "formData",
-                "description": "1=> add_credit, 2=> refund_amount",
+                "description": "1=> company_credit, 2=> card_refund",
                 "required": true,
                 "type": "number",
                 "enum":[1,2]
@@ -5583,6 +5583,14 @@
                 "description": "admin comment",
                 "required": false,
                 "type": "string"
+              },
+              {
+                "name": "type",
+                "in": "formData",
+                "description": "1=> partial, 2=> complete",
+                "required": true,
+                "type": "number",
+                "enum":[1,2]
               }
             ],
             "responses": {}

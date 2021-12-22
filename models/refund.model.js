@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 1,
-            comment: '1=> add_credit, 2=> refund_amount'
+            comment: '1=> company_credit, 2=> card_refund'
         },
 
         refunded_on:{

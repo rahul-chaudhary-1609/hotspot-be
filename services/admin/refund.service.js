@@ -27,6 +27,7 @@ module.exports = {
 
         query.limit=limit;
         query.offset=offset;
+        query.order=[["created_at"]]
 
         let payments=await utility.convertPromiseToObject(
             await models.OrderPayment.findAndCountAll(query)
@@ -67,14 +68,14 @@ module.exports = {
             order_details:params.order_details
         }
 
-        if(params.type==constants.REFUND_TYPE.add_credit){
+        if(params.type==constants.REFUND_TYPE.company_credit){
             let customer=await models.Customer.findByPk(params.order_details.customer.id);
             customer.hotspot_credit=parseFloat(customer.hotspot_credit)+parseFloat(params.refund_amount);
             customer.save();
             refund_details.hotspot_credit=params.refund_amount;
             is_success=true;
             
-        }else if(params.type==constants.REFUND_TYPE.refund_amount){
+        }else if(params.type==constants.REFUND_TYPE.card_refund){
             const refund = await stripe.refunds.create({
                 payment_intent: params.transaction_reference_id,
                 amount:parseInt(params.refund_amount*100),
@@ -102,10 +103,7 @@ module.exports = {
                     order_details:{
                         ...orderPayment.order_details,
                         ordered_items:params.order_details.ordered_items,
-                        amount_details:{
-                            ...orderPayment.order_details.amount_details,
-                            refunded:params.refund_amount,
-                        }                        
+                        amount_details:params.order_details.amount_details,                    
                     },
                     refund_type:params.refund_type,
                 },
@@ -155,6 +153,7 @@ module.exports = {
 
         query.limit=limit;
         query.offset=offset;
+        query.order=[["created_at"]]
 
         let refunds=await utility.convertPromiseToObject(
             await models.Refund.findAndCountAll(query)
@@ -165,16 +164,16 @@ module.exports = {
     },
     
     getRefundDetails:async(params)=>{
-        models.Refund.belongsTo(models.OrderPayment,{foriegnKey:'payment_id',sourceKey:'payment_id',targetKey:'payment_id'})
+        models.Refund.belongsTo(models.Order,{foriegnKey:'order_id',sourceKey:'order_id',targetKey:'order_id'})
 
         let refund=await utility.convertPromiseToObject(
-            await models.OrderPayment.findOne({
+            await models.Refund.findOne({
                 where:{
                     refund_id:params.refund_id,
                 },
                 include:[
                     {
-                        model:models.OrderPayment,
+                        model:models.Order,
                         required:true,
                     }
                 ]

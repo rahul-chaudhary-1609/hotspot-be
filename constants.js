@@ -359,8 +359,8 @@ module.exports = {
   },
 
   REFUND_TYPE:{
-    add_credit:1,
-    refund_amount:2,
+    company_credit:1,
+    card_refund:2,
   },
 
   ORDER_PAYMENT_REFUND_TYPE:{

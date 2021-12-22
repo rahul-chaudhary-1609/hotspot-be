@@ -844,6 +844,7 @@ module.exports = {
         driver_id:Joi.string().allow(null, '').optional(),
         datetime:Joi.string().required(),
         admin_comment:Joi.string().optional(),
+        refund_type:Joi.number().required(),
     }),
 
     listRefunds:Joi.object({
