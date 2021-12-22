@@ -836,12 +836,12 @@ module.exports = {
 
     refund:Joi.object({
         type:Joi.number().required(),
-        order_details:Joi.object().required,
-        transaction_reference_id:Joi.string().required,
+        order_details:Joi.object().required(),
+        transaction_reference_id:Joi.string().required(),
         refund_amount:Joi.number().required(),
-        payment_id:Joi.string().required,
-        dispute_id:Joi.string().optional(),
-        driver_id:Joi.string().optional(),
+        payment_id:Joi.string().required(),
+        dispute_id:Joi.string().allow(null, '').optional(),
+        driver_id:Joi.string().allow(null, '').optional(),
         datetime:Joi.string().required(),
         admin_comment:Joi.string().optional(),
     }),

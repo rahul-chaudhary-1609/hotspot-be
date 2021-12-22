@@ -410,9 +410,9 @@ module.exports.getUniqueRestaurantPaymentId = async ()=> {
 
 module.exports.getUniqueRefundId = async ()=> {
     let isUniqueFound = false;
-    let refunt_id = null;
+    let refund_id = null;
     while (!isUniqueFound) {
-        refunt_id  = "RE-"+getRandomStringOfLengthTen();
+        refund_id  = "RE-"+getRandomStringOfLengthTen();
         let refund = await Refund.findOne({
             where: {
                 refund_id

@@ -59,25 +59,27 @@ module.exports = {
     },
 
     refund:async(params)=>{
+        console.log("params",params)
         let is_success=false;
         let refund_details={
             hotspot_credit:null,
             stripe_refund_details:null,
+            order_details:params.order_details
         }
 
         if(params.type==constants.REFUND_TYPE.add_credit){
             let customer=await models.Customer.findByPk(params.order_details.customer.id);
-            customer.hotspot_credit=parseFloat(customer.hotspot_credit)+params.refund_amount/100;
+            customer.hotspot_credit=parseFloat(customer.hotspot_credit)+parseFloat(params.refund_amount);
             customer.save();
-            refund_details.hotspot_credit=params.refund_amount/100;
+            refund_details.hotspot_credit=params.refund_amount;
             is_success=true;
             
         }else if(params.type==constants.REFUND_TYPE.refund_amount){
             const refund = await stripe.refunds.create({
                 payment_intent: params.transaction_reference_id,
-                amount:params.refund_amount,
+                amount:parseInt(params.refund_amount*100),
                 reason:'requested_by_customer',
-                refund_application_fee:true,
+                refund_application_fee:false,
             });
 
             if(refund && refund.id){
@@ -99,13 +101,13 @@ module.exports = {
                 {
                     order_details:{
                         ...orderPayment.order_details,
-                        ordered_items:params.ordered_items,
+                        ordered_items:params.order_details.ordered_items,
                         amount_details:{
                             ...orderPayment.order_details.amount_details,
-                            refunded:params.refund_amount/100,
-                        }
-                        
-                    }
+                            refunded:params.refund_amount,
+                        }                        
+                    },
+                    refund_type:params.refund_type,
                 },
                 {
                     where:{
@@ -121,7 +123,7 @@ module.exports = {
                 dispute_id: params.dispute_id,
                 customer_id:params.order_details.customer.id,        
                 driver_id: params.driver_id,       
-                refund_value: params.refund_amount/100,        
+                refund_value: params.refund_amount,        
                 type: params.type,        
                 refunded_on:params.datetime,
                 admin_comment: params.admin_comment,        
