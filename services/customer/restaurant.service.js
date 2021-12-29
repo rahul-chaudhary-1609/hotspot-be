@@ -331,7 +331,7 @@ module.exports = {
             }
         });
 
-        let nextDeliveryTimeIndex =1;
+        let nextDeliveryTimeIndex =0;
         
         hotspotLocation.delivery_shifts.forEach((time,index) => {
             if(params.delivery_shift == time){
@@ -536,11 +536,11 @@ module.exports = {
             }
         });
 
-        let nextDeliveryTimeIndex =1;
+        let nextDeliveryTimeIndex =0;
         
         hotspotLocation.delivery_shifts.forEach((time,index) => {
             if(params.delivery_shift == time){
-                nextDeliveryTimeIndex==index+1;
+                nextDeliveryTimeIndex=index+1;
             }
         });
 
