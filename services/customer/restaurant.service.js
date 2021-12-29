@@ -118,7 +118,7 @@ const getDishCard =  async (args) => {
         }
         
         
-        if (foodCards.length === 0)  throw new Error(constants.MESSAGES.no_dish);
+        //if (foodCards.length === 0)  throw new Error(constants.MESSAGES.no_dish);
 
         return { foodCards };    
 
@@ -700,7 +700,6 @@ module.exports = {
     
 
     getRestaurantDetails: async (params,user) => {
-
 
         const restaurantHotspot = await models.HotspotRestaurant.findOne({
             where: {
