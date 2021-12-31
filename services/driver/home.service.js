@@ -11,8 +11,8 @@ const getWhereCondition = (params,user)=>{
   let whereCondition = {
         driver_id:user.id,              
   };
-  let start_date = new Date();
-  let end_date = new Date();
+  let start_date = params.current_date;
+  let end_date = params.current_date;
   
   if (params.date) {
     whereCondition = {
@@ -20,66 +20,58 @@ const getWhereCondition = (params,user)=>{
         {
             ...whereCondition,                      
         },
-        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date(params.date))),
+        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.date),
       ]
     };
   } else if (params.filter_key) {
-      // let start_date = new Date();
-      // let end_date = new Date();
       if (params.filter_key == "Daily") {
           whereCondition = {
             [Op.and]: [
               {
                   ...whereCondition,                      
               },
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date())),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date),
             ]
           };
       }
       else if (params.filter_key == "Weekly") {
-        start_date = utility.getMonday(start_date);
-        end_date = utility.getMonday(start_date);
-        end_date.setDate(start_date.getDate() + 6);
+        start_date = utility.getStartDate(params.current_date,"week");
+        end_date = utility.getEndDate(params.current_date,"week");
           whereCondition = {
             [Op.and]: [
               {
                   ...whereCondition,                      
               },
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', start_date),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', end_date),
             ]
           };
       }
       else if (params.filter_key == "Monthly") {
-          start_date.setDate(1)
-          end_date.setMonth(start_date.getMonth() + 1)
-          end_date.setDate(1)
-          end_date.setDate(end_date.getDate() - 1)
+        start_date = utility.getStartDate(params.current_date,"month");
+        end_date = utility.getEndDate(params.current_date,"month");
         
           whereCondition = {
             [Op.and]: [
               {
                   ...whereCondition,                      
               },
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', start_date),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', end_date),
             ]
           };
       }
       else if (params.filter_key == "Yearly") {
-          start_date.setDate(1)
-          start_date.setMonth(0)
-          end_date.setDate(1)
-          end_date.setMonth(0)
-          end_date.setFullYear(end_date.getFullYear() + 1)
-          end_date.setDate(end_date.getDate()-1)
+        start_date = utility.getStartDate(params.current_date,"year");
+        end_date = utility.getEndDate(params.current_date,"year");
+
           whereCondition = {
             [Op.and]: [
               {
                   ...whereCondition,                      
               },
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(new Date(start_date))),
-              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(new Date(end_date))),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', start_date),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', end_date),
             ]
           };
     }
@@ -91,7 +83,7 @@ const getWhereCondition = (params,user)=>{
         {
             ...whereCondition,                      
         },
-        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', utility.getOnlyDate(new Date())),
+        sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date),
       ]
     };
 }
@@ -237,7 +229,6 @@ module.exports = {
       }
     )
 
-    //orderPickup.pickup_datetime = new Date();
     orderPickup.status = constants.PICKUP_STATUS.done;
     orderPickup.save()
 
