@@ -969,7 +969,7 @@ module.exports = {
             }
 
             if(dish.is_beverages){
-                beverages_count++;
+                beverages_count=beverages_count+parseInt(item.cart_count);
             }
 
             const dishAddOn=await utilityFunction.convertPromiseToObject(
