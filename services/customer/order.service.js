@@ -889,33 +889,42 @@ module.exports = {
             return { cart: null, isDeliveryOnly,isPickupOnly,isBothAvailable };
         }
 
+        let newCart={ 
+            cartInfo,
+            cartItems,
+            subtotal,
+            regulatory_response_fee:0.00,
+            delivery_fee:0.00,
+            service_fee:0.00,
+            processing_fee:stripeFeeAmount,
+            processing_fee_variable_percentage:stripeFee.variable_percentage,
+            processing_fee_fixed_amount:stripeFee.fixed_amount,
+            // totalAmount,
+            // regulatoryResponseFee:0,
+            // deliveryFee:0,
+            // serviceFee:0,
+            // processingFee:stripeFeeAmount,
+            taxes:salesTaxAmount,
+            taxes_variable_percentage:salesTax.variable_percentage,
+            taxes_fixed_amount:salesTax.fixed_amount,
+            // credits_applied,
+            grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount).toFixed(2)),
+        },
+
+        if(newCart.grandTotal<credits_applied){
+            newCart.credits_applied=newCart.grandTotal;
+            newCart.grandTotal=0;
+        }else{
+            newCart.credits_applied=credits_applied;
+            newCart.grandTotal=newCart.grandTotal-credits_applied
+        }
 
         return {
             restaurant:{
                 id:restaurant.id,
                 name:restaurant.restaurant_name,
             },
-            cart: { 
-                cartInfo,
-                cartItems,
-                subtotal,
-                regulatory_response_fee:0.00,
-                delivery_fee:0.00,
-                service_fee:0.00,
-                processing_fee:stripeFeeAmount,
-                processing_fee_variable_percentage:stripeFee.variable_percentage,
-                processing_fee_fixed_amount:stripeFee.fixed_amount,
-                // totalAmount,
-                // regulatoryResponseFee:0,
-                // deliveryFee:0,
-                // serviceFee:0,
-                // processingFee:stripeFeeAmount,
-                taxes:salesTaxAmount,
-                taxes_variable_percentage:salesTax.variable_percentage,
-                taxes_fixed_amount:salesTax.fixed_amount,
-                credits_applied,
-                grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount-credits_applied).toFixed(2)),
-            }, 
+            cart:newCart,
             isDeliveryOnly,
             isPickupOnly,
             isBothAvailable
@@ -1141,10 +1150,18 @@ module.exports = {
                 taxes:salesTaxAmount,
                 taxes_variable_percentage:salesTax.variable_percentage,
                 taxes_fixed_amount:salesTax.fixed_amount,
-                credits_applied,
-                grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount-credits_applied).toFixed(2)),
+                // credits_applied,
+                grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount).toFixed(2)),
             },
             beverages_count,
+        }
+
+        if(order_details.amount_details.grandTotal<credits_applied){
+            order_details.amount_details.credits_applied=order_details.amount_details.grandTotal;
+            order_details.amount_details.grandTotal=0;
+        }else{
+            order_details.amount_details.credits_applied=credits_applied;
+            order_details.amount_details.grandTotal=order_details.amount_details.grandTotal-credits_applied
         }
         const newOrder = await models.Order.create({
             order_id,
@@ -1313,8 +1330,17 @@ module.exports = {
 
         
         let customer=await utilityFunction.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
-    
-        
+
+        await models.Customer.update(
+            {
+                hotspot_credit:parseFloat(customer.hotspot_credit)-parseFloat(order_details.amount_details.credits_applied),
+            },
+            {
+                where:{
+                    id:order.customer_id
+                }
+            }
+        )
 
         await sendOrderPaymentEmail({
             order:await utilityFunction.convertPromiseToObject(order),
