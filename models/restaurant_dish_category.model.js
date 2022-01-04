@@ -30,6 +30,13 @@ module.exports = (sequelize, DataTypes) => {
             allowNull:false,
         },
 
+        is_beverages: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=>no,1=>yes'
+        },
+
         status: {
             type: DataTypes.INTEGER,
             allowNull: false,

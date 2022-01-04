@@ -296,6 +296,7 @@ module.exports = {
             let categoryObj={
                 name:params.name,
                 restaurant_id:params.restaurant_id,
+                is_beverages:params.is_beverages
             }
 
             return {
@@ -332,6 +333,7 @@ module.exports = {
             if(category){
 
                 category.name=params.name;
+                category.is_beverages=params.is_beverages;
                 category.save();
 
                 return {

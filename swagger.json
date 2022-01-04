@@ -1209,6 +1209,15 @@
                 "description": "enetr category name",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "is_beverages",
+                "in": "formData",
+                "description": "0=>no, 1=>yes",
+                "required": true,
+                "type": "number",
+                "default":0,
+                "enum":[0,1]
               }
             ],
             "responses": {}
@@ -1251,6 +1260,15 @@
                 "description": "enetr category name",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "is_beverages",
+                "in": "formData",
+                "description": "0=>no, 1=>yes",
+                "required": true,
+                "type": "number",
+                "default":0,
+                "enum":[0,1]
               }
             ],
             "responses": {}

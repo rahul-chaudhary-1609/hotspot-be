@@ -698,12 +698,14 @@ module.exports = {
     addRestaurantDishCategory: Joi.object({
         name: Joi.string().required(),
         restaurant_id: Joi.number().required(),
+        is_beverages:Joi.number().required(),
     }),
 
     editRestaurantDishCategory: Joi.object({
         category_id: Joi.number().required(),
         restaurant_id: Joi.number().required(),
         name: Joi.string().required(),
+        is_beverages:Joi.number().required(),
     }),
 
     listRestaurantDishCategories: Joi.object({        
