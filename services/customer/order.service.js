@@ -1333,7 +1333,7 @@ module.exports = {
 
         await models.Customer.update(
             {
-                hotspot_credit:parseFloat(customer.hotspot_credit)-parseFloat(order_details.amount_details.credits_applied),
+                hotspot_credit:parseFloat(customer.hotspot_credit)-parseFloat(order.order_details.amount_details.credits_applied),
             },
             {
                 where:{
