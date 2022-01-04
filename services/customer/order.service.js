@@ -952,6 +952,7 @@ module.exports = {
         });
         
         let ordered_items = [];
+        let beverages_count=0;
 
         for (const item of cart.rows) {
 
@@ -959,11 +960,16 @@ module.exports = {
                 where: {
                     id: item.restaurant_dish_id,
                     status:constants.STATUS.active,
-                }
+                },
+                raw:true,
             })
 
             if(!dish){
                 throw new Error(constants.MESSAGES.cart_item_not_available)
+            }
+
+            if(dish.is_beverages){
+                beverages_count++;
             }
 
             const dishAddOn=await utilityFunction.convertPromiseToObject(
@@ -992,6 +998,7 @@ module.exports = {
                     name: addOn.name,
                     price,
                     actualAddOnPrice,
+                    is_refunded:false,
                 }
             })
 
@@ -1007,7 +1014,9 @@ module.exports = {
                 itemMarkupPrice:dish.markup_price && parseFloat(((parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))+addOnPrice)*item.cart_count).toFixed(2)),
                 itemPrice:dish.markup_price?
                            parseFloat(((parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))+addOnPrice)*item.cart_count).toFixed(2)):
-                           parseFloat(((parseFloat(dish.price)+addOnPrice)*item.cart_count).toFixed(2))              
+                           parseFloat(((parseFloat(dish.price)+addOnPrice)*item.cart_count).toFixed(2)),
+                is_beverages:dish.is_beverages,
+                is_refunded:false,              
             })
         }
 
@@ -1134,7 +1143,8 @@ module.exports = {
                 taxes_fixed_amount:salesTax.fixed_amount,
                 credits_applied,
                 grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount-credits_applied).toFixed(2)),
-            }
+            },
+            beverages_count,
         }
         const newOrder = await models.Order.create({
             order_id,

@@ -138,6 +138,12 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 0,
             comment: '0=>not_paid, 1=>paid, 2=>not_applicable'
         },
+        refund_type: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0,
+            comment: '0=>none, 1=>partial, 2=>complete'
+        },
 
 
     }, {

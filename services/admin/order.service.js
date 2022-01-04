@@ -392,6 +392,7 @@ module.exports = {
                 updatedRestaurant = currentOrderPickup.pickup_details.restaurants.map((rest) => {
                     if (rest.id == currentOrder.order_details.restaurant.id) {
                         rest.order_count = parseInt(rest.order_count) + 1;
+                        rest.beverages_count = parseInt(rest.beverages_count) + parseInt(currentOrder.order_details.beverages_count);
                         rest.fee =parseFloat(rest.fee)+ parseFloat(currentOrder.order_details.restaurant.fee);
                         return rest;
                     }
@@ -402,6 +403,7 @@ module.exports = {
             }
             else {
                 currentOrder.order_details.restaurant.order_count = 1;
+                currentOrder.order_details.restaurant.beverages_count = currentOrder.order_details.beverages_count;
                 currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
                 updatedRestaurant=[...currentOrderPickup.pickup_details.restaurants,currentOrder.order_details.restaurant];
             }
@@ -418,6 +420,7 @@ module.exports = {
         }
         else {
             currentOrder.order_details.restaurant.order_count = 1;
+            currentOrder.order_details.restaurant.beverages_count = currentOrder.order_details.beverages_count;
             currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
             let pickup_datetime=deliveryPickupDatetime;//moment(currentOrder.delivery_datetime).subtract(20, "minutes").format("YYYY-MM-DD HH:mm:ss");
             

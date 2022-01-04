@@ -98,6 +98,22 @@ module.exports = {
                 })
             )
 
+            await models.Order.update(
+                {
+                    order_details:{
+                        ...orderPayment.order_details,
+                        ordered_items:params.order_details.ordered_items,
+                        amount_details:params.order_details.amount_details,                    
+                    },
+                    refund_type:params.refund_type,
+                },
+                {
+                    where:{
+                        order_id:orderPayment.order_id,
+                    }
+                }
+            )
+
             await models.OrderPayment.update(
                 {
                     order_details:{

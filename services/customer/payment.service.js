@@ -466,14 +466,14 @@ module.exports = {
         })
       )
 
-      let order_details={...order.order_details}
+      // let order_details={...order.order_details}
 
-      for(let order_item of order_details.ordered_items){
-        order_item.is_refunded=false;
-        for(let addon of order_item.itemAddOn){
-          addon.is_refunded=false;
-        }
-      }
+      // for(let order_item of order_details.ordered_items){
+      //   order_item.is_refunded=false;
+      //   for(let addon of order_item.itemAddOn){
+      //     addon.is_refunded=false;
+      //   }
+      // }
 
      let [orderPayment,created]= await models.OrderPayment.findOrCreate({
        where:{
@@ -485,7 +485,7 @@ module.exports = {
           transaction_reference_id: params.payment_intent.id,
           payment_status: 1,
           type:constants.PAYMENT_TYPE.online,
-          order_details,
+          order_details:{...order.order_details},
           payment_details: {
             stripePaymentDetails,            
         }

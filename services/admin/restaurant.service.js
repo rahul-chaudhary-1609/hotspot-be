@@ -502,6 +502,13 @@ module.exports = {
         })
 
         if(!dish){
+            let category=await RestaurantDishCategory.findOne({
+                where:{
+                    id:params.restaurant_dish_category_id,
+                },
+                raw:true,
+            });
+
             let dishObj={
                 name:params.name,
                 price:parseFloat(params.price),
@@ -511,6 +518,7 @@ module.exports = {
                 image_url:params.image_url,
                 is_recommended:params.is_recommended,
                 is_quick_filter:params.is_quick_filter,
+                is_beverages:category.is_beverages,
             }
 
             return {
