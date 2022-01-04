@@ -909,7 +909,7 @@ module.exports = {
             taxes_fixed_amount:salesTax.fixed_amount,
             // credits_applied,
             grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount).toFixed(2)),
-        },
+        };
 
         if(newCart.grandTotal<credits_applied){
             newCart.credits_applied=newCart.grandTotal;
