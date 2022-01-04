@@ -845,7 +845,7 @@ module.exports = {
         dispute_id:Joi.string().allow(null, '').optional(),
         driver_id:Joi.string().allow(null, '').optional(),
         datetime:Joi.string().required(),
-        admin_comment:Joi.string().optional(),
+        admin_comment:Joi.string().allow(null, '').optional(),
         refund_type:Joi.number().required(),
     }),
 
