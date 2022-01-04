@@ -1267,6 +1267,7 @@ module.exports = {
                 ...order.order_details.amount_details,
                 tip:parseFloat(params.tip_amount),
                 grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)).toFixed(2)),
+                totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)).toFixed(2)),
             }
         }
 
