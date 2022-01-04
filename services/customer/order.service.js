@@ -908,15 +908,15 @@ module.exports = {
             taxes_variable_percentage:salesTax.variable_percentage,
             taxes_fixed_amount:salesTax.fixed_amount,
             // credits_applied,
-            grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount).toFixed(2)),
+            totalCost:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount).toFixed(2)),
         };
 
-        if(newCart.grandTotal<credits_applied){
-            newCart.credits_applied=newCart.grandTotal;
+        if(newCart.totalCost<credits_applied){
+            newCart.credits_applied=newCart.totalCost;
             newCart.grandTotal=0;
         }else{
             newCart.credits_applied=credits_applied;
-            newCart.grandTotal=newCart.grandTotal-credits_applied
+            newCart.grandTotal=newCart.totalCost-credits_applied
         }
 
         return {
@@ -1151,17 +1151,17 @@ module.exports = {
                 taxes_variable_percentage:salesTax.variable_percentage,
                 taxes_fixed_amount:salesTax.fixed_amount,
                 // credits_applied,
-                grandTotal:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount).toFixed(2)),
+                totalCost:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount).toFixed(2)),
             },
             beverages_count,
         }
 
-        if(order_details.amount_details.grandTotal<credits_applied){
-            order_details.amount_details.credits_applied=order_details.amount_details.grandTotal;
+        if(order_details.amount_details.totalCost<credits_applied){
+            order_details.amount_details.credits_applied=order_details.amount_details.totalCost;
             order_details.amount_details.grandTotal=0;
         }else{
             order_details.amount_details.credits_applied=credits_applied;
-            order_details.amount_details.grandTotal=order_details.amount_details.grandTotal-credits_applied
+            order_details.amount_details.grandTotal=order_details.amount_details.totalCost-credits_applied
         }
         const newOrder = await models.Order.create({
             order_id,
