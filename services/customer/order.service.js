@@ -285,7 +285,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right;">
                     <div>
-                        $${params.order.order_details.amount_details.regulatory_response_fee.toFixed(2)}
+                        $${params.order.order_details.amount_details.regulatory_response_fee.toFixed(2) || "Free"}
                     </div>
                 </td>
             </tr>
@@ -297,7 +297,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right;">
                     <div>
-                        $${params.order.order_details.amount_details.delivery_fee.toFixed(2)}
+                        $${params.order.order_details.amount_details.delivery_fee.toFixed(2) || "Free"}
                     </div>
                 </td>
             </tr>
@@ -309,7 +309,7 @@ const sendOrderPaymentEmail= async (params) => {
                 </td>
                 <td style="text-align: right;">
                     <div>
-                        $${params.order.order_details.amount_details.service_fee.toFixed(2)}
+                        $${params.order.order_details.amount_details.service_fee.toFixed(2) || "Free"}
                     </div>
                 </td>
             </tr>

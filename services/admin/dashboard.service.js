@@ -17,7 +17,7 @@ const getRefundAmount=async(query)=>{
           raw:true,
       })
 
-      refund_amount=refund_amount+parseFloat((orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal,0)).toFixed(2))
+      refund_amount=refund_amount+parseFloat((orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal || 0,0)).toFixed(2))
   }
 
   return refund_amount;

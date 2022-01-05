@@ -291,7 +291,7 @@ module.exports = {
                 },
                 raw:true,
             })
-            orderDelivery.refund_amount=(orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal,0)).toFixed(2)
+            orderDelivery.refund_amount=(orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal || 0,0)).toFixed(2)
             orderDelivery.order_amount = (parseFloat(orderDelivery.amount)).toFixed(2);
             orderDelivery.restaurant_fee = (orderDelivery.delivery_details.restaurants.reduce((result, restaurant) => result + restaurant.fee, 0)).toFixed(2)
             orderDeliveriesRows.push(orderDelivery)
