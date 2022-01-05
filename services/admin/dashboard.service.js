@@ -17,7 +17,7 @@ const getRefundAmount=async(query)=>{
           raw:true,
       })
 
-      refund_amount=refund_amount+(orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal,0)).toFixed(2)
+      refund_amount=refund_amount+parseFloat((orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal,0)).toFixed(2))
   }
 
   return refund_amount;
@@ -281,9 +281,15 @@ module.exports = {
       const monthEndDate = utility.getEndDate(params.current_date,"month")
      
       const yearStartDate = utility.getStartDate(params.current_date,"year")
-      const yearEndDate = utility.getEndDate(params.current_date,"year")     
+      const yearEndDate = utility.getEndDate(params.current_date,"year")  
+      
+      const completedOrders = models.Order.count({
+        where: {
+            status:constants.ORDER_STATUS.delivered,
+        }
+      });
 
-      const totalOrders = await models.Order.count({
+      const totalOrders = models.Order.count({
         where: {
           status:{
             [Op.in]:[
@@ -296,15 +302,7 @@ module.exports = {
         }
         });
 
-        const completedOrders = await models.Order.count({
-        where: {
-            status:constants.ORDER_STATUS.delivered,
-        }
-        });
-
-        const completedPercent = Math.floor((completedOrders / totalOrders) * 100)
-
-        const todayOrders = await models.Order.count({
+        const todayOrders = models.Order.count({
             where: {
               [Op.and]: [
                 {
@@ -321,7 +319,8 @@ module.exports = {
               ] 
           }
         });
-        const monthOrders = await models.Order.count({
+
+        const monthOrders = models.Order.count({
           where:{
             [Op.and]: [
               {
@@ -340,7 +339,7 @@ module.exports = {
           }
       });
 
-      const yearOrders = await models.Order.count({
+      const yearOrders = models.Order.count({
         where: {
           [Op.and]: [
             {
@@ -358,12 +357,17 @@ module.exports = {
           ]
         }
       });
+
+      let orders=await Promise.all([completedOrders,totalOrders,todayOrders,monthOrders,yearOrders ])
+
+      const completedPercent = Math.floor((orders[0] / orders[1]) * 100)
+
       return { 
-        completedOrderPercentage:completedPercent,
-        numberOfTotalOrders:totalOrders,
-        numberOfTodayOrders:todayOrders,
-        numberOfMonthlyOrders:monthOrders,
-        numberOfYearlyOrders:yearOrders 
+        completedOrderPercentage:orders[0],
+        numberOfTotalOrders:orders[1],
+        numberOfTodayOrders:orders[2],
+        numberOfMonthlyOrders:orders[3],
+        numberOfYearlyOrders:orders[4] 
       };
   },
 
@@ -374,13 +378,13 @@ module.exports = {
     const yearStartDate = utility.getStartDate(params.current_date,"year")
     const yearEndDate = utility.getEndDate(params.current_date,"year")
     
-    let TotalAmount = await models.OrderDelivery.sum('hotspot_fee');
+    let totalAmount = models.OrderDelivery.sum('hotspot_fee');
 
     const query1={
         where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
     }
 
-    let todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',query1);    
+    let todayTotalAmount = models.OrderDelivery.sum('hotspot_fee',query1);    
 
     const query2={
       where: {
@@ -391,7 +395,7 @@ module.exports = {
       }
     };
 
-    let monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',query2);
+    let monthTotalAmount = models.OrderDelivery.sum('hotspot_fee',query2);
 
     const query3={
       where:  {
@@ -402,18 +406,25 @@ module.exports = {
       }
     };
 
-    let yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',query3);
+    let yearTotalAmount = models.OrderDelivery.sum('hotspot_fee',query3);
 
-    let totalRefund=await getRefundAmount({});
-    let todayTotalRefund=await getRefundAmount(query1);
-    let monthTotalRefund=await getRefundAmount(query2);
-    let yearTotalRefund=await getRefundAmount(query3);
+    let amounts=await Promise.all([totalAmount,todayTotalAmount,monthTotalAmount,yearTotalAmount])
+
+
+    let totalRefund= getRefundAmount({});
+    let todayTotalRefund= getRefundAmount(query1);
+    let monthTotalRefund= getRefundAmount(query2);
+    let yearTotalRefund= getRefundAmount(query3);
+
+    let refunds=await Promise.all([totalRefund,todayTotalRefund,monthTotalRefund,yearTotalRefund])
+
+    console.log("totalRefund,todayTotalRefund,monthTotalRefund,yearTotalRefund==========================>\n",amounts,refunds)
 
     return {
-      totalRevenue: parseFloat(TotalAmount.toFixed(2))-parseFloat(totalRefund.toFixed(2)),
-      todayRevenue: parseFloat(todayTotalAmount.toFixed(2))-parseFloat(todayTotalRefund.toFixed(2)),
-      monthlyRevenue: parseFloat(monthTotalAmount.toFixed(2))-parseFloat(monthTotalRefund.toFixed(2)),
-      yearlyRevenue: parseFloat(yearTotalAmount.toFixed(2))-parseFloat(yearTotalRefund.toFixed(2)),
+      totalRevenue: parseFloat((amounts[0]-refunds[0]).toFixed(2)),
+      todayRevenue: parseFloat((amounts[1]-refunds[1]).toFixed(2)),
+      monthlyRevenue: parseFloat((amounts[2]-refunds[2]).toFixed(2)),
+      yearlyRevenue: parseFloat((amounts[3]-refunds[3]).toFixed(2)),
     };
 
   
