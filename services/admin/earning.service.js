@@ -285,6 +285,13 @@ module.exports = {
         
         for (let orderDelivery of orderDeliveries.rows) {
             //orderDelivery.order_amount = (parseFloat(orderDelivery.amount) - parseFloat(orderDelivery.tip_amount)).toFixed(2);
+            let orders=await models.Order.findAll({
+                where:{
+                    order_delivery_id:orderDelivery.delivery_id,
+                },
+                raw:true,
+            })
+            orderDelivery.refund_amount=(orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal,0)).toFixed(2)
             orderDelivery.order_amount = (parseFloat(orderDelivery.amount)).toFixed(2);
             orderDelivery.restaurant_fee = (orderDelivery.delivery_details.restaurants.reduce((result, restaurant) => result + restaurant.fee, 0)).toFixed(2)
             orderDeliveriesRows.push(orderDelivery)

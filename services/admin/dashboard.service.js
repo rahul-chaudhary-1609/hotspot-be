@@ -4,6 +4,25 @@ const {sequelize}=require('../../models');
 const constants = require('../../constants');
 const utility = require('../../utils/utilityFunctions');
 
+const getRefundAmount=async(query)=>{
+  let orderDeliveries = await models.OrderDelivery.findAll(query)
+
+  let refund_amount=0;
+  for (let orderDelivery of orderDeliveries.rows) {
+
+      let orders=await models.Order.findAll({
+          where:{
+              order_delivery_id:orderDelivery.delivery_id,
+          },
+          raw:true,
+      })
+
+      refund_amount=refund_amount+(orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal,0)).toFixed(2)
+  }
+
+  return refund_amount;
+
+}
 
 module.exports = {
 
@@ -356,117 +375,45 @@ module.exports = {
     const yearEndDate = utility.getEndDate(params.current_date,"year")
     
     let TotalAmount = await models.OrderDelivery.sum('hotspot_fee');
-    
-    // let allPickupTypeOrders = await utility.convertPromiseToObject(
-    //   await models.Order.findAll({
-    //     where: {
-    //       type: constants.ORDER_TYPE.pickup,
-    //       status:constants.ORDER_STATUS.delivered,
-    //       }
-    //   })
-    // )
 
-    // TotalAmount += allPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-    //   return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-    // }, 0)
-
-    let todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
+    const query1={
         where: sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
-    });
-    
-    // let todayPickupTypeOrders = await utility.convertPromiseToObject(
-    //   await models.Order.findAll({
-    //     where: {
-    //       [Op.and]: [
-    //         {
-    //           type: constants.ORDER_TYPE.pickup,
-    //         },
-    //         {
-    //           status:constants.ORDER_STATUS.delivered,
-    //         },
-    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '=', params.current_date)
-    //       ]
-          
-          
-    //     }
-    //   })
-    // )
+    }
 
-    // todayTotalAmount += todayPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-    //   return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-    // }, 0)
-    
+    let todayTotalAmount = await models.OrderDelivery.sum('hotspot_fee',query1);    
 
-      let monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-        where: {
-          [Op.and]: [
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', monthStartDate),
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', monthEndDate)
-          ]
-        }
-      });
-    
-    // let monthPickupTypeOrders = await utility.convertPromiseToObject(
-    //   await models.Order.findAll({
-    //     where: {
-    //       [Op.and]: [
-    //         {
-    //           type: constants.ORDER_TYPE.pickup,
-    //         },
-    //         {
-    //           status:constants.ORDER_STATUS.delivered,
-    //         },
-    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', monthStartDate),
-    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', monthEndDate)
-    //       ]
-          
-          
-    //     }
-    //   })
-    // )
+    const query2={
+      where: {
+        [Op.and]: [
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', monthStartDate),
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', monthEndDate)
+        ]
+      }
+    };
 
-    // monthTotalAmount += monthPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-    //   return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-    // }, 0)
+    let monthTotalAmount = await models.OrderDelivery.sum('hotspot_fee',query2);
 
-      let yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',{
-        where:  {
-          [Op.and]: [
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', yearStartDate),
-            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', yearEndDate)
-          ]
-        }
-      });
-    
-    // let yearPickupTypeOrders = await utility.convertPromiseToObject(
-    //   await models.Order.findAll({
-    //     where: {
-    //       [Op.and]: [
-    //         {
-    //           type: constants.ORDER_TYPE.pickup,
-    //         },
-    //         {
-    //           status:constants.ORDER_STATUS.delivered,
-    //         },
-    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', yearStartDate),
-    //         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', yearEndDate)
-    //       ]
-          
-          
-    //     }
-    //   })
-    // )
+    const query3={
+      where:  {
+        [Op.and]: [
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', yearStartDate),
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', yearEndDate)
+        ]
+      }
+    };
 
-    // yearTotalAmount += yearPickupTypeOrders.reduce((result, pickupTypeOrder) => {
-    //   return result + parseFloat(pickupTypeOrder.amount) - parseFloat(pickupTypeOrder.order_details.restaurant.fee)
-    // }, 0)
+    let yearTotalAmount = await models.OrderDelivery.sum('hotspot_fee',query3);
 
+    let totalRefund=await getRefundAmount({});
+    let todayTotalRefund=await getRefundAmount(query1);
+    let monthTotalRefund=await getRefundAmount(query2);
+    let yearTotalRefund=await getRefundAmount(query3);
 
     return {
-      totalRevenue: parseFloat(TotalAmount.toFixed(2)),
-      todayRevenue: parseFloat(todayTotalAmount.toFixed(2)),
-      monthlyRevenue: parseFloat(monthTotalAmount.toFixed(2)),
-      yearlyRevenue: parseFloat(yearTotalAmount.toFixed(2)),
+      totalRevenue: parseFloat(TotalAmount.toFixed(2))-parseFloat(totalRefund.toFixed(2)),
+      todayRevenue: parseFloat(todayTotalAmount.toFixed(2))-parseFloat(todayTotalRefund.toFixed(2)),
+      monthlyRevenue: parseFloat(monthTotalAmount.toFixed(2))-parseFloat(monthTotalRefund.toFixed(2)),
+      yearlyRevenue: parseFloat(yearTotalAmount.toFixed(2))-parseFloat(yearTotalRefund.toFixed(2)),
     };
 
   
