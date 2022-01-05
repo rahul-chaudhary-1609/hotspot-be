@@ -319,6 +319,7 @@ module.exports = {
                 order_status:order.status,
                 driver: order.order_details.driver? `${order.order_details.driver.first_name} ${order.order_details.driver.last_name}`:null,
                 delivery_image_urls:order.delivery_image_urls,
+                refund_type:order.refund_type,
                 order_details:order.order_details,
             }
             
