@@ -8,7 +8,7 @@ const getRefundAmount=async(query)=>{
   let orderDeliveries = await models.OrderDelivery.findAll(query)
 
   let refund_amount=0;
-  for (let orderDelivery of orderDeliveries.rows) {
+  for (let orderDelivery of orderDeliveries) {
 
       let orders=await models.Order.findAll({
           where:{
