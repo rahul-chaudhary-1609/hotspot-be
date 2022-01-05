@@ -54,6 +54,7 @@ const getOrderCard =  async (args) => {
                 restaurant: order.order_details.restaurant.restaurant_name,
                 restaurant_image_url:order.order_details.restaurant.restaurant_image_url,
                 status:order.status,
+                refund_type:order.refund_type,
                 statusInfo,
                 createdAt: order.createdAt,
                 updatedAt: moment(order.payment_datetime).format("YYYY-MM-DD HH:mm:ss"),
@@ -1476,6 +1477,7 @@ module.exports = {
                 amount: order.tip_amount? parseFloat(order.amount)+parseFloat(order.tip_amount):parseFloat(order.amount),
                 status: order.status,
                 order_type:order.type,
+                refund_type:order.refund_type,
                 trackInfo,
             }
             
