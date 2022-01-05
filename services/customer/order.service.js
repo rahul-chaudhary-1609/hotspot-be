@@ -1479,6 +1479,7 @@ module.exports = {
                 order_type:order.type,
                 refund_type:order.refund_type,
                 trackInfo,
+                refundDetails:order.refund_type?order.order_details.ordered_items:null,
             }
             
             return {orderDetails };
