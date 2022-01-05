@@ -1171,7 +1171,7 @@ module.exports = {
             hotspot_location_id: hotspot ? hotspot.id : null,
             hotspot_dropoff_id: hotspot ? hotspot.dropoff.id : null,
             order_details,
-            amount,
+            amount:order_details.amount_details.totalCost,
             type,
             delivery_datetime,
             driver_payment_status: type == constants.ORDER_TYPE.delivery?constants.PAYMENT_STATUS.not_paid:constants.PAYMENT_STATUS.not_applicable,
