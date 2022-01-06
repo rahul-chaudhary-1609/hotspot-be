@@ -326,8 +326,8 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                         // let timeDiff = Math.floor(((new Date(moment().tz(process.env.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss'))).getTime() - (new Date(moment(cutOffTime).format('YYYY-MM-DD HH:mm:ss'))).getTime()) / 1000)
                         let timeDiff = currentTime.toDate().getTime() - moment(cutOffTime,"YYYY-MM-DD HH:mm:ss").utc().toDate().getTime();
                         let of=moment().utcOffset();
-                        console.log(currentTime.toDate().getTime(),moment(`${cutOffTime}.${of}Z`).utc().toDate().getTime())
-                        console.log(currentTime.toDate(),moment(`${cutOffTime}.${of}Z`).utc().toDate())
+                        console.log(currentTime.toDate().getTime(),moment(new Date(cutOffTime)).utc().toDate().getTime())
+                        console.log(currentTime.toDate(),moment(new Date(cutOffTime)).utc().toDate())
                         
                         console.log("timeDiff:",timeDiff)
 
