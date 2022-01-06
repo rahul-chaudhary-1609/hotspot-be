@@ -57,22 +57,22 @@ const sendRestaurantOrderEmail= async (params) => {
 
     
     bodyHTML += `<div>
-    <table cellpadding=5 style="margin-top:10px;border-collapse: collapse;display: block;overflow-x: auto;white-space: nowrap;max-width: 1000px;" border="1">
+    <table cellpadding=5 style="margin-top:10px;border-collapse: collapse;display: block;overflow-x: auto;white-space: nowrap;max-width: 1100px;" border="1">
         <tr>
             <th style="text-align: center">Order#</th>
-            <th style="text-align: center;min-width: 150px;">Order ID</th>
+            <th style="text-align: center;min-width: 100px;">Order ID</th>
             <th style="text-align: center;min-width: 150px;"> <span style="color: red;">(Label on order)</span><br />Customer Name</th>
             <th style="text-align: center;min-width: 150px;">
                 <span style="color: red;">(Label on order)</span><br />Drop-off Location
             </th>`
             for(let th=0;th<maxOrderItemCount;th++){
-                bodyHTML+=`<th style="text-align: center;min-width: 350px;">
-                    Order #${th+1}<br />
+                bodyHTML+=`<th style="text-align: center;min-width: 325px;">
+                    Item #${th+1}<br />
                     Quantity | Item | Add-on | Special Instructions
                 </th>`
             }
             for(let th=0;th<maxBeverageCount;th++){
-                bodyHTML+=`<th style="text-align: center;min-width: 200px;">
+                bodyHTML+=`<th style="text-align: center;min-width: 150px;">
                     Beverage #${th+1}<br />
                     Quantity | Item
                 </th>`
@@ -137,11 +137,11 @@ const sendRestaurantOrderEmail= async (params) => {
     bodyHTML+=`<tr>`
 
     while(totalColumnCount>0){
-        bodyHTML +=`<td style="text-align: center">-</td>`;
+        bodyHTML +=`<td style="text-align: center"></td>`;
         totalColumnCount--;
     }
 
-    bodyHTML+=`<td style="text-align: center">$${totalRestaurantFee}</td></tr>`
+    bodyHTML+=`<td style="text-align: center"><strong>Total: $${totalRestaurantFee}</strong></td></tr>`
 
     bodyHTML += `</table></div>`
 
