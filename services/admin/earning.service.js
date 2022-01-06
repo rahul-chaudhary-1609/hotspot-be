@@ -57,7 +57,7 @@ const sendRestaurantOrderEmail= async (params) => {
 
     
     bodyHTML += `<div>
-    <table cellpadding=5 style="margin-top:10px;border-collapse: collapse;display: block;overflow-x: auto;white-space: nowrap;" border="1">
+    <table cellpadding=5 style="margin-top:10px;border-collapse: collapse;display: block;overflow-x: auto;white-space: nowrap;max-width: 1000px;" border="1">
         <tr>
             <th style="text-align: center">Order#</th>
             <th style="text-align: center;min-width: 150px;">Order ID</th>
@@ -114,7 +114,7 @@ const sendRestaurantOrderEmail= async (params) => {
 
         order.order_details.ordered_items.filter(item=>item.is_beverages).forEach((ordered_item)=>{
             bodyHTML +=`<td style="text-align:center;">
-                        ${ordered_item.itemCount} | ${ordered_item.itemName}</td>`;
+                        ${ordered_item.itemCount} | ${ordered_item.itemName} | `;
 
             ordered_item.itemAddOn.forEach((addOn,addOnCount)=>{
                 bodyHTML +=(addOnCount+1)<ordered_item.itemAddOn.length?`${addOn.name}, `:`${addOn.name}`;
