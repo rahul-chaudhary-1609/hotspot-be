@@ -258,9 +258,9 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
         let hotspotLocations = await utilityFunctions.convertPromiseToObject(
             await HotspotLocation.findAll({
                 attributes:["id","name", "delivery_shifts"],
-                // where:{
-                //     id:1,
-                // }        
+                where:{
+                    id:1,
+                }        
             })
         )
 
