@@ -20,7 +20,7 @@ const sendRestaurantOrderEmail= async (params) => {
     
     let maxBeverageCount=params.orders.reduce((max,order)=>
             max<order.order_details.ordered_items.filter(item=>item.is_beverages).length?
-            order.order_details.ordered_items.filter(item=>!item.is_beverages).length:
+            order.order_details.ordered_items.filter(item=>item.is_beverages).length:
             max,
             0
         )
@@ -56,8 +56,8 @@ const sendRestaurantOrderEmail= async (params) => {
     let bodyHTML = `<p>${params.restaurant.restaurant_name}</p>`;
 
     
-    bodyHTML += `<div style="overflow-x:scroll;width:100%px;">
-    <table cellpadding=5 style="margin-top:10px;border-collapse: collapse;" border="1">
+    bodyHTML += `<div>
+    <table cellpadding=5 style="margin-top:10px;border-collapse: collapse;display: block;overflow-x: auto;white-space: nowrap;" border="1">
         <tr>
             <th style="text-align: center">Order#</th>
             <th style="text-align: center;min-width: 150px;">Order ID</th>
@@ -67,13 +67,13 @@ const sendRestaurantOrderEmail= async (params) => {
             </th>`
             for(let th=0;th<maxOrderItemCount;th++){
                 bodyHTML+=`<th style="text-align: center;min-width: 350px;">
-                    Order#1<br />
+                    Order #${th+1}<br />
                     Quantity | Item | Add-on | Special Instructions
                 </th>`
             }
             for(let th=0;th<maxBeverageCount;th++){
                 bodyHTML+=`<th style="text-align: center;min-width: 200px;">
-                    Order#1<br />
+                    Beverage #${th+1}<br />
                     Quantity | Item
                 </th>`
             }
@@ -115,6 +115,12 @@ const sendRestaurantOrderEmail= async (params) => {
         order.order_details.ordered_items.filter(item=>item.is_beverages).forEach((ordered_item)=>{
             bodyHTML +=`<td style="text-align:center;">
                         ${ordered_item.itemCount} | ${ordered_item.itemName}</td>`;
+
+            ordered_item.itemAddOn.forEach((addOn,addOnCount)=>{
+                bodyHTML +=(addOnCount+1)<ordered_item.itemAddOn.length?`${addOn.name}, `:`${addOn.name}`;
+            })
+
+            bodyHTML +=`</td>`
 
             currentBeverageCount--;
         })
