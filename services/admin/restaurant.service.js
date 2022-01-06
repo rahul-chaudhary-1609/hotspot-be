@@ -5,7 +5,8 @@ const {
     HotspotRestaurant,
     RestaurantDish,
     HotspotLocation,
-    DishAddOn 
+    DishAddOn,
+    FavFood
 } = require('../../models');
 const utilityFunction = require('../../utils/utilityFunctions');
 const { Op } = require("sequelize");
@@ -236,36 +237,49 @@ module.exports = {
                 })
                 if(dishAddonSections){
                     let dishAddonSectionIds=dishAddonSections.map(dishAddonSection=>dishAddonSection.id);
-                    console.log("dishAddonSectionIds",dishAddonSectionIds) 
-                    await DishAddOn.destroy({
-                        where:{
-                            dish_add_on_section_id:{
-                                [Op.in]:dishAddonSectionIds || [],
+                    console.log("dishAddonSectionIds",dishAddonSectionIds)
+                    
+                    await Promise.all([
+                        DishAddOn.destroy({
+                            where:{
+                                dish_add_on_section_id:{
+                                    [Op.in]:dishAddonSectionIds || [],
+                                }
                             }
-                        }
-                    })
+                        }),
 
-                    await DishAddOnSection.destroy({
-                        where:{
-                            restaurant_dish_id:{
-                                [Op.in]:dishIds || []
+                        DishAddOnSection.destroy({
+                            where:{
+                                restaurant_dish_id:{
+                                    [Op.in]:dishIds || []
+                                }
                             }
-                        }
-                    })
+                        }),
 
-                    await RestaurantDish.destroy({
-                        where:{
-                            restaurant_dish_category_id:{
-                                [Op.in]:categoryIds || [],
+                        RestaurantDish.destroy({
+                            where:{
+                                restaurant_dish_category_id:{
+                                    [Op.in]:categoryIds || [],
+                                }
                             }
-                        }
-                    })
+                        }),
 
-                    await RestaurantDishCategory.destroy({
-                        where:{
-                            restaurant_id:parseInt(params.restaurantId),
-                        },
-                    })
+                        FavFood.destroy({
+                            where:{
+                                restaurant_dish_id:{
+                                    [Op.in]:dishIds || []
+                                }
+                            }
+                        }),
+
+                        RestaurantDishCategory.destroy({
+                            where:{
+                                restaurant_id:parseInt(params.restaurantId),
+                            },
+                        })
+
+                    ])
+ 
                 }
             }
         }       
@@ -437,27 +451,39 @@ module.exports = {
             if(dishAddonSections){
                 let dishAddonSectionIds=dishAddonSections.map(dishAddonSection=>dishAddonSection.id);
                 console.log("dishAddonSectionIds",dishAddonSectionIds) 
-                await DishAddOn.destroy({
-                    where:{
-                        dish_add_on_section_id:{
-                            [Op.in]:dishAddonSectionIds || [],
-                        }
-                    }
-                })
 
-                await DishAddOnSection.destroy({
-                    where:{
-                        restaurant_dish_id:{
-                            [Op.in]:dishIds || []
+                await Promise.all([
+                    DishAddOn.destroy({
+                        where:{
+                            dish_add_on_section_id:{
+                                [Op.in]:dishAddonSectionIds || [],
+                            }
                         }
-                    }
-                })
+                    }),
 
-                await RestaurantDish.destroy({
-                    where:{
-                        restaurant_dish_category_id:params.category_id,
-                    }
-                })
+                    DishAddOnSection.destroy({
+                        where:{
+                            restaurant_dish_id:{
+                                [Op.in]:dishIds || []
+                            }
+                        }
+                    }),
+
+                    RestaurantDish.destroy({
+                        where:{
+                            restaurant_dish_category_id:params.category_id,
+                        }
+                    }),
+
+                    FavFood.destroy({
+                        where:{
+                            restaurant_dish_id:{
+                                [Op.in]:dishIds || []
+                            }
+                        }
+                    }),
+
+                ])
             }
         }
 
@@ -621,22 +647,32 @@ module.exports = {
         if(dishAddonSections){
             let dishAddonSectionIds=dishAddonSections.map(dishAddonSection=>dishAddonSection.id);
             console.log("dishAddonSectionIds",dishAddonSectionIds) 
-            await DishAddOn.destroy({
-                where:{
-                    dish_add_on_section_id:{
-                        [Op.in]:dishAddonSectionIds || [],
-                    }
-                }
-            })
 
-            await DishAddOnSection.destroy({
-                where:{
-                    restaurant_dish_id:parseInt(params.dishId),
-                }
-            })
+            await Promise.all([
+                DishAddOn.destroy({
+                    where:{
+                        dish_add_on_section_id:{
+                            [Op.in]:dishAddonSectionIds || [],
+                        }
+                    }
+                }),
+                DishAddOnSection.destroy({
+                    where:{
+                        restaurant_dish_id:parseInt(params.dishId),
+                    }
+                })
+
+            ])
         }
 
         dish.destroy();
+
+        await FavFood.destroy({
+            where:{
+                restaurant_dish_id:parseInt(params.dishId),
+            }
+        })
+        
         return true;
         
     },
