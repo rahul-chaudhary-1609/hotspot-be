@@ -10,6 +10,27 @@ const moment =require("moment");
 const sendRestaurantOrderEmail= async (params) => {
 
 
+
+    let maxOrderItemCount=params.orders.reduce((max,order)=>
+            max<order.order_details.ordered_items.filter(item=>!item.is_beverages).length?
+            order.order_details.ordered_items.filter(item=>!item.is_beverages).length:
+            max,
+            0
+        )
+    
+    let maxBeverageCount=params.orders.reduce((max,order)=>
+            max<order.order_details.ordered_items.filter(item=>item.is_beverages).length?
+            order.order_details.ordered_items.filter(item=>!item.is_beverages).length:
+            max,
+            0
+        )
+
+    let totalRestaurantFee=params.orders.reduce((result,order)=>
+            result+order.order_details.restaurant.fee,
+            0
+        )
+
+
     let headerHTML = `<div
         style="
             position: relative;
@@ -35,60 +56,88 @@ const sendRestaurantOrderEmail= async (params) => {
     let bodyHTML = `<p>${params.restaurant.restaurant_name}</p>`;
 
     
-    bodyHTML += `<table cellpadding=5 style="margin-top:10px;border-collapse: collapse;" border="1"><tr>
-        <th style="text-align:center;">Order#</th>
-        <th style="text-align:center;">Order ID</th>
-        <th style="text-align:center;">Customer Name<br/>(Label on order)</th>
-        <th style="text-align:center;">Drop-off Location<br/>(Label on order)</th>
-        <th style="text-align:center;">Ordered Items<br/>
-            <table cellpadding="10">
-                    <tr>
-                        <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Item</th>
-                        <th style="color:rgba(0,0,0,0.6);border-right:1px solid #ddd;">Quantity</th>
-                        <th style="color:rgba(0,0,0,0.6);">Add-Ons</th>
-                        <th style="color:rgba(0,0,0,0.6);">Preference</th>
-                    <tr>
-            </table>
-        </th>
+    bodyHTML += `<div style="overflow-x:scroll;width:100%px;">
+    <table cellpadding=5 style="margin-top:10px;border-collapse: collapse;" border="1">
+        <tr>
+            <th style="text-align: center">Order#</th>
+            <th style="text-align: center;min-width: 150px;">Order ID</th>
+            <th style="text-align: center;min-width: 150px;"> <span style="color: red;">(Label on order)</span><br />Customer Name</th>
+            <th style="text-align: center;min-width: 150px;">
+                <span style="color: red;">(Label on order)</span><br />Drop-off Location
+            </th>`
+            for(let th=0;th<maxOrderItemCount;th++){
+                bodyHTML+=`<th style="text-align: center;min-width: 350px;">
+                    Order#1<br />
+                    Quantity | Item | Add-on | Special Instructions
+                </th>`
+            }
+            for(let th=0;th<maxBeverageCount;th++){
+                bodyHTML+=`<th style="text-align: center;min-width: 200px;">
+                    Order#1<br />
+                    Quantity | Item
+                </th>`
+            }
+                
+    bodyHTML +=`<th style="text-align: center;min-width: 150px;">Restaurant Total</th>
     </tr>`
 
-    let snCounter = 1;
-    for (let order of params.orders) {
-        let rowHTML = `<tr>
-            <td style="text-align:center;">${snCounter++}</td>
-            <td style="text-align:center;">${order.order_id}</td>
-            <td style="text-align:center;">${order.order_details.customer.name}</td>
-            <td style="text-align:center;">${order.order_details.hotspot.dropoff.dropoff_detail}</td>
-            <td style="text-align:center;">
-            <div style="display:flex; justify-content:'center';">
-                  <div>
-                    <table cellpadding="10">`
-        for (let ordered_item of order.order_details.ordered_items) {
-            let itemHTML =`
-            <tr>
-                <td style="border-right:1px solid #ddd;">${ordered_item.itemName}</td>
-                <td style="border-right:1px solid #ddd;">${ordered_item.itemCount}</td>
-                <td style="border-right:1px solid #ddd;">`
-                    
-            for (let addOn of ordered_item.itemAddOn) {
-                itemHTML+=`${addOn.name}<br/>`
-            }
 
-            itemHTML+=`</td>
-                <td>${ordered_item.preference || "-"}</td>
-            </tr>`
-            
-            rowHTML+=itemHTML
+    params.orders.forEach((order,orderCount)=>{
+        bodyHTML +=`<tr>
+        <td style="text-align:center;">${++orderCount}</td>
+        <td style="text-align:center;">${order.order_id}</td>
+        <td style="text-align:center;">${order.order_details.customer.name}</td>
+        <td style="text-align:center;">${order.order_details.hotspot.dropoff.dropoff_detail}</td>`
+
+        let currentOrderItemCount=maxOrderItemCount;
+
+        order.order_details.ordered_items.filter(item=>!item.is_beverages).forEach((ordered_item)=>{
+            bodyHTML +=`<td style="text-align:center;">
+                        ${ordered_item.itemCount} | ${ordered_item.itemName} | `
+
+            ordered_item.itemAddOn.forEach((addOn,addOnCount)=>{
+                bodyHTML +=(addOnCount+1)<ordered_item.itemAddOn.length?`${addOn.name}, `:`${addOn.name}`;
+            })
+
+            bodyHTML +=` | ${ordered_item.preference || "-"}</td>`
+
+            currentOrderItemCount--;
+        })
+
+        
+        while(currentOrderItemCount>0){
+            bodyHTML +=`<td style="text-align: center">-</td>`;
+            currentOrderItemCount--;
         }
-            
-        rowHTML +=`</table></div></div></td>
-        </tr>`
 
-        bodyHTML+=rowHTML
+        let currentBeverageCount=maxBeverageCount;
+
+        order.order_details.ordered_items.filter(item=>item.is_beverages).forEach((ordered_item)=>{
+            bodyHTML +=`<td style="text-align:center;">
+                        ${ordered_item.itemCount} | ${ordered_item.itemName}</td>`;
+
+            currentBeverageCount--;
+        })
+
+        while(currentBeverageCount>0){
+            bodyHTML +=`<td style="text-align: center">-</td>`;
+            currentBeverageCount--;
+        }
+
+        bodyHTML+=`<td style="text-align: center">$${order.order_details.restaurant.fee}</td></tr>`
+    })
+
+    let totalColumnCount= 4+maxOrderItemCount+maxBeverageCount;
+    bodyHTML+=`<tr>`
+
+    while(totalColumnCount>0){
+        bodyHTML +=`<td style="text-align: center">-</td>`;
+        totalColumnCount--;
     }
 
+    bodyHTML+=`<td style="text-align: center">$${totalRestaurantFee}</td></tr>`
 
-    bodyHTML += `</table>`
+    bodyHTML += `</table></div>`
 
     
     
