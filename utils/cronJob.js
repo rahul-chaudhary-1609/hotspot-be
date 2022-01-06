@@ -181,6 +181,40 @@ const sendRestaurantOrderEmail= async (params) => {
     return true;
 }
 
+// const addRestaurantPayment=async(params)=>{
+//     let order={};
+//     order.restaurant_id=params.restaurant.id;
+//     order.restaurant_fee=parseFloat((params.orders.reduce((result,order)=>result+order.order_details.restaurant.fee,0)).toFixed(2));
+//     order.order_count=params.orders.length;
+//     order.amount=parseFloat((params.orders.reduce((result,order)=>result+parseFloat(order.amount),0)).toFixed(2));
+//     order.tip_amount=parseFloat((params.orders.reduce((result,order)=>result+parseFloat(order.tip_amount),0)).toFixed(2));
+
+//     let restaurantPaymentObj={
+//         ...order,
+//         payment_id: await utilityFunctions.getUniqueRestaurantPaymentId(),
+//         from_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
+//         to_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
+//         delivery_datetime:moment(params.deliveryDatetime).format("YYYY-MM-DD HH:mm:ss"),
+//         restaurant_name:params.restaurant.restaurant_name,
+//         order_type:constants.ORDER_TYPE.delivery,
+//         status:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
+//         type:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_TYPE.offline:constants.PAYMENT_TYPE.none,
+//         payment_details: {
+//             restaurant:{
+//                 ...params.restaurant
+//             },
+//             hotspot:{
+//                 ...params.hotspotLocation
+//             }
+//         },
+//     }
+
+//     await RestaurantPayment.create(restaurantPaymentObj);
+
+//     return restaurantPaymentObj.payment_id;
+
+// }
+
 const addRestaurantPayment=async(params)=>{
     let order={};
     order.restaurant_id=params.restaurant.id;
@@ -191,7 +225,7 @@ const addRestaurantPayment=async(params)=>{
 
     let restaurantPaymentObj={
         ...order,
-        payment_id: await utilityFunctions.getUniqueRestaurantPaymentId(),
+        payment_id: await utility.getUniqueRestaurantPaymentId(),
         from_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
         to_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
         delivery_datetime:moment(params.deliveryDatetime).format("YYYY-MM-DD HH:mm:ss"),
@@ -199,7 +233,9 @@ const addRestaurantPayment=async(params)=>{
         order_type:constants.ORDER_TYPE.delivery,
         status:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
         type:params.restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_TYPE.offline:constants.PAYMENT_TYPE.none,
+        email_count:1,
         payment_details: {
+            deliveryPickupDatetime:params.deliveryPickupDatetime,
             restaurant:{
                 ...params.restaurant
             },
@@ -215,12 +251,16 @@ const addRestaurantPayment=async(params)=>{
 
 }
 
+
 module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
     schedule.scheduleJob('* * * * *', async ()=> {
         
         let hotspotLocations = await utilityFunctions.convertPromiseToObject(
             await HotspotLocation.findAll({
-                attributes:["id","name", "delivery_shifts"],        
+                attributes:["id","name", "delivery_shifts"],
+                where:{
+                    id:1,
+                }        
             })
         )
 
@@ -245,26 +285,23 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     })
                 )
 
-                var currentTime=moment(new Date()).tz(process.env.TIME_ZONE).format('HH:mm:ss');
-
+                let currentTime=moment().utc();
+                
                 console.log("moment",currentTime)
 
                 
                 let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                    return time >= currentTime;
+                    return moment(time,"HH:mm:ss").utc().format('HH:mm:ss') >= currentTime.format('HH:mm:ss');
                 });
 
                 console.log("\nnextDeliveryTime",nextDeliveryTime)
 
                 if(nextDeliveryTime){
 
-                    // let deliveryDatetime = new Date(`${utilityFunctions.getOnlyDate(new Date())} ${nextDeliveryTime}${process.env.TIME_ZONE_OFFSET}`);
-                    let deliveryDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${nextDeliveryTime}`;
-                    // let deliveryDatetime = new Date(`2021-06-28 ${nextDeliveryTime}`);
-                    //let deliveryDatetime = new Date(`2021-06-29 12:30:00`);
-                    let cutOffTime = `${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}`;
+                    let deliveryDatetime = `${currentTime.format("YYYY-MM-DD")} ${nextDeliveryTime}`;
+                    let cutOffTime = `${currentTime.format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",restaurant.cut_off_time)}`;
                     
-                    let deliveryPickupDatetime = `${moment(new Date()).format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",hotspotRestaurant.pickup_time)}`;
+                    let deliveryPickupDatetime = `${currentTime.format("YYYY-MM-DD")} ${utilityFunctions.getCutOffTime(nextDeliveryTime || "00:00:00",hotspotRestaurant.pickup_time)}`;
 
                     console.log("\ndeliveryDatetime:",deliveryDatetime,"\ncutOffTime:",cutOffTime,"\ndeliveryPickupDatetime:",deliveryPickupDatetime)
                     let orders = await utilityFunctions.convertPromiseToObject(
@@ -286,18 +323,21 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 
 
                     if (orders.length > 0) {
-                        let timeDiff = Math.floor(((new Date(moment().tz(process.env.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss'))).getTime() - (new Date(moment(cutOffTime).format('YYYY-MM-DD HH:mm:ss'))).getTime()) / 1000)
+                        // let timeDiff = Math.floor(((new Date(moment().tz(process.env.TIME_ZONE).format('YYYY-MM-DD HH:mm:ss'))).getTime() - (new Date(moment(cutOffTime).format('YYYY-MM-DD HH:mm:ss'))).getTime()) / 1000)
+                        let timeDiff = currentTime.toDate().getTime() - moment(cutOffTime,"YYYY-MM-DD HH:mm:ss").utc().toDate().getTime();
+                        
                         console.log("timeDiff:",timeDiff)
+
                         if (timeDiff > 0) {
                             await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
-                            let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime })
+                            let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime,deliveryPickupDatetime })
                             console.log("restaurant_payment_id:",restaurant_payment_id)
                             for (let order of orders) {
                                 await Order.update({
                                     is_restaurant_notified:1,
                                     restaurant_payment_id,
                                     restaurant_payment_status:restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
-                                    // status:order.status==constants.ORDER_STATUS.pending?constants.ORDER_STATUS.food_being_prepared:order.status,
+                                    status:order.status==constants.ORDER_STATUS.pending?constants.ORDER_STATUS.food_being_prepared:order.status,
                                 }, {
                                     where: {
                                         id:order.id,
