@@ -294,7 +294,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                     return moment(time,"HH:mm:ss").utc().format('HH:mm:ss') >= currentTime.format('HH:mm:ss');
                 });
 
-                console.log("\nnextDeliveryTime",nextDeliveryTime)
+                console.log("\nnextDeliveryTime",nextDeliveryTime,moment(time,"HH:mm:ss").utc().format('HH:mm:ss'))
 
                 if(nextDeliveryTime){
 
