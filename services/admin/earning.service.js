@@ -92,7 +92,7 @@ const sendRestaurantOrderEmail= async (params) => {
         let currentOrderItemCount=maxOrderItemCount;
 
         order.order_details.ordered_items.filter(item=>!item.is_beverages).forEach((ordered_item)=>{
-            bodyHTML +=`<td style="text-align:center;">
+            bodyHTML +=`<td style="text-align:left;">
                         ${ordered_item.itemCount} | ${ordered_item.itemName} | `
 
             ordered_item.itemAddOn.forEach((addOn,addOnCount)=>{
@@ -113,7 +113,7 @@ const sendRestaurantOrderEmail= async (params) => {
         let currentBeverageCount=maxBeverageCount;
 
         order.order_details.ordered_items.filter(item=>item.is_beverages).forEach((ordered_item)=>{
-            bodyHTML +=`<td style="text-align:center;">
+            bodyHTML +=`<td style="text-align:left;">
                         ${ordered_item.itemCount} | ${ordered_item.itemName} | `;
 
             ordered_item.itemAddOn.forEach((addOn,addOnCount)=>{
@@ -130,7 +130,7 @@ const sendRestaurantOrderEmail= async (params) => {
             currentBeverageCount--;
         }
 
-        bodyHTML+=`<td style="text-align: center">$${order.order_details.restaurant.fee}</td></tr>`
+        bodyHTML+=`<td style="text-align:right;">$${order.order_details.restaurant.fee}</td></tr>`
     })
 
     let totalColumnCount= 4+maxOrderItemCount+maxBeverageCount;
@@ -141,7 +141,7 @@ const sendRestaurantOrderEmail= async (params) => {
         totalColumnCount--;
     }
 
-    bodyHTML+=`<td style="text-align: center"><strong>Total: $${totalRestaurantFee}</strong></td></tr>`
+    bodyHTML+=`<td style="text-align: right;"><strong>Total: $${totalRestaurantFee}</strong></td></tr>`
 
     bodyHTML += `</table></div>`
 
