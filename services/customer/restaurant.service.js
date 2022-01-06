@@ -796,7 +796,8 @@ module.exports = {
             where:{
                 restaurant_id:params.restaurant_id,
                 status:constants.STATUS.active,
-            }
+            },
+            order:[["created_at","DESC"]]
         }      
 
         let restaurant=await utility.convertPromiseToObject(
