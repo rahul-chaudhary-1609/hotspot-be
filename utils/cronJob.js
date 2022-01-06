@@ -258,9 +258,9 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
         let hotspotLocations = await utilityFunctions.convertPromiseToObject(
             await HotspotLocation.findAll({
                 attributes:["id","name", "delivery_shifts"],
-                where:{
-                    id:1,
-                }        
+                // where:{
+                //     id:1,
+                // }        
             })
         )
 
@@ -329,34 +329,34 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
                         console.log("timeDiff:",timeDiff)
 
                         if (timeDiff > 0) {
-                            console.log("\nrestaurant", restaurant,"\norders",orders)
-                            // await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
-                            // let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime,deliveryPickupDatetime })
-                            // console.log("restaurant_payment_id:",restaurant_payment_id)
-                            // for (let order of orders) {
-                            //     await Order.update({
-                            //         is_restaurant_notified:1,
-                            //         restaurant_payment_id,
-                            //         restaurant_payment_status:restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
-                            //         status:order.status==constants.ORDER_STATUS.pending?constants.ORDER_STATUS.food_being_prepared:order.status,
-                            //     }, {
-                            //         where: {
-                            //             id:order.id,
-                            //         }
-                            //     })
-                            // }
+                            // console.log("\nrestaurant", restaurant,"\norders",orders)
+                            await sendRestaurantOrderEmail({ orders, restaurant, hotspotLocation, deliveryPickupDatetime })
+                            let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime,deliveryPickupDatetime })
+                            console.log("restaurant_payment_id:",restaurant_payment_id)
+                            for (let order of orders) {
+                                await Order.update({
+                                    is_restaurant_notified:1,
+                                    restaurant_payment_id,
+                                    restaurant_payment_status:restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
+                                    status:order.status==constants.ORDER_STATUS.pending?constants.ORDER_STATUS.food_being_prepared:order.status,
+                                }, {
+                                    where: {
+                                        id:order.id,
+                                    }
+                                })
+                            }
 
-                            // await Order.destroy({
-                            //     where: {
-                            //         hotspot_location_id:hotspotLocation.id,
-                            //         restaurant_id: restaurant.id,
-                            //         type: constants.ORDER_TYPE.delivery,
-                            //         status:{
-                            //             [Op.in]:[constants.ORDER_STATUS.not_paid]
-                            //         },
-                            //         delivery_datetime: deliveryDatetime,
-                            //     }
-                            // })
+                            await Order.destroy({
+                                where: {
+                                    hotspot_location_id:hotspotLocation.id,
+                                    restaurant_id: restaurant.id,
+                                    type: constants.ORDER_TYPE.delivery,
+                                    status:{
+                                        [Op.in]:[constants.ORDER_STATUS.not_paid]
+                                    },
+                                    delivery_datetime: deliveryDatetime,
+                                }
+                            })
                         }
                     }
                 }
