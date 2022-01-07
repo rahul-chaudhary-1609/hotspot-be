@@ -57,7 +57,7 @@ const sendRestaurantOrderEmail= async (params) => {
 
     
     bodyHTML += `<div>
-    <table cellpadding=5 style="margin-top:10px;border-collapse: collapse;display: block;overflow-x: auto;max-width: 1100px;" border="1">
+    <table cellpadding=5 style="margin-top:10px;border-collapse: collapse;display: block;overflow-x: auto;max-width: 1100px;border:none;" border="1">
         <tr>
             <th style="text-align: center">Order#</th>
             <th style="text-align: center;min-width: 100px;">Order ID</th>
