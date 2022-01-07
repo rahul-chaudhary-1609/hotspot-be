@@ -592,7 +592,7 @@ module.exports = {
             for (let order of orders) {
                 await Order.update({
                     is_restaurant_notified:1,
-                    status:order.status=constants.ORDER_STATUS.food_being_prepared,
+                    status:order.status==constants.ORDER_STATUS.pending?constants.ORDER_STATUS.food_being_prepared:order.status,
                 }, {
                     where: {
                         id:order.id,
