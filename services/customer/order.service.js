@@ -316,7 +316,7 @@ const sendOrderPaymentEmail= async (params) => {
             <tr style="text-align: left; vertical-align: top; ">
                 <td style="text-align: left;">
                     <div>
-                        Processing Fee(${params.order.order_details.amount_details.processing_fee_variable_percentage}%${params.order.order_details.amount_details.processing_fee_fixed_amount?` + ¢${params.order.order_details.amount_details.processing_fee_fixed_amount}`:``})
+                        Processing Fee (${params.order.order_details.amount_details.processing_fee_variable_percentage}%${params.order.order_details.amount_details.processing_fee_fixed_amount?` + ¢${params.order.order_details.amount_details.processing_fee_fixed_amount}`:``})
                     </div>
                 </td>
                 <td style="text-align: right;">
@@ -328,7 +328,7 @@ const sendOrderPaymentEmail= async (params) => {
             <tr style="text-align: left; vertical-align: top; ">
                 <td style="text-align: left;">
                     <div>
-                        Taxes(${params.order.order_details.amount_details.taxes_variable_percentage}%${params.order.order_details.amount_details.taxes_fixed_amount?` + ¢${params.order.order_details.amount_details.taxes_fixed_amount}`:``})
+                        Taxes (${params.order.order_details.amount_details.taxes_variable_percentage}%${params.order.order_details.amount_details.taxes_fixed_amount?` + ¢${params.order.order_details.amount_details.taxes_fixed_amount}`:``})
                     </div>
                 </td>
                 <td style="text-align: right;">
