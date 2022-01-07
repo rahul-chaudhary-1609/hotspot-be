@@ -27,7 +27,7 @@ module.exports = {
 
         query.limit=limit;
         query.offset=offset;
-        query.order=[["created_at"]]
+        query.order=[["created_at","DESC"]]
 
         let payments=await utility.convertPromiseToObject(
             await models.OrderPayment.findAndCountAll(query)
@@ -169,7 +169,7 @@ module.exports = {
 
         query.limit=limit;
         query.offset=offset;
-        query.order=[["created_at"]]
+        query.order=[["created_at","DESC"]]
 
         let refunds=await utility.convertPromiseToObject(
             await models.Refund.findAndCountAll(query)
