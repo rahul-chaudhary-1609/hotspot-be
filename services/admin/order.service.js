@@ -321,6 +321,7 @@ module.exports = {
                 delivery_image_urls:order.delivery_image_urls,
                 refund_type:order.refund_type,
                 order_details:order.order_details,
+                order_payment_id:order.order_payment_id,
             }
             
             return { orderDetails };
