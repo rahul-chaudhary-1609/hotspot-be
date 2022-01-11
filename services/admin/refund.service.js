@@ -55,10 +55,10 @@ const sendRefundEmail= async (params) => {
                                                             padding:1px 5px 1px 5px;"
                                                     >${ordered_item.refund_count}x refunded</span>`
                                         
-                                        bodyHTML +=`<span 
-                                                        style="color:red;margin-right:10px;">
-                                                        (- $${(parseFloat(ordered_item.refund_amount)).toFixed(2)})
-                                                    </span>`
+                                        // bodyHTML +=`<span 
+                                        //                 style="color:red;margin-right:10px;">
+                                        //                 (- $${(parseFloat(ordered_item.refund_amount)).toFixed(2)})
+                                        //             </span>`
                                     }
                                     
 
@@ -74,10 +74,10 @@ const sendRefundEmail= async (params) => {
                                         padding:1px 5px 1px 5px;"
                                 >${addOn.refund_count}x refunded</span>`
                     
-                    bodyHTML +=`<span 
-                                    style="color:red;margin-right:10px;">
-                                    (- $${(parseFloat(addOn.refund_amount)).toFixed(2)})
-                                </span>`
+                    // bodyHTML +=`<span 
+                    //                 style="color:red;margin-right:10px;">
+                    //                 (- $${(parseFloat(addOn.refund_amount)).toFixed(2)})
+                    //             </span>`
                 }
             bodyHTML +=`</li>`
         })
