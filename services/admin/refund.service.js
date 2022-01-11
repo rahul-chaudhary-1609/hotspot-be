@@ -37,7 +37,7 @@ const sendRefundEmail= async (params) => {
                 Hi ${params.order.order_details.customer.name},
             </div><br/>
             <div>
-                We have issued Hotspot credits to your account for the amount of ${params.order.order_details.amount_details.totalRefund}!
+                We have issued Hotspot credits to your account for the amount of ${params.order.order_details.amount_details.refundTotal}!
             </div><br/>
             <div>
                 These credits are immediately avaialable for you to use and will be autometically appllied towards your next order, excluding tip
