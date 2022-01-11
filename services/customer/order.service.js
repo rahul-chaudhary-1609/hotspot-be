@@ -909,7 +909,7 @@ module.exports = {
             taxes_variable_percentage:salesTax.variable_percentage,
             taxes_fixed_amount:salesTax.fixed_amount,
             // credits_applied,
-            totalCost:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount).toFixed(2)),
+            totalCost:parseFloat((subtotal+salesTaxAmount).toFixed(2)),
         };
 
         if(newCart.totalCost<credits_applied){
@@ -919,6 +919,9 @@ module.exports = {
             newCart.credits_applied=credits_applied;
             newCart.grandTotal=newCart.totalCost-credits_applied
         }
+
+        newCart.grandTotal=parseFloat((newCart.grandTotal+stripeFeeAmount).toFixed(2))
+        newCart.totalCost=parseFloat((newCart.totalCost+stripeFeeAmount).toFixed(2))
 
         return {
             restaurant:{
@@ -1152,7 +1155,7 @@ module.exports = {
                 taxes_variable_percentage:salesTax.variable_percentage,
                 taxes_fixed_amount:salesTax.fixed_amount,
                 // credits_applied,
-                totalCost:parseFloat((subtotal+stripeFeeAmount+salesTaxAmount).toFixed(2)),
+                totalCost:parseFloat((subtotal+salesTaxAmount).toFixed(2)),
             },
             beverages_count,
         }
@@ -1164,6 +1167,10 @@ module.exports = {
             order_details.amount_details.credits_applied=credits_applied;
             order_details.amount_details.grandTotal=order_details.amount_details.totalCost-credits_applied
         }
+
+        order_details.amount_details.grandTotal=parseFloat((order_details.amount_details.grandTotal+stripeFeeAmount).toFixed(2))
+        order_details.amount_details.totalCost=parseFloat((order_details.amount_details.totalCost+stripeFeeAmount).toFixed(2))
+        
         const newOrder = await models.Order.create({
             order_id,
             customer_id,
