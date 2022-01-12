@@ -880,7 +880,7 @@ module.exports = {
                             {
                                 model:models.Restaurant,
                                 require:true,
-                                attributes:['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to'],
+                                attributes:['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to','dish_preference'],
                             }
                         ]
                     },
