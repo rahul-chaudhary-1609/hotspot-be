@@ -214,3 +214,5 @@ router.get('/getOrderPaymentDetails/:payment_id', adminAuthentication.validateAd
 router.post('/refund', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.refund), refundController.refund);
 router.get('/listRefunds', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.listRefunds), refundController.listRefunds);
 router.get('/getRefundDetails/:refund_id', adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getRefundDetails), refundController.getRefundDetails);
+router.get('/listRefundHistory', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.listRefundHistory), refundController.listRefundHistory);
+router.get('/getRefundHistoryDetails/:customer_id', adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getRefundHistoryDetails), refundController.getRefundHistoryDetails);

@@ -5685,6 +5685,77 @@
           }
         },
 
+        "/admin/listRefundHistory": {
+          "get": {
+            "tags": [
+              "Admin Refund Management"
+            ],
+            "description": "Api to list Refunds",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "search_key",
+                "in": "query",
+                "description": "search key",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "name": "page",
+                "in": "query",
+                "description": "current page count to access",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "name": "page_size",
+                "in": "query",
+                "description": "no of items per page",
+                "required": false,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/getRefundHistoryDetails/{customer_id}": {
+          "get": {
+            "tags": [
+              "Admin Refund Management"
+            ],
+            "description": "Api to get Refund Details",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "in": "path",
+                "description": "customer id",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

@@ -5,6 +5,7 @@ const utility = require('../../utils/utilityFunctions');
 const stripe = require('stripe')(constants.STRIPE.stripe_secret_key);
 const sendMail = require('../../utils/mail');
 const moment =require("moment");
+const Sequelize  = require("sequelize");
 
 const sendRefundEmail= async (params) => {
 
@@ -285,6 +286,81 @@ module.exports = {
         )
 
         return {refund}
+
+    },
+
+    listRefundHistory:async(params)=>{
+        models.Refund.belongsTo(models.Customer,{foriegnKey:'id',sourceKey:'customer_id',targetKey:'id'})
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+
+        let query={}
+        query.where={}
+
+        query.attributes= [
+            'customer_id',
+            [Sequelize.fn('SUM', Sequelize.col('refund_value')), 'totalRefundAmount'], 
+            [Sequelize.fn('COUNT', Sequelize.col('customer_id')), 'refundCount'],  
+        ],
+
+        query.group= ['"customer_id"','"Customer.id"']
+
+        query.limit=limit;
+        query.offset=offset;
+        query.include=[
+            {
+                model:models.Customer,
+                attributes:['id','name','email'],
+                required:true,
+            }
+        ]
+
+        let refunds=await utility.convertPromiseToObject(
+            await models.Refund.findAll(query)
+        )
+
+        console.log("refunds1",refunds)
+        if(params.search_key && params.search_key.trim()){
+            refunds=refunds.filter((refund)=>(refund.Customer.name.includes(params.search_key) || refund.Customer.email.includes(params.search_key)))
+        }
+
+        console.log("refunds2",refunds)
+
+        refunds={
+            count:refunds.length,
+            rows:refunds,
+        }
+
+        return {refunds};
+
+    },
+
+    
+    getRefundHistoryDetails:async(params)=>{
+        models.Refund.belongsTo(models.Order,{foriegnKey:'order_id',sourceKey:'order_id',targetKey:'order_id'})
+
+        let customer=await models.Customer.findOne({
+            attributes:['id','name','email','phone_no'],
+            where:{
+                id:params.customer_id
+            },
+            raw:true
+        })
+
+        let refunds=await utility.convertPromiseToObject(
+            await models.Refund.findAndCountAll({
+                where:{
+                    customer_id:params.customer_id,
+                },
+                order:[["created_at","DESC"]]
+            })
+        )
+
+        let refundHistory={
+            customer,
+            refunds,
+        }
+
+        return {refundHistory}
 
     },
 

@@ -47,4 +47,22 @@ module.exports = {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
+
+    listRefundHistory: async (req, res) => {
+        try {
+            const responseFromService = await refundService.listRefundHistory(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    getRefundHistoryDetails: async (req, res) => {
+        try {
+            const responseFromService = await refundService.getRefundHistoryDetails(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 }

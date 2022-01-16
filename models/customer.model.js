@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue:"+91",
     },
     phone_no: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.STRING,
     },
     is_phone_verified: {
       type: DataTypes.BOOLEAN,

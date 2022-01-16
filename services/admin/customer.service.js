@@ -19,7 +19,8 @@ module.exports = {
                     { name: { [Op.iLike]: `%${searchKey}%` } },
                     { email: { [Op.iLike]: `%${searchKey}%` } },
                     { city: { [Op.iLike]: `%${searchKey}%` } },
-                    { state: { [Op.iLike]: `%${searchKey}%` } }
+                    { state: { [Op.iLike]: `%${searchKey}%` } },
+                    { phone_no: { [Op.iLike]: `%${searchKey}%` } }
                 ]
             };
         }
