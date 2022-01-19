@@ -825,6 +825,11 @@ module.exports = {
         orderId: Joi.string().required(),
         driverId: Joi.number().required(),
     }),
+
+    bulkAssignDriver:Joi.object({
+        restaurant_payment_id: Joi.string().required(),
+        driverId: Joi.number().required(),
+    }),
     
     listOrderPayments:Joi.object({
         search_key: Joi.string().allow(null, '').optional(),

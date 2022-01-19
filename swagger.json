@@ -3561,6 +3561,42 @@
           }
         },
 
+        "/admin/bulkAssignDriver": {
+          "put": {
+            "tags": [
+              "Admin Order Management"
+            ],
+            "description": "Api to bulk Assign Driver",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "restaurant_payment_id",
+                "in": "formData",
+                "description": "enter restaurant payment id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "driverId",
+                "in": "formData",
+                "description": "enter driver id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

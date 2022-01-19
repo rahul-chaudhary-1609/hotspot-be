@@ -128,6 +128,7 @@ router.get('/getScheduledOrders',adminAuthentication.validateAdminToken,joiValid
 router.get('/getCompletedOrders',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getCompletedOrders), adminOrderController.getCompletedOrders);
 router.get('/getOrderDetails/:orderId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getOrderDetails), adminOrderController.getOrderDetails);
 router.put('/assignDriver',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.assignDriver), adminOrderController.assignDriver);
+router.put('/bulkAssignDriver',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.bulkAssignDriver), adminOrderController.bulkAssignDriver);
 router.get('/getDriverListByHotspot',adminAuthentication.validateAdminToken,joiValidation.validateQueryParams(apiSchema.getDriverListByHotspot), adminOrderController.getDriverListByHotspot);
 
 

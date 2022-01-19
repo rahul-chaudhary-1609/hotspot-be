@@ -571,7 +571,7 @@ module.exports.scheduleAdminEmailJob = async()=> {
     schedule.scheduleJob('0 */1 * * *', async ()=> {
       let params={
             admin:await utilityFunctions.convertPromiseToObject(await Admin.findOne({where:{role:constants.ADMIN_ROLE.super_admin}})),
-            current_date:moment(new Date()),
+            current_date:moment(new Date()).subtract(1,"month"),
             
       }
       const monthStartDate = utilityFunctions.getStartDate(params.current_date.format("YYYY-MM-DD"),"month")

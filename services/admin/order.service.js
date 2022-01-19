@@ -52,12 +52,167 @@ const getOrderRow =  async (args) => {
         args.orderList.rows = orderRows;
         
         return {orderList: args.orderList};
-
-
-    
-
-
 };
+
+let assignDriver= async (params,user) => {
+       
+
+    const orderId = params.orderId;
+    const driverId = params.driverId;
+
+    const order = await utility.convertPromiseToObject(await models.Order.findOne({
+            where: {
+                order_id:orderId,
+            }
+        })
+    );
+
+    if (!order) throw new Error(constants.MESSAGES.no_order);
+
+    let hotspotRestaurant = await utility.convertPromiseToObject(
+        await models.HotspotRestaurant.findOne({
+            where: {
+                hotspot_location_id: order.hotspot_location_id,
+                restaurant_id:order.restaurant_id,
+            }
+        })
+    )
+
+    let deliveryTime=moment(order.delivery_datetime).format("HH:mm:ss");
+    let deliveryDate=moment(order.delivery_datetime).format("YYYY-MM-DD");
+    
+    let deliveryPickupDatetime = `${deliveryDate} ${utility.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}`;
+    const driver = await utility.convertPromiseToObject(await models.Driver.findOne({
+            attributes: ['id','first_name','last_name'],
+            where: {
+                id:driverId
+            }
+        })
+    );
+
+    if (!driver) throw new Error(constants.MESSAGES.no_driver);
+
+    let currentOrder = await utility.convertPromiseToObject(await models.Order.findOne({
+            where: {
+                order_id:orderId,
+            }
+        })
+    );
+
+    delete currentOrder.order_details.hotspot.dropoff;
+    
+    const orderPickup = await models.OrderPickup.findOne({
+        where: {
+            hotspot_location_id: currentOrder.hotspot_location_id,
+            delivery_datetime: moment(currentOrder.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+            driver_id:driver.id
+            }
+    })
+    let order_pickup_id = await utility.getUniqueOrderPickupId();
+    if (orderPickup) {
+        let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
+        orderPickup.order_count =parseInt(currentOrderPickup.order_count)+ 1;
+        orderPickup.amount = parseFloat(orderPickup.amount)+parseFloat(currentOrder.amount);
+        orderPickup.tip_amount = parseFloat(orderPickup.tip_amount)+parseFloat(currentOrder.tip_amount);
+        let updatedRestaurant = [];
+        let findRestaurant = currentOrderPickup.pickup_details.restaurants.find(({ id }) => id == currentOrder.order_details.restaurant.id);
+        if (findRestaurant) {
+            updatedRestaurant = currentOrderPickup.pickup_details.restaurants.map((rest) => {
+                if (rest.id == currentOrder.order_details.restaurant.id) {
+                    rest.order_count = parseInt(rest.order_count) + 1;
+                    rest.beverages_count = parseInt(rest.beverages_count) + parseInt(currentOrder.order_details.beverages_count);
+                    rest.fee =parseFloat(rest.fee)+ parseFloat(currentOrder.order_details.restaurant.fee);
+                    return rest;
+                }
+                else {
+                    return rest;
+                }
+            })
+        }
+        else {
+            currentOrder.order_details.restaurant.order_count = 1;
+            currentOrder.order_details.restaurant.beverages_count = currentOrder.order_details.beverages_count;
+            currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
+            updatedRestaurant=[...currentOrderPickup.pickup_details.restaurants,currentOrder.order_details.restaurant];
+        }
+        orderPickup.pickup_details = {
+            actual_amount: parseFloat(orderPickup.pickup_details.actual_amount)+parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
+            markup_amount: parseFloat(orderPickup.pickup_details.markup_amount)+parseFloat(currentOrder.amount)-parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
+            hotspot:currentOrderPickup.pickup_details.hotspot,
+            restaurants: updatedRestaurant,
+            driver:currentOrderPickup.pickup_details.driver,
+        };
+        orderPickup.save();            
+        order_pickup_id = orderPickup.pickup_id;
+
+    }
+    else {
+        currentOrder.order_details.restaurant.order_count = 1;
+        currentOrder.order_details.restaurant.beverages_count = currentOrder.order_details.beverages_count;
+        currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
+        let pickup_datetime=deliveryPickupDatetime;//moment(currentOrder.delivery_datetime).subtract(20, "minutes").format("YYYY-MM-DD HH:mm:ss");
+        
+        let orderPickupObj = {
+            pickup_id: order_pickup_id,
+            hotspot_location_id: currentOrder.hotspot_location_id,
+            order_count: 1,
+            amount:parseFloat(currentOrder.amount),
+            tip_amount:parseFloat(currentOrder.tip_amount),
+            driver_id:driver.id,
+            pickup_datetime,
+            delivery_datetime:moment(currentOrder.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+            pickup_details: {
+                actual_amount: parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
+                markup_amount: parseFloat(currentOrder.amount)-parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
+                hotspot:currentOrder.order_details.hotspot,
+                restaurants:[currentOrder.order_details.restaurant],
+                driver,
+            }
+            
+        }
+        await models.OrderPickup.create(orderPickupObj)
+    }
+
+    await models.Order.update({
+        status: constants.ORDER_STATUS.food_ready_or_on_the_way,            
+        order_pickup_id,
+        order_details:{ ...order.order_details,driver },
+        driver_id: driver.id,
+    },
+        {
+            where: {
+                order_id:orderId
+            },
+            returning: true,
+        }
+    );
+
+    let customer=await utility.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
+
+
+    // add notification for employee
+    let notificationObj = {
+        type_id: orderId,                
+        title: 'Order Confirmed by Restaurant',
+        description: `Order - ${orderId} is confirmed by restaurant`,
+        sender_id: user.id,
+        reciever_ids: [order.customer_id],
+        type: constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
+    }
+    await models.Notification.create(notificationObj);
+
+    if (customer.notification_status && customer.device_token) {
+        // send push notification
+        let notificationData = {
+            title: 'Order Confirmed by Restaurant',
+            body: `Order - ${orderId} is confirmed by restaurant`,
+        }
+        await utility.sendFcmNotification([customer.device_token], notificationData);
+    }
+
+    return true;    
+};
+
 
 
 module.exports = {
@@ -329,164 +484,30 @@ module.exports = {
         
     },
 
-    assignDriver: async (params,user) => {
-       
-
-        const orderId = params.orderId;
-        const driverId = params.driverId;
-
-        const order = await utility.convertPromiseToObject(await models.Order.findOne({
-                where: {
-                    order_id:orderId,
-                }
-            })
-        );
-
-        if (!order) throw new Error(constants.MESSAGES.no_order);
-
-        let hotspotRestaurant = await utility.convertPromiseToObject(
-            await models.HotspotRestaurant.findOne({
-                where: {
-                    hotspot_location_id: order.hotspot_location_id,
-                    restaurant_id:order.restaurant_id,
-                }
-            })
-        )
-
-        let deliveryTime=moment(order.delivery_datetime).format("HH:mm:ss");
-        let deliveryDate=moment(order.delivery_datetime).format("YYYY-MM-DD");
-        
-        let deliveryPickupDatetime = `${deliveryDate} ${utility.getCutOffTime(deliveryTime,hotspotRestaurant.pickup_time)}`;
-        const driver = await utility.convertPromiseToObject(await models.Driver.findOne({
-                attributes: ['id','first_name','last_name'],
-                where: {
-                    id:driverId
-                }
-            })
-        );
-    
-        if (!driver) throw new Error(constants.MESSAGES.no_driver);
-
-        let currentOrder = await utility.convertPromiseToObject(await models.Order.findOne({
-                where: {
-                    order_id:orderId,
-                }
-            })
-        );
-
-        delete currentOrder.order_details.hotspot.dropoff;
-        
-        const orderPickup = await models.OrderPickup.findOne({
-            where: {
-                hotspot_location_id: currentOrder.hotspot_location_id,
-                delivery_datetime: moment(currentOrder.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
-                driver_id:driver.id
-                }
+    bulkAssignDriver:async(params,user)=>{
+        let orders=await models.Order.findAll({
+            where:{
+                restaurant_payment_id:params.restaurant_payment_id,
+            },
+            raw:true,
         })
-        let order_pickup_id = await utility.getUniqueOrderPickupId();
-        if (orderPickup) {
-            let currentOrderPickup = await utility.convertPromiseToObject(orderPickup);
-            orderPickup.order_count =parseInt(currentOrderPickup.order_count)+ 1;
-            orderPickup.amount = parseFloat(orderPickup.amount)+parseFloat(currentOrder.amount);
-            orderPickup.tip_amount = parseFloat(orderPickup.tip_amount)+parseFloat(currentOrder.tip_amount);
-            let updatedRestaurant = [];
-            let findRestaurant = currentOrderPickup.pickup_details.restaurants.find(({ id }) => id == currentOrder.order_details.restaurant.id);
-            if (findRestaurant) {
-                updatedRestaurant = currentOrderPickup.pickup_details.restaurants.map((rest) => {
-                    if (rest.id == currentOrder.order_details.restaurant.id) {
-                        rest.order_count = parseInt(rest.order_count) + 1;
-                        rest.beverages_count = parseInt(rest.beverages_count) + parseInt(currentOrder.order_details.beverages_count);
-                        rest.fee =parseFloat(rest.fee)+ parseFloat(currentOrder.order_details.restaurant.fee);
-                        return rest;
-                    }
-                    else {
-                        return rest;
-                    }
-                })
-            }
-            else {
-                currentOrder.order_details.restaurant.order_count = 1;
-                currentOrder.order_details.restaurant.beverages_count = currentOrder.order_details.beverages_count;
-                currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
-                updatedRestaurant=[...currentOrderPickup.pickup_details.restaurants,currentOrder.order_details.restaurant];
-            }
-            orderPickup.pickup_details = {
-                actual_amount: parseFloat(orderPickup.pickup_details.actual_amount)+parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
-                markup_amount: parseFloat(orderPickup.pickup_details.markup_amount)+parseFloat(currentOrder.amount)-parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
-                hotspot:currentOrderPickup.pickup_details.hotspot,
-                restaurants: updatedRestaurant,
-                driver:currentOrderPickup.pickup_details.driver,
-            };
-            orderPickup.save();            
-            order_pickup_id = orderPickup.pickup_id;
 
-        }
-        else {
-            currentOrder.order_details.restaurant.order_count = 1;
-            currentOrder.order_details.restaurant.beverages_count = currentOrder.order_details.beverages_count;
-            currentOrder.order_details.restaurant.deliveryPickupDatetime = deliveryPickupDatetime;
-            let pickup_datetime=deliveryPickupDatetime;//moment(currentOrder.delivery_datetime).subtract(20, "minutes").format("YYYY-MM-DD HH:mm:ss");
-            
-            let orderPickupObj = {
-                pickup_id: order_pickup_id,
-                hotspot_location_id: currentOrder.hotspot_location_id,
-                order_count: 1,
-                amount:parseFloat(currentOrder.amount),
-                tip_amount:parseFloat(currentOrder.tip_amount),
-                driver_id:driver.id,
-                pickup_datetime,
-                delivery_datetime:moment(currentOrder.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
-                pickup_details: {
-                    actual_amount: parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
-                    markup_amount: parseFloat(currentOrder.amount)-parseFloat(currentOrder.order_details.amount_details.totalActualPrice),
-                    hotspot:currentOrder.order_details.hotspot,
-                    restaurants:[currentOrder.order_details.restaurant],
-                    driver,
+        orders.forEach((order)=>{
+            assignDriver(
+                {
+                    orderId:order.id,
+                    driverId:params.driverId,
                 }
-                
-            }
-            await models.OrderPickup.create(orderPickupObj)
-        }
-
-        await models.Order.update({
-            status: constants.ORDER_STATUS.food_ready_or_on_the_way,            
-            order_pickup_id,
-            order_details:{ ...order.order_details,driver },
-            driver_id: driver.id,
-        },
-            {
-                where: {
-                    order_id:orderId
-                },
-                returning: true,
-            }
-        );
-
-        let customer=await utility.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
-    
-    
-        // add notification for employee
-        let notificationObj = {
-            type_id: orderId,                
-            title: 'Order Confirmed by Restaurant',
-            description: `Order - ${orderId} is confirmed by restaurant`,
-            sender_id: user.id,
-            reciever_ids: [order.customer_id],
-            type: constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
-        }
-        await models.Notification.create(notificationObj);
-
-        if (customer.notification_status && customer.device_token) {
-            // send push notification
-            let notificationData = {
-                title: 'Order Confirmed by Restaurant',
-                body: `Order - ${orderId} is confirmed by restaurant`,
-            }
-            await utility.sendFcmNotification([customer.device_token], notificationData);
-        }
+                ,user
+            );
+        })
 
         return true;
+    },
 
+    assignDriver: async (params,user) => {
+       
+        return await assignDriver(params,user);
         
     },
 
