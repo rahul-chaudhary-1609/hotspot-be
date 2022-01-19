@@ -363,7 +363,8 @@ module.exports = {
       const completedPercent = Math.floor((orders[0] / orders[1]) * 100)
 
       return { 
-        completedOrderPercentage:orders[0],
+        completedOrderPercentage:completedPercent,
+        completedOrders:orders[0],
         numberOfTotalOrders:orders[1],
         numberOfTodayOrders:orders[2],
         numberOfMonthlyOrders:orders[3],
