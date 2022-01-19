@@ -42,6 +42,12 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.STRING(60),
     },
+    role: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      defaultValue: 2,
+      comment:"1=> super_admin, 2=> sub_admin"
+    },
     reset_pass_otp: {
       type: DataTypes.STRING(45),
     },

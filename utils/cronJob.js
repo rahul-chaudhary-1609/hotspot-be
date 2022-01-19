@@ -2,63 +2,34 @@
 require("dotenv").config();
 const schedule = require('node-schedule');
 const constants = require('../constants');
-const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment } = require("../models")
+const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment,OrderDelivery,Admin } = require("../models")
 const utilityFunctions = require('./utilityFunctions');
 const sendMail = require('./mail');
 const fs = require('fs');
 const moment = require('moment');
 const { Op } = require("sequelize");
+const {sequelize}=require('../models');
 
+const getRefundAmount=async(query)=>{
+    let orderDeliveries = await OrderDelivery.findAll(query)
+  
+    let refund_amount=0;
+    for (let orderDelivery of orderDeliveries) {
+  
+        let orders=await Order.findAll({
+            where:{
+                order_delivery_id:orderDelivery.delivery_id,
+            },
+            raw:true,
+        })
+  
+        refund_amount=refund_amount+parseFloat((orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal || 0,0)).toFixed(2))
+    }
+  
+    return refund_amount;
+  
+  }
 
-// let order_details = {
-//     "customer": {
-//         "id": 1,
-//         "name": "Rahul Chaudhary ",
-//         "email": "rahul.chaudhary@algoworks.com"
-//     },
-//     "hotspot": {
-//         "id": 1,
-//         "name": "BSW All Saints Medical Center -Fort Worth",
-//         "location": [32.7296612, -97.3448064],
-//         "location_detail": "1400 8th Ave, Fort Worth, TX 76104, USA",
-//         "dropoff": {
-//             "id": 1,
-//             "dropoff_detail": "Floor 1"
-//         }
-//     },
-//     "restaurant": {
-//         "id": 3,
-//         "restaurant_name": "Cafe Bithares",
-//         "location": [32.7428082, -97.3210077],
-//         "address": "108 South Fwy, Fort Worth, TX 76104, USA",
-//         "restaurant_image_url": "https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/restaurant/eugene-zhyvchik-vad__5nCLJ8-unsplash_1623613089190.jpg",
-//         "working_hours_from": "10:00:00",
-//         "working_hours_to": "19:00:00",
-//         "percentage_fee": "70.00",
-//         "fee": 1.05
-//     },
-//     "driver": {
-//         "id": 16,
-//         "first_name": "Ritesh",
-//         "last_name": "Pratap"
-//     },
-//     "ordered_items": [
-//         {
-//             "id": 287,
-//             "dishId": 7,
-//             "itemName": "Cold Coffee",
-//             "itemCount": 1,
-//             "itemAddOn": [
-//                 {
-//                     "id": 46,
-//                     "name": "Add Salads",
-//                     "price": "0.50"
-//                 }
-//             ],
-//             "itemPrice": 1.5
-//         }
-//     ]
-// }
 
 const sendRestaurantOrderEmail= async (params) => {
 
@@ -181,6 +152,226 @@ const sendRestaurantOrderEmail= async (params) => {
     return true;
 }
 
+const sendHotspotMonthlyEmail= async (params) => {
+
+
+
+    let headerHTML = `<html>
+    <head>
+            <style>
+            .bottom-border{
+                border-bottom:2px solid rgba(0,0,0,0.1)
+            }
+            .right-border{
+                border-right:2px solid rgba(0,0,0,0.1)
+            }
+            h4{
+                text-decoration: underline;
+            }
+            tr{
+                text-align: right;
+            }
+            tr:nth-child(3) td:nth-child(2){
+                font-weight: bold;
+                font-size: larger;
+            }
+
+            .w100{
+                width: 100%;
+            }
+
+            .w33{
+                width: 33%;
+            }
+
+            .w32{
+                width: 32%;
+            }
+
+            .h100{
+                height: 100%;
+            }
+
+            .align-center{
+                text-align: center;
+            }
+
+            .left-float{
+                float: left;
+            }
+
+            strong{
+                font-size: larger;
+            }
+            
+            .mt150p{
+                margin-top: 150px;
+            }
+
+            .logo{
+                opacity:0.5;
+                margin-top:5px;
+            }
+        </style>
+
+    </head>
+    <body>
+    <div>
+       Hi ${params.admin.name},<br>
+    `;
+
+    let bottomHTML = `
+    <div
+        class="w100 h100 mt150p">
+        <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" 
+            class="logo"/>
+    </div></body></html>`;
+
+
+    
+    let bodyHTML = `
+        <div class="w100">
+            <div class="bottom-border w100 align-center">
+                <div class="w100"><h3>Order Stats</h3></div>
+                <div class="w100 align-center">
+                    <div class="right-border w32 left-float">
+                        <h4>This Month</h4>
+                        <strong>${params.stats[0]}</strong>
+                    </div>
+                    <div class="right-border w33 left-float">
+                        <h4>This Year</h4>
+                        <strong>${params.stats[1]}</strong>
+
+                    </div>
+                    <div class="w32 left-float">
+                        <h4>Till Now</h4>
+                        <strong>${params.stats[2]}</strong>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="w100 align-center mt150p bottom-border">
+                <div class="w100"><h3>Revenue Stats</h3></div>
+                <div class="w100 align-center">
+                    <div class="right-border w32 left-float">
+                        <h4>This Month</h4>
+                        <strong>`
+                        if((params.stats[3]-params.stats[6])>=0){
+                            bodyHTML +=`$${(params.stats[3]-params.stats[6]).toFixed(2)}`
+                        }else{
+                            bodyHTML+=`- $${(Math.abs(params.stats[3]-params.stats[6])).toFixed(2)}`
+                        }
+
+                    bodyHTML +=`</strong>
+                    <div class="align-center">
+                            <table align="center">
+                                <tr>
+                                    <td>
+                                        Earned:
+                                    </td>
+                                    <td>
+                                        $${params.stats[3]}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Refunded:
+                                    </td>
+                                    <td>
+                                        $${params.stats[6]}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="right-border w33 left-float">
+                        <h4>This Year</h4>
+                        <strong>`
+                        if((params.stats[4]-params.stats[7])>=0){
+                            bodyHTML +=`$${(params.stats[4]-params.stats[7]).toFixed(2)}`
+                        }else{
+                            bodyHTML+=`- $${(Math.abs(params.stats[4]-params.stats[7])).toFixed(2)}`
+                        }
+
+                    bodyHTML +=`</strong>
+                        <div class="align-center">
+                            <table align="center">
+                                <tr>
+                                    <td>
+                                        Earned:
+                                    </td>
+                                    <td>
+                                        $${params.stats[4]}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Refunded:
+                                    </td>
+                                    <td>
+                                        $${params.stats[7]}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="w32 left-float">
+                        <h4>Till Now</h4>
+                        <strong>`
+                        if((params.stats[5]-params.stats[8])>=0){
+                            bodyHTML +=`$${(params.stats[5]-params.stats[8]).toFixed(2)}`
+                        }else{
+                            bodyHTML+=`- $${(Math.abs(params.stats[5]-params.stats[8])).toFixed(2)}`
+                        }
+
+                    bodyHTML +=`</strong>
+                        <div class="align-center">
+                            <table align="center">
+                                <tr>
+                                    <td>
+                                        Earned:
+                                    </td>
+                                    <td>
+                                        $${params.stats[5]}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Refunded:
+                                    </td>
+                                    <td>
+                                        $${params.stats[8]}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`
+
+        
+    let mailOptions = {
+        from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
+        to:params.admin.email,
+        subject: `Hotspot Monthly Report- ${params.current_date.format('MMMM')}`,
+        html: headerHTML + bodyHTML + bottomHTML,
+    }
+
+    // fs.writeFile('mail.html', headerHTML + bodyHTML + bottomHTML, function (err) {
+    //         if (err) return console.log(err);
+    //         console.log('Hello World > helloworld.txt');
+    //     });
+
+    console.log(mailOptions)    
+    
+    
+    await sendMail.send(mailOptions);
+    
+    return true;
+}
+
 // const addRestaurantPayment=async(params)=>{
 //     let order={};
 //     order.restaurant_id=params.restaurant.id;
@@ -225,7 +416,7 @@ const addRestaurantPayment=async(params)=>{
 
     let restaurantPaymentObj={
         ...order,
-        payment_id: await utility.getUniqueRestaurantPaymentId(),
+        payment_id: await utilityFunctions.getUniqueRestaurantPaymentId(),
         from_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
         to_date: moment(params.deliveryDatetime).format("YYYY-MM-DD"),
         delivery_datetime:moment(params.deliveryDatetime).format("YYYY-MM-DD HH:mm:ss"),
@@ -372,6 +563,115 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
     });
 
     console.log("Send restaurant orders email job started!")
+
+    return true;
+}
+
+module.exports.scheduleAdminEmailJob = async()=> {
+    schedule.scheduleJob('0 */1 * * *', async ()=> {
+      let params={
+            admin:await utilityFunctions.convertPromiseToObject(await Admin.findOne({where:{role:constants.ADMIN_ROLE.super_admin}})),
+            current_date:moment(new Date()),
+            
+      }
+      const monthStartDate = utilityFunctions.getStartDate(params.current_date.format("YYYY-MM-DD"),"month")
+      const monthEndDate = utilityFunctions.getEndDate(params.current_date.format("YYYY-MM-DD"),"month")
+     
+      const yearStartDate = utilityFunctions.getStartDate(params.current_date.format("YYYY-MM-DD"),"year")
+      const yearEndDate = utilityFunctions.getEndDate(params.current_date.format("YYYY-MM-DD"),"year")  
+    
+
+      const totalOrders = Order.count({
+        where: {
+          status:{
+            [Op.in]:[
+            //   constants.ORDER_STATUS.pending,
+            //   constants.ORDER_STATUS.food_being_prepared,
+            //   constants.ORDER_STATUS.food_ready_or_on_the_way,
+              constants.ORDER_STATUS.delivered,
+            ]
+          },
+        }
+        });
+
+        const monthOrders = Order.count({
+          where:{
+            [Op.and]: [
+              {
+                status:{
+                    [Op.in]:[
+                    //   constants.ORDER_STATUS.pending,
+                    //   constants.ORDER_STATUS.food_being_prepared,
+                    //   constants.ORDER_STATUS.food_ready_or_on_the_way,
+                      constants.ORDER_STATUS.delivered,
+                    ]
+                  },
+              },
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', monthStartDate),
+              sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', monthEndDate)
+            ] 
+          }
+      });
+
+      const yearOrders = Order.count({
+        where: {
+          [Op.and]: [
+            {
+              status:{
+                [Op.in]:[
+                //   constants.ORDER_STATUS.pending,
+                //   constants.ORDER_STATUS.food_being_prepared,
+                //   constants.ORDER_STATUS.food_ready_or_on_the_way,
+                  constants.ORDER_STATUS.delivered,
+                ]
+              },
+            },
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', yearStartDate),
+            sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', yearEndDate)
+          ]
+        }
+      });
+    
+    let totalAmount = OrderDelivery.sum('hotspot_fee');
+
+    const query2={
+      where: {
+        [Op.and]: [
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', monthStartDate),
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', monthEndDate)
+        ]
+      }
+    };
+
+    let monthTotalAmount = OrderDelivery.sum('hotspot_fee',query2);
+
+    const query3={
+      where:  {
+        [Op.and]: [
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', yearStartDate),
+          sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', yearEndDate)
+        ]
+      }
+    };
+
+    let yearTotalAmount = OrderDelivery.sum('hotspot_fee',query3);
+
+
+
+    let totalRefund= getRefundAmount({});
+    let monthTotalRefund= getRefundAmount(query2);
+    let yearTotalRefund= getRefundAmount(query3);
+
+    params.stats=await Promise.all([
+        monthOrders,yearOrders,totalOrders,
+        monthTotalAmount,yearTotalAmount,totalAmount,
+        monthTotalRefund,yearTotalRefund,totalRefund
+     ])
+
+     await sendHotspotMonthlyEmail(params);
+    });
+
+    console.log("Send admin email job started!")
 
     return true;
 }

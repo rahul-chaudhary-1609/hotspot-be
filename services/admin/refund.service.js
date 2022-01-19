@@ -320,7 +320,7 @@ module.exports = {
 
         console.log("refunds1",refunds)
         if(params.search_key && params.search_key.trim()){
-            refunds=refunds.filter((refund)=>(refund.Customer.name.includes(params.search_key) || refund.Customer.email.includes(params.search_key)))
+            refunds=refunds.filter((refund)=>(refund.Customer.name.toLowerCase().includes(params.search_key.toLowerCase()) || refund.Customer.email.toLowerCase().includes(params.search_key.toLowerCase())))
         }
 
         console.log("refunds2",refunds)

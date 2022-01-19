@@ -367,6 +367,11 @@ module.exports = {
     none:0,
     partial:1,
     complete:2,
+  },
+
+  ADMIN_ROLE:{
+    super_admin:1,
+    sub_admin:2,
   }
 
 }
