@@ -372,6 +372,11 @@ module.exports = {
   ADMIN_ROLE:{
     super_admin:1,
     sub_admin:2,
+  },
+
+  IS_DRIVER_ASSIGNED:{
+    no:0,
+    yes:1,
   }
 
 }

@@ -696,6 +696,7 @@ module.exports = {
         // await models.RestaurantPayment.bulkCreate(newRestaurantPayment);
 
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
+        models.RestaurantPayment.hasOne(models.Driver, { foreignKey: 'id', sourceKey: 'driver_id', targetKey: 'id' })
 
         
         let whereCondition = {};
@@ -723,6 +724,13 @@ module.exports = {
 
         let restaurantEarnings= await utility.convertPromiseToObject(await models.RestaurantPayment.findAndCountAll({
                 where: whereCondition,
+                include:[
+                    {
+                        model:models.Driver,
+                        attributes:['id','first_name','last_name'],
+                        required:false,
+                    }
+                ],
                 order: [["createdAt", "DESC"]],
                 limit,
                 offset,

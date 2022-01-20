@@ -90,6 +90,15 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 0,
         },
+        is_driver_assigned: {
+            type: DataTypes.SMALLINT,
+            allowNull: false,
+            defaultValue: 0,
+            comment:"0=> no, 1=> yes"
+        },
+        driver_id: {
+            type: DataTypes.INTEGER,
+        },
 
     }, {
         sequelize,

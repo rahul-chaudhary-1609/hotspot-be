@@ -171,6 +171,18 @@ let assignDriver= async (params,user) => {
             
         }
         await models.OrderPickup.create(orderPickupObj)
+        
+        await models.RestaurantPayment.update(
+            {
+                is_driver_assigned:constants.IS_DRIVER_ASSIGNED.yes,
+                driver_id:driver.id
+            },
+            {
+                where:{
+                    payment_id:params.restaurant_payment_id,
+                }
+            }
+        )
     }
 
     await models.Order.update({
@@ -495,10 +507,10 @@ module.exports = {
         orders.forEach((order)=>{
             assignDriver(
                 {
+                    ...params,
                     orderId:order.id,
-                    driverId:params.driverId,
-                }
-                ,user
+                },
+                user
             );
         })
 
