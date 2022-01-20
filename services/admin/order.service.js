@@ -504,11 +504,11 @@ module.exports = {
             raw:true,
         })
 
-        orders.forEach((order)=>{
-            assignDriver(
+        orders.forEach(async(order)=>{
+            await assignDriver(
                 {
                     ...params,
-                    orderId:order.id,
+                    orderId:order.order_id,
                 },
                 user
             );
