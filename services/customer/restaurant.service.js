@@ -114,7 +114,7 @@ const getDishCard =  async (args) => {
                 is_added_to_cart,
                 cart_count,
                 is_favorite,
-                restaurant:dish.RestaurantDishCategory.Restaurant
+                restaurant:dish.RestaurantDishCategory?.Restaurant
             })
         }
         
