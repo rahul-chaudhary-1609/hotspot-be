@@ -7280,14 +7280,14 @@
               },
               {
                 "name": "hotspot_location_id",
-                "in": "formData",
+                "in": "query",
                 "description": "enter hotspot location id",
                 "required": true,
                 "type": "number"
               },
               {
                 "name": "delivery_shift",
-                "in": "formData",
+                "in": "query",
                 "description": "enter delivery shift HH:MM:SS",
                 "required": true,
                 "type": "string"
