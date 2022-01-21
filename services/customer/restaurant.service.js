@@ -270,23 +270,67 @@ module.exports = {
             restaurantCategories:[],
         }
 
-        const restaurants = await models.Restaurant.findAll({
+        let whereCondiition = {
+            id: [],
+            restaurant_name: {
+                [Op.iLike]: `%${searchPhrase}%`,
+            },
+            status: constants.STATUS.active,
+            order_type:[constants.ORDER_TYPE.delivery,constants.ORDER_TYPE.both]
+        };
+
+        const hotspotLocation = await models.HotspotLocation.findOne({
             where: {
-                restaurant_name: {
-                    [Op.iLike]: `%${searchPhrase}%`,
-                },
-                status:constants.STATUS.active
+                id: params.hotspot_location_id,
             }
+        });
+
+        let nextDeliveryTimeIndex =0;
+        
+        hotspotLocation.delivery_shifts.forEach((time,index) => {
+            if(params.delivery_shift == time){
+                nextDeliveryTimeIndex=index+1;
+            }
+        });
+        
+
+        let hotspotRestaurants = await utility.convertPromiseToObject(
+            await models.HotspotRestaurant.findAll({
+                attributes:['id','restaurant_id'],
+                where: {
+                    hotspot_location_id: parseInt(params.hotspot_location_id),
+                    available_for_shifts:{
+                        [Op.contains]:[nextDeliveryTimeIndex]
+                    },
+                }
+            })
+        )
+
+        whereCondiition.id=hotspotRestaurants.map(hotspotRestaurant=>hotspotRestaurant.restaurant_id);
+
+
+        const restaurants = await models.Restaurant.findAll({
+            where: whereCondiition,
         });
 
         restaurants.forEach((restaurant) => {
             if (!searchSuggestion.restaurantCategories.includes(restaurant.restaurant_name)) {
                 searchSuggestion.restaurantCategories.push(restaurant.restaurant_name)
             }
-        })      
+        })  
+        
+        let categories=await utility.convertPromiseToObject(
+            await models.RestaurantDishCategory.findAll({
+                where:{
+                    restaurant_id:whereCondiition.id,
+                    status:constants.STATUS.active,
+                },
+            })
+        )
 
         const restaurantDishes = await models.RestaurantDish.findAll({
             where: {
+                restaurant_dish_category_id:categories.map((category)=>category.id),
                 name: {
                     [Op.iLike]: `%${searchPhrase}%`,
                 },
