@@ -114,6 +114,7 @@ const getDishCard =  async (args) => {
                 is_added_to_cart,
                 cart_count,
                 is_favorite,
+                restaurant:dish.RestaurantDishCategory.Restaurant
             })
         }
         
@@ -1018,6 +1019,9 @@ module.exports = {
     },
 
     getFavoriteFood: async (user) => {
+        models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
+        models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
+        
 
         const favFoods = await models.FavFood.findAll({
             where: {
@@ -1030,7 +1034,21 @@ module.exports = {
         const restaurantDish = await models.RestaurantDish.findAll({
             where: {
                 id: restaurant_dish_ids,
-            }
+            },
+            include:[
+                {
+                    model:models.RestaurantDishCategory,
+                    require:true,
+                    attributes:['id','name'],
+                    include:[
+                        {
+                            model:models.Restaurant,
+                            require:true,
+                            attributes:['id', 'restaurant_name',],
+                        }
+                    ]
+                },
+            ]
         });
 
         return getDishCard({ restaurantDish,customer_id:user.id, });
