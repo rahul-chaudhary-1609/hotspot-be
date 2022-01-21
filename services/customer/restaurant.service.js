@@ -114,7 +114,7 @@ const getDishCard =  async (args) => {
                 is_added_to_cart,
                 cart_count,
                 is_favorite,
-                restaurant:dish.RestaurantDishCategory?.Restaurant
+                restaurant:dish.RestaurantDishCategory.Restaurant
             })
         }
         
@@ -836,7 +836,12 @@ module.exports = {
          
     },
 
-    getRestaurantDishCategories:async(params,user)=>{        
+    getRestaurantDishCategories:async(params,user)=>{     
+        
+        models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
+        models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
+        
+
         let query={
             where:{
                 restaurant_id:params.restaurant_id,
@@ -868,7 +873,21 @@ module.exports = {
                 where: {
                     restaurant_dish_category_id:parseInt(category.id),
                     status:constants.STATUS.active,
-                }
+                },
+                include:[
+                    {
+                        model:models.RestaurantDishCategory,
+                        require:true,
+                        attributes:['id','name'],
+                        include:[
+                            {
+                                model:models.Restaurant,
+                                require:true,
+                                attributes:['id', 'restaurant_name',],
+                            }
+                        ]
+                    },
+                ]
             });
 
             if(restaurantDish){
