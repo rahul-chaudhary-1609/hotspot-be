@@ -904,15 +904,34 @@ module.exports = {
     },
 
     getDishes: async (params, user) => {
-        
-            const restaurantDish = await models.RestaurantDish.findAll({
-                where: {
-                    restaurant_dish_category_id:parseInt(params.restaurant_dish_category_id),
-                    status:constants.STATUS.active,
-                }
-            });
 
-           return getDishCard({ restaurantDish,customer_id:user.id});
+        models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
+        models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
+        
+
+        
+        const restaurantDish = await models.RestaurantDish.findAll({
+            where: {
+                restaurant_dish_category_id:parseInt(params.restaurant_dish_category_id),
+                status:constants.STATUS.active,
+            },
+            include:[
+                {
+                    model:models.RestaurantDishCategory,
+                    require:true,
+                    attributes:['id','name'],
+                    include:[
+                        {
+                            model:models.Restaurant,
+                            require:true,
+                            attributes:['id', 'restaurant_name',],
+                        }
+                    ]
+                },
+            ]
+        });
+
+        return getDishCard({ restaurantDish,customer_id:user.id});
         
     },
 
