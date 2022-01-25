@@ -65,4 +65,20 @@ module.exports = {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
+    listDisputes: async (req, res) => {
+        try {
+            const responseFromService = await refundService.listDisputes(req.query);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+    getDisputeDetails: async (req, res) => {
+        try {
+            const responseFromService = await refundService.getDisputeDetails(req.params);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 }

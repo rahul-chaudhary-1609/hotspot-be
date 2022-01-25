@@ -364,4 +364,56 @@ module.exports = {
 
     },
 
+
+    listDisputes:async(params)=>{
+
+        let [offset, limit] = await utility.pagination(params.page, params.page_size);
+
+        let query={}
+        query.where={}
+
+        if(params.search_key && params.search_key.trim()){
+            query.where={
+                ...query.where,
+                order_id:{
+                    [Op.iLike]:`%${params.search_key}%`,
+                }
+            }
+        }
+
+        query.limit=limit;
+        query.offset=offset;
+        query.order=[["created_at","DESC"]]
+
+        let disputes=await utility.convertPromiseToObject(
+            await models.Dispute.findAndCountAll(query)
+        )
+
+        return {disputes};
+    },
+
+    getDisputeDetails:async(params)=>{
+        models.Dispute.belongsTo(models.Order,{foriegnKey:'order_id',sourceKey:'order_id',targetKey:'order_id'})
+
+        let dispute=await utility.convertPromiseToObject(
+            await models.Dispute.findOne({
+                where:{
+                    id:params.dispute_id,
+                },
+                include:[
+                    {
+                        model:models.Order,
+                        required:true,
+                    }
+                ]
+            })
+        )
+
+
+
+        return {dispute}
+
+    },
+
+
 }

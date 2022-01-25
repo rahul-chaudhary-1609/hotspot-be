@@ -568,7 +568,7 @@ module.exports.scheduleRestaurantOrdersEmailJob = async()=> {
 }
 
 module.exports.scheduleAdminEmailJob = async()=> {
-    schedule.scheduleJob('0 */2 * * *', async ()=> {
+    schedule.scheduleJob('0 0 */1 * *', async ()=> {
       let params={
             admin:await utilityFunctions.convertPromiseToObject(await Admin.findOne({where:{role:constants.ADMIN_ROLE.super_admin}})),
             current_date:moment(new Date()).subtract(1,"month"),

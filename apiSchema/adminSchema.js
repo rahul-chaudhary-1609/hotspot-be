@@ -873,6 +873,16 @@ module.exports = {
     getRefundHistoryDetails:Joi.object({
         customer_id: Joi.string().required(),
     }),
+
+    listDisputes:Joi.object({
+        search_key: Joi.string().allow(null, '').optional(),
+        page: Joi.number().allow(null, '').optional(),
+        page_size: Joi.number().allow(null, '').optional(),
+    }),
+
+    getDisputeDetails:Joi.object({
+        dispute_id: Joi.string().required(),
+    }),
 }
 
 
