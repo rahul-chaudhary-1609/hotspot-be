@@ -6056,7 +6056,7 @@
             ],            
             "parameters": [
               {
-                "name": "google_id",
+                "name": "id",
                 "in": "formData",
                 "description": "enter google id",
                 "required": true,
@@ -6099,7 +6099,7 @@
             ],            
             "parameters": [
               {
-                "name": "facebook_id",
+                "name": "id",
                 "in": "formData",
                 "description": "enter facebook id",
                 "required": true,
@@ -6142,7 +6142,7 @@
             ],            
             "parameters": [
               {
-                "name": "apple_id",
+                "name": "id",
                 "in": "formData",
                 "description": "enter apple id",
                 "required": true,
@@ -6280,7 +6280,7 @@
             ],            
             "parameters": [
               {
-                "name": "google_id",
+                "name": "id",
                 "in": "formData",
                 "description": "enter google id",
                 "required": true,
@@ -6323,7 +6323,7 @@
             ],            
             "parameters": [
               {
-                "name": "facebook_id",
+                "name": "id",
                 "in": "formData",
                 "description": "enter facebook id",
                 "required": true,
@@ -6366,7 +6366,7 @@
             ],            
             "parameters": [
               {
-                "name": "apple_id",
+                "name": "id",
                 "in": "formData",
                 "description": "enter apple id",
                 "required": true,
