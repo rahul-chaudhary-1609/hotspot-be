@@ -1035,7 +1035,7 @@ module.exports = {
             const email = (params.emailOrPhone).toLowerCase();
             //const country_code = params.country_code
 
-            console.log(phone_no,email,country_code)
+            console.log(phone_no,email)
 
             let customer = null;
 
