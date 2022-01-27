@@ -929,6 +929,7 @@ module.exports = {
             restaurant:{
                 id:restaurant.id,
                 name:restaurant.restaurant_name,
+                cutOffTime:restaurant.cut_off_time
             },
             cart:newCart,
             isDeliveryOnly,
