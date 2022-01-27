@@ -219,3 +219,4 @@ router.get('/listRefundHistory', adminAuthentication.validateAdminToken, joiVali
 router.get('/getRefundHistoryDetails/:customer_id', adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getRefundHistoryDetails), refundController.getRefundHistoryDetails);
 router.get('/listDisputes', adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.listDisputes), refundController.listDisputes);
 router.get('/getDisputeDetails/:dispute_id', adminAuthentication.validateAdminToken, joiValidation.validateParams(apiSchema.getDisputeDetails), refundController.getDisputeDetails);
+router.put('/changeDisputeStatus', adminAuthentication.validateAdminToken, joiValidation.validateBody(apiSchema.changeDisputeStatus), refundController.changeDisputeStatus);

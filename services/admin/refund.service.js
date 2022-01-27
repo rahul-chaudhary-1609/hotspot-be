@@ -366,6 +366,7 @@ module.exports = {
 
 
     listDisputes:async(params)=>{
+        models.Dispute.belongsTo(models.Customer,{foriegnKey:'id',sourceKey:'customer_id',targetKey:'id'})
 
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
@@ -384,6 +385,13 @@ module.exports = {
         query.limit=limit;
         query.offset=offset;
         query.order=[["created_at","DESC"]]
+        query.include=[
+            {
+                model:models.Customer,
+                attributes:['id','name','country_code','phone_no','email'],
+                required:true,
+            }
+        ]
 
         let disputes=await utility.convertPromiseToObject(
             await models.Dispute.findAndCountAll(query)
@@ -398,7 +406,7 @@ module.exports = {
         let dispute=await utility.convertPromiseToObject(
             await models.Dispute.findOne({
                 where:{
-                    id:params.dispute_id,
+                    dispute_id:params.dispute_id,
                 },
                 include:[
                     {
@@ -408,12 +416,37 @@ module.exports = {
                 ]
             })
         )
+        return {dispute}
 
+    },
 
+    changeDisputeStatus:async(params)=>{
+
+        let dispute=await Dispute.update(
+            {
+                status:[
+                    constants.DISPUTE_STATUS.under_review,
+                    constants.DISPUTE_STATUS.closed
+                ].includes(params.status)?params.status:constants.DISPUTE_STATUS.new,
+                result:[
+                    constants.DISPUTE_RESULT.partially_accepted,
+                    constants.DISPUTE_RESULT.accepted,
+                    constants.DISPUTE_RESULT.rejected,
+                ].includes(params.result)?params.status:constants.DISPUTE_RESULT.none,
+            },
+            {
+                where:{
+                    dispute_id:params.dispute_id,
+                },
+                returing:true,
+                raw:true
+            }
+        )
 
         return {dispute}
 
     },
+
 
 
 }

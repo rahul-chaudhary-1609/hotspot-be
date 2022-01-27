@@ -81,4 +81,13 @@ module.exports = {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
+
+    changeDisputeStatus: async (req, res) => {
+        try {
+            const responseFromService = await refundService.changeDisputeStatus(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
 }

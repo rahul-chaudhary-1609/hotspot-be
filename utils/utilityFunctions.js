@@ -9,7 +9,7 @@ const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWI
 const geolib = require('geolib');
 const Cryptr = require('cryptr');
 const cryptr = new Cryptr(process.env.CRYPTR_KEY);
-const { Order, OrderPayment,Refund, OrderPickup, OrderDelivery, DriverPayment, RestaurantPayment, Notification } = require('../models');
+const { Order, OrderPayment,Refund,Dispute, OrderPickup, OrderDelivery, DriverPayment, RestaurantPayment, Notification } = require('../models');
 const moment=require("moment");
 
 
@@ -423,6 +423,23 @@ module.exports.getUniqueRefundId = async ()=> {
     }
 
     return refund_id;
+}
+
+module.exports.getUniqueDisputeId = async ()=> {
+    let isUniqueFound = false;
+    let dispute_id = null;
+    while (!isUniqueFound) {
+        dispute_id  = "DI-"+getRandomStringOfLengthTen();
+        let dispute = await Dispute.findOne({
+            where: {
+                dispute_id
+            }
+        });
+
+        if (!dispute) isUniqueFound=true 
+    }
+
+    return dispute_id;
 }
 
 module.exports.getUniqueTypeIdForNotification = async ()=> {

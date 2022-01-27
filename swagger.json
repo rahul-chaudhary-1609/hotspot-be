@@ -5785,7 +5785,7 @@
                 "in": "path",
                 "description": "customer id",
                 "required": false,
-                "type": "string"
+                "type": "number"
               }
             ],
             "responses": {}
@@ -5856,6 +5856,50 @@
                 "description": "dispute id",
                 "required": true,
                 "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+        "/admin/changeDisputeStatus": {
+          "put": {
+            "tags": [
+              "Admin Refund Management"
+            ],
+            "description": "Api to change Dispute Status",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "dispute_id",
+                "in": "formData",
+                "description": "dispute id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "result",
+                "in": "formData",
+                "description": "0=> none, 1=> partially_accepted, 2=>accepted , 3=>rejected",
+                "required": false,
+                "type": "number",
+                "enum":[0,1,2,3]
+              },
+              {
+                "name": "status",
+                "in": "formData",
+                "description": "1=> new, 2=> under_review, 3=> closed",
+                "required": false,
+                "type": "number",
+                "enum":[1,2,3]
               }
             ],
             "responses": {}

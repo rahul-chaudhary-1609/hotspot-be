@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
+        dispute_id: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         order_id: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -61,7 +65,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
-            comment: '0=> none, 1=> accepted, 2=> partially_accepted, 3=>rejected'
+            comment: '0=> none, 1=> partially_accepted, 2=>accepted , 3=>rejected'
         },
 
         raised_at:{

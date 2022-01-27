@@ -348,8 +348,8 @@ module.exports = {
 
   DISPUTE_RESULT:{
     none:0,
-    accepted:1,
-    partially_accepted:2,
+    partially_accepted:1,
+    accepted:2,    
     rejected:3,
   },
 

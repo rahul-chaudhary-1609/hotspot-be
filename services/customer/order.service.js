@@ -1603,6 +1603,7 @@ module.exports = {
         )
 
         let disputeObj={
+            dispute_id:await utilityFunction.getUniqueDisputeId(),
             order_id:params.order_id,
             customer_id:user.id,
             title:params.title,
