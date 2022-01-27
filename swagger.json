@@ -7806,7 +7806,22 @@
               }
             ],
             
-            "parameters": [],
+            "parameters": [
+              {
+                "name": "hotspot_location_id",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "delivery_shift",
+                "in": "query",
+                "description": "enter delivery shift HH:MM:SS",
+                "required": true,
+                "type": "string"
+              }
+            ],
             "responses": {}
           }
         },

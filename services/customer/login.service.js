@@ -1251,7 +1251,7 @@ module.exports = {
 
     updateCustomerphone: async (params,user) => {
 
-            const phone_no = parseInt(params.phone);
+            const phone_no = params.phone;
             //const country_code = params.country_code;
 
             const customer_phone = await models.Customer.findOne({

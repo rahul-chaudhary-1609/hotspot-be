@@ -114,6 +114,7 @@ const getDishCard =  async (args) => {
                 is_added_to_cart,
                 cart_count,
                 is_favorite,
+                is_available:args.unavailableRestaurantsIds?(!args.availableRestaurantsIds.includes(dish.RestaurantDishCategory.Restaurant.id))?0:1:1,
                 restaurant:dish.RestaurantDishCategory.Restaurant
             })
         }
@@ -1056,10 +1057,38 @@ module.exports = {
         
     },
 
-    getFavoriteFood: async (user) => {
+    getFavoriteFood: async (params,user) => {
         models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
         models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
+
+        const hotspotLocation = await models.HotspotLocation.findOne({
+            where: {
+                id: params.hotspot_location_id,
+            }
+        });
+
+        let nextDeliveryTimeIndex =0;
         
+        hotspotLocation.delivery_shifts.forEach((time,index) => {
+            if(params.delivery_shift == time){
+                nextDeliveryTimeIndex=index+1;
+            }
+        });
+        
+
+        let hotspotRestaurants = await utility.convertPromiseToObject(
+            await models.HotspotRestaurant.findAll({
+                attributes:['id','restaurant_id'],
+                where: {
+                    hotspot_location_id: parseInt(params.hotspot_location_id),
+                    available_for_shifts:{
+                        [Op.contains]:[nextDeliveryTimeIndex]
+                    },
+                }
+            })
+        )
+
+        let availableRestaurantsIds=hotspotRestaurants.map(hotspotRestaurant=>hotspotRestaurant.restaurant_id);        
 
         const favFoods = await models.FavFood.findAll({
             where: {
@@ -1089,7 +1118,7 @@ module.exports = {
             ]
         });
 
-        return getDishCard({ restaurantDish,customer_id:user.id, });
+        return getDishCard({ restaurantDish,customer_id:user.id,availableRestaurantsIds });
 
           
     },
