@@ -1101,6 +1101,7 @@ module.exports = {
         const restaurantDish = await models.RestaurantDish.findAll({
             where: {
                 id: restaurant_dish_ids,
+                status:constants.STATUS.active,
             },
             include:[
                 {
@@ -1112,6 +1113,9 @@ module.exports = {
                             model:models.Restaurant,
                             require:true,
                             attributes:['id', 'restaurant_name',],
+                            where:{
+                                status:constants.STATUS.active,
+                            }
                         }
                     ]
                 },
