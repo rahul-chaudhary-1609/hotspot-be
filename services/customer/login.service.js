@@ -130,7 +130,7 @@ module.exports = {
 
 
             const password = passwordHash.generate(params.password);
-            const phone_no = parseInt(params.phone);
+            const phone_no = params.phone;
             const email = (params.email).toLowerCase();
 
             const checkCustomer = await models.Customer.findOne({
