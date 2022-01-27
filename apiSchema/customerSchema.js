@@ -93,26 +93,26 @@ module.exports = {
         email: Joi.string().regex(/^(?:^[0-9]{4,15}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})$/i).required(),
     }),
 
-    resetPassword : Joi.object({
-        email: Joi.string().regex(/^(?:^[0-9]{4,15}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})$/i).required(),
-        password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
-            "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
-            "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
-            "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
-            "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
-            "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
-            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
-        }),
-        confirmPassword: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
-            "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
-            "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
-            "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
-            "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
-            "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
-            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
-        }),
-        otp: Joi.string().required(),
-    }),
+    // resetPassword : Joi.object({
+    //     email: Joi.string().regex(/^(?:^[0-9]{4,15}|[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})$/i).required(),
+    //     password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
+    //         "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
+    //         "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
+    //         "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
+    //         "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+    //         "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+    //         "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
+    //     }),
+    //     confirmPassword: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
+    //         "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
+    //         "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
+    //         "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
+    //         "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+    //         "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+    //         "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
+    //     }),
+    //     otp: Joi.string().required(),
+    // }),
 
     customerSchema : Joi.object({
         name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
@@ -190,6 +190,18 @@ module.exports = {
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
         }),
         newPassword: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
+            "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
+            "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
+            "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
+            "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+            "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
+            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
+        }),
+    }),
+
+    resetPassword : Joi.object({
+        emailOrPhone: Joi.string().trim().required(),
+        password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
             "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
             "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
             "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,

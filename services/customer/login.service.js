@@ -1031,7 +1031,7 @@ module.exports = {
                 throw new Error(constants.MESSAGES.invalid_email_phone);
             }
 
-            const phone_no = parseInt(params.emailOrPhone);
+            const phone_no = params.emailOrPhone;
             const email = (params.emailOrPhone).toLowerCase();
             //const country_code = params.country_code
 
@@ -1049,7 +1049,7 @@ module.exports = {
             else {
                 customer = await models.Customer.findOne({
                     where: {
-                            phone_no,
+                        phone_no,
                     }
                 });
             }
@@ -1060,11 +1060,11 @@ module.exports = {
 
             if (customer.is_social) throw new Error(constants.MESSAGES.social_media_account);
         
-            const result = validation.passwordSchema.validate({ password: params.password });
+            // const result = validation.passwordSchema.validate({ password: params.password });
 
-            if (result.error) {
-                throw new Error(constants.MESSAGES.bad_request);
-            }
+            // if (result.error) {
+            //     throw new Error(constants.MESSAGES.bad_request);
+            // }
 
 
             const password = passwordHash.generate(params.password);

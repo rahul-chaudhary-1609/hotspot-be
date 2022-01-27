@@ -53,7 +53,7 @@ router.get('/verify-email', joiValidation.validateQueryParams(apiSchema.emailSch
 router.get('/validate-email',  joiValidation.validateQueryParams(apiSchema.emailSchema), customerLoginController.validateEmailOTP);
 router.post('/send-password-reset-code', customerLoginController.generatePassResetCode);
 router.post('/validate-password-reset-code',customerLoginController.validatePassResetCode);
-router.put('/reset-password',customerLoginController.resetPassword);
+router.put('/reset-password',joiValidation.validateBody(apiSchema.resetPassword),customerLoginController.resetPassword);
 router.get('/customer-profile', customerAuthentication.validateCustomerToken,  customerLoginController.getCustomerProfile);
 router.post('/update-device-token', customerAuthentication.validateCustomerToken, joiValidation.validateBody(apiSchema.update_device_token), customerLoginController.update_device_token);
 router.put('/customer-update-name', customerAuthentication.validateCustomerToken,joiValidation.validateBody(apiSchema.nameSchema),customerLoginController.updateCustomerName);
