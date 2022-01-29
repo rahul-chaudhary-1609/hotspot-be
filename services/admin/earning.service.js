@@ -1,6 +1,6 @@
 const models = require('../../models');
 const {sequelize}=require('../../models');
-const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment,Admin } = require("../../models")
+const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment,Admin,Driver } = require("../../models")
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const sendMail = require('../../utils/mail');
@@ -156,7 +156,7 @@ const sendRestaurantOrderEmail= async (params) => {
         
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
-        to:[params.restaurant.owner_email,params.admin.email],
+        to:[params.restaurant.owner_email,params.admin.email,params.driver.email],
         subject: `Hotspot delivery order(s) ${params.hotspotLocation.name}, delivery pickup time ${moment(params.deliveryPickupDatetime).format("h:mma")}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
@@ -584,6 +584,7 @@ module.exports = {
 
             await sendRestaurantOrderEmail({
                     admin:await utility.convertPromiseToObject(await Admin.findOne({where:{role:constants.ADMIN_ROLE.super_admin}})),
+                    driver:await utility.convertPromiseToObject(await Driver.findOne({where:{id:restaurantPayment.driver_id}})),
                     orders,
                     restaurant:restaurantPayment.payment_details.restaurant,
                     hotspotLocation:restaurantPayment.payment_details.hotspot,

@@ -888,6 +888,7 @@ module.exports = {
         dispute_id: Joi.string().required(),
         status:Joi.number().valid(1,2,3).allow(null, '').optional(),
         result:Joi.number().valid(0,1,2,3).allow(null, '').optional(),
+        admin_comment:Joi.string().allow(null,'').optional(),
     }),
 }
 

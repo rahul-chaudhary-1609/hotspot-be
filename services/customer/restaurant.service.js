@@ -888,7 +888,8 @@ module.exports = {
                             }
                         ]
                     },
-                ]
+                ],
+                order:[["createdAt","DESC"]],
             });
 
             if(restaurantDish){
@@ -929,7 +930,8 @@ module.exports = {
                         }
                     ]
                 },
-            ]
+            ],
+            order:[["createdAt","DESC"]],
         });
 
         return getDishCard({ restaurantDish,customer_id:user.id});
@@ -987,8 +989,10 @@ module.exports = {
                                     ), 'price'
                                     ],'image_url','dish_add_on_section_id','status','createdAt','updatedAt'
                                 ],
+                                order:[["createdAt","DESC"]],
                             }
-                        ]
+                        ],
+                        order:[["createdAt","DESC"]]
                     },
                 ]
             })

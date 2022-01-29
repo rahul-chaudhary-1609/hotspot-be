@@ -7,6 +7,29 @@ const sendMail = require('../../utils/mail');
 const moment =require("moment");
 const Sequelize  = require("sequelize");
 
+let disputeResult=[
+    {
+        label:"None",
+        color:"Black",
+        value:0,
+    },
+    {
+        label:"Partially Accepted",
+        color:"Blue",
+        value:1,
+    },
+    {
+        label:"Accepted",
+        color:"Green",
+        value:2,
+    },
+    {
+        label:"Rejected",
+        color:"Red",
+        value:3,
+    },
+]
+
 const sendRefundEmail= async (params) => {
 
     console.log("send Order Payment Email", params)
@@ -15,7 +38,7 @@ const sendRefundEmail= async (params) => {
     let emailHTML="";
 
     if(params.refundType==constants.REFUND_TYPE.card_refund){
-        emailSubject=+`Credit Card Refund`;
+        emailSubject+=`Credit Card Refund`;
 
         emailHTML+=`
             <div>
@@ -71,6 +94,76 @@ const sendRefundEmail= async (params) => {
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: params.order.order_details.customer.email,
+        subject:  emailSubject,
+        html: emailHTML,
+    };
+
+    console.log(mailOptions)    
+    
+    
+    await sendMail.send(mailOptions);
+    
+    return true;
+}
+
+
+const sendDisputeClosedEmail= async (params) => {
+
+    console.log("send Order Payment Email", params)
+
+    let emailSubject="";
+    let emailHTML="";
+
+    emailSubject+=`Dispute #${params.dispute_id} Closed`;
+
+    emailHTML+=`
+        <div>
+            Hi ${params.Order.order_details.customer.name},
+        </div><br/>
+        <div>
+            Thank you for contacting Hotspot. We're sorry to hear about the issue with your order.
+        </div><br/>
+        <div>
+            We are closing the dispute (${params.dispute_id}) raised by you for order #<b>${params.order_id}</bd>.
+        </div><br/>
+        <div>
+            <b>Action:</b> <span style="color:${disputeResult[params.result].color};">${disputeResult[params.result].label}<span>
+        </div>`
+
+
+        if(params.admin_comment && params.admin_comment.trim()){
+            emailHTML+=`<div>
+               <b>Hotspot Comment</b>: ${params.admin_comment} 
+            </div><br/>`
+            }
+        
+
+    emailHTML+=`
+        <div>
+            If you have any question or need help, <br/>
+            Please respond to this email.
+        </div><br/><br/>
+        <div>
+            Best Regards,<br/><br/>
+            Hotspot Support
+        </div><br><br>
+        <div
+            style="
+                position: absolute;
+                width: 100%;
+                height: 100%;
+            ">
+            <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" 
+                style="
+                        opacity:0.5;
+                        margin-top:5px;;
+                    "/>
+        </div>`
+
+        
+    let mailOptions = {
+        from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
+        to: params.Order.order_details.customer.email,
         subject:  emailSubject,
         html: emailHTML,
     };
@@ -366,7 +459,7 @@ module.exports = {
 
 
     listDisputes:async(params)=>{
-        models.Dispute.belongsTo(models.Customer,{foriegnKey:'id',sourceKey:'customer_id',targetKey:'id'})
+        models.Dispute.belongsTo(models.Order,{foriegnKey:'order_id',sourceKey:'order_id',targetKey:'order_id'})
 
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
@@ -387,8 +480,8 @@ module.exports = {
         query.order=[["created_at","DESC"]]
         query.include=[
             {
-                model:models.Customer,
-                attributes:['id','name','country_code','phone_no','email'],
+                model:models.Order,
+                attributes:['id','order_id','order_delivery_id','delivery_datetime','order_payment_id','order_details'],
                 required:true,
             }
         ]
@@ -421,18 +514,22 @@ module.exports = {
     },
 
     changeDisputeStatus:async(params)=>{
+        console.log(params)
 
-        let dispute=await Dispute.update(
+        let dispute=await models.Dispute.update(
             {
                 status:[
                     constants.DISPUTE_STATUS.under_review,
                     constants.DISPUTE_STATUS.closed
                 ].includes(params.status)?params.status:constants.DISPUTE_STATUS.new,
+                
                 result:[
                     constants.DISPUTE_RESULT.partially_accepted,
                     constants.DISPUTE_RESULT.accepted,
                     constants.DISPUTE_RESULT.rejected,
-                ].includes(params.result)?params.status:constants.DISPUTE_RESULT.none,
+                ].includes(params.result)?params.result:constants.DISPUTE_RESULT.none,
+
+                admin_comment:params.admin_comment,
             },
             {
                 where:{
@@ -442,6 +539,26 @@ module.exports = {
                 raw:true
             }
         )
+
+        if(params.status==constants.DISPUTE_STATUS.closed){
+            models.Dispute.belongsTo(models.Order,{foriegnKey:'order_id',sourceKey:'order_id',targetKey:'order_id'})
+
+            let dispute=await utility.convertPromiseToObject(
+                await models.Dispute.findOne({
+                    where:{
+                        dispute_id:params.dispute_id,
+                    },
+                    include:[
+                        {
+                            model:models.Order,
+                            required:true,
+                        }
+                    ]
+                })
+            )
+
+            await sendDisputeClosedEmail(dispute);
+        }
 
         return {dispute}
 

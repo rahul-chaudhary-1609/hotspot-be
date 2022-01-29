@@ -186,7 +186,7 @@ let assignDriver= async (params,user) => {
     }
 
     await models.Order.update({
-        status: constants.ORDER_STATUS.food_ready_or_on_the_way,            
+        // status: constants.ORDER_STATUS.food_ready_or_on_the_way,            
         order_pickup_id,
         order_details:{ ...order.order_details,driver },
         driver_id: driver.id,
@@ -199,28 +199,28 @@ let assignDriver= async (params,user) => {
         }
     );
 
-    let customer=await utility.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
+    // let customer=await utility.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
 
 
-    // add notification for employee
-    let notificationObj = {
-        type_id: orderId,                
-        title: 'Order Confirmed by Restaurant',
-        description: `Order - ${orderId} is confirmed by restaurant`,
-        sender_id: user.id,
-        reciever_ids: [order.customer_id],
-        type: constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
-    }
-    await models.Notification.create(notificationObj);
+    // // add notification for employee
+    // let notificationObj = {
+    //     type_id: orderId,                
+    //     title: 'Order Confirmed by Restaurant',
+    //     description: `Order - ${orderId} is confirmed by restaurant`,
+    //     sender_id: user.id,
+    //     reciever_ids: [order.customer_id],
+    //     type: constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
+    // }
+    // await models.Notification.create(notificationObj);
 
-    if (customer.notification_status && customer.device_token) {
-        // send push notification
-        let notificationData = {
-            title: 'Order Confirmed by Restaurant',
-            body: `Order - ${orderId} is confirmed by restaurant`,
-        }
-        await utility.sendFcmNotification([customer.device_token], notificationData);
-    }
+    // if (customer.notification_status && customer.device_token) {
+    //     // send push notification
+    //     let notificationData = {
+    //         title: 'Order Confirmed by Restaurant',
+    //         body: `Order - ${orderId} is confirmed by restaurant`,
+    //     }
+    //     await utility.sendFcmNotification([customer.device_token], notificationData);
+    // }
 
     return true;    
 };

@@ -5900,6 +5900,13 @@
                 "required": false,
                 "type": "number",
                 "enum":[1,2,3]
+              },
+              {
+                "name": "admin_comment",
+                "in": "formData",
+                "description": "admin comment",
+                "required": false,
+                "type": "string"
               }
             ],
             "responses": {}

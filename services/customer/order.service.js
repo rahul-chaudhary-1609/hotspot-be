@@ -1127,7 +1127,7 @@ module.exports = {
 
         if (restaurant_id) {
             restaurant = await utilityFunction.convertPromiseToObject(await models.Restaurant.findOne({
-                attributes: ['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
+                attributes: ['id', 'restaurant_name','owner_email','owner_phone','location','address','restaurant_image_url','working_hours_from','working_hours_to','percentage_fee'],
                     where: {
                         id: restaurant_id
                     }
