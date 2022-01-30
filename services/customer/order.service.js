@@ -832,7 +832,7 @@ module.exports = {
             })
         }
 
-        if (cartItems.count == 0) throw new Error(constants.MESSAGES.no_item);
+        if (cartItems.length == 0) throw new Error(constants.MESSAGES.no_item);
 
         let taxes= await utilityFunction.convertPromiseToObject(
                 await models.Tax.findAll({

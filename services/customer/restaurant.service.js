@@ -55,6 +55,7 @@ const getRestaurantCard =  async (args) => {
         restaurants.push({
             restaurant_id: restaurant.id,
             restaurant_name: restaurant.restaurant_name,
+            restaurant_address: restaurant.address,
             restaurant_image_url: restaurant.restaurant_image_url,
             restaurant_category_ids: restaurant.restaurant_category_ids,
             next_delivery_time:next_delivery_time?next_delivery_time:null,
