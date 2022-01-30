@@ -807,6 +807,7 @@ module.exports = {
             orderType: restaurant.order_type,
             nextDeliveryTime,
             isFavorite,
+            dish_preference:restaurant.dish_preference
         }
 
         if (!restaurant) throw new Error(constants.MESSAGES.no_restaurant);
