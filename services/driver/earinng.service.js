@@ -97,6 +97,7 @@ module.exports = {
                     "driver_fee",
                     "delivery_datetime",
                     [sequelize.json("delivery_details.hotspot"), 'hotspot'],
+                    [sequelize.json("delivery_details.restaurants"), 'restaurants'],
                     [sequelize.json("delivery_details.dropOffs"), 'dropOffs'],
                     "status"
                 ],
@@ -109,6 +110,7 @@ module.exports = {
         
         for (let delivery of deliveryHistory) {
             delivery.hotspot = JSON.parse(delivery.hotspot)
+            delivery.restaurants = JSON.parse(delivery.restaurants)
             delivery.dropOffs = JSON.parse(delivery.dropOffs)
         }
         return { deliveryHistory };
