@@ -125,6 +125,7 @@ module.exports = {
                     "delivery_datetime",
                     [sequelize.json("delivery_details.driver"), 'driver'],
                     [sequelize.json("delivery_details.hotspot"), 'hotspot'],
+                    [sequelize.json("delivery_details.restaurants"), 'restaurants'],
                     [sequelize.json("delivery_details.dropOffs"), 'dropOffs']
                 ],
                 where: {
@@ -138,6 +139,7 @@ module.exports = {
 
         deliveryDetails.driver=JSON.parse(deliveryDetails.driver)
         deliveryDetails.hotspot=JSON.parse(deliveryDetails.hotspot)
+        deliveryDetails.restaurants=JSON.parse(deliveryDetails.restaurants)
         deliveryDetails.dropOffs=JSON.parse(deliveryDetails.dropOffs)
 
         for (let dropOff of deliveryDetails.dropOffs) {
