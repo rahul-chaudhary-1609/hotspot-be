@@ -156,7 +156,7 @@ const sendRestaurantOrderEmail= async (params) => {
         
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
-        to:[params.restaurant.owner_email,params.admin.email,params.driver.email],
+        to:[...(new Set([params.restaurant.owner_email,params.admin.email,params.driver.email]))],
         subject: `Hotspot delivery order(s) ${params.hotspotLocation.name}, delivery pickup time ${moment(params.deliveryPickupDatetime).format("h:mma")}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
