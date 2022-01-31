@@ -183,6 +183,7 @@ module.exports = {
         attributes: [
           'hotspot_dropoff_id',
           [Sequelize.fn('COUNT', Sequelize.col('id')), 'orderCount'],
+          [Sequelize.fn('COUNT',sequelize.json("order_details.beverages_count")), 'beverageCount'],
 
         ],
         where:{
