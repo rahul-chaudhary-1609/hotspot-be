@@ -540,34 +540,34 @@ module.exports = {
         }
         
 
-        let exclude_restaurant_ids = []
+        // let exclude_restaurant_ids = []
         
 
-        for (let restaurant_id of whereCondiition.id) {
-            let restaurant = await utility.convertPromiseToObject(
-                await models.Restaurant.findByPk(restaurant_id)
-            )
+        // for (let restaurant_id of whereCondiition.id) {
+        //     let restaurant = await utility.convertPromiseToObject(
+        //         await models.Restaurant.findByPk(restaurant_id)
+        //     )
 
-            let delivery_datetime=moment(params.datetime).format("YYYY-MM-DD")+" "+params.delivery_shift
+        //     let delivery_datetime=moment(params.datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD")+" "+params.delivery_shift
 
-            let order_count = await models.Order.count({
-                where: {
-                    restaurant_id,
-                    delivery_datetime,
-                    status: {
-                        [Op.notIn]:[constants.ORDER_STATUS.not_paid],
-                    }
-                }
-            })
+        //     let order_count = await models.Order.count({
+        //         where: {
+        //             restaurant_id,
+        //             delivery_datetime,
+        //             status: {
+        //                 [Op.notIn]:[constants.ORDER_STATUS.not_paid],
+        //             }
+        //         }
+        //     })
             
 
-            if (parseInt(restaurant.deliveries_per_shift) <= order_count) {
-                exclude_restaurant_ids.push(restaurant_id)
-            }
+        //     if (parseInt(restaurant.deliveries_per_shift) <= order_count) {
+        //         exclude_restaurant_ids.push(restaurant_id)
+        //     }
 
-        }
+        // }
 
-        whereCondiition.id = whereCondiition.id.filter((restaurant_id) => !(exclude_restaurant_ids.includes(restaurant_id)));
+        // whereCondiition.id = whereCondiition.id.filter((restaurant_id) => !(exclude_restaurant_ids.includes(restaurant_id)));
 
         let restaurants = await utility.convertPromiseToObject(
             await models.Restaurant.findAll({
@@ -882,11 +882,13 @@ module.exports = {
                         model:models.RestaurantDishCategory,
                         require:true,
                         attributes:['id','name'],
+                        where:{status:constants.STATUS.active},
                         include:[
                             {
                                 model:models.Restaurant,
                                 require:true,
                                 attributes:['id', 'restaurant_name',],
+                                where:{status:constants.STATUS.active},
                             }
                         ]
                     },
@@ -924,11 +926,13 @@ module.exports = {
                     model:models.RestaurantDishCategory,
                     require:true,
                     attributes:['id','name'],
+                    where:{status:constants.STATUS.active},
                     include:[
                         {
                             model:models.Restaurant,
                             require:true,
                             attributes:['id', 'restaurant_name',],
+                            where:{status:constants.STATUS.active},
                         }
                     ]
                 },
@@ -964,11 +968,13 @@ module.exports = {
                         model:models.RestaurantDishCategory,
                         require:true,
                         attributes:['id','name'],
+                        where:{status:constants.STATUS.active},
                         include:[
                             {
                                 model:models.Restaurant,
                                 require:true,
                                 attributes:['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to','dish_preference'],
+                                where:{status:constants.STATUS.active},
                             }
                         ]
                     },
@@ -1114,6 +1120,7 @@ module.exports = {
                     model:models.RestaurantDishCategory,
                     require:true,
                     attributes:['id','name'],
+                    where:{status:constants.STATUS.active},
                     include:[
                         {
                             model:models.Restaurant,

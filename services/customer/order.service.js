@@ -651,14 +651,93 @@ module.exports = {
     },
 
     getCartItemCount:async(user)=>{
-        return {
-            count:await models.Cart.count({
-                where:{
-                    customer_id:user.id,
+        models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
+        models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
+        models.DishAddOn.belongsTo(models.DishAddOnSection, { foreignKey: 'dish_add_on_section_id' })
+
+        const cart = await models.Cart.findAll({
+                where: {
+                    customer_id: user.id,
                     status:constants.STATUS.active,
-                }
+                },
+                order:[["createdAt","DESC"]],
+                raw:true,
             })
+        
+        let count = 0;
+
+        for (const item of cart) {
+
+            const dish = await models.RestaurantDish.findOne({
+                where: {
+                    id: item.restaurant_dish_id,
+                    status:constants.STATUS.active,
+                },
+                include:[
+                    {
+                        model:models.RestaurantDishCategory,
+                        require:true,
+                        where:{status:constants.STATUS.active},
+                        include:[
+                            {
+                                model:models.Restaurant,
+                                require:true,
+                                where:{status:constants.STATUS.active},
+                            }
+                        ]
+                    },
+                ],
+            })
+
+            if(!dish){
+                await models.Cart.destroy({
+                    where:{
+                        id:item.id,
+                    }
+                })
+
+                continue;
+            }
+
+            const dishAddOn=await utilityFunction.convertPromiseToObject(
+                await models.DishAddOn.findAll({
+                    where: {
+                        id: item.dish_add_on_ids,
+                        status:constants.STATUS.active,
+                    },
+                    include:[
+                        {
+                            model:models.DishAddOnSection,
+                            require:true,
+                            where:{status:constants.STATUS.active},
+                        },
+                    ]
+                })
+            )
+
+            if(dishAddOn && item.dish_add_on_ids && dishAddOn.length!=item.dish_add_on_ids.length){
+                await models.Cart.destroy({
+                    where:{
+                        id:item.id,
+                    }
+                })
+
+                continue;
+            }
+
+            count++;
         }
+
+        // return {
+        //     count:await models.Cart.count({
+        //         where:{
+        //             customer_id:user.id,
+        //             status:constants.STATUS.active,
+        //         }
+        //     })
+        // }
+
+        return {count}
     },
 
     deleteFromCart: async (params) => {
@@ -682,26 +761,18 @@ module.exports = {
     
     getCart: async (user) => {
         
-        //params.order_type = parseInt(params.order_type)
+        models.RestaurantDish.belongsTo(models.RestaurantDishCategory, { foreignKey: 'restaurant_dish_category_id' })
+        models.RestaurantDishCategory.belongsTo(models.Restaurant, { foreignKey: 'restaurant_id'})
+        models.DishAddOn.belongsTo(models.DishAddOnSection, { foreignKey: 'dish_add_on_section_id' })
 
-        // await models.Order.destroy({
-        //     where: {
-        //         customer_id: user.id,
-        //         //restaurant_id,
-        //         status:constants.ORDER_STATUS.not_paid,
-        //     }
-        // })
-
-        const cart = await utilityFunction.convertPromiseToObject(
-                await models.Cart.findAndCountAll({
+        const cart = await models.Cart.findAndCountAll({
                 where: {
                     customer_id: user.id,
-                    //restaurant_id,
                     status:constants.STATUS.active,
                 },
-                order:[["createdAt","DESC"]]
+                order:[["createdAt","DESC"]],
+                raw:true,
             })
-        )
 
         if (cart.count == 0) throw new Error(constants.MESSAGES.no_item);
         
@@ -769,7 +840,21 @@ module.exports = {
                 where: {
                     id: item.restaurant_dish_id,
                     status:constants.STATUS.active,
-                }
+                },
+                include:[
+                    {
+                        model:models.RestaurantDishCategory,
+                        require:true,
+                        where:{status:constants.STATUS.active},
+                        include:[
+                            {
+                                model:models.Restaurant,
+                                require:true,
+                                where:{status:constants.STATUS.active},
+                            }
+                        ]
+                    },
+                ],
             })
 
             if(!dish){
@@ -787,7 +872,14 @@ module.exports = {
                     where: {
                         id: item.dish_add_on_ids,
                         status:constants.STATUS.active,
-                    }
+                    },
+                    include:[
+                        {
+                            model:models.DishAddOnSection,
+                            require:true,
+                            where:{status:constants.STATUS.active},
+                        },
+                    ]
                 })
             )
 
