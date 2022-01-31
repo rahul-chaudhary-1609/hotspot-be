@@ -183,7 +183,7 @@ module.exports = {
         attributes: [
           'hotspot_dropoff_id',
           [Sequelize.fn('COUNT', Sequelize.col('id')), 'orderCount'],
-          [Sequelize.fn('SUM',sequelize.json("order_details.beverages_count")), 'beverageCount'],
+          [Sequelize.fn('SUM',sequelize.cast(sequelize.json("order_details.beverages_count"),"integer")), 'beverageCount'],
 
         ],
         where:{
