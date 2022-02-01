@@ -115,7 +115,7 @@ const getDishCard =  async (args) => {
                 is_added_to_cart,
                 cart_count,
                 is_favorite,
-                is_available:args.unavailableRestaurantsIds?(!args.availableRestaurantsIds.includes(dish.RestaurantDishCategory.Restaurant.id))?0:1:1,
+                is_available:args.availableRestaurantsIds?(!args.availableRestaurantsIds.includes(dish.RestaurantDishCategory.Restaurant.id))?0:1:1,
                 restaurant:dish.RestaurantDishCategory.Restaurant
             })
         }
