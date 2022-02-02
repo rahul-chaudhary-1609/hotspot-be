@@ -966,13 +966,13 @@ module.exports = {
                 include:[
                     {
                         model:models.RestaurantDishCategory,
-                        require:true,
+                        required:true,
                         attributes:['id','name'],
                         where:{status:constants.STATUS.active},
                         include:[
                             {
                                 model:models.Restaurant,
-                                require:true,
+                                required:true,
                                 attributes:['id', 'restaurant_name','owner_email','location','address','restaurant_image_url','working_hours_from','working_hours_to','dish_preference'],
                                 where:{status:constants.STATUS.active},
                             }
@@ -980,14 +980,14 @@ module.exports = {
                     },
                     {
                         model:models.DishAddOnSection,
-                        require:false,
+                        required:false,
                         where:{
                             status:constants.STATUS.active,
                         },
                         include:[
                             {
                                 model:models.DishAddOn,
-                                require:false,
+                                required:false,
                                 where:{
                                     status:constants.STATUS.active,
                                 },
