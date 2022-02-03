@@ -504,7 +504,17 @@ module.exports = {
             raw:true,
         })
 
-        orders.forEach(async(order)=>{
+        // orders.forEach(async(order)=>{
+        //     await assignDriver(
+        //         {
+        //             ...params,
+        //             orderId:order.order_id,
+        //         },
+        //         user
+        //     );
+        // })
+
+        for(let order of orders){
             await assignDriver(
                 {
                     ...params,
@@ -512,7 +522,7 @@ module.exports = {
                 },
                 user
             );
-        })
+        }
 
         return true;
     },

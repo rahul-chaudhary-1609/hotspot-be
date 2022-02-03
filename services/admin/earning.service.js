@@ -305,6 +305,8 @@ module.exports = {
     getOrderDeliveries: async (params) => {
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
 
+        console.log("getOrderDeliveries params",params)
+
         
         let whereCondition = {};
         
@@ -358,6 +360,7 @@ module.exports = {
     },
     
     getOrderDeliveryDetails: async (params) => {
+        console.log("getOrderDeliveryDetails params",params)
         models.Order.hasOne(models.HotspotLocation, { foreignKey: 'id', sourceKey: 'hotspot_location_id', targetKey: 'id' })
         models.Order.hasOne(models.Restaurant, { foreignKey: 'id', sourceKey: 'restaurant_id', targetKey: 'id' })
         models.Order.hasOne(models.HotspotDropoff, { foreignKey: 'id', sourceKey: 'hotspot_dropoff_id', targetKey: 'id' })
