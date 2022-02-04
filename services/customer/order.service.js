@@ -636,9 +636,9 @@ module.exports = {
         })
 
         if (cart) {
-            cart.cart_count=parseInt(params.cart_count) || cart.cart_count;
-            cart.dish_add_on_ids=params.dish_add_on_ids || cart.dish_add_on_ids;
-            cart.special_instructions=params.special_instructions || cart.special_instructions;
+            cart.cart_count=parseInt(params.cart_count); //|| cart.cart_count;
+            cart.dish_add_on_ids=params.dish_add_on_ids; //|| cart.dish_add_on_ids;
+            cart.special_instructions=params.special_instructions; //|| cart.special_instructions;
 
             cart.save();
 
