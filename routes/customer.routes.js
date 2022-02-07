@@ -150,7 +150,7 @@ router.post('/payment-success',customerAuthentication.validateCustomerToken,joiV
 
 
 // statticContent API's
-router.get('/getStaticContent/:type',customerAuthentication.validateCustomerToken, joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
+router.get('/getStaticContent/:type', joiValidation.validateParams(apiSchema.getStaticContent),staticContentController.getStaticContent);
 router.get('/getFaqTopics',customerAuthentication.validateCustomerToken, staticContentController.getFaqTopics);
 router.get('/getFaqs',customerAuthentication.validateCustomerToken, joiValidation.validateQueryParams(apiSchema.getFaqs), staticContentController.getFaqs);
 router.get('/htmlFileUrlToTextConvert',customerAuthentication.validateCustomerToken, staticContentController.htmlFileUrlToTextConvert);
