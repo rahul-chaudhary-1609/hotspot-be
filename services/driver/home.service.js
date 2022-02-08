@@ -205,7 +205,7 @@ module.exports = {
       tip_amount:parseFloat(currentOrderPickup.tip_amount),
       driver_id:currentOrderPickup.driver_id,
       driver_fee:parseFloat(driver_fee.fee),
-      delivery_datetime:moment(currentOrderPickup.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+      delivery_datetime:moment(currentOrderPickup.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
       delivery_details: {
         ...currentOrderPickup.pickup_details,
         dropOffs:orderDropoffs,
@@ -216,7 +216,7 @@ module.exports = {
       driver_id: user.id,
       delivery_id,
       driver_fee: parseFloat(driver_fee.fee),
-      delivery_datetime:moment(currentOrderPickup).format("YYYY-MM-DD HH:mm:ss"),
+      delivery_datetime:moment(currentOrderPickup.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
     }
     
     await models.Order.update({
