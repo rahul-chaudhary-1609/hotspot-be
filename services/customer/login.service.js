@@ -930,7 +930,7 @@ module.exports = {
 
             // const phone_no = parseInt(phoneResult.value.phone);
             //const country_code = phoneResult.value.country_code;
-            const phone_no = phoneResult.value.phon;
+            const phone_no = phoneResult.value.phone;
 
             const emailResult = validation.emailSchema.validate({ email: params.emailOrPhone });
 
