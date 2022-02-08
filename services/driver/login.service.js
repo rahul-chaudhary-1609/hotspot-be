@@ -89,7 +89,7 @@ module.exports = {
 
     if (driver) {
         let otpSentObj = {
-            country_code=process.env.COUNTRY_CODE,
+            country_code:process.env.COUNTRY_CODE,
             phone_no:driver.phone_no
         }
         let otpData = await utilityFunction.sentOtp(otpSentObj);
