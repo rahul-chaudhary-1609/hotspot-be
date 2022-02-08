@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
     country_code: {
       type: DataTypes.STRING(45),
       allowNull: false,
-      defaultValue:"+91",
+      defaultValue:"+1",
     },
     phone_no: {
       type: DataTypes.STRING,

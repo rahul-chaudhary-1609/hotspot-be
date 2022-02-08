@@ -535,7 +535,8 @@ module.exports = {
 
 
         let otpSentObj = {
-            country_code: customer.country_code,
+            // country_code: customer.country_code,
+            country_code=process.env.COUNTRY_CODE,
             phone_no
         }
 
@@ -612,7 +613,7 @@ module.exports = {
         }
 
         let otpVerifyObj = {
-            country_code: customer.country_code,
+            country_code=process.env.COUNTRY_CODE,
             phone_no,
             otp:params.code
         }
@@ -854,7 +855,8 @@ module.exports = {
             if (is_phone) {
 
                 let otpSentObj = {
-                    country_code: customer.country_code,
+                    // country_code: customer.country_code,
+                    country_code=process.env.COUNTRY_CODE,
                     phone_no
                 }
 
@@ -989,7 +991,7 @@ module.exports = {
 
 
                 let otpVerifyObj = {
-                    country_code: customer.country_code,
+                    country_code=process.env.COUNTRY_CODE,
                     phone_no,
                     otp:params.code
                 }

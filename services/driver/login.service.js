@@ -88,7 +88,11 @@ module.exports = {
     });
 
     if (driver) {
-        let otpData = await utilityFunction.sentOtp(driver);
+        let otpSentObj = {
+            country_code=process.env.COUNTRY_CODE,
+            phone_no:driver.phone_no
+        }
+        let otpData = await utilityFunction.sentOtp(otpSentObj);
         await Driver.update({
             phone_verification_otp_expiry: new Date(),
         }, {
