@@ -54,8 +54,8 @@ const getOrderRow =  async (args) => {
         return {orderList: args.orderList};
 };
 
-let assignDriver= async (params,user) => {
-       
+let assignDriver= async (params) => {       
+
 
     const orderId = params.orderId;
     const driverId = params.driverId;
@@ -144,6 +144,18 @@ let assignDriver= async (params,user) => {
         };
         orderPickup.save();            
         order_pickup_id = orderPickup.pickup_id;
+
+        await models.RestaurantPayment.update(
+            {
+                is_driver_assigned:constants.IS_DRIVER_ASSIGNED.yes,
+                driver_id:driver.id
+            },
+            {
+                where:{
+                    payment_id:params.restaurant_payment_id,
+                }
+            }
+        )
 
     }
     else {
@@ -496,7 +508,7 @@ module.exports = {
         
     },
 
-    bulkAssignDriver:async(params,user)=>{
+    bulkAssignDriver:async(params)=>{
         let orders=await models.Order.findAll({
             where:{
                 restaurant_payment_id:params.restaurant_payment_id,
@@ -519,17 +531,17 @@ module.exports = {
                 {
                     ...params,
                     orderId:order.order_id,
-                },
-                user
+                }
+                
             );
         }
 
         return true;
     },
 
-    assignDriver: async (params,user) => {
+    assignDriver: async (params) => {
        
-        return await assignDriver(params,user);
+        return await assignDriver(params);
         
     },
 
