@@ -68,7 +68,7 @@ module.exports = {
 
     loginWithPhone: async (params) => {
 
-            const phone_no = parseInt(params.phone);
+            //const phone_no = parseInt(params.phone);
             //const country_code = params.country_code;
             const password = params.password;
 
