@@ -453,7 +453,7 @@ const sendOrderDisputeEmail= async (params) => {
         
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
-        to: params.order.order_details.customer.email,
+        to:[...(new Set([params.order.order_details.customer.email,params.admin.email]))],
         subject:  `Help #${params.order.order_id}`,
         html:headerHTML+bodyHTML+bottomHTML,
     };
@@ -1709,7 +1709,11 @@ module.exports = {
             await models.Dispute.create(disputeObj)
         )
 
-        sendOrderDisputeEmail({order,...params});
+        sendOrderDisputeEmail({
+            order,
+            ...params,
+            admin:await utilityFunction.convertPromiseToObject(await models.Admin.findOne({where:{role:constants.ADMIN_ROLE.super_admin}})),
+        });
 
         return {dispute};
      
