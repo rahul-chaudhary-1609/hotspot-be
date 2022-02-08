@@ -517,8 +517,9 @@ module.exports = {
 
     generatePhoneOTP: async (params ) => {
 
-        const phone_no = parseInt(params.phone);
+        // const phone_no = parseInt(params.phone);
         //const country_code = params.country_code;
+        const phone_no = params.phone;
 
 
         let customer = await utilityFunction.convertPromiseToObject( await models.Customer.findOne({
@@ -560,8 +561,9 @@ module.exports = {
 
     validatePhoneOTP: async (params ) => {
 
-        const phone_no = parseInt(params.phone);
+        // const phone_no = parseInt(params.phone);
         //const country_code = params.country_code;
+        const phone_no = params.phone;
 
 
         let customer = await utilityFunction.convertPromiseToObject(  await models.Customer.findOne({
@@ -808,8 +810,9 @@ module.exports = {
                 is_phone = true;               
             }
 
-            const phone_no = parseInt(phoneResult.value.phone);
+            // const phone_no = parseInt(phoneResult.value.phone);
             //const country_code = phoneResult.value.country_code;
+            const phone_no = phoneResult.value.phone;
 
             const emailResult = validation.emailSchema.validate({ email: params.emailOrPhone });
 
@@ -923,8 +926,9 @@ module.exports = {
                 is_phone = true;
             }
 
-            const phone_no = parseInt(phoneResult.value.phone);
+            // const phone_no = parseInt(phoneResult.value.phone);
             //const country_code = phoneResult.value.country_code;
+            const phone_no = phoneResult.value.phon;
 
             const emailResult = validation.emailSchema.validate({ email: params.emailOrPhone });
 
