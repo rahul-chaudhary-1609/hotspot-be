@@ -70,6 +70,7 @@ module.exports = {
 
             //const phone_no = parseInt(params.phone);
             //const country_code = params.country_code;
+            const phone_no = params.phone;
             const password = params.password;
 
             const customer = await utilityFunction.convertPromiseToObject( await models.Customer.findOne({
