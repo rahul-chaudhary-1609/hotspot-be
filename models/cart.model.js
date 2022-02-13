@@ -49,6 +49,12 @@ module.exports = (sequelize, DataTypes) => {
         special_instructions: {
             type: DataTypes.TEXT,
         },
+        preference_type: {
+            type: DataTypes.SMALLINT,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '1=> go_with_merchant_recommendation, 2=> refund_this_item, 3=> cancel_the_entire_order'
+        },
         expire_datetime: {
             type:CustomDataTypes.DATE_NO_TZ,
         },

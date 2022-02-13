@@ -316,19 +316,7 @@ const sendOrderPaymentEmail= async (params) => {
             <tr style="text-align: left; vertical-align: top; ">
                 <td style="text-align: left;">
                     <div>
-                        Processing Fee (${params.order.order_details.amount_details.processing_fee_variable_percentage}%${params.order.order_details.amount_details.processing_fee_fixed_amount?` + ¢${params.order.order_details.amount_details.processing_fee_fixed_amount}`:``})
-                    </div>
-                </td>
-                <td style="text-align: right;">
-                    <div>
-                        $${params.order.order_details.amount_details.processing_fee.toFixed(2)}
-                    </div>
-                </td>
-            </tr>
-            <tr style="text-align: left; vertical-align: top; ">
-                <td style="text-align: left;">
-                    <div>
-                        Taxes (${params.order.order_details.amount_details.taxes_variable_percentage}%${params.order.order_details.amount_details.taxes_fixed_amount?` + ¢${params.order.order_details.amount_details.taxes_fixed_amount}`:``})
+                        Taxes
                     </div>
                 </td>
                 <td style="text-align: right;">
@@ -346,6 +334,18 @@ const sendOrderPaymentEmail= async (params) => {
                 <td style="text-align: right;">
                     <div>
                         -$${params.order.order_details.amount_details.credits_applied.toFixed(2)}
+                    </div>
+                </td>
+            </tr>
+            <tr style="text-align: left; vertical-align: top; ">
+                <td style="text-align: left;">
+                    <div>
+                        Processing
+                    </div>
+                </td>
+                <td style="text-align: right;">
+                    <div>
+                        $${params.order.order_details.amount_details.processing_fee.toFixed(2)}
                     </div>
                 </td>
             </tr>
@@ -582,6 +582,7 @@ module.exports = {
                             cart_count:parseInt(params.cart_count),
                             dish_add_on_ids:params.dish_add_on_ids,
                             special_instructions:params.special_instructions,
+                            preference_type:params.preference_type || constants.ORDER_PREFERENCE_TYPE.go_with_merchant_recommendation,
                             customer_id:user.id,
                         })
                     )
@@ -639,7 +640,7 @@ module.exports = {
             cart.cart_count=parseInt(params.cart_count); //|| cart.cart_count;
             cart.dish_add_on_ids=params.dish_add_on_ids; //|| cart.dish_add_on_ids;
             cart.special_instructions=params.special_instructions; //|| cart.special_instructions;
-
+            cart.preference_type=params.preference_type || constants.ORDER_PREFERENCE_TYPE.go_with_merchant_recommendation,
             cart.save();
 
             return {
@@ -914,6 +915,7 @@ module.exports = {
                 description:dish.description,
                 price:dish.markup_price ? (parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2) : dish.price,
                 preference:item.special_instructions,
+                preference_type:item.preference_type,
                 itemAddOn: addOns,
                 // itemPrice:dish.markup_price?
                 //             (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
@@ -1117,6 +1119,7 @@ module.exports = {
                 itemCount: item.cart_count,
                 price:dish.markup_price ? (parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2) : dish.price,
                 preference:item.special_instructions,
+                preference_type:item.preference_type,
                 itemAddOn: addOns,
                 name:dish.name,
                 description:dish.description,
@@ -1534,6 +1537,7 @@ module.exports = {
                                     }
                                 },""),
                     preference:item.preference,
+                    preference_type:item.preference_type,
                     
                 }
             })

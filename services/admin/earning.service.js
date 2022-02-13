@@ -68,13 +68,13 @@ const sendRestaurantOrderEmail= async (params) => {
             for(let th=0;th<maxOrderItemCount;th++){
                 bodyHTML+=`<th style="text-align: center;min-width: 325px;">
                     Item #${th+1}<br />
-                    Quantity | Item | Add-on | Special Instructions
+                    Quantity | Item | Add-on | Special Instructions | Preference
                 </th>`
             }
             for(let th=0;th<maxBeverageCount;th++){
                 bodyHTML+=`<th style="text-align: center;min-width: 150px;">
                     Beverage #${th+1}<br />
-                    Quantity | Item
+                    Quantity | Item | Add-on | Preference
                 </th>`
             }
                 
@@ -95,11 +95,16 @@ const sendRestaurantOrderEmail= async (params) => {
             bodyHTML +=`<td style="text-align:left;">
                         ${ordered_item.itemCount} | ${ordered_item.itemName} | `
 
-            ordered_item.itemAddOn.forEach((addOn,addOnCount)=>{
-                bodyHTML +=(addOnCount+1)<ordered_item.itemAddOn.length?`${addOn.name}, `:`${addOn.name}`;
-            })
+            if(ordered_item.itemAddOn.length>0){
+                ordered_item.itemAddOn.forEach((addOn,addOnCount)=>{
+                    bodyHTML +=(addOnCount+1)<ordered_item.itemAddOn.length?`${addOn.name}, `:`${addOn.name}`;
+                })
+            }else{
+                bodyHTML +=`-`;
+            }            
 
-            bodyHTML +=` | ${ordered_item.preference || "-"}</td>`
+            bodyHTML +=` | ${ordered_item.preference || "-"}`
+            bodyHTML +=` | ${constants.ORDER_PREFERENCE_VALUE[ordered_item.preference_type]}</td>`
 
             currentOrderItemCount--;
         })
@@ -116,11 +121,15 @@ const sendRestaurantOrderEmail= async (params) => {
             bodyHTML +=`<td style="text-align:left;">
                         ${ordered_item.itemCount} | ${ordered_item.itemName} | `;
 
-            ordered_item.itemAddOn.forEach((addOn,addOnCount)=>{
-                bodyHTML +=(addOnCount+1)<ordered_item.itemAddOn.length?`${addOn.name}, `:`${addOn.name}`;
-            })
-
-            bodyHTML +=`</td>`
+            if(ordered_item.itemAddOn.length>0){
+                ordered_item.itemAddOn.forEach((addOn,addOnCount)=>{
+                    bodyHTML +=(addOnCount+1)<ordered_item.itemAddOn.length?`${addOn.name}, `:`${addOn.name}`;
+                })
+            }else{
+                bodyHTML +=`-`;
+            }
+            
+            bodyHTML +=` | ${constants.ORDER_PREFERENCE_VALUE[ordered_item.preference_type]}</td>`
 
             currentBeverageCount--;
         })

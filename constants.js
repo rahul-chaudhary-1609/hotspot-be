@@ -377,6 +377,18 @@ module.exports = {
   IS_DRIVER_ASSIGNED:{
     no:0,
     yes:1,
+  },
+
+  ORDER_PREFERENCE_TYPE:{
+    go_with_merchant_recommendation:1,
+    refund_this_item:2,
+    cancel_the_entire_order:3,
+  },
+
+  ORDER_PREFERENCE_VALUE:{
+    1:"Go with Merchant recommendation",
+    2:"Refund this item",
+    3:"Cancel the entire order",
   }
 
 }
