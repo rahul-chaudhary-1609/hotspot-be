@@ -256,100 +256,109 @@ const sendHotspotMonthlyEmail= async (params) => {
                 <div class="w100 align-center">
                     <div class="right-border w32 left-float">
                         <h4>This Month</h4>
-                        <strong>`
-                        if((params.stats[3]-params.stats[6])>=0){
-                            bodyHTML +=`$${(params.stats[3]-params.stats[6]).toFixed(2)}`
-                        }else{
-                            bodyHTML+=`- $${(Math.abs(params.stats[3]-params.stats[6])).toFixed(2)}`
-                        }
-
-                    bodyHTML +=`</strong>
-                    <div class="align-center">
-                            <table align="center">
-                                <tr>
-                                    <td>
-                                        Earned:
-                                    </td>
-                                    <td>
-                                        $${params.stats[3]}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Refunded:
-                                    </td>
-                                    <td>
-                                        $${params.stats[6]}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+                        <strong>$${params.stats[3]}</strong>
                     </div>
                     <div class="right-border w33 left-float">
                         <h4>This Year</h4>
-                        <strong>`
-                        if((params.stats[4]-params.stats[7])>=0){
-                            bodyHTML +=`$${(params.stats[4]-params.stats[7]).toFixed(2)}`
-                        }else{
-                            bodyHTML+=`- $${(Math.abs(params.stats[4]-params.stats[7])).toFixed(2)}`
-                        }
-
-                    bodyHTML +=`</strong>
-                        <div class="align-center">
-                            <table align="center">
-                                <tr>
-                                    <td>
-                                        Earned:
-                                    </td>
-                                    <td>
-                                        $${params.stats[4]}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Refunded:
-                                    </td>
-                                    <td>
-                                        $${params.stats[7]}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+                        <strong>$${params.stats[4]}</strong>    
                     </div>
                     <div class="w32 left-float">
                         <h4>Till Now</h4>
-                        <strong>`
-                        if((params.stats[5]-params.stats[8])>=0){
-                            bodyHTML +=`$${(params.stats[5]-params.stats[8]).toFixed(2)}`
-                        }else{
-                            bodyHTML+=`- $${(Math.abs(params.stats[5]-params.stats[8])).toFixed(2)}`
-                        }
+                        <strong>$${params.stats[5]}</strong>
 
-                    bodyHTML +=`</strong>
-                        <div class="align-center">
-                            <table align="center">
-                                <tr>
-                                    <td>
-                                        Earned:
-                                    </td>
-                                    <td>
-                                        $${params.stats[5]}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Refunded:
-                                    </td>
-                                    <td>
-                                        $${params.stats[8]}
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>`
+                    
+        // bodyHTML +=`</strong>
+        //                 <div class="align-center">
+        //                     <table align="center">
+        //                         <tr>
+        //                             <td>
+        //                                 Earned:
+        //                             </td>
+        //                             <td>
+        //                                 $${params.stats[3]}
+        //                             </td>
+        //                         </tr>
+        //                         <tr>
+        //                             <td>
+        //                                 Refunded:
+        //                             </td>
+        //                             <td>
+        //                                 $${params.stats[6]}
+        //                             </td>
+        //                         </tr>
+        //                     </table>
+        //                 </div>
+        //             </div>
+        //             <div class="right-border w33 left-float">
+        //                 <h4>This Year</h4>
+        //                 <strong>`
+        //                 if((params.stats[4]-params.stats[7])>=0){
+        //                     bodyHTML +=`$${(params.stats[4]-params.stats[7]).toFixed(2)}`
+        //                 }else{
+        //                     bodyHTML+=`- $${(Math.abs(params.stats[4]-params.stats[7])).toFixed(2)}`
+        //                 }
+
+        //             bodyHTML +=`</strong>
+        //                 <div class="align-center">
+        //                     <table align="center">
+        //                         <tr>
+        //                             <td>
+        //                                 Earned:
+        //                             </td>
+        //                             <td>
+        //                                 $${params.stats[4]}
+        //                             </td>
+        //                         </tr>
+        //                         <tr>
+        //                             <td>
+        //                                 Refunded:
+        //                             </td>
+        //                             <td>
+        //                                 $${params.stats[7]}
+        //                             </td>
+        //                         </tr>
+        //                     </table>
+        //                 </div>
+        //             </div>
+        //             <div class="w32 left-float">
+        //                 <h4>Till Now</h4>
+        //                 <strong>`
+        //                 if((params.stats[5]-params.stats[8])>=0){
+        //                     bodyHTML +=`$${(params.stats[5]-params.stats[8]).toFixed(2)}`
+        //                 }else{
+        //                     bodyHTML+=`- $${(Math.abs(params.stats[5]-params.stats[8])).toFixed(2)}`
+        //                 }
+
+        //             bodyHTML +=`</strong>
+        //                 <div class="align-center">
+        //                     <table align="center">
+        //                         <tr>
+        //                             <td>
+        //                                 Earned:
+        //                             </td>
+        //                             <td>
+        //                                 $${params.stats[5]}
+        //                             </td>
+        //                         </tr>
+        //                         <tr>
+        //                             <td>
+        //                                 Refunded:
+        //                             </td>
+        //                             <td>
+        //                                 $${params.stats[8]}
+        //                             </td>
+        //                         </tr>
+        //                     </table>
+        //                 </div>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </div>`
 
         
     let mailOptions = {
