@@ -2943,6 +2943,70 @@
           }
         },
 
+        "/admin/listActiveCustomers": {
+          "get": {
+            "tags": [
+              "Admin Customer Management"
+            ],
+            "description": "Api to list Active Customers",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/addPromotionalCredits": {
+          "put": {
+            "tags": [
+              "Admin Customer Management"
+            ],
+            "description": "Api to add Promotional Credits",
+            "consumes": [
+              "application/json"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "customer_ids",
+                "in": "body",
+                "description": "1. customer_ids:array (Required),\n2. hotspot_credit:number (required)",
+                "required": true,
+                "schema":{
+                  "type":"object",
+                  "properties":{
+                    "customer_ids":{
+                      "type":"array",
+                      "items":{
+                        "type":"number"
+                      }
+                    },
+                    "hotspot_credit":{
+                      "type":"number"
+                    }
+                  }
+                }
+              }
+            ],
+            "responses": {}
+          }
+        },
+
 
 
 

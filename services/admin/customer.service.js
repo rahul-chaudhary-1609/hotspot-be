@@ -179,5 +179,60 @@ module.exports = {
             reason:params.reason,
         })
         return true;
-    }
+    },
+
+    listActiveCustomers: async () => {
+
+        let query = {};
+        query.where = {
+            status:constants.STATUS.active,
+        };
+
+        query.attributes=['id','name','email','phone_no','status','city','state','postal_code','country','createdAt']
+        
+        query.order = [
+            ['name', 'ASC'],['email', 'ASC']
+        ];
+
+        query.raw = true;
+
+        let customerList = await model.Customer.findAndCountAll(query);
+        
+        return { customerList };
+        
+    },
+
+    addPromotionalCredits: async (params) => {
+
+        console.log("params=====>",params)
+
+        let customers = await model.Customer.findAll({
+            where:{
+                id:params.customer_ids
+            },
+            raw:true
+        });
+
+        let updatedCustomerPromise=[];
+
+        for(let customer of customers){
+            updatedCustomerPromise.push(
+                model.Customer.update(
+                    {
+                        hotspot_credit:parseFloat((parseFloat(customer.hotspot_credit)+parseFloat(params.hotspot_credit)).toFixed(2)),
+                    },
+                    {
+                        where:{
+                            id:customer.id
+                        },
+                    }
+                )
+            )
+        }
+        
+        await Promise.all(updatedCustomerPromise);
+
+        return true;
+        
+    },
 }

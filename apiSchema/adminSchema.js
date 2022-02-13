@@ -890,6 +890,12 @@ module.exports = {
         result:Joi.number().valid(0,1,2,3).allow(null, '').optional(),
         admin_comment:Joi.string().allow(null,'').optional(),
     }),
+
+    addPromotionalCredits:Joi.object({
+        customer_ids: Joi.array().items(Joi.number().required()).required(),
+        hotspot_credit: Joi.number().required(),
+    }),
+    
 }
 
 

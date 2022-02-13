@@ -57,5 +57,23 @@ module.exports = {
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
+    },
+
+    listActiveCustomers: async (req, res) => {
+        try {
+            const responseFromService = await customerService.listActiveCustomers();
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
+    },
+
+    addPromotionalCredits : async (req, res) => {
+        try {
+            const responseFromService = await customerService.addPromotionalCredits(req.body);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+        } catch (error) {
+            utilityFunction.errorResponse(res, error, constants.code.error_code);
+        }
     }
 }
