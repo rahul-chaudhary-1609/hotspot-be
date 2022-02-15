@@ -286,7 +286,7 @@ module.exports = {
      )
 
      if(order.status>constants.ORDER_STATUS.not_paid){
-       throw new Error(constants.MESSAGES.payment_already_done(order.order_id))
+       throw new Error(constants.MESSAGES.order_payment_already_done(order.order_id))
      }
             
      const customer = await utilityFunction.convertPromiseToObject(

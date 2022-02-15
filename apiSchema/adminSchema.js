@@ -197,7 +197,7 @@ module.exports = {
 
     editDishAddon: Joi.object({
         dish_addon_id: Joi.number().required(),
-        dish_add_on_section_id: Joi.number().required(),
+        // dish_add_on_section_id: Joi.number().required(),
         name: Joi.string().trim().optional(),
         price: Joi.number().optional(),
         markup_price: Joi.number().optional(),
@@ -249,7 +249,7 @@ module.exports = {
         street: Joi.string().max(45),
         city: Joi.string().max(45),
         state: Joi.string().max(45),
-        postal_code:Joi.string().regex(/^\d{5}|\d{6}$/).messages({
+        postal_code:Joi.string().regex(/^\d{5,6}$/).messages({
             "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.postal_code_msg.pattern,
         }),
 
@@ -637,7 +637,7 @@ module.exports = {
         card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg.pattern,
         }),
-        card_cvc: Joi.string().trim().min(3).max(4).regex(/^\d{3}|\d{4}$/).messages({
+        card_cvc: Joi.string().trim().min(3).max(4).regex(/^\d{3,4}$/).messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_cvc_msg.pattern,
         }).required(),
         amount: Joi.number(),
@@ -654,7 +654,7 @@ module.exports = {
         card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg.pattern,
         }),
-        card_cvc: Joi.string().trim().min(3).max(4).regex(/^\d{3}|\d{4}$/).messages({
+        card_cvc: Joi.string().trim().min(3).max(4).regex(/^\d{3,4}$/).messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_cvc_msg.pattern,
         }).required(),
         amount: Joi.number(),

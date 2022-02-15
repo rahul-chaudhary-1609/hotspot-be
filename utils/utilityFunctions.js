@@ -176,13 +176,14 @@ module.exports.sentOtp = async (params) => {
             //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
         })
         .catch((error) => {
-            if (error.status === 429) {
-                //.status(429).json({ status: 429, message: `Too many requests` });
-                resolve(1);
-                //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
-            } else {
-                resolve(1);
-            }
+            // if (error.status === 429) {
+            //     //.status(429).json({ status: 429, message: `Too many requests` });
+            //     resolve(1);
+            //     //.status(200).json({ status: 200, message: `Verification code is sent to phone` });
+            // } else {
+            //     resolve(1);
+            // }
+            resolve(0);
         })
     }));
     

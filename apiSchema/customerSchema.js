@@ -390,7 +390,7 @@ module.exports = {
         card_exp_year: Joi.string().trim().min(4).max(4).regex(/^\d{4}$/).required().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_exp_year_msg.pattern,
         }),
-        card_cvc: Joi.string().trim().min(3).max(4).regex(/^\d{3}|\d{4}$/).messages({
+        card_cvc: Joi.string().trim().min(3).max(4).regex(/^\d{3,4}$/).messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.card_cvc_msg.pattern,
         }),
         amount: Joi.number(),

@@ -51,4 +51,6 @@ Thumbs.db
 *.mov
 *.wmv
 
-
+coverage/
+sonar-project.properties
+.scannerwork

@@ -131,7 +131,7 @@ module.exports = {
     no_cart_item:`No cart item found`,
     no_tax:`No tax found`,
     dish_not_available:`One or more than one dish of current order is unavailable for now`,
-    payment_already_done:(order_id)=>`Payment already done for order ${order_id}`,
+    order_payment_already_done:(order_id)=>`Payment already done for order ${order_id}`,
   },
 
   code: {
