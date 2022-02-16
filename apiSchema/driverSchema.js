@@ -26,6 +26,7 @@ module.exports = {
     }),
 
     verifyOTP: Joi.object({
+        user_id:Joi.number().optional(),
         phone_no: Joi.number().required(),
         otp: Joi.number().required()
     }),

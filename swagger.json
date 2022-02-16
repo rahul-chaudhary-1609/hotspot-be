@@ -9093,6 +9093,13 @@
         ],
         "parameters": [
           {
+            "name": "user_id",
+            "in": "formData",
+            "description": "enter user id in case you are updating the phone no.",
+            "required": false,
+            "type": "number"
+          },
+          {
             "name": "phone_no",
             "in": "formData",
             "description": "enter phone",

@@ -129,12 +129,22 @@ module.exports = {
     * function for verify_otp
     */
     verifyOTP: async (params) => {
-        let driver = await utilityFunction.convertPromiseToObject(  await Driver.findOne({
-                where: {
-                     phone_no:params.phone_no
-                }
-            })
-        );
+        let driver = null;
+        if(params.user_id){
+            driver=await utilityFunction.convertPromiseToObject(  await Driver.findOne({
+                    where: {
+                        id:params.user_id
+                    }
+                })
+            )
+        }else if(params.phone_no){
+            driver=await utilityFunction.convertPromiseToObject(  await Driver.findOne({
+                    where: {
+                        phone_no:params.phone_no
+                    }
+                })
+            );
+        }
         if(!driver) throw new Error (constants.MESSAGES.no_driver_account)
        
         const phone_verification_otp_expiry = driver.phone_verification_otp_expiry;
