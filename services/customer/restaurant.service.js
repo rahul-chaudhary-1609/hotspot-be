@@ -385,9 +385,18 @@ module.exports = {
                 nextDeliveryTimeIndex=index+1;
             }
         });
-        
 
         let hotspotRestaurants = await utility.convertPromiseToObject(
+            await models.HotspotRestaurant.findAll({
+                attributes:['id','restaurant_id'],
+                where: {
+                    hotspot_location_id: parseInt(params.hotspot_location_id),
+                }
+            })
+        )
+        
+
+        let avilableHotspotRestaurants = await utility.convertPromiseToObject(
             await models.HotspotRestaurant.findAll({
                 attributes:['id','restaurant_id'],
                 where: {
@@ -408,7 +417,20 @@ module.exports = {
             })
         )
 
-        let restaurantNames=restaurants.map(restaurant=>restaurant.restaurant_name);
+        let restaurantNames=restaurants.map((restaurant)=>{
+            if(avilableHotspotRestaurants.includes(restaurant.id)){
+                return {
+                    name:restaurant.restaurant_name,
+                    is_available:1,
+                }
+            }else{
+                return {
+                    name:restaurant.restaurant_name,
+                    is_available:0
+                }
+            }
+            
+        });
 
         return { restaurantNames }
 
