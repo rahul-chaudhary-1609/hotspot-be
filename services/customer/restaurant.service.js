@@ -417,6 +417,8 @@ module.exports = {
             })
         )
 
+        avilableHotspotRestaurants=avilableHotspotRestaurants.map(hotspotRestaurant=>hotspotRestaurant.restaurant_id)
+
         let restaurantNames=restaurants.map((restaurant)=>{
             if(avilableHotspotRestaurants.includes(restaurant.id)){
                 return {
