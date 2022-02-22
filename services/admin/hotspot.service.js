@@ -70,14 +70,13 @@ module.exports = {
             const postal_code = params.postal_code;
             const dropoffs = params.dropoffs;
             const delivery_shifts = params.delivery_shifts;
-            const service_availibility = params.service_availibility;
 
             const restaurantIds = params.restaurant_ids;
             const driverIds = params.driver_ids;
 
 
             const hotspotLocation = await models.HotspotLocation.create({
-                name,location,location_detail,city,state,country,postal_code,delivery_shifts,service_availibility
+                name,location,location_detail,city,state,country,postal_code,delivery_shifts
             })
 
             if (dropoffs) {
@@ -148,14 +147,13 @@ module.exports = {
             const postal_code = params.postal_code || hotspot.postal_code;
             const dropoffs = params.dropoffs;
             const delivery_shifts = params.delivery_shifts || hotspot.delivery_shifts;
-            const service_availibility = params.service_availibility || hotspot.service_availibility;
 
             const restaurantIds = params.restaurant_ids;
             
             const driverIds = params.driver_ids;
 
             await models.HotspotLocation.update({
-                name,location,location_detail,city,state,country,postal_code,delivery_shifts, service_availibility
+                name,location,location_detail,city,state,country,postal_code,delivery_shifts
                 },
                 {
                     where: {
@@ -485,6 +483,70 @@ module.exports = {
 
         await Promise.all(deleteArray);
 
+        return true;
+
+        
+    },
+
+    toggleHotspotAvailibility: async (params) => {
+        
+
+        const hotspotLocationId = params.hotspotLocationId;
+
+        const hotspot = await models.HotspotLocation.findOne({
+            where:{
+                id:hotspotLocationId,
+            },
+        })
+
+        if (!hotspot) throw new Error(constants.MESSAGES.no_hotspot);
+
+        if(hotspot.service_availibility==constants.HOTSPOT_SERVICE_AVAILIBILITY.available){
+
+            let hotspotRestaurants=await models.HotspotRestaurant.findAll({
+                where: {
+                    hotspot_location_id:hotspotLocationId,
+                },
+                raw:true,
+            })
+    
+            if(hotspotRestaurants.length>0){
+                let restaurantIds=hotspotRestaurants.map(hotspotRestaurant=>hotspotRestaurant.restaurant_id);
+
+                let deleteArray=[];
+    
+                deleteArray.push(
+                    models.Order.destroy({
+                        where: {
+                            restaurant_id:restaurantIds,
+                            status:constants.ORDER_STATUS.not_paid,
+                        }
+                    })
+                )
+    
+                deleteArray.push(
+                    models.Cart.destroy({
+                        where:{
+                            restaurant_id:restaurantIds,
+                        }
+                    })
+                )
+
+                await Promise.all(deleteArray);
+    
+            }
+            
+            hotspot.service_availibility=constants.HOTSPOT_SERVICE_AVAILIBILITY.not_available;
+            hotspot.save();       
+    
+        }else if(hotspot.service_availibility==constants.HOTSPOT_SERVICE_AVAILIBILITY.not_available){
+
+            hotspot.service_availibility=constants.HOTSPOT_SERVICE_AVAILIBILITY.available;
+            hotspot.save();
+
+        }
+
+        
         return true;
 
         

@@ -158,6 +158,7 @@ router.post('/addHotspot',adminAuthentication.validateAdminToken,parseStringToAr
 router.put('/editHotspot',adminAuthentication.validateAdminToken,parseStringToArray,joiValidation.validateBody(apiSchema.editHotspot), adminHotspotController.editHotspot);
 router.get('/getHotspot/:hotspotLocationId',adminAuthentication.validateAdminToken,joiValidation.validateParams(apiSchema.getHotspot), adminHotspotController.getHotspot);
 router.delete('/deleteHotspot',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.deleteHotspot), adminHotspotController.deleteHotspot);
+router.put('/toggleHotspotAvailibility',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.toggleHotspotAvailibility), adminHotspotController.toggleHotspotAvailibility);
 
 
 // notification management

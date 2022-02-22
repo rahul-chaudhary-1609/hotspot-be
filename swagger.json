@@ -4199,7 +4199,7 @@
               {
                 "name":"body",
                 "in":"body",
-                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss\n3. Service avialibity can be 0 or 1: 0=>not_available,1=> available \n4. Thsese fields are required:\n\tname\n\tlocation\n\tlocation_detail\n\tcity\n\tstate\n\tcountry\n\tpostal_code\n\tdropoffs\n\tdelivery_shifts\n\trestaurant_ids ",
+                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss\n3. Thsese fields are required:\n\tname\n\tlocation\n\tlocation_detail\n\tcity\n\tstate\n\tcountry\n\tpostal_code\n\tdropoffs\n\tdelivery_shifts\n\trestaurant_ids ",
                 "required":"true",
                 "schema":{
                   "type":"object",
@@ -4243,9 +4243,6 @@
                       },
                       "minItems": 3,
                       "maxItems": 3
-                    },
-                    "service_availibility":{
-                      "type":"number"
                     },
                     "restaurant_ids":{
                       "type":"array",
@@ -4294,7 +4291,7 @@
               {
                 "name":"body",
                 "in":"body",
-                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss\n3. Service avialibity can be 0 or 1: 0=>not_available,1=> available ",
+                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss",
                 "required":"true",
                 "schema":{
                   "type":"object",
@@ -4341,9 +4338,6 @@
                       },
                       "minItems": 3,
                       "maxItems": 3
-                    },
-                    "service_availibility":{
-                      "type":"number"
                     },
                     "restaurant_ids":{
                       "type":"array",
@@ -4408,6 +4402,35 @@
               "Admin Schedule Settings"
             ],
             "description": "Api to delete a hotspot",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "hotspotLocationId",
+                "in": "formData",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/toggleHotspotAvailibility": {
+          "put": {
+            "tags": [
+              "Admin Schedule Settings"
+            ],
+            "description": "Api to toggle Hotspot Availibility",
             "consumes": [
               "application/x-www-form-urlencoded"
             ],

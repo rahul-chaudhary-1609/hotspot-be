@@ -65,4 +65,13 @@ module.exports = {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }
     },
+
+    toggleHotspotAvailibility: async (req, res) => {
+        try {
+             const responseFromService = await hotspotService.toggleHotspotAvailibility(req.body);
+             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
+         } catch (error) {
+             utilityFunction.errorResponse(res, error, constants.code.error_code);
+         }
+     },
 }

@@ -346,7 +346,6 @@ module.exports = {
                 }),
             ).length(3)
             .required(),
-        service_availibility:Joi.number().valid(0,1).optional(),
         
         restaurant_ids: Joi.array().items(Joi.object().keys({
             restaurant_id: Joi.number().required(),
@@ -379,7 +378,6 @@ module.exports = {
                 }),
             ).length(3)
             .optional(),
-        service_availibility:Joi.number().valid(0,1).optional(),
         
         restaurant_ids: Joi.array().items(Joi.object().keys({
             restaurant_id: Joi.number().required(),
@@ -400,6 +398,10 @@ module.exports = {
     }),
 
     deleteHotspot: Joi.object({
+        hotspotLocationId:Joi.number().required(),
+    }),
+
+    toggleHotspotAvailibility: Joi.object({
         hotspotLocationId:Joi.number().required(),
     }),
 

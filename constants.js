@@ -389,6 +389,11 @@ module.exports = {
     1:"Go with Merchant recommendation",
     2:"Refund this item",
     3:"Cancel the entire order",
+  },
+
+  HOTSPOT_SERVICE_AVAILIBILITY:{
+    not_available:0,
+    available:1,
   }
 
 }
