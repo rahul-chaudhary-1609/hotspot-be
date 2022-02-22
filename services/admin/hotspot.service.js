@@ -406,52 +406,84 @@ module.exports = {
         const hotspot = await models.HotspotLocation.findByPk(hotspotLocationId);
 
         if (!hotspot) throw new Error(constants.MESSAGES.no_hotspot);
-    
-        // let hotspotRestaurant = await models.HotspotRestaurant.findOne({
-        //     where: {
-        //             hotspot_location_id:hotspotLocationId,
-        //         }
-        // })
-        
-        // if (hotspotRestaurant) throw new Error(constants.MESSAGES.hotspot_can_not_delete);
-        
-        await models.HotspotDropoff.destroy({
+
+        let hotspotRestaurants=await models.HotspotRestaurant.findAll({
             where: {
                 hotspot_location_id:hotspotLocationId,
             },
-            force:true,
-        })
-        
-
-        
-        await models.HotspotRestaurant.destroy({
-            where: {
-                hotspot_location_id:hotspotLocationId,
-            },
-            force:true,
-        })
-        
-        await models.HotspotDriver.destroy({
-            where: {
-                hotspot_location_id:hotspotLocationId,
-            },
-            force:true,
+            raw:true,
         })
 
-        await models.CustomerFavLocation.destroy({
-            where: {
-                hotspot_location_id:hotspotLocationId,
-            },
-            force:true,
-        })
+        let deleteArray=[];
 
-        await models.HotspotLocation.destroy({
-            where: {
-                id:hotspotLocationId,
-            },
-            force:true,
-        })
+        if(hotspotRestaurants.length>0){
+            let restaurantIds=hotspotRestaurants.map(hotspotRestaurant=>hotspotRestaurant.restaurant_id);
 
+            deleteArray.push(
+                models.Order.destroy({
+                    where: {
+                        restaurant_id:restaurantIds,
+                        status:constants.ORDER_STATUS.not_paid,
+                    }
+                })
+            )
+
+            deleteArray.push(
+                models.Cart.destroy({
+                    where:{
+                        restaurant_id:restaurantIds,
+                    }
+                })
+            )
+
+        }
+
+        deleteArray.push(
+            models.HotspotRestaurant.destroy({
+                where: {
+                    hotspot_location_id:hotspotLocationId,
+                },
+                force:true,
+            })
+        )
+
+        deleteArray.push(
+            models.HotspotDropoff.destroy({
+                where: {
+                    hotspot_location_id:hotspotLocationId,
+                },
+                force:true,
+            })
+        )
+
+        deleteArray.push(
+            models.HotspotDriver.destroy({
+                where: {
+                    hotspot_location_id:hotspotLocationId,
+                },
+                force:true,
+            })
+        )
+
+        deleteArray.push(
+            models.CustomerFavLocation.destroy({
+                where: {
+                    hotspot_location_id:hotspotLocationId,
+                },
+                force:true,
+            })
+        )
+
+        deleteArray.push(
+            models.HotspotLocation.destroy({
+                where: {
+                    id:hotspotLocationId,
+                },
+                force:true,
+            })
+        )
+
+        await Promise.all(deleteArray);
 
         return true;
 
