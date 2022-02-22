@@ -273,18 +273,20 @@ module.exports = {
             query.limit=limit                
         }
 
+        query.attributes=['id','name','location',['location_detail','locationDetail'], 'service_availibility']
+
         let hotspotList = await models.HotspotLocation.findAndCountAll(query);
         
         if (hotspotList.count === 0) throw new Error(constants.MESSAGES.no_hotspot);
 
-        hotspotList.rows = hotspotList.rows.map((val) => {
-            return {
-                id:val.id,
-                name: val.name,
-                location: val.location,
-                locationDetail: val.location_detail,                   
-            }
-        })
+        // hotspotList.rows = hotspotList.rows.map((val) => {
+        //     return {
+        //         id:val.id,
+        //         name: val.name,
+        //         location: val.location,
+        //         locationDetail: val.location_detail,                   
+        //     }
+        // })
             
         return { hotspotList };
             
@@ -296,19 +298,25 @@ module.exports = {
 
             const hotspotLocationId = params.hotspotLocationId;
 
-            const hotspot = await models.HotspotLocation.findByPk(hotspotLocationId);
+            const hotspot = await models.HotspotLocation.findOne({
+                where:{
+                    id:hotspotLocationId,
+                },
+                raw:true,
+            });
 
             if (!hotspot) throw new Error(constants.MESSAGES.no_hotspot);
 
                 
-            const name = hotspot.name;
-            const location = hotspot.location;
-            const location_detail = hotspot.location_detail;
-            const city = hotspot.city;
-            const state = hotspot.state;
-            const country = hotspot.country;
-            const postal_code = hotspot.postal_code;
-            const delivery_shifts = hotspot.delivery_shifts;
+            // const name = hotspot.name;
+            // const location = hotspot.location;
+            // const location_detail = hotspot.location_detail;
+            // const city = hotspot.city;
+            // const state = hotspot.state;
+            // const country = hotspot.country;
+            // const postal_code = hotspot.postal_code;
+            // const delivery_shifts = hotspot.delivery_shifts;
+            // const service_availibility=hotspot.service_availibility;
 
             
             let dropoffs = null;
@@ -377,17 +385,10 @@ module.exports = {
             }
             
             const hotspotDetails = {
-                name,
-                location,
-                location_detail,
-                city,
-                state,
-                country,
-                postal_code,
+                ...hotspot,
                 dropoffs,
-                delivery_shifts,
                 restaurants,
-                drivers
+                drivers,
             }
 
 
