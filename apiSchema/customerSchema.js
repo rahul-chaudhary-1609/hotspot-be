@@ -261,7 +261,7 @@ module.exports = {
 
     getAvailableRestaurants:Joi.object({
         hotspot_location_id:Joi.number().required(),
-        delivery_shift: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
+        delivery_shift: Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).allow(null, '').min(7).max(8).messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
         }),
     }),

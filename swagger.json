@@ -4199,7 +4199,7 @@
               {
                 "name":"body",
                 "in":"body",
-                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss\n3. Thsese fields are required:\n\tname\n\tlocation\n\tlocation_detail\n\tcity\n\tstate\n\tcountry\n\tpostal_code\n\tdropoffs\n\tdelivery_shifts\n\trestaurant_ids ",
+                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss\n3. Service avialibity can be 0 or 1: 0=>not_available,1=> available \n4. Thsese fields are required:\n\tname\n\tlocation\n\tlocation_detail\n\tcity\n\tstate\n\tcountry\n\tpostal_code\n\tdropoffs\n\tdelivery_shifts\n\trestaurant_ids ",
                 "required":"true",
                 "schema":{
                   "type":"object",
@@ -4243,6 +4243,9 @@
                       },
                       "minItems": 3,
                       "maxItems": 3
+                    },
+                    "service_availibility":{
+                      "type":"number"
                     },
                     "restaurant_ids":{
                       "type":"array",
@@ -4291,7 +4294,7 @@
               {
                 "name":"body",
                 "in":"body",
-                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss",
+                "description":"1. Location format will be like: [latitude,longitude].\n2. Delivery shifts format will be HH:mm:ss\n3. Service avialibity can be 0 or 1: 0=>not_available,1=> available ",
                 "required":"true",
                 "schema":{
                   "type":"object",
@@ -4338,6 +4341,9 @@
                       },
                       "minItems": 3,
                       "maxItems": 3
+                    },
+                    "service_availibility":{
+                      "type":"number"
                     },
                     "restaurant_ids":{
                       "type":"array",
@@ -7532,7 +7538,7 @@
                 "name": "delivery_shift",
                 "in": "formData",
                 "description": "enter delivery shift HH:MM:SS",
-                "required": true,
+                "required": false,
                 "type": "string"
               }
             ],

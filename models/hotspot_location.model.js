@@ -51,6 +51,12 @@ module.exports = (sequelize, DataTypes) => {
         delivery_shifts: {
             type: DataTypes.ARRAY(DataTypes.TIME),
         },
+        service_availibility: {
+            type: DataTypes.SMALLINT,
+            allowNull: false,
+            defaultValue: 1,
+            comment: '0=>not_available,1=>available'
+        },
     }, {
         sequelize,
         underscored: true,

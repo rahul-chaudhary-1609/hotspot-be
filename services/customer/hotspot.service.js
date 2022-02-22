@@ -45,6 +45,7 @@ module.exports = {
                 location_geometry: { latitude: hotspotLocation.location[0], longitude: hotspotLocation.location[1] },
                 is_added: customerFavLocationIds.includes(hotspotLocation.id),
                 distance: utility.getDistanceBetweenTwoGeoLocations(distanceCalculationParams, 'miles'),
+                service_availibility:hotspotLocation.service_availibility,
             }
         });
 
@@ -139,7 +140,8 @@ module.exports = {
               name: hotspotLocation.name,
               formatted_address: hotspotLocation.location_detail,
               dropoffs,
-              delivery_shifts: hotspotLocation.delivery_shifts
+              delivery_shifts: hotspotLocation.delivery_shifts,
+              service_availibility:hotspotLocation.service_availibility,
           }
 
 
@@ -227,6 +229,7 @@ module.exports = {
                 formatted_address: hotspotLocations.location_detail,
                 default_dropoff:hotspotDropoff.dropoff_detail,
                 delivery_shifts: hotspotLocations.delivery_shifts,
+                service_availibility:hotspotLocations.service_availibility,
                 slots,
             }
 

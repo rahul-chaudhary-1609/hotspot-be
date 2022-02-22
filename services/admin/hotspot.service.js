@@ -70,13 +70,14 @@ module.exports = {
             const postal_code = params.postal_code;
             const dropoffs = params.dropoffs;
             const delivery_shifts = params.delivery_shifts;
+            const service_availibility = params.service_availibility;
 
             const restaurantIds = params.restaurant_ids;
             const driverIds = params.driver_ids;
 
 
             const hotspotLocation = await models.HotspotLocation.create({
-                name,location,location_detail,city,state,country,postal_code,delivery_shifts
+                name,location,location_detail,city,state,country,postal_code,delivery_shifts,service_availibility
             })
 
             if (dropoffs) {
@@ -147,13 +148,14 @@ module.exports = {
             const postal_code = params.postal_code || hotspot.postal_code;
             const dropoffs = params.dropoffs;
             const delivery_shifts = params.delivery_shifts || hotspot.delivery_shifts;
+            const service_availibility = params.service_availibility || hotspot.service_availibility;
 
             const restaurantIds = params.restaurant_ids;
             
             const driverIds = params.driver_ids;
 
             await models.HotspotLocation.update({
-                name,location,location_detail,city,state,country,postal_code,delivery_shifts
+                name,location,location_detail,city,state,country,postal_code,delivery_shifts, service_availibility
                 },
                 {
                     where: {
