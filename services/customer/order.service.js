@@ -1368,18 +1368,33 @@ module.exports = {
 
         if (!order) throw new Error(constants.MESSAGES.no_order);
 
-        order.tip_amount=parseFloat(params.tip_amount);
-        order.order_details={
-            ...order.order_details,
-            amount_details:{
-                ...order.order_details.amount_details,
-                tip:parseFloat(params.tip_amount),
-                grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)).toFixed(2)),
-                totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)).toFixed(2)),
+        if(order.tip_amount){
+            order.tip_amount=parseFloat(params.tip_amount);
+            order.order_details={
+                ...order.order_details,
+                amount_details:{
+                    ...order.order_details.amount_details,
+                    tip:parseFloat(params.tip_amount),
+                    grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)-parseFloat(order.tip_amount)).toFixed(2)),
+                    totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)-parseFloat(order.tip_amount)).toFixed(2)),
+                }
             }
-        }
 
-        order.save();
+            order.save();
+        }else{
+            order.tip_amount=parseFloat(params.tip_amount);
+            order.order_details={
+                ...order.order_details,
+                amount_details:{
+                    ...order.order_details.amount_details,
+                    tip:parseFloat(params.tip_amount),
+                    grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)).toFixed(2)),
+                    totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)).toFixed(2)),
+                }
+            }
+
+            order.save();
+        }
 
         return {
             order:utilityFunction.convertPromiseToObject(order),
