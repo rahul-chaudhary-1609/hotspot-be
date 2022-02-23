@@ -350,6 +350,17 @@ module.exports = {
                 category.is_beverages=params.is_beverages;
                 category.save();
 
+                await RestaurantDish.update(
+                    {
+                        is_beverages:params.is_beverages
+                    },
+                    {
+                        where:{
+                            restaurant_dish_category_id:category.id,
+                        }
+                    }
+                )
+
                 return {
                     category:await utilityFunction.convertPromiseToObject(category)
                 }
