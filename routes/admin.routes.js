@@ -97,8 +97,9 @@ router.get('/viewCustomerProfile/:customerId',adminAuthentication.validateAdminT
 router.put('/changeCustomerStatus/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.changeCustomerStatus);
 router.put('/editCustomer/:customerId',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.customerSchema), adminCustomerController.editCustomer);
 router.delete('/deleteCustomer/:customerId',adminAuthentication.validateAdminToken, adminCustomerController.deleteCustomer);
-router.get('/listActiveCustomers',adminAuthentication.validateAdminToken, adminCustomerController.listActiveCustomers);
+router.get('/listActiveCustomers',adminAuthentication.validateAdminToken, joiValidation.validateQueryParams(apiSchema.listActiveCustomers), adminCustomerController.listActiveCustomers);
 router.put('/addPromotionalCredits',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.addPromotionalCredits), adminCustomerController.addPromotionalCredits);
+router.put('/editPromotionalCredits',adminAuthentication.validateAdminToken,joiValidation.validateBody(apiSchema.editPromotionalCredits), adminCustomerController.editPromotionalCredits);
 
 
 //Dashboard Management

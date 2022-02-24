@@ -120,6 +120,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue:0.00,
     },
+    hotspot_credit_last_updated_on: {
+      type:CustomDataTypes.DATE_NO_TZ,
+    },
+    last_added_hotspot_credit: {
+      type: DataTypes.DECIMAL(15,2),
+      allowNull: false,
+      defaultValue:0.00,
+    },
     device_token: {
       type: DataTypes.STRING,
       allowNull: true

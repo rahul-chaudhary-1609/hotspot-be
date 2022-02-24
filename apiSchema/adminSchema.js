@@ -898,8 +898,18 @@ module.exports = {
     addPromotionalCredits:Joi.object({
         customer_ids: Joi.array().items(Joi.number().required()).required(),
         hotspot_credit: Joi.number().required(),
+        datetime:Joi.string().required(),
     }),
-    
+
+    editPromotionalCredits:Joi.object({
+        customer_id: Joi.number().required(),
+        hotspot_credit: Joi.number().required(),
+        datetime:Joi.string().required(),
+    }),
+
+    listActiveCustomers: Joi.object({
+        hotspotLocationId:Joi.number().required(),
+    }),
 }
 
 

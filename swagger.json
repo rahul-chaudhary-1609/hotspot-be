@@ -2959,6 +2959,13 @@
                 "description": "Enter jwt token for authentication",
                 "required": true,
                 "type": "string"
+              },
+              {
+                "name": "hotspotLocationId",
+                "in": "query",
+                "description": "enter hotspot location id",
+                "required": true,
+                "type": "number"
               }
             ],
             "responses": {}
@@ -2985,7 +2992,7 @@
               {
                 "name": "customer_ids",
                 "in": "body",
-                "description": "1. customer_ids:array (Required),\n2. hotspot_credit:number (required)",
+                "description": "1. customer_ids:array (Required),\n2. hotspot_credit:number (required)\n3. datetime:string (required)",
                 "required": true,
                 "schema":{
                   "type":"object",
@@ -2998,9 +3005,55 @@
                     },
                     "hotspot_credit":{
                       "type":"number"
+                    },
+                    "datetime":{
+                      "type":"string"
                     }
                   }
                 }
+              }
+            ],
+            "responses": {}
+          }
+        },
+
+        "/admin/editPromotionalCredits": {
+          "put": {
+            "tags": [
+              "Admin Customer Management"
+            ],
+            "description": "Api to edit Promotional Credits",
+            "consumes": [
+              "application/x-www-form-urlencoded"
+            ],
+            "parameters": [
+              {
+                "name": "Authorization",
+                "in": "header",
+                "description": "Enter jwt token for authentication",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "name": "customer_id",
+                "in": "formData",
+                "description": "enter customer id",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "hotspot_credit",
+                "in": "formData",
+                "description": "enter hotspot credit",
+                "required": true,
+                "type": "number"
+              },
+              {
+                "name": "datetime",
+                "in": "formData",
+                "description": "datetime Format: YYYY-MM-DD HH:mm:ss",
+                "required": true,
+                "type": "string"
               }
             ],
             "responses": {}

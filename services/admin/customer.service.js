@@ -183,8 +183,21 @@ module.exports = {
 
     listActiveCustomers: async () => {
 
+        let customerFavLocations=await model.CustomerFavLocation.findAll({
+            where:{
+                hotspot_location_id:params.hotspotLocationId,
+                is_default:true,
+            },
+            raw:true,
+        })
+
+        let customerIds=customerFavLocations.map(customerFavLocation=>customerFavLocation.customer_id);
+        
+        customerIds=[...new Set(customerIds)]
+
         let query = {};
         query.where = {
+            id:customerIds,
             status:constants.STATUS.active,
         };
 
@@ -220,6 +233,8 @@ module.exports = {
                 model.Customer.update(
                     {
                         hotspot_credit:parseFloat((parseFloat(customer.hotspot_credit)+parseFloat(params.hotspot_credit)).toFixed(2)),
+                        hotspot_credit_last_updated_on:params.datetime,
+                        last_added_hotspot_credit:parseFloat(parseFloat(params.hotspot_credit).toFixed(2)),
                     },
                     {
                         where:{
@@ -231,6 +246,26 @@ module.exports = {
         }
         
         await Promise.all(updatedCustomerPromise);
+
+        return true;
+        
+    },
+
+    editPromotionalCredits: async (params) => {
+
+        console.log("params=====>",params)
+
+        let customers = await model.Customer.findOne({
+            where:{
+                id:params.customer_id
+            },
+        });
+
+        customers.hotspot_credit=parseFloat(parseFloat(params.hotspot_credit).toFixed(2));
+        customers.hotspot_credit_last_updated_on=params.datetime;
+        customers.last_added_hotspot_credit=0.00;
+
+        customers.save();
 
         return true;
         
