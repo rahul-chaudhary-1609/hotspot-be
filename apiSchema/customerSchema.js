@@ -462,6 +462,7 @@ module.exports = {
         restaurant_id:Joi.number().required(),
         cart_ids:Joi.array().required(),
         amount:  Joi.number().required(),
+        tip_amount:  Joi.number().required(),
         order_type:Joi.number().required(),   
         delivery_datetime:Joi.string().optional(),
     }),

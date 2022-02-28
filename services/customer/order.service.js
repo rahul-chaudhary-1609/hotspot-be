@@ -1040,19 +1040,20 @@ module.exports = {
         const customer_id = user.id;
         const restaurant_id = parseInt(params.restaurant_id);
 
-        // await models.Order.destroy({
-        //     where: {
-        //         customer_id,
-        //         restaurant_id,
-        //         status:constants.ORDER_STATUS.not_paid,
-        //     }
-        // })
+        await models.Order.destroy({
+            where: {
+                customer_id,
+                restaurant_id,
+                status:constants.ORDER_STATUS.not_paid,
+            }
+        })
 
         const order_id = await utilityFunction.getUniqueOrderId();
         const amount = parseFloat(params.amount);
         const type = parseInt(params.order_type);
         const delivery_datetime = params.delivery_datetime ? moment(params.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss") : null;
         const cart_ids = params.cart_ids;
+        const tip_amount = parseFloat(params.tip_amount);
 
         const cart = await models.Cart.findAndCountAll({
             where: {
@@ -1268,8 +1269,8 @@ module.exports = {
             order_details.amount_details.grandTotal=order_details.amount_details.totalCost-credits_applied
         }
 
-        order_details.amount_details.grandTotal=parseFloat((order_details.amount_details.grandTotal+stripeFeeAmount).toFixed(2))
-        order_details.amount_details.totalCost=parseFloat((order_details.amount_details.totalCost+stripeFeeAmount).toFixed(2))
+        order_details.amount_details.grandTotal=parseFloat((order_details.amount_details.grandTotal+stripeFeeAmount+tip_amount).toFixed(2))
+        order_details.amount_details.totalCost=parseFloat((order_details.amount_details.totalCost+stripeFeeAmount+tip_amount).toFixed(2))
         
         const newOrder = await models.Order.create({
             order_id,
@@ -1278,7 +1279,8 @@ module.exports = {
             hotspot_location_id: hotspot ? hotspot.id : null,
             hotspot_dropoff_id: hotspot ? hotspot.dropoff.id : null,
             order_details,
-            amount:order_details.amount_details.totalCost,
+            amount:parseFloat((order_details.amount_details.totalCost-tip_amount).toFixed(2)),
+            tip_amount,
             type,
             delivery_datetime,
             driver_payment_status: type == constants.ORDER_TYPE.delivery?constants.PAYMENT_STATUS.not_paid:constants.PAYMENT_STATUS.not_applicable,
@@ -1360,45 +1362,47 @@ module.exports = {
 
     updateTipAmount: async (params) => {
 
-        const order = await models.Order.findOne({
-            where: {
-                order_id:params.order_id,
-            }
-        })
+        // const order = await models.Order.findOne({
+        //     where: {
+        //         order_id:params.order_id,
+        //     }
+        // })
 
-        if (!order) throw new Error(constants.MESSAGES.no_order);
+        // if (!order) throw new Error(constants.MESSAGES.no_order);
 
-        if(order.tip_amount){
-            order.tip_amount=parseFloat(params.tip_amount);
-            order.order_details={
-                ...order.order_details,
-                amount_details:{
-                    ...order.order_details.amount_details,
-                    tip:parseFloat(params.tip_amount),
-                    grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)-parseFloat(order.tip_amount)).toFixed(2)),
-                    totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)-parseFloat(order.tip_amount)).toFixed(2)),
-                }
-            }
+        // if(order.tip_amount){
+        //     order.tip_amount=parseFloat(params.tip_amount);
+        //     order.order_details={
+        //         ...order.order_details,
+        //         amount_details:{
+        //             ...order.order_details.amount_details,
+        //             tip:parseFloat(params.tip_amount),
+        //             grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)-parseFloat(order.tip_amount)).toFixed(2)),
+        //             totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)-parseFloat(order.tip_amount)).toFixed(2)),
+        //         }
+        //     }
 
-            order.save();
-        }else{
-            order.tip_amount=parseFloat(params.tip_amount);
-            order.order_details={
-                ...order.order_details,
-                amount_details:{
-                    ...order.order_details.amount_details,
-                    tip:parseFloat(params.tip_amount),
-                    grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)).toFixed(2)),
-                    totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)).toFixed(2)),
-                }
-            }
+        //     order.save();
+        // }else{
+        //     order.tip_amount=parseFloat(params.tip_amount);
+        //     order.order_details={
+        //         ...order.order_details,
+        //         amount_details:{
+        //             ...order.order_details.amount_details,
+        //             tip:parseFloat(params.tip_amount),
+        //             grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)).toFixed(2)),
+        //             totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)).toFixed(2)),
+        //         }
+        //     }
 
-            order.save();
-        }
+        //     order.save();
+        // }
 
-        return {
-            order:utilityFunction.convertPromiseToObject(order),
-        }         
+        // return {
+        //     order:utilityFunction.convertPromiseToObject(order),
+        // }
+        
+        return true;
     },
 
     confirmOrderPaymentTest: async (params) => {

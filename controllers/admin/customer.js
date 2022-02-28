@@ -61,7 +61,7 @@ module.exports = {
 
     listActiveCustomers: async (req, res) => {
         try {
-            const responseFromService = await customerService.listActiveCustomers();
+            const responseFromService = await customerService.listActiveCustomers(req.query);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);

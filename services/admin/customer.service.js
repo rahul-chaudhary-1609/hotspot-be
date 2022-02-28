@@ -70,7 +70,10 @@ module.exports = {
             state: customer.state,
             signupDate: customer.createdAt,
             status: customer.status,
-            profilePictureURL: customer.profile_picture_url
+            profilePictureURL: customer.profile_picture_url,
+            hotspot_credit:customer.hotspot_credit,
+            hotspot_credit_last_updated_on:customer.hotspot_credit_last_updated_on,
+            last_added_hotspot_credit:customer.last_added_hotspot_credit,
         }
 
         return {customer };
@@ -181,7 +184,7 @@ module.exports = {
         return true;
     },
 
-    listActiveCustomers: async () => {
+    listActiveCustomers: async (params) => {
 
         let customerFavLocations=await model.CustomerFavLocation.findAll({
             where:{
