@@ -3042,6 +3042,14 @@
                 "type": "number"
               },
               {
+                "name": "action",
+                "in": "formData",
+                "description": "1=>add, 2=>subtract",
+                "required": true,
+                "type": "number",
+                "enum":[1,2]
+              },
+              {
                 "name": "hotspot_credit",
                 "in": "formData",
                 "description": "enter hotspot credit",

@@ -903,6 +903,7 @@ module.exports = {
 
     editPromotionalCredits:Joi.object({
         customer_id: Joi.number().required(),
+        action:Joi.number().valid(1,2).required(),
         hotspot_credit: Joi.number().required(),
         datetime:Joi.string().required(),
     }),

@@ -258,17 +258,23 @@ module.exports = {
 
         console.log("params=====>",params)
 
-        let customers = await model.Customer.findOne({
+        let customer = await model.Customer.findOne({
             where:{
                 id:params.customer_id
             },
         });
 
-        customers.hotspot_credit=parseFloat(parseFloat(params.hotspot_credit).toFixed(2));
-        customers.hotspot_credit_last_updated_on=params.datetime;
-        customers.last_added_hotspot_credit=0.00;
+        if(params.action==constants.HOTSPOT_CREDIT_ACTION.add){
+            customer.hotspot_credit=parseFloat((parseFloat(customer.hotspot_credit)+parseFloat(params.hotspot_credit)).toFixed(2));
+            customer.last_added_hotspot_credit=parseFloat(parseFloat(params.hotspot_credit).toFixed(2));
+        }else if(params.action==constants.HOTSPOT_CREDIT_ACTION.subtract){
+            customer.hotspot_credit=parseFloat((parseFloat(customer.hotspot_credit)-parseFloat(params.hotspot_credit)).toFixed(2));
+            customer.last_added_hotspot_credit=-parseFloat(parseFloat(params.hotspot_credit).toFixed(2));
+        }
 
-        customers.save();
+        customer.hotspot_credit_last_updated_on=params.datetime;
+
+        customer.save();
 
         return true;
         

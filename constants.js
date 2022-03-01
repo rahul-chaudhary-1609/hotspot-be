@@ -394,6 +394,11 @@ module.exports = {
   HOTSPOT_SERVICE_AVAILIBILITY:{
     not_available:0,
     available:1,
+  },
+
+  HOTSPOT_CREDIT_ACTION:{
+    add:1,
+    subtract:2,
   }
 
 }
