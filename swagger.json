@@ -6140,10 +6140,17 @@
             ],            
             "parameters": [
               {
-                "name": "name",
+                "name": "first_name",
                 "in": "formData",
-                "description": "enter name",
+                "description": "enter first name",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "last_name",
+                "in": "formData",
+                "description": "enter last name",
+                "required": false,
                 "type": "string"
               },
               {
@@ -6268,10 +6275,17 @@
                 "type": "string"
               },
               {
-                "name": "name",
+                "name": "first_name",
                 "in": "formData",
-                "description": "enter name",
+                "description": "enter first name",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "last_name",
+                "in": "formData",
+                "description": "enter last name",
+                "required": false,
                 "type": "string"
               },
               {
@@ -6311,10 +6325,17 @@
                 "type": "string"
               },
               {
-                "name": "name",
+                "name": "first_name",
                 "in": "formData",
-                "description": "enter name",
+                "description": "enter first name",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "last_name",
+                "in": "formData",
+                "description": "enter last name",
+                "required": false,
                 "type": "string"
               },
               {
@@ -6354,10 +6375,17 @@
                 "type": "string"
               },
               {
-                "name": "name",
+                "name": "first_name",
                 "in": "formData",
-                "description": "enter name",
+                "description": "enter first name",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "last_name",
+                "in": "formData",
+                "description": "enter last name",
+                "required": false,
                 "type": "string"
               },
               {
@@ -6492,10 +6520,17 @@
                 "type": "string"
               },
               {
-                "name": "name",
+                "name": "first_name",
                 "in": "formData",
-                "description": "enter name",
+                "description": "enter first name",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "last_name",
+                "in": "formData",
+                "description": "enter last name",
+                "required": false,
                 "type": "string"
               },
               {
@@ -6535,10 +6570,17 @@
                 "type": "string"
               },
               {
-                "name": "name",
+                "name": "first_name",
                 "in": "formData",
-                "description": "enter name",
+                "description": "enter first name",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "last_name",
+                "in": "formData",
+                "description": "enter last name",
+                "required": false,
                 "type": "string"
               },
               {
@@ -6578,10 +6620,17 @@
                 "type": "string"
               },
               {
-                "name": "name",
+                "name": "first_name",
                 "in": "formData",
-                "description": "enter name",
+                "description": "enter first name",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "last_name",
+                "in": "formData",
+                "description": "enter last name",
+                "required": false,
                 "type": "string"
               },
               {
@@ -6790,10 +6839,17 @@
             
             "parameters": [
               {
-                "name": "name",
+                "name": "first_name",
                 "in": "formData",
-                "description": "enter name",
+                "description": "enter first name",
                 "required": true,
+                "type": "string"
+              },
+              {
+                "name": "last_name",
+                "in": "formData",
+                "description": "enter last name",
+                "required": false,
                 "type": "string"
               }
             ],

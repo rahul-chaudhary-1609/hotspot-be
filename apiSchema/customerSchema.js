@@ -42,7 +42,13 @@ module.exports = {
     }),
 
     googleLogin: Joi.object({
-        name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        // name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        //     'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        // }),
+        first_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        }),
+        last_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).allow(null, '').optional().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
         email: Joi.string()
@@ -58,7 +64,13 @@ module.exports = {
     }),
 
     facebookLogin: Joi.object({
-        name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        // name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        //     'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        // }),
+        first_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        }),
+        last_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).allow(null, '').optional().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
         email: Joi.string()
@@ -74,7 +86,13 @@ module.exports = {
     }),
 
     appleLogin: Joi.object({
-        name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        // name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        //     'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        // }),
+        first_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        }),
+        last_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).allow(null, '').optional().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
         email: Joi.string()
@@ -115,7 +133,13 @@ module.exports = {
     // }),
 
     customerSchema : Joi.object({
-        name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        // name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        //     'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        // }),
+        first_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        }),
+        last_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).allow(null, '').optional().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
         email: Joi.string().trim().max(45).email().required(),
@@ -141,7 +165,13 @@ module.exports = {
     }),
 
     nameSchema : Joi.object({
-        name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        // name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+        //     'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        // }),
+        first_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).required().messages({
+            'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
+        }),
+        last_name: Joi.string().trim().regex(/^[a-zA-Z\s]+$/).max(45).allow(null, '').optional().messages({
             'string.pattern.base': constants.CUSTOM_JOI_MESSAGE.name_msg.pattern,
         }),
     }),

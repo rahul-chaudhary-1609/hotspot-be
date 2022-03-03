@@ -38,6 +38,8 @@ module.exports = {
                 const user = {
                     id: customer.id,
                     name: customer.name,
+                    first_name:customer.first_name,
+                    last_name:customer.last_name,
                     email:customer.email,
                 };
 
@@ -97,6 +99,8 @@ module.exports = {
                 const user = {
                     id: customer.id,
                     name: customer.name,
+                    first_name:customer.first_name,
+                    last_name:customer.last_name,
                     email:customer.email,
                 };
 
@@ -127,7 +131,9 @@ module.exports = {
 
     signupCustomer: async (params ) => {
 
-            const { name, facebook_id, google_id, apple_id } = params;
+            const { first_name, facebook_id, google_id, apple_id } = params;
+            const last_name=params.last_name ? params.last_name : null;
+            const name=first_name && last_name ? `${first_name} ${last_name}`: first_name
 
 
             const password = passwordHash.generate(params.password);
@@ -172,7 +178,7 @@ module.exports = {
                     }
                 },
                 defaults: {
-                    name, email, is_email_verified, email_verification_otp, email_verification_otp_expiry, phone_no, password, facebook_id, google_id, apple_id
+                    name, first_name,last_name, email, is_email_verified, email_verification_otp, email_verification_otp_expiry, phone_no, password, facebook_id, google_id, apple_id
                 }
             });
 
@@ -196,6 +202,8 @@ module.exports = {
                 const user = {
                     id: customer.id,
                     name: customer.name,
+                    first_name:customer.first_name,
+                    last_name:customer.last_name,
                     email:customer.email,
                 };
 
@@ -240,9 +248,11 @@ module.exports = {
     loginWithGoogle: async (params ) => {
     
         
-            const body = { google_id: params.id, name: params.name, email: params.email };
+            const body = { google_id: params.id, first_name:params.first_name, email: params.email };
 
-            const { google_id, name, email } = body;
+            const { google_id, first_name, email } = body;
+            let name = params.first_name && params.last_name ? `${params.first_name} ${params.last_name}`: params.first_name;
+            const last_name=params.last_name ? params.last_name : null;
             const is_email_verified = true;
             const is_social = true;
 
@@ -251,7 +261,7 @@ module.exports = {
                     email,
                 },
                 defaults: {
-                    name, email, is_email_verified, google_id, is_social
+                    name, first_name,last_name, email, is_email_verified, google_id, is_social
                 }
             });
 
@@ -269,6 +279,8 @@ module.exports = {
                 const user = {
                     id: getCustomer.id,
                     name: getCustomer.name,
+                    first_name:getCustomer.first_name,
+                    last_name:getCustomer.last_name,
                     email:getCustomer.email,
                 };
 
@@ -306,6 +318,8 @@ module.exports = {
                 const user = {
                     id: getCustomer.id,
                     name: getCustomer.name,
+                    first_name:getCustomer.first_name,
+                    last_name:getCustomer.last_name,
                     email:getCustomer.email,
                 };
 
@@ -333,9 +347,12 @@ module.exports = {
     loginWithFacebook: async (params ) => {
 
         
-            const body = { facebook_id: params.id, name: params.name, email: params.email };
+            const body = { facebook_id: params.id, first_name:params.first_name, email: params.email };
 
-            const { facebook_id, name, email } = body;
+            const { facebook_id, first_name, email } = body;
+
+            let name = params.first_name && params.last_name ? `${params.first_name} ${params.last_name}`: params.first_name;
+            const last_name=params.last_name ? params.last_name : null;
 
             const is_email_verified = true;
             const is_social = true;
@@ -346,7 +363,7 @@ module.exports = {
                     email,
                 },
                 defaults: {
-                    name, email, is_email_verified, facebook_id, is_social
+                    name, first_name,last_name, email, is_email_verified, facebook_id, is_social
                 }
             });
 
@@ -363,6 +380,8 @@ module.exports = {
                 const user = {
                     id: getCustomer.id,
                     name: getCustomer.name,
+                    first_name:getCustomer.first_name,
+                    last_name:getCustomer.last_name,
                     email:getCustomer.email,
                 };
 
@@ -400,6 +419,8 @@ module.exports = {
                 const user = {
                     id: getCustomer.id,
                     name: getCustomer.name,
+                    first_name:getCustomer.first_name,
+                    last_name:getCustomer.last_name,
                     email:getCustomer.email,
                 };
 
@@ -426,9 +447,13 @@ module.exports = {
     loginWithApple: async (params ) => {
 
         
-            const body = { apple_id: params.id, name: params.name, email: params.email };
+            const body = { apple_id: params.id, first_name:params.first_name, email: params.email };
 
-            const { apple_id, name, email } = body;
+            const { apple_id, first_name, email } = body;
+
+            let name = params.first_name && params.last_name ? `${params.first_name} ${params.last_name}`: params.first_name;
+
+            const last_name=params.last_name ? params.last_name : null;
 
             const is_email_verified = true;
             const is_social = true;
@@ -439,7 +464,7 @@ module.exports = {
                     email,
                 },
                 defaults: {
-                    name, email, is_email_verified, apple_id, is_social
+                    name, first_name,last_name, email, is_email_verified, apple_id, is_social
                 }
             });
 
@@ -456,6 +481,8 @@ module.exports = {
                 const user = {
                     id: getCustomer.id,
                     name: getCustomer.name,
+                    first_name:getCustomer.first_name,
+                    last_name:getCustomer.last_name,
                     email:getCustomer.email,
                 };
 
@@ -493,6 +520,8 @@ module.exports = {
                 const user = {
                     id: getCustomer.id,
                     name: getCustomer.name,
+                    first_name:getCustomer.first_name,
+                    last_name:getCustomer.last_name,
                     email:getCustomer.email,
                 };
 
@@ -604,6 +633,8 @@ module.exports = {
             let user = {
                 id:customer.id,
                 name: customer.name,
+                first_name:customer.first_name,
+                last_name:customer.last_name,
                 email:customer.email,
             };
 
@@ -638,6 +669,8 @@ module.exports = {
         let user = {
             id: customer.id,
             name: customer.name,
+            first_name:customer.first_name,
+            last_name:customer.last_name,
             email:customer.email,
         };
 
@@ -1128,14 +1161,16 @@ module.exports = {
     getCustomerProfile: async (user) => {
         
             const customer = await models.Customer.findOne({
+                attributes:['name','first_name','last_name','email','country_code',['phone_no','phone'],'profile_picture_url','is_phone_verified','is_social'],
                 where: {
                     email: user.email,
-                }
+                },
+                raw:true,
             })
 
             if (!customer) throw new Error(constants.MESSAGES.user_not_found);
 
-            return { customer: { name: customer.name, email: customer.email, country_code: customer.country_code, phone: customer.phone_no, profile_picture_url: customer.profile_picture_url, is_phone_verified: customer.is_phone_verified, is_social: customer.is_social } };
+            return customer ;
         
     
     },
@@ -1173,11 +1208,14 @@ module.exports = {
 
     updateCustomerName: async (params,user) => {       
 
-            let name = params.name;
+            let name = params.first_name && params.last_name ? `${params.first_name} ${params.last_name}`: params.first_name;
                 
         
             await models.Customer.update({
-                name
+                name,
+                first_name:params.first_name,
+                last_name:params.last_name ? params.last_name : null,     
+
             }, {
                 where: {
                     email: (user.email).toLowerCase()
@@ -1246,6 +1284,8 @@ module.exports = {
             user = {
                 id: getCustomer.id,
                 name: getCustomer.name,
+                first_name:getCustomer.first_name,
+                last_name:getCustomer.last_name,
                 email:getCustomer.email,   
             }
 

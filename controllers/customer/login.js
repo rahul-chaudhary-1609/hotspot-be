@@ -31,6 +31,7 @@ module.exports = {
     signupCustomer: async (req, res) => {
 
         try {
+            console.log("req",req.body)
             const responseFromService = await loginService.signupCustomer(req.body);
             utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.success);
         } catch (error) {
