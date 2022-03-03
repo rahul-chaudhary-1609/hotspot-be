@@ -30,6 +30,7 @@ module.exports = {
         query.limit = limit;
         query.offset = offset;
         query.raw = true;
+        query.attributes=['id','name','first_name','last_name','email',['phone_no','phone'],'city','state',['createdAt','signupDate'],'status','hotspot_credit']
 
         let customerList = await model.Customer.findAndCountAll(query);
         
