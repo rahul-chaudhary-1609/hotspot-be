@@ -36,19 +36,19 @@ module.exports = {
         
         if (customerList.count === 0) throw new Error(constants.MESSAGES.no_customers);
 
-        customerList.rows = customerList.rows.map((val) => {
-            return {
-                id:val.id,
-                name: val.name,
-                email: val.email,
-                phone: val.phone_no ? val.phone_no: null,
-                city: val.city,
-                state: val.state,
-                signupDate: val.createdAt,
-                status:val.status,
+        // customerList.rows = customerList.rows.map((val) => {
+        //     return {
+        //         id:val.id,
+        //         name: val.name,
+        //         email: val.email,
+        //         phone: val.phone_no ? val.phone_no: null,
+        //         city: val.city,
+        //         state: val.state,
+        //         signupDate: val.createdAt,
+        //         status:val.status,
                 
-            }
-        })
+        //     }
+        // })
         
         return { customerList };
         
