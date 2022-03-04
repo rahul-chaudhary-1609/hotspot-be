@@ -1170,7 +1170,7 @@ module.exports = {
 
             if (!customer) throw new Error(constants.MESSAGES.user_not_found);
 
-            return customer ;
+            return {customer} ;
         
     
     },
