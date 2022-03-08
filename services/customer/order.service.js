@@ -1255,6 +1255,7 @@ module.exports = {
                 taxes:salesTaxAmount,
                 taxes_variable_percentage:salesTax.variable_percentage,
                 taxes_fixed_amount:salesTax.fixed_amount,
+                tip:tip_amount.toFixed(2),
                 // credits_applied,
                 totalCost:parseFloat((subtotal+salesTaxAmount).toFixed(2)),
             },
