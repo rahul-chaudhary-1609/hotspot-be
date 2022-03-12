@@ -39,7 +39,7 @@ module.exports = {
     model_name_required: "please pass model name also",
     invalid_credentials: "Please enter Valid Email ID",
     bad_request: "Getting error, due to bad request",
-    phone_not_verified: "Your phone number is not verified yet",
+    phone_not_verified: "Phone number is not verified yet",
     phone_already_verified: "Phone number is already verified",
     email_not_verified: "Your email is not verified yet",
     verification_code_sent: "Verification code is sent",

@@ -430,8 +430,7 @@ const sendOrderDisputeEmail= async (params) => {
         style="
             position: relative;
         ">
-        Hi,<br>
-        There is some dispute with the order ${params.order.order_id}<br>
+        Hi ${params.order.order_details.customer.first_name},<br>
     `;
 
     let bottomHTML = `</div><br><br>
@@ -448,13 +447,13 @@ const sendOrderDisputeEmail= async (params) => {
                 "/>
     </div><br>`;
 
-    let bodyHTML = `<p><strong>${params.title}</strong></p><br>
-        <p>${params.description}</p>`;
+    let bodyHTML = `<p>Thank you for contacting Hotspot! We’re sorry that there was an issue with your order.
+     Your dispute has been submitted and we will follow up shortly on this inquiry. Thanks!</p>`;
         
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to:[...(new Set([params.order.order_details.customer.email,params.admin.email]))],
-        subject:  `Help #${params.order.order_id}`,
+        subject:  `Hotspot #${params.order.order_id}`,
         html:headerHTML+bodyHTML+bottomHTML,
     };
 
@@ -1185,7 +1184,7 @@ module.exports = {
         let hotspot = null;
         let restaurant = null;
         let customer = await utilityFunction.convertPromiseToObject(await models.Customer.findOne({
-                attributes: ['id', 'name', 'email','phone_no','hotspot_credit'],
+                attributes: ['id', 'name','first_name','last_name', 'email','phone_no','hotspot_credit'],
                 where: {
                     id: customer_id
                 }

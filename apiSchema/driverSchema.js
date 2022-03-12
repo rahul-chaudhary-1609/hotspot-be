@@ -5,13 +5,12 @@ const constants = require("../constants");
 module.exports = {
     login : Joi.object({
         phone_or_email: Joi.string().required(),
-        password: Joi.string().trim().min(6).max(15).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{6,})/).required().messages({
+        password: Joi.string().trim().min(6).max(15).required().messages({
             "string.min": constants.CUSTOM_JOI_MESSAGE.password_msg.min,
             "string.max": constants.CUSTOM_JOI_MESSAGE.password_msg.max,
             "string.base": constants.CUSTOM_JOI_MESSAGE.password_msg.base,
             "string.empty": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
             "any.required": constants.CUSTOM_JOI_MESSAGE.password_msg.required,
-            "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.password_msg.customer_pattern
         }),
         device_token:Joi.string().allow(null, '').optional(),
     }),

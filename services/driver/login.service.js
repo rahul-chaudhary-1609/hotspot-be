@@ -246,8 +246,12 @@ module.exports = {
             }
         });
 
-        if (driver && driver.is_signup_completed == constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes) {
-            throw new Error( constants.MESSAGES.driver_phone_already_exists);
+        if (driver) {
+            if(driver.is_signup_completed == constants.DRIVER_SIGNUP_COMPLETE_STATUS.yes){
+                throw new Error( constants.MESSAGES.driver_phone_already_exists);
+            }
+        }else{
+            throw new Error( constants.MESSAGES.phone_not_verified);
         }
         
         driver.profile_picture_url = params.profile_picture_url;
@@ -255,9 +259,6 @@ module.exports = {
         driver.last_name = params.last_name;
         driver.email = params.email;
         driver.dob = params.dob;
-        //driver.gender = params.gender;
-        //driver.nationality = params.nationality;
-        //driver.passport_picture_url = params.passport_picture_url;
         driver.passport_number = params.passport_number;
         
         driver.save();
@@ -297,9 +298,6 @@ module.exports = {
 
         let driverBankDetails = {
             driver_id: params.driver_id,
-            // bank_name: params.bank_name,
-            // account_number: params.account_number,
-            // account_holder_name: params.account_holder_name,
             stripe_publishable_key: utilityFunction.encrypt(params.stripe_publishable_key),
             stripe_secret_key:utilityFunction.encrypt(params.stripe_secret_key),
         }
