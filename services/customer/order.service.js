@@ -1133,9 +1133,9 @@ module.exports = {
             })
         }
 
-        const totalActualPrice = parseFloat((ordered_items.reduce((result, item) => result + item.itemActualPrice, 0)).toFixed(2));
+        const totalActualPrice = ordered_items.reduce((result, item) => result + item.itemActualPrice, 0);
 
-        const subtotal = parseFloat((ordered_items.reduce((result, item) => result + item.itemPrice, 0)).toFixed(2));
+        const subtotal = ordered_items.reduce((result, item) => result + item.itemPrice, 0);
 
         let taxes= await utilityFunction.convertPromiseToObject(
             await models.Tax.findAll({

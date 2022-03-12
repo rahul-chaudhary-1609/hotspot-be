@@ -10,11 +10,10 @@ const moment = require('moment');
 const { Op } = require("sequelize");
 const {sequelize}=require('../models');
 
-const getDeductions=async(query)=>{
+const getRefundAmount=async(query)=>{
     let orderDeliveries = await OrderDelivery.findAll(query)
   
     let refund_amount=0;
-    let hotspot_credits=0;
     for (let orderDelivery of orderDeliveries) {
   
         let orders=await Order.findAll({
@@ -25,12 +24,9 @@ const getDeductions=async(query)=>{
         })
   
         refund_amount=refund_amount+parseFloat((orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal || 0,0)).toFixed(2))
-        hotspot_credits=hotspot_credits+parseFloat((orders.reduce((result,order)=>result+order.order_details.amount_details.credits_applied || 0,0)).toFixed(2))
     }
   
-    let deductions=refund_amount + hotspot_credits;
-  
-    return deductions
+    return refund_amount;
   
   }
 
@@ -671,14 +667,14 @@ module.exports.scheduleAdminEmailJob = async()=> {
 
 
 
-    let totalDeduction= getDeductions({});
-    let monthTotalDeduction= getDeductions(query2);
-    let yearTotalDeduction= getDeductions(query3);
+    let totalRefund= getRefundAmount({});
+    let monthTotalRefund= getRefundAmount(query2);
+    let yearTotalRefund= getRefundAmount(query3);
 
     params.stats=await Promise.all([
         monthOrders,yearOrders,totalOrders,
         monthTotalAmount,yearTotalAmount,totalAmount,
-        monthTotalDeduction,yearTotalDeduction,totalDeduction
+        monthTotalRefund,yearTotalRefund,totalRefund
      ])
 
      await sendHotspotMonthlyEmail(params);
