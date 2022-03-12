@@ -4,10 +4,11 @@ const {sequelize}=require('../../models');
 const constants = require('../../constants');
 const utility = require('../../utils/utilityFunctions');
 
-const getRefundAmount=async(query)=>{
+const getDeductions=async(query)=>{
   let orderDeliveries = await models.OrderDelivery.findAll(query)
 
   let refund_amount=0;
+  let hotspot_credits=0;
   for (let orderDelivery of orderDeliveries) {
 
       let orders=await models.Order.findAll({
@@ -18,9 +19,13 @@ const getRefundAmount=async(query)=>{
       })
 
       refund_amount=refund_amount+parseFloat((orders.reduce((result,order)=>result+order.order_details.amount_details.refundTotal || 0,0)).toFixed(2))
+      hotspot_credits=hotspot_credits+parseFloat((orders.reduce((result,order)=>result+order.order_details.amount_details.credits_applied || 0,0)).toFixed(2))
   }
 
-  return refund_amount;
+  let deductions=refund_amount + hotspot_credits;
+
+  return deductions
+
 
 }
 
@@ -412,26 +417,21 @@ module.exports = {
     let amounts=await Promise.all([totalAmount,todayTotalAmount,monthTotalAmount,yearTotalAmount])
 
 
-    let totalRefund= getRefundAmount({});
-    let todayTotalRefund= getRefundAmount(query1);
-    let monthTotalRefund= getRefundAmount(query2);
-    let yearTotalRefund= getRefundAmount(query3);
+    let totalDeduction= getDeductions({});
+    let todayTotalDeduction= getDeductions(query1);
+    let monthTotalDeduction= getDeductions(query2);
+    let yearTotalDeduction= getDeductions(query3);
 
-    let refunds=await Promise.all([totalRefund,todayTotalRefund,monthTotalRefund,yearTotalRefund])
+    let deductions=await Promise.all([totalDeduction,todayTotalDeduction,monthTotalDeduction,yearTotalDeduction])
 
-    console.log("totalRefund,todayTotalRefund,monthTotalRefund,yearTotalRefund==========================>\n",amounts,refunds)
+    console.log("totalDeduction,todayTotalDeduction,monthTotalDeduction,yearTotalDeduction==========================>\n",amounts,deductions)
 
     return {
-      totalRevenue: parseFloat((amounts[0]-refunds[0]).toFixed(2)),
-      todayRevenue: parseFloat((amounts[1]-refunds[1]).toFixed(2)),
-      monthlyRevenue: parseFloat((amounts[2]-refunds[2]).toFixed(2)),
-      yearlyRevenue: parseFloat((amounts[3]-refunds[3]).toFixed(2)),
-    };
-
-  
-  },
-
-              
-        
+      totalRevenue: parseFloat((amounts[0]-deductions[0]).toFixed(2)),
+      todayRevenue: parseFloat((amounts[1]-deductions[1]).toFixed(2)),
+      monthlyRevenue: parseFloat((amounts[2]-deductions[2]).toFixed(2)),
+      yearlyRevenue: parseFloat((amounts[3]-deductions[3]).toFixed(2)),
+    };  
+  },        
     /***************************recent code for admin dashboard***************************/
 }
