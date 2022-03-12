@@ -22,8 +22,9 @@ module.exports = (sequelize, DataTypes) => {
         },
 
         tip_amount:{
-            type: DataTypes.INTEGER,
+            type: DataTypes.DECIMAL(15,2),
             allowNull: false,
+            defaultValue: 3.50,
         }        
 
     }, {
