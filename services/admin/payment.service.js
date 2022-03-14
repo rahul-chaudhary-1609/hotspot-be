@@ -54,9 +54,6 @@ const sendDriverPaymentEmail= async (params) => {
 
     let bodyHTML = `<div style="margin-top:10px;">
         <table>
-            <tr><td><strong>Account Name</strong></td><td>:</td><td>${params.payment_details.driver.DriverBankDetail.account_holder_name}</td></tr>
-            <tr><td><strong>Bank Name</strong></td><td>:</td><td>${params.payment_details.driver.DriverBankDetail.bank_name}</td></tr>
-            <tr><td><strong>Account Number</strong></td><td>:</td><td>XXXX${params.payment_details.driver.DriverBankDetail.account_number.slice(-4)}</td></tr>
             <tr><td><strong>Payment Type</strong></td><td>:</td><td>Transfer</td></tr>
             <tr><td><strong>Payment Dates</strong></td><td>:</td><td>${params.from_date.slice(5,7)}/${params.from_date.slice(8,10)} - ${params.to_date.slice(5,7)}/${params.to_date.slice(8,10)}</td></tr>
         </table>
@@ -155,8 +152,6 @@ const sendRestaurantPaymentEmail= async (params) => {
         
     bodyHTML += `<div style="margin-top:10px;">
         <table>
-            <tr><td><strong>Bank Name</strong></td><td>:</td><td>Bank of America</td></tr>
-            <tr><td><strong>Account Number</strong></td><td>:</td><td>XXXX7803</td></tr>
             <tr><td><strong>Payment Type</strong></td><td>:</td><td>Transfer</td></tr>
             <tr><td><strong>Payment Dates</strong></td><td>:</td><td>${params.from_date.slice(5,7)}/${params.from_date.slice(8,10)} - ${params.to_date.slice(5,7)}/${params.to_date.slice(8,10)}</td></tr>
         </table>
