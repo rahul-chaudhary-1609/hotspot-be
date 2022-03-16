@@ -344,8 +344,7 @@ module.exports = {
                 Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
                     "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
                 }),
-            ).length(3)
-            .required(),
+            ).required(),
         
         restaurant_ids: Joi.array().items(Joi.object().keys({
             restaurant_id: Joi.number().required(),
@@ -376,8 +375,7 @@ module.exports = {
                 Joi.string().trim().regex(/^([0-9]{2})\:([0-9]{2})\:([0-9]{2})$/).min(7).max(8).messages({
                     "string.pattern.base": constants.CUSTOM_JOI_MESSAGE.delivery_shifts_msg.pattern,
                 }),
-            ).length(3)
-            .optional(),
+            ).optional(),
         
         restaurant_ids: Joi.array().items(Joi.object().keys({
             restaurant_id: Joi.number().required(),
