@@ -4301,9 +4301,7 @@
                       "type":"array",
                       "items":{
                         "type":"string"                        
-                      },
-                      "minItems": 3,
-                      "maxItems": 3
+                      }
                     },
                     "restaurant_ids":{
                       "type":"array",
@@ -4396,9 +4394,7 @@
                       "type":"array",
                       "items":{
                         "type":"string"                        
-                      },
-                      "minItems": 3,
-                      "maxItems": 3
+                      }
                     },
                     "restaurant_ids":{
                       "type":"array",
