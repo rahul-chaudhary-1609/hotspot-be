@@ -47,7 +47,7 @@ app.listen(port, async (err)=>{
         console.log(`Server is started successfully at port: ${port}`);        
     }
     try {
-        await sequelize.sync({alter:true});
+        await sequelize.sync({force:true});
         console.log("Database synced Success")
         // await cronJob.scheduleRestaurantOrdersEmailJob()
         // await cronJob.scheduleAdminEmailJob();
