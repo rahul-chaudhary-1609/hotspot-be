@@ -688,7 +688,7 @@ module.exports = {
     }),
 
     editTip: Joi.object({
-        tip_id: Joi.number().required(),
+        tip_id: Joi.number().optional(),
         tip_amount:Joi.number().required(),
     }),
     
@@ -775,11 +775,12 @@ module.exports = {
     }),
 
     editTax: Joi.object({
-        tax_id: Joi.number().required(),
+        tax_id: Joi.number().optional(),
         name:Joi.string().required(),
         variable_percentage:Joi.number().required(),
         fixed_amount:Joi.number().required(),
         description:Joi.string().optional(),
+        type:Joi.number().valid(0,1,2).required(),
     }),
 
     getSiteStatistics:Joi.object({

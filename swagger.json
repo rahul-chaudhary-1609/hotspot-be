@@ -4025,8 +4025,8 @@
               {
                 "name": "tip_id",
                 "in": "formData",
-                "description": "enter tip id",
-                "required": true,
+                "description": "id, If you will provide id then it will update else add",
+                "required": false,
                 "type": "number"
               },
               {
@@ -4112,8 +4112,8 @@
               {
                 "name": "tax_id",
                 "in": "formData",
-                "description": "enter tax id",
-                "required": true,
+                "description": "id, If you will provide id then it will update else add",
+                "required": false,
                 "type": "number"
               },
               {
@@ -4143,6 +4143,14 @@
                 "description": "description",
                 "required": false,
                 "type": "string"
+              },
+              {
+                "name": "type",
+                "in": "formData",
+                "description": "0=>None,1=>stripe,2=>sales",
+                "required": true,
+                "type": "number",
+                "enum":[0,1,2]
               }
             ],
             "responses": {}

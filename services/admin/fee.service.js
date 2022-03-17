@@ -207,14 +207,20 @@ module.exports = {
     },
 
     editTip: async (params) => {
-      let tip = await models.Tip.findByPk(parseInt(params.tip_id));
+        if(params.tip_id){
+            let tip = await models.Tip.findByPk(parseInt(params.tip_id));
 
-        if (!tip) throw new Error(constants.MESSAGES.no_tip);
+            if (!tip) throw new Error(constants.MESSAGES.no_tip);
 
-        tip.tip_amount = params.tip_amount;
-        tip.save()
+            tip.tip_amount = params.tip_amount;
+            tip.save()
 
-        return {tip}
+            return {tip}
+        }else{
+            let tip=await utility.convertPromiseToObject(models.Tip.create(params));
+            return {tip}
+        }
+        
     },
 
     listTax: async () => {
@@ -238,17 +244,23 @@ module.exports = {
     },
 
     editTax: async (params) => {
-      let tax = await models.Tax.findByPk(parseInt(params.tax_id));
+        if(params.tax_id){
+            let tax = await models.Tax.findByPk(parseInt(params.tax_id));
 
-        if (!tax) throw new Error(constants.MESSAGES.no_tax);
+            if (!tax) throw new Error(constants.MESSAGES.no_tax);
 
-        tax.name=params.name || tax.name;
-        tax.variable_percentage=parseFloat(params.variable_percentage);
-        tax.fixed_amount=parseInt(params.fixed_amount);
-        tax.description=params.description || tax.description;
-        tax.save()
+            tax.name=params.name || tax.name;
+            tax.variable_percentage=parseFloat(params.variable_percentage);
+            tax.fixed_amount=parseInt(params.fixed_amount);
+            tax.description=params.description || tax.description;
+            tax.save()
 
-        return {tax:await utility.convertPromiseToObject(tax)}
+            return {tax:await utility.convertPromiseToObject(tax)}
+        }else{
+            let tax=await utility.convertPromiseToObject(models.Tax.create(params));
+            return {tax}
+        }
+        
     }
 
 }
