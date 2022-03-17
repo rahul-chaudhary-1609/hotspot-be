@@ -54,6 +54,7 @@ module.exports = {
         }),
         passkey: Joi.string().required(),
         name: Joi.string().required(),
+        role: Joi.number().valid(1,2).required(),
     }),
 
     forgetPassword : Joi.object({

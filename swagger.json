@@ -250,6 +250,15 @@
                     "description": "confirmPassword",
                     "required": true,
                     "type": "string"
+                },
+                {
+                    "name": "role",
+                    "in": "formData",
+                    "description": "1=> super_admin, 2=>sub_admin",
+                    "required": true,
+                    "type": "number",
+                    "default":2,
+                    "enum":[1,2]
                 }
                 ],
                 "responses": {}
