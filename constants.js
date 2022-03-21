@@ -4,7 +4,7 @@ module.exports = {
   MESSAGES: {
     log_in: "Logged in successfully",
     Cust_not_verified:"Customer's email id is not Verified.",
-    login_success: 'Login Success',
+    login_success: 'Login Success.',
     sub_admin_added: "Sub admin added successfully",
     new_admin_added: "Admin added successfully",
     phone_already_registered: "An account with given phone number already exists",
