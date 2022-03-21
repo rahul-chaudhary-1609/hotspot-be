@@ -206,8 +206,8 @@ const addRestaurantPayment=async(params)=>{
 }
 
 const getStartAndEndDate = (params) => {
-    let startDate = utility.getStartDate(params.now,"week");
-    let endDate = utility.getEndDate(params.now,"week");
+    let startDate = utility.getStartDate(params.now,"today");
+    let endDate = utility.getEndDate(params.now,"today");
     return {startDate,endDate}
 }
 
