@@ -332,8 +332,8 @@ module.exports = {
             
 
         const stripePaymentIntent = await stripe.paymentIntents.create({
-            amount: params.amount*100,
-            currency: "inr",
+            amount: parseInt((parseFloat(params.amount)*100).toFixed(2)),
+            currency: constants.STRIPE.currency,
             customer: stripeCustomer.id,
         });
 
@@ -508,8 +508,8 @@ module.exports = {
             
 
         const stripePaymentIntent = await stripe.paymentIntents.create({
-            amount: params.amount*100,
-            currency: "inr",
+            amount: parseInt((parseFloat(params.amount)*100).toFixed(2)),
+            currency: constants.STRIPE.currency,
             customer: stripeCustomer.id,
         });
 

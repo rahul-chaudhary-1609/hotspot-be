@@ -432,7 +432,7 @@ module.exports = {
               // amount: order.tip_amount?
               //         parseInt(parseFloat(((parseFloat(order.amount)+parseFloat(order.tip_amount)).toFixed(2)))*100):
               //         parseInt(parseFloat(((parseFloat(order.amount)).toFixed(2)))*100),
-              amount:parseInt(parseFloat(order.order_details.amount_details.grandTotal)*100),
+              amount:parseInt((parseFloat(order.order_details.amount_details.grandTotal)*100).toFixed(2)),
               currency: constants.STRIPE.currency,
               customer: stripeCustomer.id,
             });

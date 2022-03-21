@@ -91,7 +91,7 @@ const sendRestaurantOrderEmail= async (params) => {
             position: relative;
         ">
         ${params.order.order_details.customer.name}<br>
-        PICKUP TIME ${moment(params.order.delivery_datetime).format("h:mma")}<br><br>
+        PICKUP TIME ${moment(params.order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("h:mm a")}<br><br>
     `;
 
     let bottomHTML = `</div><br><br>
@@ -160,7 +160,7 @@ const sendRestaurantOrderEmail= async (params) => {
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: params.order.order_details.restaurant.owner_email,
-        subject:  `Hotspot pickup order ${moment(params.order.delivery_datetime).format("h:mma")}`,
+        subject:  `Hotspot pickup order ${moment(params.order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("h:mm a")}`,
         html: headerHTML + bodyHTML + bottomHTML,
         // attachments: [
         //     {
@@ -198,7 +198,7 @@ const sendOrderPaymentEmail= async (params) => {
         <h1>Thanks for your order, ${params.order.order_details.customer.name.split(" ")[0]}</h1>
     </div>
     <div>
-        <p>The estimated delivery time for your order is ${moment(params.order.delivery_datetime).format("h:mma")}. Track your order in Hotspot app.</p>
+        <p>The estimated delivery time for your order is ${moment(params.order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("h:mm a")}. Track your order in Hotspot app.</p>
     </div>
 
     <div style="background-color:#fff; border-radius: 25px;padding: 20px;margin: 15px;">
@@ -478,9 +478,9 @@ const addRestaurantPayment=async(params)=>{
     let restaurantPaymentObj={
         ...order,
         payment_id: await utilityFunction.getUniqueRestaurantPaymentId(),
-        from_date: moment(params.order.delivery_datetime).format("YYYY-MM-DD"),
-        to_date: moment(params.order.delivery_datetime).format("YYYY-MM-DD"),
-        delivery_datetime:moment(params.order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+        from_date: moment(params.order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD"),
+        to_date: moment(params.order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD"),
+        delivery_datetime:moment(params.order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
         restaurant_name:params.order.order_details.restaurant.restaurant_name,
         order_type:constants.ORDER_TYPE.pickup,
         payment_details: {
@@ -1313,7 +1313,7 @@ module.exports = {
                     customer_name:order.order_details.customer.name,
                     delivery_address: order.order_details.hotspot.location_detail,
                     delivery_dropoff:order.order_details.hotspot.dropoff.dropoff_detail,
-                    delivery_datetime: order.delivery_datetime? moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"):null,
+                    delivery_datetime: order.delivery_datetime? moment(order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"):null,
                 }
             }
             else if (order.type == constants.ORDER_TYPE.pickup) {
@@ -1322,7 +1322,7 @@ module.exports = {
                     pickup_address:order.order_details.restaurant.address,
                     working_hours_from: order.order_details.restaurant.working_hours_from,
                     working_hours_to: order.order_details.restaurant.working_hours_to,
-                    pickup_datetime: order.delivery_datetime? moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"):null,
+                    pickup_datetime: order.delivery_datetime? moment(order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"):null,
                 }
             }
 
@@ -1580,7 +1580,7 @@ module.exports = {
                     orderId,
                     name: order.order_details.hotspot.name,
                     address: order.order_details.hotspot.location_detail,
-                    delivery_datetime: moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+                    delivery_datetime: moment(order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
                     dropoff: order.order_details.hotspot.dropoff.dropoff_detail,
                 }
             }
@@ -1589,7 +1589,7 @@ module.exports = {
                     orderId,
                     name: order.order_details.restaurant.restaurant_name,
                     address:order.order_details.restaurant.address,
-                    pickup_datetime: moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+                    pickup_datetime: moment(order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
                 }
             }
             
@@ -1632,7 +1632,7 @@ module.exports = {
                     orderId,
                     name: order.order_details.hotspot.name,
                     address: order.order_details.hotspot.location_detail,
-                    delivery_datetime: moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+                    delivery_datetime: moment(order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
                     dropoff: order.order_details.hotspot.dropoff.dropoff_detail,
                 }
             }
@@ -1641,7 +1641,7 @@ module.exports = {
                     orderId,
                     name: order.order_details.restaurant.restaurant_name,
                     address:order.order_details.restaurant.address,
-                    pickup_datetime: moment(order.delivery_datetime).format("YYYY-MM-DD HH:mm:ss"),
+                    pickup_datetime: moment(order.delivery_datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
                 }
             }
 
