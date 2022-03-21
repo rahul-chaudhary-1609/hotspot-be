@@ -109,14 +109,7 @@ const sendRestaurantPaymentEmail= async (params) => {
                 [sequelize.cast(sequelize.json("order_details.restaurant.fee"), 'float'),'restaurant_fee']
             ],
             where: {
-                restaurant_payment_id:params.payment_id
-                // type:constants.ORDER_TYPE.delivery,
-                // restaurant_id:params.restaurant_id,
-                // [Op.and]: [
-                //     sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', params.from_date),
-                //     sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')),'<=',params.to_date)
-                // ]
-                
+                restaurant_payment_id:params.payment_id,                
             }
         })
     )
@@ -568,9 +561,9 @@ module.exports = {
             }
         )
 
-        if(params.payment_type==constants.PAYMENT_TYPE.online){
-            await sendRestaurantPaymentEmail(currentRestaurantPayment);
-        }        
+        // if(params.payment_type==constants.PAYMENT_TYPE.online){
+        //     await sendRestaurantPaymentEmail(currentRestaurantPayment);
+        // }        
 
         return {restaurantPayment:await utility.convertPromiseToObject(restaurantPayment)}
     },

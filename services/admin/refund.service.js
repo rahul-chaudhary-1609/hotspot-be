@@ -540,25 +540,25 @@ module.exports = {
             }
         )
 
-        if(params.status==constants.DISPUTE_STATUS.closed){
-            models.Dispute.belongsTo(models.Order,{foriegnKey:'order_id',sourceKey:'order_id',targetKey:'order_id'})
+        // if(params.status==constants.DISPUTE_STATUS.closed){
+        //     models.Dispute.belongsTo(models.Order,{foriegnKey:'order_id',sourceKey:'order_id',targetKey:'order_id'})
 
-            let dispute=await utility.convertPromiseToObject(
-                await models.Dispute.findOne({
-                    where:{
-                        dispute_id:params.dispute_id,
-                    },
-                    include:[
-                        {
-                            model:models.Order,
-                            required:true,
-                        }
-                    ]
-                })
-            )
+        //     // let dispute=await utility.convertPromiseToObject(
+        //     //     await models.Dispute.findOne({
+        //     //         where:{
+        //     //             dispute_id:params.dispute_id,
+        //     //         },
+        //     //         include:[
+        //     //             {
+        //     //                 model:models.Order,
+        //     //                 required:true,
+        //     //             }
+        //     //         ]
+        //     //     })
+        //     // )
 
-            await sendDisputeClosedEmail(dispute);
-        }
+        //     // await sendDisputeClosedEmail(dispute);
+        // }
 
         return {dispute}
 

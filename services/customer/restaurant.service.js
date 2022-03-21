@@ -563,36 +563,6 @@ module.exports = {
             whereCondiition.id = whereCondiition.id.filter((restaurant_id) => include_restaurant_ids.includes(restaurant_id));
         }
         
-
-        // let exclude_restaurant_ids = []
-        
-
-        // for (let restaurant_id of whereCondiition.id) {
-        //     let restaurant = await utility.convertPromiseToObject(
-        //         await models.Restaurant.findByPk(restaurant_id)
-        //     )
-
-        //     let delivery_datetime=moment(params.datetime,"YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD")+" "+params.delivery_shift
-
-        //     let order_count = await models.Order.count({
-        //         where: {
-        //             restaurant_id,
-        //             delivery_datetime,
-        //             status: {
-        //                 [Op.notIn]:[constants.ORDER_STATUS.not_paid],
-        //             }
-        //         }
-        //     })
-            
-
-        //     if (parseInt(restaurant.deliveries_per_shift) <= order_count) {
-        //         exclude_restaurant_ids.push(restaurant_id)
-        //     }
-
-        // }
-
-        // whereCondiition.id = whereCondiition.id.filter((restaurant_id) => !(exclude_restaurant_ids.includes(restaurant_id)));
-
         let restaurants = await utility.convertPromiseToObject(
             await models.Restaurant.findAll({
                 where:whereCondiition,

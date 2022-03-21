@@ -70,8 +70,6 @@ module.exports = {
 
     loginWithPhone: async (params) => {
 
-            //const phone_no = parseInt(params.phone);
-            //const country_code = params.country_code;
             const phone_no = params.phone;
             const password = params.password;
 
@@ -1358,16 +1356,6 @@ module.exports = {
                 }
             });
 
-            // await models.HotspotLocation.update({
-            //     is_added: true
-            // }, {
-            //     where: {
-            //         id:hotspot_location_id,
-            //         //customer_id
-            //     },
-            //     returning: true,
-            // });
-
             if (customerFavLocation || created) return true
 
         
@@ -1550,8 +1538,6 @@ module.exports = {
             },
             returning: true,
         });
-
-        //return notification_status ? .status(200).json({ status: 200, message: `Notifications turned on` }) : .status(200).json({ status: 200, message: `Notifications turned off` });
 
         return true;
     },

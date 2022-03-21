@@ -526,13 +526,6 @@ module.exports = {
         driver.phone_no = params.phone_no || driver.phone_no;
         driver.dob = params.dob || driver.dob;
         driver.passport_number = params.passport_number || driver.passport_number;
-        // driver.gender = params.gender || driver.gender;
-        // driver.nationality = params.nationality || driver.nationality;
-        // driver.passport_picture_url = params.passport_picture_url || driver.passport_picture_url;
-
-        // driverBankDetails.bank_name = params.bank_name || driverBankDetails.bank_name;
-        // driverBankDetails.account_number = params.account_number || driverBankDetails.account_number;
-        // driverBankDetails.account_holder_name = params.account_holder_name || driverBankDetails.account_holder_name;
         driverBankDetails.stripe_publishable_key = params.stripe_publishable_key? utilityFunction.encrypt(params.stripe_publishable_key): driverBankDetails.stripe_publishable_key;
         driverBankDetails.stripe_secret_key = params.stripe_secret_key? utilityFunction.encrypt(params.stripe_secret_key): driverBankDetails.stripe_secret_key;
 
@@ -542,14 +535,11 @@ module.exports = {
         driverAddressDetails.state = params.state || driverAddressDetails.state;
         driverAddressDetails.postal_code = params.postal_code || driverAddressDetails.postal_code;
 
-        // driverVehicleDetails.vehicle_type = params.vehicle_type || driverVehicleDetails.vehicle_type;
-        // driverVehicleDetails.image_url = params.image_url || driverVehicleDetails.image_url;
         driverVehicleDetails.plate_number = params.plate_number || driverVehicleDetails.plate_number;
         driverVehicleDetails.vehicle_model = params.vehicle_model || driverVehicleDetails.vehicle_model;
         driverVehicleDetails.license_number = params.license_number || driverVehicleDetails.license_number;
         driverVehicleDetails.license_image_url = params.license_image_url || driverVehicleDetails.license_image_url;
         driverVehicleDetails.insurance_number = params.insurance_number || driverVehicleDetails.insurance_number;
-        //driverVehicleDetails.insurance_image_url = params.insurance_image_url || driverVehicleDetails.insurance_image_url;
 
         driver.save();
         driverAddressDetails.save();

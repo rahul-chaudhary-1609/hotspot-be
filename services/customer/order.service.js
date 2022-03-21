@@ -211,6 +211,12 @@ const sendOrderPaymentEmail= async (params) => {
                 <h2>Your Receipt</h2>
             </div>
             <div>
+                <strong>${params.order.order_details.hotspot.name}</strong>
+            </div>
+            <div>
+                <strong>Drop off: ${params.order.order_details.hotspot.dropoff.dropoff_detail}</strong>
+            </div>
+            <div>
                 ${params.order.order_details.hotspot.location_detail}
             </div>
 
@@ -386,34 +392,13 @@ const sendOrderPaymentEmail= async (params) => {
         </div>
     </div>`
 
-    
-    
-    // fs.writeFile('mail.html', bodyHTML, function (err) {
-    //     if (err) return console.log(err);
-    //     console.log('Hello World > helloworld.txt');
-    // });
 
-    // let attachment = fs.readFileSync('mail.html').toString('base64');
         
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to: params.order.order_details.customer.email,
         subject:  `Order Receipt #${params.order.order_id}`,
         html: bodyHTML,
-        // attachments: [
-        //     {
-        //         content: attachment,
-        //         filename: "mail.html",
-        //         type: "text/html",
-        //         disposition: "attachment"
-        //     },
-        //     {
-        //         content: attachment,
-        //         filename: "mail.html",
-        //         type: "text/html",
-        //         disposition: "attachment"
-        //     }
-        // ]
     };
 
     console.log(mailOptions)    
@@ -728,15 +713,6 @@ module.exports = {
             count++;
         }
 
-        // return {
-        //     count:await models.Cart.count({
-        //         where:{
-        //             customer_id:user.id,
-        //             status:constants.STATUS.active,
-        //         }
-        //     })
-        // }
-
         return {count}
     },
 
@@ -916,9 +892,6 @@ module.exports = {
                 preference:item.special_instructions,
                 preference_type:item.preference_type,
                 itemAddOn: addOns,
-                // itemPrice:dish.markup_price?
-                //             (parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))*item.cart_count)+addOnPrice:
-                //             (parseFloat(dish.price)*item.cart_count)+addOnPrice
                 itemPrice:dish.markup_price?
                            parseFloat(((parseFloat((parseFloat(dish.price)+parseFloat(dish.markup_price)).toFixed(2))+addOnPrice)*item.cart_count).toFixed(2)):
                            parseFloat(((parseFloat(dish.price)+addOnPrice)*item.cart_count).toFixed(2))                    
@@ -995,15 +968,9 @@ module.exports = {
             processing_fee:stripeFeeAmount,
             processing_fee_variable_percentage:stripeFee.variable_percentage,
             processing_fee_fixed_amount:stripeFee.fixed_amount,
-            // totalAmount,
-            // regulatoryResponseFee:0,
-            // deliveryFee:0,
-            // serviceFee:0,
-            // processingFee:stripeFeeAmount,
             taxes:salesTaxAmount,
             taxes_variable_percentage:salesTax.variable_percentage,
             taxes_fixed_amount:salesTax.fixed_amount,
-            // credits_applied,
             totalCost:parseFloat((subtotal+salesTaxAmount).toFixed(2)),
         };
 
@@ -1150,10 +1117,6 @@ module.exports = {
         let stripeFee=taxes.find(tax=>tax.type==constants.TAX_TYPE.stripe);
         let salesTax=taxes.find(tax=>tax.type==constants.TAX_TYPE.sales);
 
-        // const stripeFeeAmount=parseFloat((((subtotal*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
-        
-        // const salesTaxAmount=parseFloat((((subtotal*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
-
         let stripeFeeAmount=0.00;
 
         if(stripeFee.variable_percentage && stripeFee.fixed_amount){
@@ -1165,7 +1128,6 @@ module.exports = {
         }else{
             stripeFeeAmount=0.00;
         }
-        // parseFloat((((subtotal*stripeFee.variable_percentage)/100)+(stripeFee.fixed_amount/100)).toFixed(2));
         
         let salesTaxAmount=0.00;
 
@@ -1178,8 +1140,6 @@ module.exports = {
         }else{
             salesTaxAmount=0.00;
         }
-
-        // parseFloat((((subtotal*salesTax.variable_percentage)/100)+(salesTax.fixed_amount/100)).toFixed(2));
 
         let hotspot = null;
         let restaurant = null;
@@ -1361,46 +1321,6 @@ module.exports = {
     },
 
     updateTipAmount: async (params) => {
-
-        // const order = await models.Order.findOne({
-        //     where: {
-        //         order_id:params.order_id,
-        //     }
-        // })
-
-        // if (!order) throw new Error(constants.MESSAGES.no_order);
-
-        // if(order.tip_amount){
-        //     order.tip_amount=parseFloat(params.tip_amount);
-        //     order.order_details={
-        //         ...order.order_details,
-        //         amount_details:{
-        //             ...order.order_details.amount_details,
-        //             tip:parseFloat(params.tip_amount),
-        //             grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)-parseFloat(order.tip_amount)).toFixed(2)),
-        //             totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)-parseFloat(order.tip_amount)).toFixed(2)),
-        //         }
-        //     }
-
-        //     order.save();
-        // }else{
-        //     order.tip_amount=parseFloat(params.tip_amount);
-        //     order.order_details={
-        //         ...order.order_details,
-        //         amount_details:{
-        //             ...order.order_details.amount_details,
-        //             tip:parseFloat(params.tip_amount),
-        //             grandTotal:parseFloat((parseFloat(order.order_details.amount_details.grandTotal)+parseFloat(params.tip_amount)).toFixed(2)),
-        //             totalCost:parseFloat((parseFloat(order.order_details.amount_details.totalCost)+parseFloat(params.tip_amount)).toFixed(2)),
-        //         }
-        //     }
-
-        //     order.save();
-        // }
-
-        // return {
-        //     order:utilityFunction.convertPromiseToObject(order),
-        // }
         
         return true;
     },
@@ -1476,18 +1396,18 @@ module.exports = {
         })
     
 
-        // add notification for employee
-        let notificationObj = {
-            type_id: order_id,                
-            title: 'Order Confirmed',
-            description: `Order - ${order_id} is confirmed`,
-            sender_id: order.customer_id,
-            reciever_ids: [order.customer_id],
-            type: constants.NOTIFICATION_TYPE.order_confirmed,
-        }
+        // // add notification for employee
+        // let notificationObj = {
+        //     type_id: order_id,                
+        //     title: 'Order Confirmed',
+        //     description: `Order - ${order_id} is confirmed`,
+        //     sender_id: order.customer_id,
+        //     reciever_ids: [order.customer_id],
+        //     type: constants.NOTIFICATION_TYPE.order_confirmed,
+        // }
 
 
-        await models.Notification.create(notificationObj);
+        // await models.Notification.create(notificationObj);
 
         if (customer.notification_status && customer.device_token) {
             // send push notification
@@ -1563,14 +1483,6 @@ module.exports = {
 
             let orderAmountDetail={
                 ...order.order_details.amount_details,
-                // subtotal:parseFloat(order.order_details.amount_details.subtotal.toFixed(2)),
-                // regulatory_response_fee:0.00,
-                // delivery_fee:0.00,
-                // service_fee:0.00,
-                // tip:parseFloat(order.tip_amount) || 0.00,
-                // processing_fee:parseFloat(order.order_details.amount_details.processing_fee.toFixed(2)),
-                // taxes:parseFloat(order.order_details.amount_details.taxes.toFixed(2)),
-                // grandTotal:parseFloat(order.order_details.amount_details.grandTotal.toFixed(2)),
             }
 
             let trackInfo = null;

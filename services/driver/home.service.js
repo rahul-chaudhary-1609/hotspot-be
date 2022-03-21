@@ -245,21 +245,24 @@ module.exports = {
       })
     )
 
+    // let inAppNotifications=[];
+    let pushNotifications=[];
+
     for (let order of orders) {
 
       let customer = await utility.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))
     
     
       // add notification for employee
-      let notificationObj = {
-        type_id: order.order_id,
-        title: 'Order On The Way',
-        description: `Your order - ${order.order_id} is out for delivery`,
-        sender_id: user.id,
-        reciever_ids: [order.customer_id],
-        type: constants.NOTIFICATION_TYPE.order_on_the_way,
-      }
-      await models.Notification.create(notificationObj);
+      // let notificationObj = {
+      //   type_id: order.order_id,
+      //   title: 'Order On The Way',
+      //   description: `Your order - ${order.order_id} is out for delivery`,
+      //   sender_id: user.id,
+      //   reciever_ids: [order.customer_id],
+      //   type: constants.NOTIFICATION_TYPE.order_on_the_way,
+      // }
+      // inAppNotifications.push(models.Notification.create(notificationObj));
 
       if (customer.notification_status && customer.device_token) {
         // send push notification
@@ -267,9 +270,12 @@ module.exports = {
           title: 'Order On The Way',
           body: `Your order - ${order.order_id} is out for delivery`,
         }
-        await utility.sendFcmNotification([customer.device_token], notificationData);
+        pushNotifications.push(utility.sendFcmNotification([customer.device_token], notificationData));
       }
     }
+
+    // await Promise.all(inAppNotifications);
+    await Promise.all(pushNotifications);
 
     return { orderDelivery };
 
@@ -405,6 +411,9 @@ getDeliveryCards: async(params,user)=>{
       })
       )
 
+      // let inAppNotifications=[];
+      let pushNotifications=[];
+
       for (let order of orders) {
         let update = {
             delivery_image_urls: [delivery.image],
@@ -420,29 +429,32 @@ getDeliveryCards: async(params,user)=>{
         let customer = await utility.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))
     
     
-        // add notification for employee
-        let notificationObj = {
-          type_id: order.order_id,
-          title: 'Order Delivered',
-          description: `Your order - ${order.order_id} is delivered`,
-          sender_id: user.id,
-          reciever_ids: [order.customer_id],
-          type: constants.NOTIFICATION_TYPE.order_delivered,
-        }
-        console.log("notificationObj",notificationObj)
-        await models.Notification.create(notificationObj);
+        // // add notification for employee
+        // let notificationObj = {
+        //   type_id: order.order_id,
+        //   title: 'Order Delivered',
+        //   description: `Your order - ${order.order_id} is delivered`,
+        //   sender_id: user.id,
+        //   reciever_ids: [order.customer_id],
+        //   type: constants.NOTIFICATION_TYPE.order_delivered,
+        // }
+
+        // inAppNotifications.push(models.Notification.create(notificationObj))
         
         if (customer.notification_status && customer.device_token) {
           // send push notification
-        let notificationData = {
+          let notificationData = {
             title: 'Order Delivered',
             body: `Your order - ${order.order_id} is delivered`,
             image:delivery.image,
           }
-          await utility.sendFcmNotification([customer.device_token], notificationData);
+          pushNotifications.push(utility.sendFcmNotification([customer.device_token], notificationData));
         }
 
       }
+
+      // await Promise.all(inAppNotifications);
+      await Promise.all(pushNotifications);
 
     }
 

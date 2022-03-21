@@ -34,7 +34,7 @@ module.exports = {
    resendOTP: async (req, res) => {    
         try {
             const responseFromService = await loginService.resendOTP(req.body);
-            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.send_otp_success);
+            utilityFunction.successResponse(res, responseFromService, constants.MESSAGES.resend_otp_success);
         } catch (error) {
             utilityFunction.errorResponse(res, error, constants.code.error_code);
         }      
@@ -73,7 +73,7 @@ module.exports = {
    signUp:async (req, res) => {
     try {
         const forgotPasswordRes = await loginService.signUp(req.body);
-        utilityFunction.successResponse(res, forgotPasswordRes, constants.MESSAGES.success);
+        utilityFunction.successResponse(res, forgotPasswordRes, constants.MESSAGES.send_otp_success);
     } catch (error) {
         utilityFunction.errorResponse(res, error, constants.code.error_code);
     }

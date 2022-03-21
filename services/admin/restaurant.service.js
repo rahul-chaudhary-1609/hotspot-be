@@ -58,44 +58,20 @@ module.exports = {
                 [Op.not]:constants.STATUS.deleted
             }}});
             if(!restaurantExists) {
-                // const point = { type: 'Point', coordinates: [] };
-                // point.coordinates.push(params.long);
-                // point.coordinates.push(params.lat);
-                //params.location = point;
-                
-
-                //const hotspotLocationIds = params.hotspot_location_ids;
 
                 
                 delete params.hotspot_location_ids;
 
                 
-
-                //params.location = [parseFloat((params.lat).toFixed(7)), parseFloat((params.long).toFixed(7))];
-                //params.location = [parseFloat(params.lat), parseFloat(params.long)];
                 if (params.stripe_publishable_key && params.stripe_publishable_key.trim()!=""  && params.stripe_secret_key && params.stripe_secret_key.trim()!=="") {
                     params.stripe_publishable_key = utilityFunction.encrypt(params.stripe_publishable_key);
                     params.stripe_secret_key = utilityFunction.encrypt(params.stripe_secret_key);
                 }
                 
                 let restaurantCreated = await Restaurant.create(params);
-                if (restaurantCreated)
-                    // if (hotspotLocationIds) {
-                    //     const restaurantHotspotRows = hotspotLocationIds.map((id) => {
-                    //         return {
-                    //             hotspot_location_id:id,
-                    //             restaurant_id:restaurantCreated.id,
-                    //         }
-                    //     })
-                        
-                    //     for (let row of restaurantHotspotRows) {
-                    //         await HotspotRestaurant.findOrCreate({
-                    //             where: row,
-                    //             defaults:row
-                    //         })       
-                    //     }
-                    // }
-                 return {restaurant_id:restaurantCreated.id};
+                if (restaurantCreated){
+                    return {restaurant_id:restaurantCreated.id};
+                }
             } else {
                 throw new Error(constants.MESSAGES.email_already_registered);
             }
@@ -175,24 +151,6 @@ module.exports = {
             let restaurantExists = await Restaurant.findOne(query);
             if(restaurantExists) {
                 await Restaurant.update(updates, query);
-
-                // if (hotspotLocationIds) {
-                //     await HotspotRestaurant.destroy({
-                //         where: {
-                //             restaurant_id:parseInt(params.restaurantId),
-                //         },
-                //         force: true,
-                //     })
-                
-                //     const restaurantHotspotRows = hotspotLocationIds.map((id) => {
-                //         return {
-                //             hotspot_location_id:id,
-                //             restaurant_id:parseInt(params.restaurantId),
-                //         }
-                //     })
-    
-                //     await HotspotRestaurant.bulkCreate(restaurantHotspotRows);
-                // }
                 
                 return true;
             } else {
