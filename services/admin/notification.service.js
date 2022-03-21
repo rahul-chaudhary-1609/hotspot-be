@@ -86,43 +86,6 @@ module.exports = {
             }
         }
 
-        // push notification for restaurants
-        if (params.type == constants.NOTIFICATION_TYPE.all_user || params.type == constants.NOTIFICATION_TYPE.restaurant_only) {
-            // let restaurants = await utility.convertPromiseToObject(
-            //     await Restaurant.findAll({
-            //         where: {
-            //             status: constants.STATUS.active,
-            //           },
-            //         attributes: ['id','device_token']
-            //     })
-            // );
-            // if (restaurants.length) {
-            //     let restaurantUser = [];
-
-            //     restaurants.forEach((restaurant) => {
-            //         if (!reciever_ids.includes(restaurant.id)) reciever_ids.push(restaurant.id);
-                    
-            //         if (restaurant.device_token) restaurantUser.push(restaurant.device_token);
-            //     })
-        
-            //     utility.sendFcmNotification(restaurantUser,fcmNotificationData);
-            // }
-            
-        }
-
-        // let notificationObj = {
-        //     title:params.title,
-        //     description:params.description,
-        //     sender_id:user.id,
-        //     receiver_ids,
-        //     type:params.type,
-        // }
-
-        // // in app notification create
-        // return await Notification.create(notificationObj,
-        //     {raw: true}
-        //     );
-
         return true;
     },
 

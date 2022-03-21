@@ -1,6 +1,6 @@
 const models = require('../../models');
 const {sequelize}=require('../../models');
-const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment,Admin,Driver } = require("../../models")
+const { Restaurant, HotspotLocation,HotspotRestaurant,Order,RestaurantPayment,Admin,Driver, Customer, Notification } = require("../../models")
 const { Op } = require("sequelize");
 const utility = require('../../utils/utilityFunctions');
 const sendMail = require('../../utils/mail');
@@ -39,19 +39,19 @@ const sendRestaurantOrderEmail= async (params) => {
        DELIVERY PICKUP TIME ${moment(params.deliveryPickupDatetime).format("h:mma")}<br><br>
     `;
 
-    let bottomHTML = `</div><br><br>
-    <div
-        style="
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        ">
-        <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" 
-            style="
-                    opacity:0.5;
-                    margin-top:5px;;
-                "/>
-    </div><br>`;
+    // let bottomHTML = `</div><br><br>
+    // <div
+    //     style="
+    //         position: absolute;
+    //         width: 100%;
+    //         height: 100%;
+    //     ">
+    //     <img src="https://hotspot-customer-profile-picture1.s3.amazonaws.com/admin/other/download%20%288%29_1622468052927.png" 
+    //         style="
+    //                 opacity:0.5;
+    //                 margin-top:5px;;
+    //             "/>
+    // </div><br>`;
 
     let bodyHTML = `<p>${params.restaurant.restaurant_name}</p>`;
 
@@ -154,34 +154,12 @@ const sendRestaurantOrderEmail= async (params) => {
 
     bodyHTML += `</table></div>`
 
-    
-    
-    // fs.writeFile('mail.html', headerHTML + bodyHTML + bottomHTML, function (err) {
-    //     if (err) return console.log(err);
-    //     console.log('Hello World > helloworld.txt');
-    // });
-
-    // let attachment = fs.readFileSync('mail.html').toString('base64');
         
     let mailOptions = {
         from: `Hotspot <${process.env.SG_EMAIL_ID}>`,
         to:[...(new Set([params.restaurant.owner_email,params.admin.email,params.driver.email]))],
         subject: `Hotspot delivery order(s) ${params.hotspotLocation.name}, delivery pickup time ${moment(params.deliveryPickupDatetime).format("h:mma")}`,
-        html: headerHTML + bodyHTML + bottomHTML,
-        // attachments: [
-        //     {
-        //         content: attachment,
-        //         filename: "mail.html",
-        //         type: "text/html",
-        //         disposition: "attachment"
-        //     },
-        //     {
-        //         content: attachment,
-        //         filename: "mail.html",
-        //         type: "text/html",
-        //         disposition: "attachment"
-        //     }
-        // ]
+        html: headerHTML + bodyHTML,
     };
 
     console.log(mailOptions)    
@@ -326,15 +304,12 @@ module.exports = {
                 [Op.or]: [
                     { delivery_id: { [Op.iLike]: `%${searchKey}%` } },
                     sequelize.where(sequelize.json('delivery_details.hotspot.name'), { [Op.iLike]: `%${searchKey}%` })
-                    //sequelize.literal(`delivery_details->'hotspot'->>'name' ilike '%${searchKey}%'`),
                 ]
             };
         }
 
         params.whereCondition=whereCondition
         whereCondition=getWhereCondition(params)
-
-        // models.OrderDelivery.hasOne(models.HotspotLocation,{foreignKey:"id",sourceKey:"hotspot_location_id",targetKey:"id"})
 
         let orderDeliveries = await utility.convertPromiseToObject(
             await models.OrderDelivery.findAndCountAll({
@@ -350,7 +325,6 @@ module.exports = {
         let orderDeliveriesRows = []
         
         for (let orderDelivery of orderDeliveries.rows) {
-            //orderDelivery.order_amount = (parseFloat(orderDelivery.amount) - parseFloat(orderDelivery.tip_amount)).toFixed(2);
             let orders=await models.Order.findAll({
                 where:{
                     order_delivery_id:orderDelivery.delivery_id,
@@ -426,7 +400,6 @@ module.exports = {
                 ...whereCondition,
                 [Op.or]: [
                     { order_id: { [Op.iLike]: `%${searchKey}%` } },
-                    //sequelize.where(sequelize.fn('JSON_VALUE', sequelize.col('delivery_details'), '$.hotspot.name'), { [Op.iLike]: `%${searchKey}%` })
                 ]
             };
         }
@@ -576,7 +549,7 @@ module.exports = {
 
     },
 
-    generateRestaurantOrderEmail:async(params)=>{
+    generateRestaurantOrderEmail:async(params,user)=>{
 
         let restaurantPayment=await utility.convertPromiseToObject(
             await RestaurantPayment.findOne({
@@ -605,6 +578,9 @@ module.exports = {
                     deliveryPickupDatetime:restaurantPayment.payment_details.deliveryPickupDatetime
                  })
 
+            // let inAppNotifications=[];
+            let pushNotifications=[];
+
             for (let order of orders) {
                 await Order.update({
                     is_restaurant_notified:1,
@@ -614,7 +590,36 @@ module.exports = {
                         id:order.id,
                     }
                 })
+
+                let customer=await utility.convertPromiseToObject(await Customer.findByPk(parseInt(order.customer_id)))              
+                
+
+
+                // add notification for employee
+                // let notificationObj = {
+                //     type_id: order.order_id,                
+                //     title: 'Order Confirmed by Restaurant',
+                //     description: `Order - ${order.order_id} is confirmed by restaurant`,
+                //     sender_id: user.id,
+                //     reciever_ids: [order.customer_id],
+                //     type: constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
+                // }
+
+                // inAppNotifications.push(Notification.create(notificationObj));
+
+                if (customer.notification_status && customer.device_token) {
+                    // send push notification
+                    let notificationData = {
+                        title: 'Order Confirmed by Restaurant',
+                        body: `Order - ${order.order_id} is confirmed by restaurant`,
+                    }
+
+                    pushNotifications.push(utility.sendFcmNotification([customer.device_token], notificationData));
+                }
             }
+
+            // await Promise.all(inAppNotifications);
+            await Promise.all(pushNotifications);
 
             await RestaurantPayment.update({
                 email_count:restaurantPayment.email_count+1,
@@ -629,86 +634,6 @@ module.exports = {
     },
 
     getRestaurantEarnings: async (params) => {
-
-        
-        // let restaurantPayment = await models.RestaurantPayment.findAndCountAll({
-        //     order:[['to_date','DESC']]
-        // });
-
-        // let now = restaurantPayment.count > 0 ? (new Date(restaurantPayment.rows[0].to_date)) : new Date(process.env.PAYMENT_CALCULATION_START_DATE);
-        // now = new Date(now)
-        // now.setDate(now.getDate()+1)
-
-        // let date = getStartAndEndDate({ now })
-
-        // let newRestaurantPayment = [];
-
-        
-        // while (date.endDate < (new Date())) {
-        //     let orders = await utility.convertPromiseToObject(
-        //     await models.Order.findAll({
-        //         attributes: [
-        //             'restaurant_id',
-        //             [sequelize.fn("sum", sequelize.cast(sequelize.json("order_details.restaurant.fee"), 'float')), "restaurant_fee"],
-        //             [sequelize.fn("count", sequelize.col("Order.id")), "order_count"],
-        //             [sequelize.fn("sum", sequelize.col("amount")), "amount"],
-        //             [sequelize.fn("sum", sequelize.col("tip_amount")), "tip_amount"],
-        //         ],
-        //         where: {
-        //             status: constants.ORDER_STATUS.delivered,
-        //             [Op.and]: [
-        //                 sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', utility.getOnlyDate(date.startDate)),
-        //                 sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', utility.getOnlyDate(date.endDate)),
-        //             ]
-        //             // delivery_datetime: {
-        //             //     [Op.and]: [
-        //             //         { [Op.gte]: utility.getOnlyDate(date.startDate) },
-        //             //         {[Op.lte]:utility.getOnlyDate(date.endDate)}
-        //             //     ]
-        //             // }
-        //         },
-        //         group:['"restaurant_id"']
-        //     })
-        //     )
-
-        //     let formattedOrders = [];
-            
-        //     for (let order of orders) {
-        //         let restaurant = await utility.convertPromiseToObject(
-        //             await models.Restaurant.findOne({
-        //                 attributes:['id','restaurant_name'],
-        //                 where: {
-        //                     id:order.restaurant_id
-        //                 }
-        //             })
-        //         )
-
-        //         let orderObj= {
-        //             ...order,
-        //             payment_id: await utility.getUniqueRestaurantPaymentId(),
-        //             from_date: utility.getOnlyDate(date.startDate),
-        //             to_date: utility.getOnlyDate(date.endDate),
-        //             restaurant_name:restaurant.restaurant_name,
-        //             payment_details: {
-        //                 restaurant:{
-        //                     ...restaurant
-        //                 }
-        //             }
-        //         }
-
-        //         formattedOrders.push(orderObj);
-
-        //     }
-
-        //     newRestaurantPayment.push(...formattedOrders)            
-        //     date.endDate.setDate(date.endDate.getDate() + 1)
-        //     now = utility.getOnlyDate(date.endDate);
-        //     date=getStartAndEndDate({ now })
-        // }
-
-        // //console.log(newRestaurantPayment);
-
-        // await models.RestaurantPayment.bulkCreate(newRestaurantPayment);
 
         let [offset, limit] = await utility.pagination(params.page, params.page_size);
         models.RestaurantPayment.hasOne(models.Driver, { foreignKey: 'id', sourceKey: 'driver_id', targetKey: 'id' })
@@ -767,13 +692,6 @@ module.exports = {
             await models.Order.findAndCountAll({
                 where: {
                     restaurant_payment_id: params.restaurant_payment_id,
-                    // status: constants.ORDER_STATUS.delivered,
-                    // delivery_datetime: {
-                    //     [Op.and]: [
-                    //         { [Op.gte]: params.start_date },
-                    //         {[Op.lte]:params.end_date}
-                    //     ]
-                    // }
                 },
                 include: [
                     {
@@ -838,12 +756,6 @@ module.exports = {
                         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '>=', date.startDate),
                         sequelize.where(sequelize.fn('date', sequelize.col('delivery_datetime')), '<=', date.endDate),
                     ]
-                    // delivery_datetime: {
-                    //     [Op.and]: [
-                    //         { [Op.gte]: utility.getOnlyDate(date.startDate) },
-                    //         {[Op.lte]:utility.getOnlyDate(date.endDate)}
-                    //     ]
-                    // }
                 },
                 group:['"driver_id"']
             })
@@ -916,7 +828,6 @@ module.exports = {
             date=getStartAndEndDate({ now })
         }
 
-        //console.log(newDriverPayment);
 
         await models.DriverPayment.bulkCreate(newDriverPayment);
 
@@ -1074,13 +985,6 @@ module.exports = {
             await models.Order.findAndCountAll({
                 where: {
                     driver_payment_id: params.driver_payment_id,
-                    // status: constants.ORDER_STATUS.delivered,
-                    // delivery_datetime: {
-                    //     [Op.and]: [
-                    //         { [Op.gte]: params.start_date },
-                    //         {[Op.lte]:params.end_date}
-                    //     ]
-                    // }
                 },
                 include: [
                     {

@@ -17,14 +17,11 @@ const getOrderRow =  async (args) => {
                 if(val.type===constants.ORDER_TYPE.pickup) status="Pickup"
                 else status = "Pending"
             }
-            // else if ([2, 3].includes(val.status)) {
-            //     status="Sprinting" //"Driver Allocated"
-            // }
             else if (val.status === 2) {
-                status="Preparing food"//"Food is being prepared"
+                status="Preparing food"
             }
             else if (val.status === 3) {
-                status="Sprinting"//"Food is on the way"
+                status="Sprinting"
             }
             else if (val.status === 4) {
                 if(val.type===constants.ORDER_TYPE.pickup) status="Completed"
@@ -210,29 +207,6 @@ let assignDriver= async (params) => {
             returning: true,
         }
     );
-
-    // let customer=await utility.convertPromiseToObject(await models.Customer.findByPk(parseInt(order.customer_id)))    
-
-
-    // // add notification for employee
-    // let notificationObj = {
-    //     type_id: orderId,                
-    //     title: 'Order Confirmed by Restaurant',
-    //     description: `Order - ${orderId} is confirmed by restaurant`,
-    //     sender_id: user.id,
-    //     reciever_ids: [order.customer_id],
-    //     type: constants.NOTIFICATION_TYPE.order_driver_allocated_or_confirmed_by_restaurant,
-    // }
-    // await models.Notification.create(notificationObj);
-
-    // if (customer.notification_status && customer.device_token) {
-    //     // send push notification
-    //     let notificationData = {
-    //         title: 'Order Confirmed by Restaurant',
-    //         body: `Order - ${orderId} is confirmed by restaurant`,
-    //     }
-    //     await utility.sendFcmNotification([customer.device_token], notificationData);
-    // }
 
     return true;    
 };
@@ -515,16 +489,6 @@ module.exports = {
             },
             raw:true,
         })
-
-        // orders.forEach(async(order)=>{
-        //     await assignDriver(
-        //         {
-        //             ...params,
-        //             orderId:order.order_id,
-        //         },
-        //         user
-        //     );
-        // })
 
         for(let order of orders){
             await assignDriver(

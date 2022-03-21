@@ -418,20 +418,9 @@ module.exports = {
               customer: stripeCustomer.id,
             });   
            }
-             
-          //  let order= await utilityFunction.convertPromiseToObject(
-          //   await models.Order.findOne({
-          //       where: {
-          //           order_id:params.order_id,                       
-          //       }
-          //   })
-          //  )
-           
+                       
 
             const stripePaymentIntent = await stripe.paymentIntents.create({
-              // amount: order.tip_amount?
-              //         parseInt(parseFloat(((parseFloat(order.amount)+parseFloat(order.tip_amount)).toFixed(2)))*100):
-              //         parseInt(parseFloat(((parseFloat(order.amount)).toFixed(2)))*100),
               amount:parseInt((parseFloat(order.order_details.amount_details.grandTotal)*100).toFixed(2)),
               currency: constants.STRIPE.currency,
               customer: stripeCustomer.id,
@@ -466,15 +455,6 @@ module.exports = {
           }
         })
       )
-
-      // let order_details={...order.order_details}
-
-      // for(let order_item of order_details.ordered_items){
-      //   order_item.is_refunded=false;
-      //   for(let addon of order_item.itemAddOn){
-      //     addon.is_refunded=false;
-      //   }
-      // }
 
      let [orderPayment,created]= await models.OrderPayment.findOrCreate({
        where:{

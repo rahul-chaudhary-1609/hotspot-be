@@ -42,7 +42,6 @@ module.exports = {
         let driverList = await models.Driver.findAndCountAll(query);
         
         if (driverList.count === 0) throw new Error(constants.MESSAGES.no_driver);
-        //driverList.count = driverList.count.length;
         driverList.rows = driverList.rows.map((val) => {
             return {
                 id:val.id,
@@ -278,15 +277,6 @@ module.exports = {
         let hotspotList = await models.HotspotLocation.findAndCountAll(query);
         
         if (hotspotList.count === 0) throw new Error(constants.MESSAGES.no_hotspot);
-
-        // hotspotList.rows = hotspotList.rows.map((val) => {
-        //     return {
-        //         id:val.id,
-        //         name: val.name,
-        //         location: val.location,
-        //         locationDetail: val.location_detail,                   
-        //     }
-        // })
             
         return { hotspotList };
             
@@ -306,18 +296,6 @@ module.exports = {
             });
 
             if (!hotspot) throw new Error(constants.MESSAGES.no_hotspot);
-
-                
-            // const name = hotspot.name;
-            // const location = hotspot.location;
-            // const location_detail = hotspot.location_detail;
-            // const city = hotspot.city;
-            // const state = hotspot.state;
-            // const country = hotspot.country;
-            // const postal_code = hotspot.postal_code;
-            // const delivery_shifts = hotspot.delivery_shifts;
-            // const service_availibility=hotspot.service_availibility;
-
             
             let dropoffs = null;
 
