@@ -191,11 +191,11 @@ module.exports.sentOtp = async (params) => {
 
 module.exports.verifyOtp = async (params) => {
 
-    if (params.otp === "1234") {
-        return new Promise(((resolve, reject) => {        
-        resolve(1);
-    }));
-    }
+    // if (params.otp === "1234") {
+    //     return new Promise(((resolve, reject) => {        
+    //     resolve(1);
+    // }));
+    // }
 
     return new Promise(((resolve, reject) => {
         client

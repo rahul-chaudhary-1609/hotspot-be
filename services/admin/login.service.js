@@ -98,16 +98,6 @@ module.exports = {
             if (!_.isEmpty(existingUser)) {
                 let otp = await utilityFunction.gererateOtp();
                                
-                // const mailParams = {};
-                // mailParams.to = params.email;
-                // mailParams.toName = existingUser.name;
-                // mailParams.templateName = "reset_password_request";
-                // mailParams.subject = "Reset Password Request";
-                // mailParams.templateData = {
-                //     subject: "Reset Password Request",
-                //     name: existingUser.name,
-                //     resetLink: `${process.env.WEB_HOST_URL+'admin-panel/auth/reset-password'}?email=${params.email}&otp=${otp}`
-                // };
                 if (!_.isEmpty(otp)) {
                     reset_pass_otp = otp;
                     reset_pass_expiry = Math.floor(Date.now());
