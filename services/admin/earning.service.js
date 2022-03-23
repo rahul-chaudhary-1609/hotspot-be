@@ -467,77 +467,87 @@ module.exports = {
                 console.log("moment",currentTime)
 
                 
-                let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
-                    return time >= currentTime;
-                });
+                // let nextDeliveryTime = hotspotLocation.delivery_shifts.find((time) => {
+                //     return time >= currentTime;
+                // });
 
-                console.log("\nnextDeliveryTime",nextDeliveryTime)
+                let currentShifts=[...hotspotLocation.delivery_shifts].sort();
 
-                if(nextDeliveryTime){
+                let passedShifts=currentShifts.filter((time) => {
+                        return time < currentTime;
+                    });
 
-                    let deliveryDatetime = `${moment(params.datetime).format("YYYY-MM-DD")} ${nextDeliveryTime}`;
-                    
-                    let cutOffTime = `${moment(params.datetime).format("YYYY-MM-DD")} ${utility.getCutOffTime(nextDeliveryTime,restaurant.cut_off_time)}`;
-                    
-                    let deliveryPickupDatetime = `${moment(params.datetime).format("YYYY-MM-DD")} ${utility.getCutOffTime(nextDeliveryTime,hotspotRestaurant.pickup_time)}`;
+                for(let nextDeliveryTime of passedShifts){
 
-                    console.log("\ndeliveryDatetime:",deliveryDatetime,"\ncutOffTime:",cutOffTime,"\ndeliveryPickupDatetime:",deliveryPickupDatetime)
-                    
-                    let orders = await utility.convertPromiseToObject(
-                        await Order.findAll({
-                            where: {
-                                hotspot_location_id:hotspotLocation.id,
-                                restaurant_id: restaurant.id,
-                                type: constants.ORDER_TYPE.delivery,
-                                status:{
-                                    [Op.notIn]:[constants.ORDER_STATUS.not_paid]
-                                },
-                                delivery_datetime: deliveryDatetime,
-                                is_restaurant_payment_generated:0,
-                            }
-                        })
-                    )
+                    console.log("\nnextDeliveryTime",nextDeliveryTime)
 
-                    console.log("orders Count:",orders.length, orders.map(order=>order.order_id))
+                    if(nextDeliveryTime){
 
-
-                    if (orders.length > 0) {
-                        let startTime = moment(cutOffTime, "YYYY-MM-DD HH:mm:ss");
-                        let endTime = moment(params.datetime, "YYYY-MM-DD HH:mm:ss");
-
-                        // calculate total duration
-                        var duration = moment.duration(endTime.diff(startTime));
-                        var timeDiff = duration.asSeconds();
-                        console.log("timeDiff:",timeDiff)
+                        let deliveryDatetime = `${moment(params.datetime).format("YYYY-MM-DD")} ${nextDeliveryTime}`;
                         
-                        if (timeDiff > 0) {
-                            let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime, deliveryPickupDatetime })
-                            
-                            for (let order of orders) {
-                                await Order.update({
-                                    is_restaurant_payment_generated:1,
-                                    restaurant_payment_id,
-                                    restaurant_payment_status:restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
-                                }, {
-                                    where: {
-                                        id:order.id,
-                                    }
-                                })
-                            }
+                        let cutOffTime = `${moment(params.datetime).format("YYYY-MM-DD")} ${utility.getCutOffTime(nextDeliveryTime,restaurant.cut_off_time)}`;
+                        
+                        let deliveryPickupDatetime = `${moment(params.datetime).format("YYYY-MM-DD")} ${utility.getCutOffTime(nextDeliveryTime,hotspotRestaurant.pickup_time)}`;
 
-                            await Order.destroy({
+                        console.log("\ndeliveryDatetime:",deliveryDatetime,"\ncutOffTime:",cutOffTime,"\ndeliveryPickupDatetime:",deliveryPickupDatetime)
+                        
+                        let orders = await utility.convertPromiseToObject(
+                            await Order.findAll({
                                 where: {
                                     hotspot_location_id:hotspotLocation.id,
                                     restaurant_id: restaurant.id,
                                     type: constants.ORDER_TYPE.delivery,
                                     status:{
-                                        [Op.in]:[constants.ORDER_STATUS.not_paid]
+                                        [Op.notIn]:[constants.ORDER_STATUS.not_paid]
                                     },
                                     delivery_datetime: deliveryDatetime,
+                                    is_restaurant_payment_generated:0,
                                 }
                             })
+                        )
+
+                        console.log("orders Count:",orders.length, orders.map(order=>order.order_id))
+
+
+                        if (orders.length > 0) {
+                            let startTime = moment(cutOffTime, "YYYY-MM-DD HH:mm:ss");
+                            let endTime = moment(params.datetime, "YYYY-MM-DD HH:mm:ss");
+
+                            // calculate total duration
+                            var duration = moment.duration(endTime.diff(startTime));
+                            var timeDiff = duration.asSeconds();
+                            console.log("timeDiff:",timeDiff)
+                            
+                            if (timeDiff > 0) {
+                                let restaurant_payment_id=await addRestaurantPayment({ orders, restaurant, hotspotLocation, deliveryDatetime, deliveryPickupDatetime })
+                                
+                                for (let order of orders) {
+                                    await Order.update({
+                                        is_restaurant_payment_generated:1,
+                                        restaurant_payment_id,
+                                        restaurant_payment_status:restaurant.online_payment==constants.ONLINE_PAYMENT_MODE.off?constants.PAYMENT_STATUS.paid:constants.PAYMENT_STATUS.not_paid,
+                                    }, {
+                                        where: {
+                                            id:order.id,
+                                        }
+                                    })
+                                }
+
+                                await Order.destroy({
+                                    where: {
+                                        hotspot_location_id:hotspotLocation.id,
+                                        restaurant_id: restaurant.id,
+                                        type: constants.ORDER_TYPE.delivery,
+                                        status:{
+                                            [Op.in]:[constants.ORDER_STATUS.not_paid]
+                                        },
+                                        delivery_datetime: deliveryDatetime,
+                                    }
+                                })
+                            }
                         }
                     }
+
                 }
 
                 
