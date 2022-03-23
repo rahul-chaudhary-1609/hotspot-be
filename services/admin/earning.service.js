@@ -681,7 +681,7 @@ module.exports = {
                         required:false,
                     }
                 ],
-                order: [["createdAt", "DESC"]],
+                order: [["delivery_datetime", "DESC"],["createdAt", "DESC"]],
                 limit,
                 offset,
         }))
