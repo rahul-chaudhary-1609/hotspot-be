@@ -473,11 +473,11 @@ module.exports = {
 
                 let currentShifts=[...hotspotLocation.delivery_shifts].sort();
 
-                let passedShifts=currentShifts.filter((time) => {
-                        return time < currentTime;
-                    });
+                // let passedShifts=currentShifts.filter((time) => {
+                //         return time < currentTime;
+                //     });
 
-                for(let nextDeliveryTime of passedShifts){
+                for(let nextDeliveryTime of currentShifts){
 
                     console.log("\nnextDeliveryTime",nextDeliveryTime)
 
