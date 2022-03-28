@@ -30,7 +30,6 @@ module.exports = {
         const addBanner = await models.HotspotOffer.create({ name: params.name, image_url: params.image_url, order: params.order });
 
         return  addBanner.dataValues ;
-
      
     },
 
